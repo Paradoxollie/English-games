@@ -37,20 +37,22 @@ header h1 {
 /* Style du menu de navigation */
 nav {
     background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
-    margin-top: 8rem; /* Ajoute de l'espace en haut */
     padding: 1rem;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permet aux liens de s'adapter à l'espace */
+    flex-wrap: wrap; /* Permet aux liens de se répartir sur plusieurs lignes */
+    position: sticky; /* Position sticky pour que le menu reste visible */
+    top: 70px; /* Le menu suit le header */
+    z-index: 999;
 }
 
 nav a {
     text-decoration: none;
     color: #ffffff;
     font-size: 1.2em;
-    margin: 0.5rem 1rem; /* Marges réduites pour les petits écrans */
+    margin: 0.5rem 1rem;
     padding: 0.5rem 1rem;
     background-color: #4CAF50;
     border-radius: 5px;
@@ -67,6 +69,7 @@ nav a:hover {
     padding: 20px;
     width: 90%;
     max-width: 1200px;
+    margin-bottom: 6rem; /* Ajoute de l'espace pour le footer */
 }
 
 /* Section des jeux */
@@ -110,8 +113,8 @@ footer {
     padding: 15px;
     text-align: center;
     width: 100%;
-    position: relative; /* Position relative pour les mobiles */
-    bottom: 0;
+    position: relative; /* Change de position fixe à relative */
+    margin-top: 2rem; /* Ajoute de l'espace au-dessus du footer */
 }
 
 /* Adaptation pour les petits écrans */
@@ -130,6 +133,13 @@ footer {
         flex-direction: column; /* Les éléments de navigation se superposent en colonne */
         align-items: center;
         padding: 1rem;
+        margin-top: 12rem; /* Ajuste la marge pour les petits écrans */
+    }
+
+    nav a {
+        display: block; /* Les liens de navigation s'affichent en bloc */
+        margin: 0.5rem auto; /* Centré avec une marge autour */
+        width: 80%; /* Largeur des boutons ajustée */
     }
 
     .main-content {
