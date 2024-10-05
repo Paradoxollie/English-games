@@ -95,3 +95,22 @@ footer {
     position: fixed;
     bottom: 0;
 }
+
+/* Adaptation pour les petits écrans */
+@media only screen and (max-width: 768px) {
+    .card {
+        width: 90%; /* Réduit la taille des cartes sur mobile */
+        margin: 1rem auto;
+    }
+
+    nav {
+        flex-direction: column; /* Empile les éléments du menu sur mobile */
+        padding: 1rem;
+    }
+
+    .play-button {
+        width: 80%; /* Boutons plus petits sur mobile */
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}
