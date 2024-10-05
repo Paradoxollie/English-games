@@ -6,7 +6,7 @@
     <title>Speed Verb Challenge</title>
     <style>
         body {
-            background-image: url('images/background.jpg'); /* Chemin vers l'image de fond */
+            background-image: url('images/background.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -26,7 +26,6 @@
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-
         }
 
         #timer, #score {
@@ -71,92 +70,80 @@
             font-weight: bold;
         }
 
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
         #top-scores {
-    background-color: rgba(0, 0, 0, 0.8); /* Couleur de fond semi-transparente */
-    padding: 20px; /* Espacement à l'intérieur */
-    border-radius: 15px; /* Coins arrondis */
-    font-size: 1.2em; /* Taille du texte */
-    color: #ffffff; /* Couleur du texte */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); /* Ombre pour donner de la profondeur */
-    max-width: 250px; /* Largeur maximale de la boîte */
-    width: 100%; /* S'adapte à la largeur disponible */
-    position: absolute; /* Position absolue pour un placement plus précis */
-    top: 20px; /* Distance par rapport au haut */
-    right: 20px; /* Distance par rapport à la droite */
-    z-index: 1000; /* S'assurer qu'elle reste au-dessus */
-    text-align: left; /* Alignement du texte */
-}
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+            max-width: 250px;
+            width: 100%;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            text-align: left;
+        }
 
-#top-scores h3 {
-    font-size: 1.5em; /* Taille du titre */
-    margin-bottom: 10px; /* Espace en bas du titre */
-    text-align: center; /* Centrer le titre */
-}
-
-#top-scores-list {
-    list-style-type: none; /* Pas de puces de liste */
-    padding: 0; /* Pas d'espacement interne */
-    margin: 0; /* Pas de marge */
-}
-
-#top-scores-list li {
-    background-color: rgba(255, 255, 255, 0.1); /* Fond légèrement différent pour chaque élément */
-    padding: 10px; /* Espacement interne */
-    margin-bottom: 5px; /* Espace en bas de chaque élément */
-    border-radius: 10px; /* Coins arrondis pour chaque élément */
-    text-align: center; /* Centrer le texte dans les éléments */
-}
-
-@media only screen and (max-width: 768px) {
-    /* Styles pour les écrans de petite taille comme les téléphones */
-    #top-scores {
-        position: relative; /* Position relative pour s'intégrer mieux sur les petits écrans */
-        top: auto; /* Réinitialiser la position top */
-        right: auto; /* Réinitialiser la position right */
-        max-width: 100%; /* S'adapte à la largeur du conteneur */
-        width: 90%; /* Légère marge interne */
-        margin: 10px auto; /* Centrer et espacement vertical */
-        text-align: center; /* Centrer le texte */
-    }
-
-    #top-scores h3 {
-        font-size: 1.2em; /* Réduire la taille du texte */
-    }
-
-    #top-scores-list li {
-        font-size: 1em; /* Réduire la taille des éléments */
-        padding: 8px; /* Réduire l'espacement interne */
-    }
-}
-
+        #top-scores h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
 
         #top-scores-list {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         #top-scores-list li {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
             margin-bottom: 5px;
+            border-radius: 10px;
+            text-align: center;
         }
-        .shake {
-    animation: shake 0.5s;
-}
 
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
-}
+        @media only screen and (max-width: 768px) {
+            #top-scores {
+                position: relative;
+                top: auto;
+                right: auto;
+                max-width: 100%;
+                width: 90%;
+                margin: 10px auto;
+                text-align: center;
+            }
 
+            #top-scores h3 {
+                font-size: 1.2em;
+            }
+
+            #top-scores-list li {
+                font-size: 1em;
+                padding: 8px;
+            }
+        }
     </style>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Section affichage des meilleurs scores -->
+    <!-- Affichage des meilleurs scores -->
     <div id="top-scores">
         <h3>Top 5 Scores:</h3>
         <ul id="top-scores-list"></ul>
@@ -179,6 +166,10 @@
         <button id="check-button" onclick="checkVerb()" disabled>Check Answer</button>
         <button id="skip-button" onclick="skipVerb()" disabled>Skip</button>
         <div id="score">Score: 0</div>
+        <div id="skipped-verbs" style="display:none;">
+            <h3>Skipped Verbs:</h3>
+            <ul id="skipped-verbs-list"></ul>
+        </div>
     </div>
 
     <script>
@@ -192,22 +183,17 @@
             appId: "1:452279652544:web:916f93e0ab29183e739d25",
             measurementId: "G-RMCQTMKDVP"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-
-        // Initialize Firestore
         const db = firebase.firestore();
 
-        // Variables globales
         let score = 0;
         let timeLeft = 90;
         let timerInterval;
         let currentVerb = "";
+        let skippedVerbs = [];
 
-        // Dictionnaire des verbes avec traduction française
-        const verbs = {       
-    "become": ["became", "become", "devenir"],
+        const verbs = {
+            "become": ["became", "become", "devenir"],
     "begin": ["began", "begun", "commencer"],
     "break": ["broke", "broken", "casser"],
     "bring": ["brought", "brought", "apporter"],
@@ -475,24 +461,22 @@
     "withdraw": ["withdrew", "withdrawn", "retirer"],
     "outdo": ["outdid", "outdone", "surpasser"],
     "shrink": ["shrank", "shrunk", "rétrécir"]
-
-
         };
 
-        // Démarrer le jeu
         function startGame() {
             score = 0;
             timeLeft = 90;
+            skippedVerbs = [];
             document.getElementById("score").textContent = "Score: " + score;
             document.querySelectorAll(".verb-input").forEach(input => input.disabled = false);
             document.getElementById("start-button").disabled = true;
             document.getElementById("check-button").disabled = false;
             document.getElementById("skip-button").disabled = false;
+            document.getElementById("skipped-verbs").style.display = "none";
             timerInterval = setInterval(updateTimer, 1000);
             displayVerb();
         }
 
-        // Mettre à jour le chronomètre
         function updateTimer() {
             timeLeft--;
             document.getElementById("timer").textContent = timeLeft;
@@ -501,13 +485,11 @@
             }
         }
 
-        // Obtenir un verbe aléatoire
         function getRandomVerb() {
             const keys = Object.keys(verbs);
             return keys[Math.floor(Math.random() * keys.length)];
         }
 
-        // Afficher un verbe en fonction du niveau de difficulté
         function displayVerb() {
             currentVerb = getRandomVerb();
             const difficulty = document.getElementById("difficulty").value;
@@ -544,28 +526,32 @@
             input.className = "verb-input";
             input.placeholder = `Type ${labelText.toLowerCase()}`;
             input.disabled = disabled;
-input.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        checkVerb();
-    }
-});
+            input.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    checkVerb();
+                }
+            });
             div.appendChild(label);
             div.appendChild(input);
             return div;
         }
 
-        // Vérifier les réponses
         function checkVerb() {
             const pastSimpleInput = document.getElementById("past-simple") ? document.getElementById("past-simple").value.trim() : "";
             const pastParticipleInput = document.getElementById("past-participle") ? document.getElementById("past-participle").value.trim() : "";
             const correctForms = verbs[currentVerb];
 
             let isCorrect = true;
-            if (pastSimpleInput && pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+
+            if (pastSimpleInput === "" || (document.getElementById("past-participle") && pastParticipleInput === "")) {
                 isCorrect = false;
-            }
-            if (pastParticipleInput && pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
-                isCorrect = false;
+            } else {
+                if (pastSimpleInput && pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+                    isCorrect = false;
+                }
+                if (pastParticipleInput && pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+                    isCorrect = false;
+                }
             }
 
             if (isCorrect) {
@@ -573,17 +559,19 @@ input.addEventListener('keypress', function(event) {
                 document.getElementById("score").textContent = "Score: " + score;
                 displayVerb();
             } else {
-               
-    document.getElementById("input-container").classList.add("shake");
-
-    // Retirer la classe après l'animation pour éviter des accumulations de classes
-    setTimeout(() => {
-        document.getElementById("input-container").classList.remove("shake");
-    }, 500);
+                document.getElementById("input-container").classList.add("shake");
+                setTimeout(() => {
+                    document.getElementById("input-container").classList.remove("shake");
+                }, 500);
             }
         }
 
         function skipVerb() {
+            skippedVerbs.push({
+                verb: currentVerb,
+                pastSimple: verbs[currentVerb][0],
+                pastParticiple: verbs[currentVerb][1]
+            });
             displayVerb();
         }
 
@@ -593,8 +581,24 @@ input.addEventListener('keypress', function(event) {
             document.getElementById("start-button").disabled = false;
             document.getElementById("check-button").disabled = true;
             document.getElementById("skip-button").disabled = true;
+
             alert("Game Over! Your final score is: " + score);
+
+            if (skippedVerbs.length > 0) {
+                const skippedVerbsList = document.getElementById("skipped-verbs-list");
+                skippedVerbsList.innerHTML = "";
+                skippedVerbs.forEach(verbInfo => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${verbInfo.verb} - Past Simple: ${verbInfo.pastSimple}, Past Participle: ${verbInfo.pastParticiple}`;
+                    skippedVerbsList.appendChild(listItem);
+                });
+                document.getElementById("skipped-verbs").style.display = "block";
+            } else {
+                alert("You didn't skip any verbs. Great job!");
+            }
+
             saveScore(score);
+            skippedVerbs = [];
         }
 
         function saveScore(score) {
@@ -633,11 +637,5 @@ input.addEventListener('keypress', function(event) {
             loadTopScores();
         });
     </script>
-   <div id="game-container">
-    <!-- Le contenu de ton conteneur de jeu -->
-    <button id="home-button" onclick="location.href='index.html'">Back to Home</button>
-</div>
-
-
 </body>
 </html>
