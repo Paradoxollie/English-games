@@ -1,5 +1,5 @@
 /* Styles généraux */
-body {
+body, html {
     font-family: 'Open Sans', sans-serif;
     background-image: url('images/background.jpg');
     background-size: cover;
@@ -12,6 +12,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    height: 100%;
 }
 
 /* Style du header */
@@ -36,15 +37,15 @@ header h1 {
 
 /* Style du menu de navigation */
 nav {
-    background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
+    background-color: rgba(0, 0, 0, 0.85);
     padding: 1rem;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap; /* Permet aux liens de se répartir sur plusieurs lignes */
-    position: sticky; /* Position sticky pour que le menu reste visible */
-    top: 70px; /* Le menu suit le header */
+    flex-wrap: wrap;
+    position: relative; /* Changer position fixed à relative */
+    top: 70px; /* S'assurer qu'il reste sous le header */
     z-index: 999;
 }
 
@@ -60,16 +61,16 @@ nav a {
 }
 
 nav a:hover {
-    background-color: #45a049; /* Changement de couleur au survol */
+    background-color: #45a049;
 }
 
 /* Contenu principal */
 .main-content {
-    margin-top: 15rem; /* Espace suffisant sous le header et nav */
+    margin-top: 15rem; /* Ajuste la marge pour que le contenu soit visible */
     padding: 20px;
     width: 90%;
     max-width: 1200px;
-    margin-bottom: 6rem; /* Ajoute de l'espace pour le footer */
+    margin-bottom: 6rem; /* Laisse de l'espace pour le footer */
 }
 
 /* Section des jeux */
@@ -115,14 +116,13 @@ footer {
     width: 100%;
     position: relative; /* Le footer reste sous le contenu */
     margin-top: 2rem; /* Ajoute de l'espace au-dessus du footer */
-    bottom: 0; /* Position en bas de la page */
+    bottom: 0;
 }
 
 /* Adaptation pour les petits écrans */
 @media only screen and (max-width: 768px) {
-    body {
-        flex-direction: column;
-        align-items: flex-start;
+    body, html {
+        height: auto; /* Permet à la page de s'étendre */
     }
 
     header {
@@ -136,39 +136,33 @@ footer {
         padding: 1rem;
         position: relative; /* Change de position fixe à relative pour mobile */
         top: 0; /* Remet la position en haut */
-        margin-top: 12rem; /* Garde l'espacement sous le header */
+        margin-top: 8rem; /* Garde l'espacement sous le header */
     }
 
     nav a {
-        display: block; /* Les liens de navigation s'affichent en bloc */
-        margin: 0.5rem auto; /* Centré avec une marge autour */
-        width: 80%; /* Largeur des boutons ajustée */
+        display: block;
+        margin: 0.5rem auto;
+        width: 80%;
     }
 
     .main-content {
-        margin-top: 18rem; /* Ajuste la marge pour le contenu */
-        width: 95%; /* Ajuste la largeur pour les petits écrans */
+        margin-top: 12rem; /* Ajuste la marge pour le contenu */
+        width: 95%;
     }
 
     .game-section {
-        grid-template-columns: 1fr; /* Affiche une seule colonne */
-        gap: 1rem; /* Espace réduit entre les cartes */
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .card {
-        width: 100%; /* Les cartes prennent toute la largeur sur mobile */
+        width: 100%;
         margin: 1rem auto;
-    }
-
-    .play-button {
-        width: 80%; /* Boutons plus petits sur mobile */
-        padding: 1rem;
-        font-size: 1rem;
     }
 
     footer {
         padding: 1rem;
-        position: relative; /* Place le footer en bas du contenu */
-        margin-top: 4rem; /* Plus d'espace au-dessus du footer */
+        position: relative;
+        margin-top: 4rem; /* Ajoute de l'espace pour le footer */
     }
 }
