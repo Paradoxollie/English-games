@@ -1,51 +1,41 @@
 /* Styles généraux */
-body, html {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%; /* S'assure que le body prend toute la hauteur */
     font-family: 'Open Sans', sans-serif;
     background-image: url('images/background.jpg');
     background-size: cover;
     background-position: center;
-    animation: backgroundMove 30s linear infinite;
     color: #ffffff;
-    margin: 0;
-    padding: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100%;
 }
 
-/* Style du header */
+/* En-tête de la page */
 header {
     background-color: #000000;
     color: #4CAF50;
     padding: 20px;
     text-align: center;
     width: 100%;
-    position: fixed;
-    top: 0;
     z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 header h1 {
     font-size: 3em;
-    margin: 0;
 }
 
-/* Style du menu de navigation */
+/* Menu de navigation */
 nav {
-    background-color: rgba(0, 0, 0, 0.85);
-    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
+    padding: 10px 0;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    position: relative; /* Changer position fixed à relative */
-    top: 70px; /* S'assurer qu'il reste sous le header */
+    text-align: center;
     z-index: 999;
 }
 
@@ -53,24 +43,25 @@ nav a {
     text-decoration: none;
     color: #ffffff;
     font-size: 1.2em;
-    margin: 0.5rem 1rem;
-    padding: 0.5rem 1rem;
+    margin: 10px 15px;
+    padding: 10px 15px;
     background-color: #4CAF50;
     border-radius: 5px;
     transition: background-color 0.3s;
+    display: inline-block; /* Affichage en ligne */
 }
 
 nav a:hover {
-    background-color: #45a049;
+    background-color: #45a049; /* Changement de couleur au survol */
 }
 
 /* Contenu principal */
-.main-content {
-    margin-top: 15rem; /* Ajuste la marge pour que le contenu soit visible */
+main {
+    flex-grow: 1; /* Prend tout l'espace disponible */
     padding: 20px;
     width: 90%;
     max-width: 1200px;
-    margin-bottom: 6rem; /* Laisse de l'espace pour le footer */
+    margin: auto;
 }
 
 /* Section des jeux */
@@ -86,9 +77,6 @@ nav a:hover {
     width: 80px; /* Taille réduite */
     height: auto;
     margin-bottom: 15px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* Style des cartes de jeux */
@@ -114,55 +102,36 @@ footer {
     padding: 15px;
     text-align: center;
     width: 100%;
-    position: relative; /* Le footer reste sous le contenu */
-    margin-top: 2rem; /* Ajoute de l'espace au-dessus du footer */
+    position: relative; /* Reste sous le contenu */
     bottom: 0;
+    margin-top: auto; /* Le pousse automatiquement vers le bas */
 }
 
 /* Adaptation pour les petits écrans */
 @media only screen and (max-width: 768px) {
-    body, html {
-        height: auto; /* Permet à la page de s'étendre */
-    }
-
     header {
         font-size: 2rem;
-        padding: 1rem;
+        padding: 10px;
     }
 
     nav {
-        flex-direction: column; /* Les éléments de navigation se superposent en colonne */
+        flex-direction: column; /* Affiche les éléments de navigation en colonne */
         align-items: center;
-        padding: 1rem;
-        position: relative; /* Change de position fixe à relative pour mobile */
-        top: 0; /* Remet la position en haut */
-        margin-top: 8rem; /* Garde l'espacement sous le header */
     }
 
     nav a {
         display: block;
-        margin: 0.5rem auto;
-        width: 80%;
-    }
-
-    .main-content {
-        margin-top: 12rem; /* Ajuste la marge pour le contenu */
-        width: 95%;
+        margin: 5px auto;
+        width: 90%; /* Largeur ajustée pour mobile */
     }
 
     .game-section {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Affiche une seule colonne sur mobile */
         gap: 1rem;
     }
 
     .card {
-        width: 100%;
+        width: 90%; /* Réduit la taille des cartes sur mobile */
         margin: 1rem auto;
-    }
-
-    footer {
-        padding: 1rem;
-        position: relative;
-        margin-top: 4rem; /* Ajoute de l'espace pour le footer */
     }
 }
