@@ -1,3 +1,4 @@
+/* Styles généraux */
 body {
     font-family: 'Open Sans', sans-serif;
     background-image: url('images/background.jpg');
@@ -13,6 +14,7 @@ body {
     justify-content: flex-start;
 }
 
+/* Style du header */
 header {
     background-color: #000000;
     color: #4CAF50;
@@ -22,6 +24,9 @@ header {
     position: fixed;
     top: 0;
     z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 header h1 {
@@ -29,31 +34,42 @@ header h1 {
     margin: 0;
 }
 
+/* Style du menu de navigation */
 nav {
-    margin-top: 15px;
+    background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
+    margin-top: 8rem; /* Ajoute de l'espace en haut */
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Permet aux liens de s'adapter à l'espace */
 }
 
 nav a {
     text-decoration: none;
     color: #ffffff;
     font-size: 1.2em;
-    margin: 0 15px;
-    padding: 10px 15px;
+    margin: 0.5rem 1rem; /* Marges réduites pour les petits écrans */
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
 
 nav a:hover {
-    background-color: #4CAF50;
+    background-color: #45a049; /* Changement de couleur au survol */
 }
 
+/* Contenu principal */
 .main-content {
-    margin-top: 150px;
+    margin-top: 12rem; /* Espace suffisant sous le header */
     padding: 20px;
     width: 90%;
     max-width: 1200px;
 }
 
+/* Section des jeux */
 .game-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -61,9 +77,9 @@ nav a:hover {
     justify-items: center;
 }
 
-
+/* Style des images */
 .game-image {
-    width: 80px; /* Taille plus petite */
+    width: 80px; /* Taille réduite */
     height: auto;
     margin-bottom: 15px;
     display: block;
@@ -71,6 +87,7 @@ nav a:hover {
     margin-right: auto;
 }
 
+/* Style des cartes de jeux */
 .card {
     background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
@@ -86,31 +103,58 @@ nav a:hover {
     transform: scale(1.05);
 }
 
+/* Style du footer */
 footer {
     background-color: rgba(0, 0, 0, 0.85);
     color: #ffffff;
     padding: 15px;
     text-align: center;
     width: 100%;
-    position: fixed;
+    position: relative; /* Position relative pour les mobiles */
     bottom: 0;
 }
 
 /* Adaptation pour les petits écrans */
 @media only screen and (max-width: 768px) {
-    .card {
-        width: 90%; /* Réduit la taille des cartes sur mobile */
-        margin: 1rem auto;
+    body {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header {
+        font-size: 2rem;
+        padding: 1rem;
     }
 
     nav {
-        flex-direction: column; /* Empile les éléments du menu sur mobile */
+        flex-direction: column; /* Les éléments de navigation se superposent en colonne */
+        align-items: center;
         padding: 1rem;
+    }
+
+    .main-content {
+        margin-top: 15rem; /* Ajuste la marge pour le contenu */
+        width: 95%; /* Ajuste la largeur pour les petits écrans */
+    }
+
+    .game-section {
+        grid-template-columns: 1fr; /* Affiche une seule colonne */
+        gap: 1rem; /* Espace réduit entre les cartes */
+    }
+
+    .card {
+        width: 100%; /* Les cartes prennent toute la largeur sur mobile */
+        margin: 1rem auto;
     }
 
     .play-button {
         width: 80%; /* Boutons plus petits sur mobile */
         padding: 1rem;
         font-size: 1rem;
+    }
+
+    footer {
+        padding: 1rem;
+        position: relative; /* Place le footer en bas du contenu */
     }
 }
