@@ -67,9 +67,33 @@ body {
     margin-top: 20px; /* Espace en haut du bouton */
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Transition des effets */
 }
-
-#home-button:hover {
-    background-color: #45a049; /* Couleur du bouton au survol */
-    transform: translateY(-5px); /* Légère translation vers le haut */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Effet d'ombre au survol */
+.card {
+    width: 90%; /* Utilise un pourcentage pour que les cartes soient responsives */
+    max-width: 400px; /* Largeur maximale pour éviter qu'elles soient trop grandes */
+    height: auto; /* Ajuste la hauteur automatiquement */
+    transition: transform 0.3s ease;
+    margin: 0 auto; /* Centre les cartes */
 }
+
+.card:hover {
+    transform: scale(1.05); /* Évite de dépasser les limites du conteneur */
+    z-index: 5; /* Empêche l'affichage de se superposer */
+}
+.game-section {
+    display: flex; /* Utilise flex pour un agencement adaptatif */
+    justify-content: space-around; /* Espace les cartes */
+    align-items: center;
+    flex-wrap: wrap; /* Permet d'adapter les cartes sur plusieurs lignes si nécessaire */
+}
+.game-image {
+    width: 80%; /* Largeur relative au conteneur de la carte */
+    max-width: 150px; /* Taille maximale pour les images */
+    height: auto; /* Conserve le ratio */
+}
+
+.play-button {
+    width: 70%; /* Largeur relative pour les boutons */
+    max-width: 200px;
+    margin: 10px auto; /* Centre les boutons */
+}
+
