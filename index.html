@@ -83,7 +83,7 @@
 
         .sidebar {
             background-color: #000000;
-            width: 250px;
+            width: 200px; /* Réduit la largeur de la sidebar */
             height: 100vh;
             position: fixed;
             top: 0;
@@ -107,9 +107,9 @@
         }
 
         .main-content {
-            margin-left: 270px;
+            margin-left: 220px; /* Ajusté pour correspondre à la nouvelle largeur de la sidebar */
             padding: 20px;
-            width: calc(100% - 270px);
+            width: calc(100% - 220px);
         }
 
         .banner {
@@ -196,6 +196,33 @@
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
+
+        @media only screen and (max-width: 768px) {
+            /* Styles pour les petits écrans */
+            .sidebar {
+                width: 150px; /* Ajustement de la largeur sur mobile */
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 170px; /* Ajusté pour correspondre à la nouvelle largeur de la sidebar */
+                padding: 15px;
+                width: calc(100% - 170px);
+            }
+
+            .banner h2 {
+                font-size: 2em;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .play-button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -212,7 +239,7 @@
     <div class="main-content" style="margin-top: 100px;">
         <main class="game-section">
             <div class="card" id="speed-verb-challenge">
-                <img src="images/speed-challenge.png" width=10% height=30% alt="Speed Verb Challenge" class="game-image">
+                <img src="images/speed-challenge.png" width="10%" height="30%" alt="Speed Verb Challenge" class="game-image">
                 <div class="card-content">
                     <h2>Speed Verb Challenge</h2>
                     <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
