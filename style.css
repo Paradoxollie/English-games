@@ -135,3 +135,150 @@ footer {
         margin: 1rem auto;
     }
 }
+/* Style du conteneur de jeu */
+#game-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    width: 60%;
+    margin: 30px auto;
+    max-width: 800px;
+    position: relative;
+}
+
+.word-list {
+    font-size: 1.5em;
+    margin: 20px 0;
+    background-color: #222222;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Style pour les boîtes de saisie */
+.input-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.input-box {
+    width: 100px;
+    height: 40px;
+    margin: 10px;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+    transition: 0.3s ease-in-out;
+}
+
+/* Effet shake pour boîte incorrecte */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+.shake {
+    animation: shake 0.3s;
+}
+/* Désactiver la sélection de texte */
+body, .word-list {
+    -webkit-user-select: none; /* Désactive la sélection sur Chrome, Safari */
+    -moz-user-select: none; /* Désactive la sélection sur Firefox */
+    -ms-user-select: none; /* Désactive la sélection sur IE10+ */
+    user-select: none; /* Désactive la sélection sur tous les navigateurs */
+}
+
+/* Désactiver la sélection pour les boîtes de saisie */
+.input-box {
+    user-select: none; /* Désactive la sélection dans les champs de saisie */
+}
+/* Style général de la page */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-image: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Open Sans', sans-serif;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Conteneur principal du jeu */
+#game-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    margin-top: 50px; /* Ajuster selon le positionnement souhaité */
+}
+
+/* Tableau des meilleurs scores */
+#top-scores {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
+    max-width: 250px;
+    width: 100%;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    text-align: left;
+}
+
+#top-scores h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#top-scores-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#top-scores-list li {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Styles pour petits écrans */
+@media only screen and (max-width: 768px) {
+    #top-scores {
+        position: relative;
+        top: auto;
+        right: auto;
+        max-width: 100%;
+        width: 90%;
+        margin: 10px auto;
+        text-align: center;
+    }
+
+    #top-scores h3 {
+        font-size: 1.2em;
+    }
+
+    #top-scores-list li {
+        font-size: 1em;
+        padding: 8px;
+    }
+}
+

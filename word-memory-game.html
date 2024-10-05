@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Word Memory Game</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="fill-in-the-gaps.html">Fill in the Gaps</a>
+        <a href="word-memory-game.html">Memory Game</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="main-content">
+        <div id="game-container">
+            <h2>Level: <span id="level">1</span></h2>
+            <h3>Time Remaining: <span id="timer">30</span> seconds</h3>
+            <h3>Score: <span id="score">0</span></h3> <!-- Ajout de l'élément Score -->
+            <h3>Top Scores</h3><ul id="top-scores-list"></ul>
+
+            <div id="word-list" class="word-list"></div>
+            <button id="start-button" onclick="startGame()">Start Game</button>
+            <div id="input-container" class="input-container" style="display: none;">
+                <div id="input-boxes"></div>
+                <button id="check-button" onclick="checkWords()">Check Words</button>
+            </div>
+            <h3 id="message"></h3>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Word Memory Game by Pierre Marienne</p>
+    </footer>
+
+    <script src="word-memory-game.js"></script>
+</body>
+</html>
