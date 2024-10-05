@@ -43,7 +43,7 @@ nav {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap; /* Permet aux liens de se répartir sur plusieurs lignes */
-    position: fixed; /* Position fixe pour rester visible */
+    position: sticky; /* Position sticky pour que le menu reste visible */
     top: 70px; /* Le menu suit le header */
     z-index: 999;
 }
@@ -115,6 +115,7 @@ footer {
     width: 100%;
     position: relative; /* Le footer reste sous le contenu */
     margin-top: 2rem; /* Ajoute de l'espace au-dessus du footer */
+    bottom: 0; /* Position en bas de la page */
 }
 
 /* Adaptation pour les petits écrans */
@@ -133,8 +134,9 @@ footer {
         flex-direction: column; /* Les éléments de navigation se superposent en colonne */
         align-items: center;
         padding: 1rem;
-        position: fixed; /* Fixe le menu en haut de la page */
-        top: 70px; /* Garde le nav sous le header */
+        position: relative; /* Change de position fixe à relative pour mobile */
+        top: 0; /* Remet la position en haut */
+        margin-top: 12rem; /* Garde l'espacement sous le header */
     }
 
     nav a {
