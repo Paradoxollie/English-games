@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Games for Irregular Verbs</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+
+    <!-- Include Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics(app);
+        const database = firebase.database(app);
+
+        function saveScore(score, difficulty) {
+            const scoresRef = database.ref('scores/' + difficulty);
+            scoresRef.push({
+                score: score,
+                timestamp: Date.now()
+            }).then(() => {
+                console.log("Score enregistré avec succès !");
+            }).catch((error) => {
+                console.error("Erreur lors de l'enregistrement du score : ", error);
+            });
+        }
+
+        function loadScores() {
+            const difficulty = document.getElementById("difficulty").value;
+            const scoresRef = database.ref('scores/' + difficulty);
+            scoresRef.orderByChild('score').limitToLast(5).on('value', (snapshot) => {
+                const scores = [];
+                snapshot.forEach((childSnapshot) => {
+                    scores.push(childSnapshot.val().score);
+                });
+                updateTopScoresDisplay(scores.reverse());
+            });
+        }
+
+        function updateTopScoresDisplay(scores) {
+            const topScoresList = document.getElementById("top-scores-list");
+            topScoresList.innerHTML = "";
+            scores.forEach(score => {
+                const li = document.createElement("li");
+                li.textContent = score;
+                topScoresList.appendChild(li);
+            });
+        }
+
+        window.onload = () => {
+            loadScores();
+        }
+    </script>
+
+    <style>
+        body {
+            background-image: url('images/background.jpg');
+            background-size: cover;
+            background-position: center;
+            animation: backgroundMove 30s linear infinite; 
+            font-family: 'Open Sans', sans-serif;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 15px 0;
+            transition: color 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #ffcc00;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            width: calc(100% - 270px);
+        }
+
+        .banner {
+            background-image: url('images/banner-image.png');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .banner h2 {
+            font-size: 3em;
+        }
+
+        .game-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .game-image {
+            max-width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .play-button {
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 0 10px #4CAF50;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .play-button:hover {
+            background-color: #45a049;
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px #45a049;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #ffffff;
+            margin-top: 40px;
+            animation: fadeIn 3s;
+        }
+
+        @keyframes backgroundMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #4CAF50; }
+            100% { box-shadow: 0 0 20px #4CAF50; }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #000000; color: #4CAF50; padding: 20px; text-align: center; font-size: 3em; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="border: 3px solid #4CAF50; padding: 10px 30px; border-radius: 50px;">
+            Grammar Games
+        </div>
+    </header>
+    <div class="sidebar" style="padding-top: 150px;">
+        <a href="#courses" style="background-color: #4CAF50; color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 0; padding: 10px 20px; border-radius: 10px; text-align: center; width: 100%; display: block;">Cours</a>
+        <a href="#games" style="background-color: #4CAF50; color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 0; padding: 10px 20px; border-radius: 10px; text-align: center; width: 100%; display: block;">Jeux</a>
+        <a href="#contact" style="background-color: #4CAF50; color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 0; padding: 10px 20px; border-radius: 10px; text-align: center; width: 100%; display: block;">Contact</a>
+    </div>
+    <div class="main-content" style="margin-top: 100px;">
+        <main class="game-section">
+            <div class="card" id="speed-verb-challenge">
+                <img src="images/speed-challenge.png" alt="Speed Verb Challenge" class="game-image">
+                <div class="card-content">
+                    <h2>Speed Verb Challenge</h2>
+                    <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                    <button class="play-button" onclick="window.location.href='speed-verb-challenge.html'">Play Now</button>
+                </div>
+            </div>
+            <div class="card" id="fill-in-the-gaps">
+                <img src="images/fill-gaps.png" alt="Fill in the Gaps" class="game-image">
+                <div class="card-content">
+                    <h2>Fill in the Gaps</h2>
+                    <p>Complete the sentences with the correct form of the irregular verbs.</p>
+                    <button class="play-button" onclick="startFillInTheGaps()">Play Now</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); text-align: center;">
+        <p>&copy; 2024 Grammar Games by Pierre</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
