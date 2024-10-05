@@ -72,16 +72,63 @@
         }
 
         #top-scores {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1em;
-            text-align: left;
-            z-index: 100;
-        }
+    background-color: rgba(0, 0, 0, 0.8); /* Couleur de fond semi-transparente */
+    padding: 20px; /* Espacement à l'intérieur */
+    border-radius: 15px; /* Coins arrondis */
+    font-size: 1.2em; /* Taille du texte */
+    color: #ffffff; /* Couleur du texte */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7); /* Ombre pour donner de la profondeur */
+    max-width: 250px; /* Largeur maximale de la boîte */
+    width: 100%; /* S'adapte à la largeur disponible */
+    position: absolute; /* Position absolue pour un placement plus précis */
+    top: 20px; /* Distance par rapport au haut */
+    right: 20px; /* Distance par rapport à la droite */
+    z-index: 1000; /* S'assurer qu'elle reste au-dessus */
+    text-align: left; /* Alignement du texte */
+}
+
+#top-scores h3 {
+    font-size: 1.5em; /* Taille du titre */
+    margin-bottom: 10px; /* Espace en bas du titre */
+    text-align: center; /* Centrer le titre */
+}
+
+#top-scores-list {
+    list-style-type: none; /* Pas de puces de liste */
+    padding: 0; /* Pas d'espacement interne */
+    margin: 0; /* Pas de marge */
+}
+
+#top-scores-list li {
+    background-color: rgba(255, 255, 255, 0.1); /* Fond légèrement différent pour chaque élément */
+    padding: 10px; /* Espacement interne */
+    margin-bottom: 5px; /* Espace en bas de chaque élément */
+    border-radius: 10px; /* Coins arrondis pour chaque élément */
+    text-align: center; /* Centrer le texte dans les éléments */
+}
+
+@media only screen and (max-width: 768px) {
+    /* Styles pour les écrans de petite taille comme les téléphones */
+    #top-scores {
+        position: relative; /* Position relative pour s'intégrer mieux sur les petits écrans */
+        top: auto; /* Réinitialiser la position top */
+        right: auto; /* Réinitialiser la position right */
+        max-width: 100%; /* S'adapte à la largeur du conteneur */
+        width: 90%; /* Légère marge interne */
+        margin: 10px auto; /* Centrer et espacement vertical */
+        text-align: center; /* Centrer le texte */
+    }
+
+    #top-scores h3 {
+        font-size: 1.2em; /* Réduire la taille du texte */
+    }
+
+    #top-scores-list li {
+        font-size: 1em; /* Réduire la taille des éléments */
+        padding: 8px; /* Réduire l'espacement interne */
+    }
+}
+
 
         #top-scores-list {
             list-style-type: none;
