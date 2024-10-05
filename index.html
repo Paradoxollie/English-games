@@ -83,7 +83,7 @@
 
         .sidebar {
             background-color: #000000;
-            width: 200px; /* Réduit la largeur de la sidebar */
+            width: 200px;
             height: 100vh;
             position: fixed;
             top: 0;
@@ -107,7 +107,7 @@
         }
 
         .main-content {
-            margin-left: 220px; /* Ajusté pour correspondre à la nouvelle largeur de la sidebar */
+            margin-left: 220px;
             padding: 20px;
             width: calc(100% - 220px);
         }
@@ -149,8 +149,12 @@
         }
 
         .game-image {
-            max-width: 100%;
+            width: 100px; /* Largeur fixe pour l'image */
+            height: auto; /* Garde les proportions */
             margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .play-button {
@@ -218,6 +222,11 @@
                 padding: 15px;
             }
 
+            .game-image {
+                width: 80px; /* Réduction de la taille de l'image pour les mobiles */
+                height: auto; /* Garde les proportions */
+            }
+
             .play-button {
                 padding: 10px 20px;
                 font-size: 1em;
@@ -239,7 +248,7 @@
     <div class="main-content" style="margin-top: 100px;">
         <main class="game-section">
             <div class="card" id="speed-verb-challenge">
-                <img src="images/speed-challenge.png" width="10%" height="30%" alt="Speed Verb Challenge" class="game-image">
+                <img src="images/speed-challenge.png" alt="Speed Verb Challenge" class="game-image">
                 <div class="card-content">
                     <h2>Speed Verb Challenge</h2>
                     <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
