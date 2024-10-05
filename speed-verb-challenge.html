@@ -90,6 +90,18 @@
         #top-scores-list li {
             margin-bottom: 5px;
         }
+        .shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
     </style>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -484,6 +496,11 @@
             input.className = "verb-input";
             input.placeholder = `Type ${labelText.toLowerCase()}`;
             input.disabled = disabled;
+input.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        checkVerb();
+    }
+});
             div.appendChild(label);
             div.appendChild(input);
             return div;
@@ -508,7 +525,13 @@
                 document.getElementById("score").textContent = "Score: " + score;
                 displayVerb();
             } else {
-                alert(`Incorrect! Correct answers are: Past Simple: ${correctForms[0]}, Past Participle: ${correctForms[1]}`);
+               
+    document.getElementById("input-container").classList.add("shake");
+
+    // Retirer la classe après l'animation pour éviter des accumulations de classes
+    setTimeout(() => {
+        document.getElementById("input-container").classList.remove("shake");
+    }, 500);
             }
         }
 
