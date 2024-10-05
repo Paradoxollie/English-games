@@ -56,3 +56,20 @@ body {
         padding: 10px;
     }
 }
+#home-button {
+    background-color: #4CAF50; /* Couleur du bouton */
+    color: #ffffff; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    padding: 15px 30px; /* Espacement à l'intérieur */
+    border-radius: 25px; /* Coins arrondis */
+    cursor: pointer; /* Curseur pointeur */
+    font-size: 1.2em; /* Taille du texte */
+    margin-top: 20px; /* Espace en haut du bouton */
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Transition des effets */
+}
+
+#home-button:hover {
+    background-color: #45a049; /* Couleur du bouton au survol */
+    transform: translateY(-5px); /* Légère translation vers le haut */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Effet d'ombre au survol */
+}
