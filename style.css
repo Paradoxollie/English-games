@@ -43,7 +43,7 @@ nav {
     justify-content: center;
     align-items: center;
     flex-wrap: wrap; /* Permet aux liens de se répartir sur plusieurs lignes */
-    position: sticky; /* Position sticky pour que le menu reste visible */
+    position: fixed; /* Position fixe pour rester visible */
     top: 70px; /* Le menu suit le header */
     z-index: 999;
 }
@@ -65,7 +65,7 @@ nav a:hover {
 
 /* Contenu principal */
 .main-content {
-    margin-top: 12rem; /* Espace suffisant sous le header */
+    margin-top: 15rem; /* Espace suffisant sous le header et nav */
     padding: 20px;
     width: 90%;
     max-width: 1200px;
@@ -113,7 +113,7 @@ footer {
     padding: 15px;
     text-align: center;
     width: 100%;
-    position: relative; /* Change de position fixe à relative */
+    position: relative; /* Le footer reste sous le contenu */
     margin-top: 2rem; /* Ajoute de l'espace au-dessus du footer */
 }
 
@@ -133,7 +133,8 @@ footer {
         flex-direction: column; /* Les éléments de navigation se superposent en colonne */
         align-items: center;
         padding: 1rem;
-        margin-top: 12rem; /* Ajuste la marge pour les petits écrans */
+        position: fixed; /* Fixe le menu en haut de la page */
+        top: 70px; /* Garde le nav sous le header */
     }
 
     nav a {
@@ -143,7 +144,7 @@ footer {
     }
 
     .main-content {
-        margin-top: 15rem; /* Ajuste la marge pour le contenu */
+        margin-top: 18rem; /* Ajuste la marge pour le contenu */
         width: 95%; /* Ajuste la largeur pour les petits écrans */
     }
 
@@ -166,5 +167,6 @@ footer {
     footer {
         padding: 1rem;
         position: relative; /* Place le footer en bas du contenu */
+        margin-top: 4rem; /* Plus d'espace au-dessus du footer */
     }
 }
