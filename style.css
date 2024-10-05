@@ -1,3 +1,4 @@
+/* Styles par défaut */
 body {
     font-family: 'Comic Sans MS', sans-serif;
     background-color: #f0f0f0;
@@ -10,111 +11,23 @@ body {
     min-height: 100vh;
 }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-nav ul {
-    background-color: #333;
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-nav ul li {
-    margin: 0;
-}
-
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    padding: 15px 20px;
-    display: block;
-    transition: background-color 0.3s;
-}
-
-nav ul li a:hover {
-    background-color: #4CAF50;
-}
-
-main {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-section {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 100%;
-    transition: transform 0.3s;
-}
-
-section:hover {
-    transform: scale(1.05);
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1.2em;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-}
-
-button:hover {
-    background-color: #45a049;
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #333;
-    color: white;
-    margin-top: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 500px;
-}
+/* Styles pour les écrans de téléphone */
 @media only screen and (max-width: 768px) {
-    /* Styles pour les écrans de petite taille comme les téléphones */
     body {
-        height: 100%; /* Ajuste la hauteur pour les petits écrans */
+        height: 100%;
         justify-content: flex-start;
-        padding-top: 20px; /* Ajoute un peu d'espace en haut */
+        padding-top: 20px;
     }
 
     #game-container {
-        width: 90%; /* Réduit la largeur du conteneur pour s'adapter à l'écran */
+        width: 90%;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     }
 
     #timer, #score {
-        font-size: 1.5em; /* Réduit la taille de la police */
+        font-size: 1.5em;
         margin-bottom: 15px;
     }
 
@@ -125,21 +38,21 @@ footer {
     }
 
     .verb-input {
-        width: 100%; /* S'adapte à la largeur disponible */
+        width: 100%;
         font-size: 1em;
         padding: 10px;
         margin-bottom: 10px;
     }
 
     #start-button, #check-button, #skip-button {
-        width: 80%; /* Ajuste la largeur des boutons */
+        width: 80%;
         padding: 10px 20px;
         font-size: 1em;
         margin-top: 15px;
     }
 
     #top-scores {
-        font-size: 0.8em; /* Réduit la taille de la section des scores */
+        font-size: 0.8em;
         padding: 10px;
     }
 }
