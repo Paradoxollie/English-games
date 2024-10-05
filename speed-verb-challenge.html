@@ -537,34 +537,45 @@
         }
 
         function checkVerb() {
-            const pastSimpleInput = document.getElementById("past-simple") ? document.getElementById("past-simple").value.trim() : "";
-            const pastParticipleInput = document.getElementById("past-participle") ? document.getElementById("past-participle").value.trim() : "";
-            const correctForms = verbs[currentVerb];
+    const pastSimpleInput = document.getElementById("past-simple") ? document.getElementById("past-simple").value.trim() : "";
+    const pastParticipleInput = document.getElementById("past-participle") ? document.getElementById("past-participle").value.trim() : "";
+    const correctForms = verbs[currentVerb];
 
-            let isCorrect = true;
+    let isCorrect = true;
 
-            if (pastSimpleInput === "" || (document.getElementById("past-participle") && pastParticipleInput === "")) {
-                isCorrect = false;
-            } else {
-                if (pastSimpleInput && pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
-                    isCorrect = false;
-                }
-                if (pastParticipleInput && pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
-                    isCorrect = false;
-                }
-            }
+    // Vérifier les réponses
+    if (pastSimpleInput && pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+        isCorrect = false;
+    }
+    if (pastParticipleInput && pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+        isCorrect = false;
+    }
 
-            if (isCorrect) {
-                score++;
-                document.getElementById("score").textContent = "Score: " + score;
-                displayVerb();
-            } else {
-                document.getElementById("input-container").classList.add("shake");
-                setTimeout(() => {
-                    document.getElementById("input-container").classList.remove("shake");
-                }, 500);
-            }
-        }
+    // Détermine le nombre de points en fonction du niveau de difficulté
+    const difficulty = document.getElementById("difficulty").value;
+    let points = 1; // Par défaut, chaque réponse correcte vaut 1 point
+
+    if (difficulty === "2") {
+        points = 2; // Niveau 2 : chaque réponse correcte vaut 2 points
+    } else if (difficulty === "3") {
+        points = 3; // Niveau 3 : chaque réponse correcte vaut 3 points
+    }
+
+    // Si la réponse est correcte, ajoute les points appropriés
+    if (isCorrect) {
+        score += points; // Ajoute les points correspondant au niveau
+        document.getElementById("score").textContent = "Score: " + score;
+        displayVerb();
+    } else {
+        // Si incorrect, ajoute l'animation de secousse
+        document.getElementById("input-container").classList.add("shake");
+
+        setTimeout(() => {
+            document.getElementById("input-container").classList.remove("shake");
+        }, 500);
+    }
+}
+
 
         function skipVerb() {
             skippedVerbs.push({
