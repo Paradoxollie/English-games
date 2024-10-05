@@ -98,3 +98,48 @@ footer {
     width: 100%;
     max-width: 500px;
 }
+@media only screen and (max-width: 768px) {
+    /* Styles pour les écrans de petite taille comme les téléphones */
+    body {
+        height: 100%; /* Ajuste la hauteur pour les petits écrans */
+        justify-content: flex-start;
+        padding-top: 20px; /* Ajoute un peu d'espace en haut */
+    }
+
+    #game-container {
+        width: 90%; /* Réduit la largeur du conteneur pour s'adapter à l'écran */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #timer, #score {
+        font-size: 1.5em; /* Réduit la taille de la police */
+        margin-bottom: 15px;
+    }
+
+    #difficulty {
+        font-size: 1.2em;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .verb-input {
+        width: 100%; /* S'adapte à la largeur disponible */
+        font-size: 1em;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    #start-button, #check-button, #skip-button {
+        width: 80%; /* Ajuste la largeur des boutons */
+        padding: 10px 20px;
+        font-size: 1em;
+        margin-top: 15px;
+    }
+
+    #top-scores {
+        font-size: 0.8em; /* Réduit la taille de la section des scores */
+        padding: 10px;
+    }
+}
