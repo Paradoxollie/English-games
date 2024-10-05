@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All English Games</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<div class="main-content" style="margin-top: 0.5%;">
+<body>
+    <!-- Unique balise header -->
+    <header style="background-color: #000000; color: #4CAF50; padding: 2rem; text-align: center; font-size: 3rem; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; display: flex; justify-content: center; align-items: center;">
+        <div style="border: 3px solid #4CAF50; padding: 10px 30px; border-radius: 50px;">
+            All English Games
+        </div>
+    </header>    
+
+    <!-- Menu de navigation, en dehors de la balise header -->
+    <nav style="background-color: rgba(0, 0, 0, 0.85);padding: 2rem 0; text-align: center; position: relative; margin-top: 6rem; width: 100%; z-index: 999;">
+        
+        <a href="index.html" style="color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 15px; padding: 10px 15px; background-color: #4CAF50; border-radius: 5px;">Home</a>
+        <a href="courses.html" style="color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 15px; padding: 10px 15px; background-color: #4CAF50; border-radius: 5px;">Cours</a>
+        <a href="contact.html" style="color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 15px; padding: 10px 15px; background-color: #4CAF50; border-radius: 5px;">Contact</a>
+    </nav>
+
+    <div class="main-content">
+        <main class="game-section">
+            <div class="card">
+                <img src="images/speed-challenge.png" alt="Speed Verb Challenge" class="game-image">
+                <h2>Speed Verb Challenge</h2>
+                <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                <button class="play-button" onclick="window.location.href='speed-verb-challenge.html'">Play Now</button>
+            </div>
+            <div class="card">
+                <img src="images/fill-gaps.png" alt="Fill in the Gaps" class="game-image">
+                <h2>Fill in the Gaps</h2>
+                <p>Complete the sentences with the correct form of the irregular verbs.</p>
+                <button class="play-button" onclick="window.location.href='fill-in-the-gaps.html'">Play Now</button>
+            </div>
+        </main>
+    </div>
+    <footer style="position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); text-align: center;">
+        <p>&copy; 2024 English Games by Pierre Marienne</p>
+    </footer>
+</body>
+</html>
