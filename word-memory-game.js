@@ -1,3 +1,10 @@
+// Désactiver la console
+console.log = console.warn = console.error = function() {};
+
+// Tentative de détection et de blocage des outils de développement
+setInterval(function(){
+    debugger;
+}, 100);
 // Configuration Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
