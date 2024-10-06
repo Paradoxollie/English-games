@@ -7,37 +7,47 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- En-tête de la page -->
     <header>
-        <h1>All English Games</h1>
+        <h1>English Games</h1>
     </header>    
 
-    <!-- Menu de navigation -->
     <nav>
         <a href="index.html">Home</a>
-        <a href="courses.html">Cours</a>
+        <a href="all-games.html" class="active">Games</a>
+        <a href="courses.html">Courses</a>
         <a href="contact.html">Contact</a>
     </nav>
 
-    <!-- Contenu principal -->
-    <main class="main-content">
-        <div class="game-section">
-            <div class="card">
-                <img src="images/speed-challenge.png" alt="Speed Verb Challenge" class="game-image">
-                <h2>Speed Verb Challenge</h2>
-                <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
-                <button class="play-button" onclick="window.location.href='speed-verb-challenge.html'">Play Now</button>
+    <main>
+        <h2>All Available Games</h2>
+        <div class="game-grid">
+            <div class="game-card">
+                <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
+                <div class="game-info">
+                    <h3>Speed Verb Challenge</h3>
+                    <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                    <a href="speed-verb-challenge.html" class="play-button">Play Now</a>
+                </div>
             </div>
-            <div class="card">
-                <img src="images/fill-gaps.png" alt="Fill in the Gaps" class="game-image">
-                <h2>Fill in the Gaps</h2>
-                <p>Complete the sentences with the correct form of the irregular verbs.</p>
-                <button class="play-button" onclick="window.location.href='fill-in-the-gaps.html'">Play Now</button>
+            <div class="game-card">
+                <img src="images/fill-gaps.webp" alt="Fill in the Gaps" class="game-image">
+                <div class="game-info">
+                    <h3>Fill in the Gaps</h3>
+                    <p>Complete the sentences with the correct form of the irregular verbs.</p>
+                    <a href="fill-in-the-gaps.html" class="play-button">Play Now</a>
+                </div>
+            </div>
+            <div class="game-card">
+                <img src="images/word-memory-game.webp" alt="Word Memory Game" class="game-image">
+                <div class="game-info">
+                    <h3>Word Memory Game</h3>
+                    <p>Test your memory skills by remembering and recalling English words!</p>
+                    <a href="word-memory-game.html" class="play-button">Play Now</a>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Pied de page -->
     <footer>
         <p>&copy; 2024 English Games by Pierre Marienne</p>
     </footer>
