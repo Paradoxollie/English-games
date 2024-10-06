@@ -27,9 +27,17 @@ header {
 }
 
 header h1 {
-    font-size: 2.5em;
+    display: inline-block; /* Pour que la bordure s'ajuste à la taille du texte */
+    font-size: 2.5em; /* Taille du texte */
     color: #4CAF50;
+    border: 3px solid #4CAF50;
+    padding: 0.2em 1em; /* `em` ajuste le padding proportionnellement à la taille de la police */
+    border-radius: 50px; /* Coins arrondis */
+    text-align: center; /* Centrer le texte */
+    margin: 0 auto; /* Centrer l'élément au milieu du conteneur */
+    line-height: 1.2; /* Ajuste l'espacement vertical du texte à l'intérieur */
 }
+
 
 /* Navigation */
 nav {
