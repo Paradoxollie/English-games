@@ -224,6 +224,8 @@ footer {
     margin-top: auto;
     animation: fadeIn 3s;
     width: 100%;
+    position: relative; /* Permet d'utiliser z-index */
+    z-index: 1; /* Place le footer devant le background */
 }
 
 /* Responsive design */
