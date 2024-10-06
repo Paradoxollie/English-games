@@ -242,3 +242,174 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+/* Ajoutez ces styles */
+.content-wrapper {
+    margin-left: 200px; /* Ajustez cette valeur selon la largeur de votre barre latérale */
+    width: calc(100% - 200px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Modifiez ces styles existants */
+body {
+    display: flex; /* Changez flex-direction: column; en display: flex; */
+}
+
+header {
+    width: auto; /* Changez width: 100%; en width: auto; */
+}
+
+main {
+    flex-grow: 1;
+    width: 100%; /* Ajoutez cette ligne */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+footer {
+    width: auto; /* Changez width: 100%; en width: auto; */
+}
+
+/* Ajoutez ces styles pour la barre latérale si ce n'est pas déjà fait */
+.sidebar {
+    width: 200px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+}
+
+/* Ajustez le responsive design */
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+}
+/* Ajustez ces styles pour Speed Verb Challenge */
+
+body {
+    display: flex;
+    flex-direction: column; /* Changez en column pour empiler les éléments verticalement */
+}
+
+header, footer {
+    width: 100%; /* Assurez-vous que header et footer prennent toute la largeur */
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: none; /* Retirez la largeur maximale pour le main */
+    margin: 0;
+    padding: 20px;
+}
+
+#game-container {
+    width: 100%;
+    max-width: 800px; /* Ajustez selon vos préférences */
+    margin: 30px auto;
+}
+
+/* Styles spécifiques pour Speed Verb Challenge */
+#difficulty {
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 1em;
+}
+
+#timer, #score {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+.verb-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1em;
+}
+
+#start-button, #check-button, #skip-button {
+    margin: 10px;
+}
+
+#top-scores {
+    position: static; /* Changez en static pour l'intégrer dans le flux normal */
+    max-width: 100%;
+    margin: 20px auto;
+}
+
+/* Responsive design pour Speed Verb Challenge */
+@media (max-width: 768px) {
+    #game-container {
+        padding: 15px;
+    }
+
+    .verb-input {
+        max-width: 100%;
+    }
+}
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    header {
+        padding: 10px 0;
+    }
+
+    header h1 {
+        font-size: 2em;
+        padding: 0.2em 0.5em;
+    }
+
+    nav {
+        padding: 5px 0;
+    }
+
+    nav a {
+        display: block;
+        margin: 5px 0;
+        padding: 8px 15px;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .game-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-card {
+        max-width: 100%;
+    }
+
+    .game-image {
+        height: 150px;
+    }
+
+    .game-info h3 {
+        font-size: 1.2em;
+    }
+
+    .play-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}

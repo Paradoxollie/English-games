@@ -147,42 +147,51 @@
 </head>
 <body>
     <header>
-        <h1>Speed verb Challenge</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="word-memory-game.html">Word Memory Game</a>
-            <a href="contact.html">Contact</a>
-        </nav>
+        <h1>Speed Verb Challenge</h1>
     </header>
-    <!-- Affichage des meilleurs scores -->
-    <div id="top-scores">
-        <h3>Top 5 Scores:</h3>
-        <ul id="top-scores-list"></ul>
-    </div>
 
-    <!-- Section principale du jeu -->
-    <div id="game-container">
-        <label for="difficulty">Choose Difficulty:</label>
-        <select id="difficulty">
-            <option value="1">Level 1: 1 bonne réponse = 1 point</option>
-            <option value="2">Level 2: 1 bonne réponse = 2 points</option>
-            <option value="3">Level 3: 1 bonne réponse = 3 points</option>
-        </select>
-        <div id="timer">90</div>
-        <div id="verb-prompt">Verb: <span id="verb-display">---</span> (<span id="verb-translation" class="red-text">---</span>)</div>
-        <div id="verb-forms">
-            <div id="input-container"></div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="word-memory-game.html">Word Memory Game</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <main id="game-container">
+        <div id="top-scores">
+            <h3>Top 5 Scores:</h3>
+            <ul id="top-scores-list"></ul>
         </div>
-        <button id="start-button" onclick="startGame()">Start Game</button>
-        <button id="check-button" onclick="checkVerb()" disabled>Check Answer</button>
-        <button id="skip-button" onclick="skipVerb()" disabled>Skip</button>
-        <div id="score">Score: 0</div>
-        <div id="skipped-verbs" style="display:none;">
-            <h3>Skipped Verbs:</h3>
-            <ul id="skipped-verbs-list"></ul>
-            
+
+        <div id="game-area">
+            <label for="difficulty">Choose Difficulty:</label>
+            <select id="difficulty">
+                <option value="1">Level 1: 1 bonne réponse = 1 point</option>
+                <option value="2">Level 2: 1 bonne réponse = 2 points</option>
+                <option value="3">Level 3: 1 bonne réponse = 3 points</option>
+            </select>
+
+            <div id="timer">90</div>
+            <div id="verb-prompt">Verb: <span id="verb-display">---</span> (<span id="verb-translation" class="red-text">---</span>)</div>
+            <div id="verb-forms">
+                <div id="input-container"></div>
+            </div>
+
+            <button id="start-button" onclick="startGame()">Start Game</button>
+            <button id="check-button" onclick="checkVerb()" disabled>Check Answer</button>
+            <button id="skip-button" onclick="skipVerb()" disabled>Skip</button>
+
+            <div id="score">Score: 0</div>
+
+            <div id="skipped-verbs" style="display:none;">
+                <h3>Skipped Verbs:</h3>
+                <ul id="skipped-verbs-list"></ul>
+            </div>
         </div>
-    </div>
+    </main>
+    <button id="home-button" onclick="location.href='index.html';" style="background-color: #0000009f; color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 0; padding: 10px 20px; border-radius: 10px; text-align: center; display: inline-block;">Back to Home</button>
+    <footer>
+        <p>&copy; 2024 English Games by Pierre Marienne</p>
+    </footer>
 
     <script>
         // Configuration Firebase
@@ -660,9 +669,7 @@
             loadTopScores();
         });
     </script>
-<button id="home-button" onclick="location.href='index.html';" style="background-color: #0000009f; color: #ffffff; text-decoration: none; font-size: 1.2em; margin: 10px 0; padding: 10px 20px; border-radius: 10px; text-align: center; display: inline-block;">Back to Home</button>
-<footer>
-    <p>&copy; 2024 English Games by Pierre Marienne</p>
-</footer>
+
+
 </body>
 </html>
