@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    
 }
 
 body {
@@ -114,6 +115,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 50px auto
 }
 
 .game-section {
