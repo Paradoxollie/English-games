@@ -14,11 +14,20 @@ const firebaseConfig = {
   const db = firebase.firestore();
   
   const wordBank = [
-      "time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand",
-      "part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government",
-      "company", "number", "group", "problem", "fact", "system", "program", "question", "night", "word",
-      "home", "water", "room", "mother", "area", "money", "story", "month", "right", "study",
-      "book", "job", "business", "issue", "side", "kind", "head", "house", "service", "friend"
+"time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand",
+"part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government",
+"company", "number", "group", "problem", "fact", "system", "program", "question", "night", "word",
+"home", "water", "room", "mother", "area", "money", "story", "month", "right", "study",
+"book", "job", "business", "issue", "side", "kind", "head", "house", "service", "friend",
+"power", "hour", "game", "line", "end", "member", "law", "car", "city", "community", "name",
+"president", "team", "minute", "idea", "body", "information", "back", "parent", "face", "others",
+"level", "office", "door", "health", "person", "art", "war", "history", "party", "result",
+"change", "morning", "reason", "research", "girl", "guy", "food", "authority", "education", "foot",
+"voice", "price", "decision", "communication", "skill", "plan", "goal", "experience", "product",
+"relationship", "market", "policy", "process", "action", "effort", "performance", "technology", "development", "opportunity",
+"and", "but", "so", "because", "however", "therefore", "although", "meanwhile", "moreover", "furthermore",
+"nevertheless", "consequently", "besides", "otherwise", "instead", "thus", "yet", "still", "beside", "then"
+
   ];
   
   let currentLevel = 1;
@@ -62,10 +71,10 @@ function startGame() {
     console.log("Words to remember:", wordsToRemember);
     
     if (wordListElement) wordListElement.innerText = wordsToRemember.join(" ");
-    if (timeLeftElement) timeLeftElement.innerText = "30";
+    if (timeLeftElement) timeLeftElement.innerText = "20";
     
     updateScore(); // Assurez-vous que le score est correctement affiché
-    startTimer(30);
+    startTimer(20);
     console.log("Game started successfully. Score:", score);
 }
   
