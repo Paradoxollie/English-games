@@ -329,6 +329,9 @@ footer {
         position: fixed;
         left: -250px; /* Caché hors de l'écran */
         transition: left 0.3s ease;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
     }
 
     .sidebar.active {
@@ -342,9 +345,17 @@ footer {
 
     .sidebar-toggle {
         display: block; /* Visible sur mobile */
+        position: absolute; /* Change de fixed à absolute */
+        top: 10px;
+        left: 10px;
     }
 
     body.sidebar-active {
         overflow: hidden; /* Empêche le défilement du body quand le sidebar est ouvert */
+    }
+
+    header {
+        position: relative; /* Assure que le header est au-dessus du bouton toggle */
+        z-index: 1002; /* Plus élevé que le bouton toggle */
     }
 }
