@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Games for Irregular Verbs</title>
+    <title>English Games for everyone</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
 
@@ -68,180 +68,18 @@
             loadScores();
         }
     </script>
-
-    <style>
-        body {
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-position: center;
-            animation: backgroundMove 30s linear infinite; 
-            font-family: 'Open Sans', sans-serif;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
-        .sidebar {
-            background-color: rgba(0, 0, 0, 0.85);
-            width: 200px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .sidebar a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1.2em;
-            margin: 15px 0;
-            transition: color 0.3s;
-        }
-
-        .sidebar a:hover {
-            color: #ffcc00;
-        }
-
-        .main-content {
-            margin-left: 220px;
-            padding: 20px;
-            width: calc(100% - 220px);
-        }
-
-        .banner {
-            background-image: url('images/banner-image.png');
-            background-size: cover;
-            background-position: center;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .banner h2 {
-            font-size: 3em;
-        }
-
-        .game-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-            transition: transform 0.3s;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-        }
-
-        .game-image {
-            width: 100px; /* Largeur fixe pour l'image */
-            height: auto; /* Garde les proportions */
-            margin-bottom: 15px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .play-button {
-            background-color: #4CAF50;
-            color: #ffffff;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: background-color 0.3s, transform 0.3s;
-            box-shadow: 0 0 10px #4CAF50;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        .play-button:hover {
-            background-color: #45a049;
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px #45a049;
-        }
-
-
-        @keyframes backgroundMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px #4CAF50; }
-            100% { box-shadow: 0 0 20px #4CAF50; }
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @media only screen and (max-width: 768px) {
-            /* Styles pour les petits écrans */
-            .sidebar {
-                width: 150px; /* Ajustement de la largeur sur mobile */
-                padding: 10px;
-            }
-
-            .main-content {
-                margin-left: 170px; /* Ajusté pour correspondre à la nouvelle largeur de la sidebar */
-                padding: 15px;
-                width: calc(100% - 170px);
-            }
-
-            .banner h2 {
-                font-size: 2em;
-            }
-
-            .card {
-                padding: 15px;
-            }
-
-            .game-image {
-                width: 80px; /* Réduction de la taille de l'image pour les mobiles */
-                height: auto; /* Garde les proportions */
-            }
-
-            .play-button {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-        }
-    </style>
 </head>
-<body>
-    <body class="page-with-sidebar">
-
-        <div class="sidebar">
+<body class="page-with-sidebar">
+    <button class="sidebar-toggle">☰</button>
+    <div class="sidebar">
         <a href="#courses">Cours</a>
         <a href="all-games.html">Jeux</a>
         <a href="#contact">Contact</a>
-        </div>
-
+    </div>
     <div class="content-wrapper">
         <header>
-            <button class="sidebar-toggle">☰</button>
             <h1>English Games</h1>
         </header>
-
         <main class="main-content">
             <section class="game-section">
                 <div class="card" id="speed-verb-challenge">
