@@ -189,13 +189,15 @@ function startTimer(seconds) {
         }
     } else {
         // Certains mots sont incorrects
-        document.getElementById("message").innerText = `You got ${newPoints} out of ${wordsToRemember.length} words correct. Try again or start a new game.`;
+        document.getElementById("message").innerText = `You got ${newPoints} out of ${wordsToRemember.length} words correct. Game Over. Final Score: ${score}`;
         document.getElementById("start-button").style.display = "inline-block";
         document.getElementById("start-button").innerText = "New Game";
         document.getElementById("check-button").style.display = "none";
+        saveScore(score);  // Save the score when the game is lost
     }
 }
 function newGame() {
+    console.log("Starting new game...");
     if (score > 0) {
         saveScore(score);
     }
@@ -204,6 +206,21 @@ function newGame() {
     updateScore();
     startGame();
 }
+
+// Assurez-vous que le bouton "Start Game" appelle newGame et non startGame
+document.addEventListener('DOMContentLoaded', (event) => {
+    console.log("DOM fully loaded");
+    loadTopScores();
+    const startButton = document.getElementById("start-button");
+    
+    if (startButton) {
+        startButton.addEventListener("click", newGame);  // Changed from startGame to newGame
+    } else {
+        console.error("Start button not found in the DOM");
+    }
+    
+
+});
 function updateScore() {
     const scoreElement = document.getElementById("score");
     if (scoreElement) {
@@ -221,12 +238,13 @@ function endGame() {
     document.getElementById("check-button").style.display = "none";
     document.getElementById("input-container").style.display = "none";
     
-    // Sauvegarde du score
+    console.log("Game ended. Saving final score:", score);
     saveScore(score);
 }
 
 
 function saveScore(score) {
+    console.log("Saving score:", score);
     db.collection("word_memory_scores").add({
         score: score,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
