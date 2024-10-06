@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" href="style.css">
     <title>Speed Verb Challenge</title>
     <style>
@@ -556,7 +555,6 @@
             div.appendChild(input);
             return div;
         }
-
         function checkVerb() {
     const pastSimpleInput = document.getElementById("past-simple") ? document.getElementById("past-simple").value.trim() : "";
     const pastParticipleInput = document.getElementById("past-participle") ? document.getElementById("past-participle").value.trim() : "";
@@ -564,12 +562,17 @@
 
     let isCorrect = true;
 
-    // Vérifier les réponses
-    if (pastSimpleInput && pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+    // Vérifier si les champs sont vides, auquel cas la réponse est considérée incorrecte
+    if (!pastSimpleInput || !pastParticipleInput) {
         isCorrect = false;
-    }
-    if (pastParticipleInput && pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
-        isCorrect = false;
+    } else {
+        // Vérifier les réponses si les champs ne sont pas vides
+        if (pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+            isCorrect = false;
+        }
+        if (pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+            isCorrect = false;
+        }
     }
 
     // Détermine le nombre de points en fonction du niveau de difficulté
@@ -596,7 +599,6 @@
         }, 500);
     }
 }
-
 
         function skipVerb() {
             skippedVerbs.push({
