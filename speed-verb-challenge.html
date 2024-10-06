@@ -562,32 +562,37 @@
 
     let isCorrect = true;
 
-    // Vérifier si les champs sont vides, auquel cas la réponse est considérée incorrecte
-    if (!pastSimpleInput || !pastParticipleInput) {
-        isCorrect = false;
-    } else {
-        // Vérifier les réponses si les champs ne sont pas vides
-        if (pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
-            isCorrect = false;
-        }
-        if (pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+    // Vérifier les champs selon le niveau de difficulté
+    const difficulty = document.getElementById("difficulty").value;
+
+    // Niveau 1 : Vérifie seulement le "past simple"
+    if (difficulty === "1") {
+        if (!pastSimpleInput || pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
             isCorrect = false;
         }
     }
 
-    // Détermine le nombre de points en fonction du niveau de difficulté
-    const difficulty = document.getElementById("difficulty").value;
-    let points = 1; // Par défaut, chaque réponse correcte vaut 1 point
-
+    // Niveau 2 : Vérifie seulement le "past participle"
     if (difficulty === "2") {
-        points = 2; // Niveau 2 : chaque réponse correcte vaut 2 points
-    } else if (difficulty === "3") {
-        points = 3; // Niveau 3 : chaque réponse correcte vaut 3 points
+        if (!pastParticipleInput || pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+            isCorrect = false;
+        }
+    }
+
+    // Niveau 3 : Vérifie les deux champs
+    if (difficulty === "3") {
+        if (!pastSimpleInput || pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
+            isCorrect = false;
+        }
+        if (!pastParticipleInput || pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
+            isCorrect = false;
+        }
     }
 
     // Si la réponse est correcte, ajoute les points appropriés
     if (isCorrect) {
-        score += points; // Ajoute les points correspondant au niveau
+        const points = parseInt(difficulty); // 1 point pour niveau 1, 2 pour niveau 2, 3 pour niveau 3
+        score += points;
         document.getElementById("score").textContent = "Score: " + score;
         displayVerb();
     } else {
@@ -599,6 +604,7 @@
         }, 500);
     }
 }
+
 
         function skipVerb() {
             skippedVerbs.push({
