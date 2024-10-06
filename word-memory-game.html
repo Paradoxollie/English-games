@@ -3,42 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Memory Game</title>
+    <title>Word Memory Game - English Games</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Word Memory Game</h1>
+        <h1>English Games</h1>
     </header>
 
     <nav>
         <a href="index.html">Home</a>
-        <a href="fill-in-the-gaps.html">Fill in the Gaps</a>
-        <a href="word-memory-game.html">Memory Game</a>
+        <a href="speed-verb-challenge.html">Speed Verb Challenge</a>
+        <a href="word-memory-game.html">Word Memory Game</a>
         <a href="contact.html">Contact</a>
     </nav>
 
-    <div class="main-content">
+    <main>
         <div id="game-container">
-            <h2>Level: <span id="level">1</span></h2>
-            <h3>Time Remaining: <span id="timer">30</span> seconds</h3>
-            <h3>Score: <span id="score">0</span></h3> <!-- Ajout de l'élément Score -->
-            <h3>Top Scores</h3><ul id="top-scores-list"></ul>
-
+            <h2>Word Memory Game</h2>
+            <div id="level-display">Level: <span id="level">1</span></div>
+            <div id="timer">Time: <span id="time-left">30</span> seconds</div>
+            <div id="score-display">Score: <span id="score">0</span></div>
+            
             <div id="word-list" class="word-list"></div>
-            <button id="start-button" onclick="startGame()">Start Game</button>
-            <div id="input-container" class="input-container" style="display: none;">
+            
+            <div id="input-container" style="display: none;">
                 <div id="input-boxes"></div>
-                <button id="check-button" onclick="checkWords()">Check Words</button>
+                <button id="check-button">Check Words</button>
             </div>
-            <h3 id="message"></h3>
+            
+            <button id="start-button">Start Game</button>
+            
+            <div id="message"></div>
         </div>
-    </div>
+        
+        <div id="top-scores">
+            <h3>Top 5 Scores:</h3>
+            <ul id="top-scores-list"></ul>
+        </div>
+    </main>
 
     <footer>
-        <p>&copy; 2024 Word Memory Game by Pierre Marienne</p>
+        <p>&copy; 2024 English Games by Pierre Marienne</p>
     </footer>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Your custom JavaScript file -->
     <script src="word-memory-game.js"></script>
 </body>
 </html>

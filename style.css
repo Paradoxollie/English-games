@@ -1,166 +1,83 @@
-/* Styles généraux */
+/* Reset de base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html, body {
-    height: 100%; /* S'assure que le body prend toute la hauteur */
-    font-family: 'Open Sans', sans-serif;
+body {
+    font-family: 'Arial', sans-serif;
     background-image: url('images/background.jpg');
     background-size: cover;
+    background-attachment: fixed;
     background-position: center;
     color: #ffffff;
-    display: flex;
-    flex-direction: column;
+    line-height: 1.6;
 }
 
-/* En-tête de la page */
+/* En-tête */
 header {
-    background-color: #000000;
-    color: #4CAF50;
-    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px 0;
     text-align: center;
-    width: 100%;
-    z-index: 1000;
 }
 
 header h1 {
-    font-size: 3em;
+    font-size: 2.5em;
+    color: #4CAF50;
 }
 
-/* Menu de navigation */
+/* Navigation */
 nav {
-    background-color: rgba(0, 0, 0, 0.85); /* Fond noir semi-transparent */
+    background-color: rgba(0, 0, 0, 0.6);
     padding: 10px 0;
-    width: 100%;
     text-align: center;
-    z-index: 999;
 }
 
 nav a {
-    text-decoration: none;
     color: #ffffff;
-    font-size: 1.2em;
-    margin: 10px 15px;
-    padding: 10px 15px;
-    background-color: #4CAF50;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 1.1em;
     border-radius: 5px;
     transition: background-color 0.3s;
-    display: inline-block; /* Affichage en ligne */
 }
 
 nav a:hover {
-    background-color: #45a049; /* Changement de couleur au survol */
+    background-color: #4CAF50;
 }
 
 /* Contenu principal */
 main {
-    flex-grow: 1; /* Prend tout l'espace disponible */
     padding: 20px;
-    width: 90%;
     max-width: 1200px;
-    margin: auto;
+    margin: 0 auto;
 }
 
-/* Section des jeux */
-.game-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    justify-items: center;
-}
-
-/* Style des images */
-.game-image {
-    width: 80px; /* Taille réduite */
-    height: auto;
-    margin-bottom: 15px;
-}
-
-/* Style des cartes de jeux */
-.card {
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-    transition: transform 0.3s;
-    width: 100%;
-    max-width: 300px;
-}
-
-.card:hover {
-    transform: scale(1.05);
-}
-
-/* Style du footer */
-footer {
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #ffffff;
-    padding: 15px;
-    text-align: center;
-    width: 100%;
-    position: relative; /* Reste sous le contenu */
-    bottom: 0;
-    margin-top: auto; /* Le pousse automatiquement vers le bas */
-}
-
-/* Adaptation pour les petits écrans */
-@media only screen and (max-width: 768px) {
-    header {
-        font-size: 2rem;
-        padding: 10px;
-    }
-
-    nav {
-        flex-direction: column; /* Affiche les éléments de navigation en colonne */
-        align-items: center;
-    }
-
-    nav a {
-        display: block;
-        margin: 5px auto;
-        width: 90%; /* Largeur ajustée pour mobile */
-    }
-
-    .game-section {
-        grid-template-columns: 1fr; /* Affiche une seule colonne sur mobile */
-        gap: 1rem;
-    }
-
-    .card {
-        width: 90%; /* Réduit la taille des cartes sur mobile */
-        margin: 1rem auto;
-    }
-}
-/* Style du conteneur de jeu */
+/* Conteneur de jeu */
 #game-container {
     background-color: rgba(0, 0, 0, 0.8);
+    padding: 30px;
     border-radius: 15px;
-    padding: 20px;
     text-align: center;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-    width: 60%;
-    margin: 30px auto;
     max-width: 800px;
-    position: relative;
+    margin: 30px auto;
+}
+
+/* Styles pour les éléments du jeu */
+#level-display, #timer, #score-display {
+    font-size: 1.2em;
+    margin: 10px 0;
 }
 
 .word-list {
     font-size: 1.5em;
     margin: 20px 0;
-    background-color: #222222;
+    background-color: rgba(34, 34, 34, 0.8);
     padding: 20px;
     border-radius: 10px;
-}
-
-/* Style pour les boîtes de saisie */
-.input-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
 }
 
 .input-box {
@@ -171,114 +88,82 @@ footer {
     border-radius: 5px;
     text-align: center;
     font-size: 1.2em;
-    transition: 0.3s ease-in-out;
-}
-
-/* Effet shake pour boîte incorrecte */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-}
-
-.shake {
-    animation: shake 0.3s;
-}
-/* Désactiver la sélection de texte */
-body, .word-list {
-    -webkit-user-select: none; /* Désactive la sélection sur Chrome, Safari */
-    -moz-user-select: none; /* Désactive la sélection sur Firefox */
-    -ms-user-select: none; /* Désactive la sélection sur IE10+ */
-    user-select: none; /* Désactive la sélection sur tous les navigateurs */
-}
-
-/* Désactiver la sélection pour les boîtes de saisie */
-.input-box {
-    user-select: none; /* Désactive la sélection dans les champs de saisie */
-}
-/* Style général de la page */
-body {
-    font-family: 'Open Sans', sans-serif;
-    background-image: url('images/background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    font-family: 'Open Sans', sans-serif;
+    background-color: rgba(255, 255, 255, 0.1);
     color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
 }
 
-/* Conteneur principal du jeu */
-#game-container {
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 30px;
-    border-radius: 15px;
+#start-button, #check-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 30px;
     text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-    margin-top: 50px; /* Ajuster selon le positionnement souhaité */
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s;
 }
 
-/* Tableau des meilleurs scores */
+#start-button:hover, #check-button:hover {
+    background-color: #45a049;
+}
+
+#message {
+    font-size: 1.2em;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* Top Scores */
 #top-scores {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
     border-radius: 15px;
-    color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.7);
     max-width: 250px;
-    width: 100%;
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000;
-    text-align: left;
 }
 
 #top-scores h3 {
-    font-size: 1.5em;
     margin-bottom: 10px;
-    text-align: center;
 }
 
 #top-scores-list {
     list-style-type: none;
     padding: 0;
-    margin: 0;
 }
 
 #top-scores-list li {
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 10px;
+    padding: 5px;
     margin-bottom: 5px;
-    border-radius: 10px;
+    border-radius: 5px;
+}
+
+/* Pied de page */
+footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
     text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
-/* Styles pour petits écrans */
-@media only screen and (max-width: 768px) {
+/* Responsive design */
+@media (max-width: 768px) {
+    nav a {
+        display: block;
+        margin: 5px 0;
+    }
+
     #top-scores {
-        position: relative;
-        top: auto;
-        right: auto;
-        max-width: 100%;
-        width: 90%;
-        margin: 10px auto;
-        text-align: center;
-    }
-
-    #top-scores h3 {
-        font-size: 1.2em;
-    }
-
-    #top-scores-list li {
-        font-size: 1em;
-        padding: 8px;
+        position: static;
+        margin: 20px auto;
     }
 }
-
