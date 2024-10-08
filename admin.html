@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - English Quest</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        #login-form, #admin-panel { max-width: 600px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="login-form">
+        <h2>Admin Login</h2>
+        <input type="password" id="admin-password" placeholder="Enter password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="admin-panel" style="display: none;">
+        <h1>Admin Panel - English Quest</h1>
+        <button onclick="loadScores('scores', 'speed-verb-scores')">Load Speed Verb Scores</button>
+        <button onclick="loadScores('word_memory_scores', 'word-memory-scores')">Load Word Memory Scores</button>
+        <div id="scores-list"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function login() {
+            const password = document.getElementById('admin-password').value;
+            if (password === '0578') { // Changez ceci par un mot de passe sécurisé
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+            } else {
+                alert('Mot de passe incorrect');
+            }
+        }
+
+        function loadScores(collectionName, tableId) {
+            db.collection(collectionName).orderBy("score", "desc").get().then((querySnapshot) => {
+                const scoresList = document.getElementById("scores-list");
+                scoresList.innerHTML = `<h2>${collectionName}</h2><table><tr><th>Name</th><th>Score</th><th>Action</th></tr>`;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    scoresList.innerHTML += `
+                        <tr>
+                            <td>${data.name}</td>
+                            <td>${data.score}</td>
+                            <td><button onclick="editName('${collectionName}', '${doc.id}', '${data.name}')">Edit Name</button></td>
+                        </tr>
+                    `;
+                });
+                scoresList.innerHTML += '</table>';
+            });
+        }
+
+        function editName(collectionName, docId, currentName) {
+            const newName = prompt("Enter new name:", currentName);
+            if (newName && newName !== currentName) {
+                db.collection(collectionName).doc(docId).update({
+                    name: newName
+                }).then(() => {
+                    alert("Name updated successfully");
+                    loadScores(collectionName, 'scores-list');
+                }).catch((error) => {
+                    console.error("Error updating name: ", error);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

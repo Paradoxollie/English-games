@@ -1,9 +1,40 @@
-// script.js
+// Liste de mots inappropriés à filtrer
+const inappropriateWords = ['badword1', 'badword2', 'badword3']; // Ajoutez vos mots inappropriés ici
+
+// Fonction pour filtrer les noms
+function filterName(name) {
+    let filteredName = name.toLowerCase();
+    inappropriateWords.forEach(word => {
+        const regex = new RegExp(word, 'gi');
+        filteredName = filteredName.replace(regex, '*'.repeat(word.length));
+    });
+    return filteredName;
+}
+
+// Fonction pour obtenir le nom du joueur
+function getPlayerName() {
+    let playerName = localStorage.getItem('playerName');
+    if (!playerName) {
+        playerName = prompt("Enter your name for the leaderboard:");
+        if (playerName) {
+            playerName = filterName(playerName);
+            localStorage.setItem('playerName', playerName);
+        }
+    }
+    return playerName;
+}
 
 // Enregistre le score dans Firebase
 function saveScore(score, difficulty) {
+    const playerName = getPlayerName();
+    if (!playerName) {
+        console.log("Score not saved: No player name provided");
+        return;
+    }
+
     const scoresRef = database.ref('scores/' + difficulty);
     scoresRef.push({
+        name: playerName,
         score: score,
         timestamp: Date.now()
     }).then(() => {
@@ -20,7 +51,10 @@ function loadScores() {
     scoresRef.orderByChild('score').limitToLast(5).on('value', (snapshot) => {
         const scores = [];
         snapshot.forEach((childSnapshot) => {
-            scores.push(childSnapshot.val().score);
+            scores.push({
+                name: childSnapshot.val().name,
+                score: childSnapshot.val().score
+            });
         });
         updateTopScoresDisplay(scores.reverse());
     });
@@ -32,7 +66,7 @@ function updateTopScoresDisplay(scores) {
     topScoresList.innerHTML = "";
     scores.forEach(score => {
         const li = document.createElement("li");
-        li.textContent = score;
+        li.textContent = `${score.name}: ${score.score}`;
         topScoresList.appendChild(li);
     });
 }

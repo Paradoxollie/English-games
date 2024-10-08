@@ -74,13 +74,14 @@ header {
 header h1 {
     display: inline-block;
     font-size: 2.5em;
-    color: #4CAF50;
-    border: 3px solid #4CAF50;
-    padding: 0.2em 1em;
-    border-radius: 50px;
+    color: #c9aa71;
+    border: 3px solid #c9aa71;
+    border: 5px solid #c9aa71;
+    border-radius: 10px;
     text-align: center;
-    margin: 0 auto;
-    line-height: 1.2;
+    padding: 20px;
+    transition: transform 0.3s;
+
 }
 
 /* Navigation */
