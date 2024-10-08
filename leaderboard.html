@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - English Quest</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styles spécifiques au leaderboard */
+        .leaderboard {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 20px solid transparent;
+            border-image: url('images/fantasy-border.png') 30 round;
+            margin: 20px auto;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .leaderboard h2 {
+            color: #c9aa71;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .game-leaderboard {
+            margin-bottom: 40px;
+        }
+
+        .game-leaderboard h3 {
+            color: #e0c589;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #c9aa71;
+        }
+
+        .leaderboard-table th {
+            background-color: rgba(201, 170, 113, 0.3);
+            color: #f0e6d2;
+        }
+
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-table tr:hover {
+            background-color: rgba(201, 170, 113, 0.1);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #c9aa71;
+        }
+    </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1 class="site-title">English Quest: The MMORPG Language Adventure</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="all-games.html">Games</a>
+            <a href="courses.html">Courses</a>
+            <a href="leaderboard.html" class="active">Leaderboard</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="leaderboard">
+            <h2>Leaderboard</h2>
+            
+            <div id="speed-verb-challenge" class="game-leaderboard">
+                <h3>Speed Verb Challenge</h3>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="speed-verb-scores">
+                        <!-- Les scores seront insérés ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="word-memory-game" class="game-leaderboard">
+                <h3>Word Memory Game</h3>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="word-memory-scores">
+                        <!-- Les scores seront insérés ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Fonction pour charger les scores d'un jeu spécifique
+        function loadGameScores(collectionName, tableId) {
+            db.collection(collectionName)
+                .orderBy("score", "desc")
+                .limit(5)
+                .get()
+                .then((querySnapshot) => {
+                    const tableBody = document.getElementById(tableId);
+                    tableBody.innerHTML = "";
+                    let rank = 1;
+                    querySnapshot.forEach((doc) => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td class="rank">${rank}</td>
+                            <td>${doc.data().score}</td>
+                        `;
+                        rank++;
+                    });
+                })
+                .catch((error) => {
+                    console.error(`Error loading ${collectionName} scores:`, error);
+                });
+        }
+
+        // Chargement des scores pour chaque jeu
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadGameScores("scores", "speed-verb-scores");
+            loadGameScores("word_memory_scores", "word-memory-scores");
+        });
+    </script>
+</body>
+</html>
