@@ -84,26 +84,26 @@ header h1 {
 }
 
 /* Navigation */
+/* Styles pour la barre de navigation */
 nav {
     background-color: rgba(0, 0, 0, 0.6);
     padding: 10px 0;
     text-align: center;
-    width: 100%;
 }
 
 nav a {
-    color: #ffffff;
+    color: #f0e6d2; /* Couleur de texte claire */
     text-decoration: none;
     padding: 10px 20px;
     margin: 0 5px;
     font-size: 1.1em;
     border-radius: 5px;
-    transition: background-color 0.3s;
-    display: inline-block;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 nav a:hover, nav a.active {
-    background-color: #4CAF50;
+    background-color: #c9aa71; /* Couleur dorée au survol et pour le lien actif */
+    color: #000; /* Texte noir sur fond doré pour un meilleur contraste */
 }
 
 /* Contenu principal */
@@ -191,9 +191,9 @@ main {
 }
 
 .play-button:hover, #start-button:hover, #check-button:hover, #skip-button:hover {
-    background-color: #45a049;
+    background-color: #c9aa71;
     transform: translateY(-5px);
-    box-shadow: 0 0 20px #45a049;
+    box-shadow: 0 0 20px #c9aa71;
 }
 
 /* Éléments spécifiques aux jeux */
