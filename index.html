@@ -1,141 +1,74 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Games for everyone</title>
+    <title>English Games</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
-
-    <!-- Include Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
-
-    <script>
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-            authDomain: "english-games-41017.firebaseapp.com",
-            projectId: "english-games-41017",
-            storageBucket: "english-games-41017.appspot.com",
-            messagingSenderId: "452279652544",
-            appId: "1:452279652544:web:916f93e0ab29183e739d25",
-            measurementId: "G-RMCQTMKDVP"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const analytics = firebase.analytics(app);
-        const database = firebase.database(app);
-
-        function saveScore(score, difficulty) {
-            const scoresRef = database.ref('scores/' + difficulty);
-            scoresRef.push({
-                score: score,
-                timestamp: Date.now()
-            }).then(() => {
-                console.log("Score enregistré avec succès !");
-            }).catch((error) => {
-                console.error("Erreur lors de l'enregistrement du score : ", error);
-            });
-        }
-
-        function loadScores() {
-            const difficulty = document.getElementById("difficulty").value;
-            const scoresRef = database.ref('scores/' + difficulty);
-            scoresRef.orderByChild('score').limitToLast(5).on('value', (snapshot) => {
-                const scores = [];
-                snapshot.forEach((childSnapshot) => {
-                    scores.push(childSnapshot.val().score);
-                });
-                updateTopScoresDisplay(scores.reverse());
-            });
-        }
-
-        function updateTopScoresDisplay(scores) {
-            const topScoresList = document.getElementById("top-scores-list");
-            topScoresList.innerHTML = "";
-            scores.forEach(score => {
-                const li = document.createElement("li");
-                li.textContent = score;
-                topScoresList.appendChild(li);
-            });
-        }
-
-        window.onload = () => {
-            loadScores();
-        }
-    </script>
 </head>
-<body class="page-with-sidebar">
-    <button class="sidebar-toggle">☰</button>
-    <div class="sidebar">
-        <a href="courses.html">Cours</a>
-        <a href="all-games.html">Jeux</a>
-        <a href="#contact">Contact</a>
-    </div>
-    <div class="content-wrapper">
-        <header>
-            <h1>English Games</h1>
-        </header>
-        <main class="main-content">
-            <section class="game-section game-grid"> <!-- Ajoute la classe game-grid ici -->
-                <div class="card" id="speed-verb-challenge">
-                    <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
-                    <div class="card-content">
-                        <h2>Speed Verb Challenge</h2>
-                        <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
-                        <a href="speed-verb-challenge.html" class="play-button">Play Now</a>
-                    </div>
-                </div>
-        
-                <div class="card" id="fill-in-the-gaps">
-                    <img src="images/fill-gaps.webp" alt="Fill in the Gaps" class="game-image">
-                    <div class="card-content">
-                        <h2>Fill in the Gaps</h2>
-                        <p>Complete the sentences with the correct form of the irregular verbs.</p>
-                        <button class="play-button" onclick="startFillInTheGaps()">Play Now</button>
-                    </div>
-                </div>
-        
-                <div class="card" id="word-memory-game">
-                    <img src="images/word-memory-game.webp" alt="Word memory" class="game-image">
-                    <div class="card-content">
-                        <h2>Word memory</h2>
-                        <p>Memorize words and then type them back from memory.</p>
-                        <a href="word-memory-game.html" class="play-button">Play Now</a>
-                    </div>
-                </div>
-        
-                <div class="card" id="conditional-course">
-                    <img src="images/conditionnel-course.webp" alt="Conditionnel Course" class="game-image">
-                    <div class="card-content">
-                        <h2>The Conditional</h2>
-                        <p>Learn everything about the conditional tense in English!</p>
-                        <a href="conditional-course.html" class="play-button">Start Learning</a>
-                    </div>
-                </div>
-        
-                <div class="card" id="superlative-course">
-                    <img src="images/Superlative.webp" alt="Superlative Course" class="game-image">
-                    <div class="card-content">
-                        <h2>The Superlative</h2>
-                        <p>Learn the art of comparison and reach the pinnacle of excellence with superlatives.</p>
-                        <a href="superlative.html" class="play-button">Start Learning</a>
-                    </div>
-                </div>
-            </section>
-        </main>
+<body>
+    <header>
+        <h1>English Games</h1>
+    </header>
 
-        <footer>
-            <p>&copy; 2024 English Games by Pierre Marienne</p>
-        </footer>
-    </div>
+    <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="all-games.html">Games</a>
+        <a href="courses.html">Courses</a>
+        <a href="contact.html">Contact</a>
+    </nav>
 
-    <script src="script.js"></script>
-    <script src="chemin/vers/votre/sidebar.js"></script>
+    <main role="main">
+        <section class="game-section game-grid">
+            <div class="card" id="speed-verb-challenge">
+                <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
+                <div class="card-content">
+                    <h2>Speed Verb Challenge</h2>
+                    <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                    <a href="speed-verb-challenge.html" class="play-button">Play Now</a>
+                </div>
+            </div>
+
+            <div class="card" id="fill-in-the-gaps">
+                <img src="images/fill-gaps.webp" alt="Fill in the Gaps" class="game-image">
+                <div class="card-content">
+                    <h2>Fill in the Gaps</h2>
+                    <p>Complete the sentences with the correct form of the irregular verbs.</p>
+                    <a href="fill-in-the-gaps.html" class="play-button">Play Now</a>
+                </div>
+            </div>
+
+            <div class="card" id="word-memory-game">
+                <img src="images/word-memory-game.webp" alt="Word memory" class="game-image">
+                <div class="card-content">
+                    <h2>Word memory</h2>
+                    <p>Memorize words and then type them back from memory.</p>
+                    <a href="word-memory-game.html" class="play-button">Play Now</a>
+                </div>
+            </div>
+
+            <div class="card" id="conditional-course">
+                <img src="images/conditionnel-course.webp" alt="Conditionnel Course" class="game-image">
+                <div class="card-content">
+                    <h2>The Conditional</h2>
+                    <p>Learn everything about the conditional tense in English!</p>
+                    <a href="conditional-course.html" class="play-button">Start Learning</a>
+                </div>
+            </div>
+
+            <div class="card" id="superlative-course">
+                <img src="images/Superlative.webp" alt="Superlative Course" class="game-image">
+                <div class="card-content">
+                    <h2>The Superlative</h2>
+                    <p>Learn the art of comparison and reach the pinnacle of excellence with superlatives.</p>
+                    <a href="superlative.html" class="play-button">Start Learning</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 English Games by Pierre Marienne</p>
+    </footer>
 </body>
 </html>
-
