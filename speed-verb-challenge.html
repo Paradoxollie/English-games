@@ -657,43 +657,67 @@
         }
 
         function endGame() {
-            clearInterval(timerInterval);
-            document.querySelectorAll(".verb-input").forEach(input => input.disabled = true);
-            document.getElementById("start-button").disabled = false;
-            document.getElementById("check-button").disabled = true;
-            document.getElementById("skip-button").disabled = true;
+    console.log("endGame function called. Final score:", score);
+    clearInterval(timerInterval);
+    document.querySelectorAll(".verb-input").forEach(input => input.disabled = true);
+    document.getElementById("start-button").disabled = false;
+    document.getElementById("check-button").disabled = true;
+    document.getElementById("skip-button").disabled = true;
 
-            alert("Game Over! Your final score is: " + score);
+    alert("Game Over! Your final score is: " + score);
 
-            if (skippedVerbs.length > 0) {
-                const skippedVerbsList = document.getElementById("skipped-verbs-list");
-                skippedVerbsList.innerHTML = "";
-                skippedVerbs.forEach(verbInfo => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${verbInfo.verb} - Past Simple: ${verbInfo.pastSimple}, Past Participle: ${verbInfo.pastParticiple}`;
-                    skippedVerbsList.appendChild(listItem);
-                });
-                document.getElementById("skipped-verbs").style.display = "block";
-            } else {
-                alert("You didn't skip any verbs. Great job!");
-            }
+    if (skippedVerbs.length > 0) {
+        const skippedVerbsList = document.getElementById("skipped-verbs-list");
+        skippedVerbsList.innerHTML = "";
+        skippedVerbs.forEach(verbInfo => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${verbInfo.verb} - Past Simple: ${verbInfo.pastSimple}, Past Participle: ${verbInfo.pastParticiple}`;
+            skippedVerbsList.appendChild(listItem);
+        });
+        document.getElementById("skipped-verbs").style.display = "block";
+    } else {
+        console.log("No skipped verbs");
+    }
 
-            saveScore(score);
-            skippedVerbs = [];
-        }
+    console.log("Calling saveScore function");
+    saveScore(score);
+    skippedVerbs = [];
+}
+
 
         function saveScore(score) {
-            db.collection("scores").add({
-                score: score,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                loadTopScores();
-            })
-            .catch((error) => {
-                console.error("Error saving score: ", error);
-            });
+    console.log("saveScore function called with score:", score);
+    
+    let playerName = localStorage.getItem('playerName');
+    console.log("Player name from localStorage:", playerName);
+    
+    if (!playerName) {
+        playerName = prompt("Enter your name for the leaderboard:");
+        console.log("Player entered name:", playerName);
+        
+        if (playerName) {
+            localStorage.setItem('playerName', playerName);
+            console.log("Player name saved to localStorage");
+        } else {
+            console.log("Player did not enter a name");
+            return; // Exit the function if no name was entered
         }
+    }
+    
+    console.log("Attempting to save score to database");
+    db.collection("scores").add({
+        name: playerName,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        console.log("Score saved successfully");
+        loadTopScores();
+    })
+    .catch((error) => {
+        console.error("Error saving score: ", error);
+    });
+}
 
         function loadTopScores() {
             db.collection("scores")

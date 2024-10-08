@@ -260,18 +260,22 @@ function endGame() {
 
 
 function saveScore(score) {
-    console.log("Saving score:", score);
-    db.collection("word_memory_scores").add({
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-        console.log("Score saved successfully");
-        loadTopScores();
-    })
-    .catch((error) => {
-        console.error("Error saving score: ", error);
-    });
+    const playerName = localStorage.getItem('playerName') || prompt("Enter your name for the leaderboard:");
+    if (playerName) {
+        localStorage.setItem('playerName', playerName);
+        db.collection("scores").add({
+            name: playerName,
+            score: score,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            console.log("Score saved successfully");
+            loadTopScores();
+        })
+        .catch((error) => {
+            console.error("Error saving score: ", error);
+        });
+    }
 }
 
 function loadTopScores() {
