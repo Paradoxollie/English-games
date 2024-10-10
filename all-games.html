@@ -31,9 +31,9 @@
             <div class="game-card">
                 <img src="images/fill-gaps.webp" alt="Fill in the Gaps" class="game-image">
                 <div class="game-info">
-                    <h3>Fill in the Gaps</h3>
-                    <p>Complete the sentences with the correct form of the irregular verbs.</p>
-                    <a href="fill-in-the-gaps.html" class="play-button">Play Now</a>
+                    <h3>Matrix</h3>
+                    <p>Obtain great power by matching words and definitons</p>
+                    <a href="memory-matrix.html" class="play-button">Play Now</a>
                 </div>
             </div>
             <div class="game-card">
@@ -48,7 +48,19 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 English Games by Pierre Marienne</p>
+        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+        <div id="visit-stats"></div>
+
+        <!-- Scripts Firebase -->
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        
+        <!-- Votre script d'initialisation Firebase -->
+        <script src="firebase-init.js"></script>
+        
+        <!-- Le script du compteur de visites -->
+        <script src="visit-counter.js"></script>
+
     </footer>
 </body>
 </html>

@@ -277,6 +277,7 @@ footer {
     margin-top: auto;
 }
 
+
 /* Bouton toggle pour la barre latérale sur mobile */
 .sidebar-toggle {
     display: none;
@@ -367,4 +368,80 @@ footer {
 @keyframes glow {
     0% { box-shadow: 0 0 10px #4CAF50; }
     100% { box-shadow: 0 0 20px #4CAF50; }
+}
+.matrix-cell {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.word-slot {
+    min-height: 30px;
+    border: 1px dashed #ccc;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.word, .word-bank-item {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: move;
+    user-select: none;
+}
+/* Styles spécifiques pour Speed Verb Challenge */
+#verb-prompt {
+    font-size: 1.5em;
+    margin: 20px 0;
+    background-color: rgba(34, 34, 34, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#verb-forms {
+    margin: 20px 0;
+}
+
+.verb-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+#skipped-verbs {
+    background-color: rgba(34, 34, 34, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+#skipped-verbs h3 {
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+#skipped-verbs-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#skipped-verbs-list li {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+.red-text {
+    color: #ff6b6b;
 }

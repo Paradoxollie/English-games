@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Matrix</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Matrix</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="speed-verb-challenge.html">Speed Verb Challenge</a>
+        <a href="word-memory-game.html">Word Memory Game</a>
+        <a href="memory-matrix.html" class="active">Memory Matrix</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+<body>
+    <div class="page-with-sidebar">
+        <div class="content-wrapper">
+        
+            <main role="main">
+                <div id="game-container">
+                    <div id="game-info">
+                        <div id="level-display">Level: <span id="level">1</span></div>
+                        <div id="timer">Time: <span id="time-left">30</span> seconds</div>
+                        <div id="score-display">Score: <span id="score">0</span></div>
+                    </div>
+                    <div id="game-controls">
+                        <button id="start-button">Start Game</button>
+                        <button id="check-button" style="display: none;">Check Answers</button>
+                    </div>
+                    <div id="word-bank"></div>
+                    <div id="matrix-container"></div>
+                    <div id="input-container" style="display: none;"></div>
+                    <div id="message"></div>
+                </div>
+                <div id="top-scores">
+                    <h3>Top 5 Scores:</h3>
+                    <ul id="top-scores-list"></ul>
+                </div>
+ 
+            </main>
+
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+        <div id="visit-stats"></div>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="memory-matrix.js"> </script>
+        <script src="firebase-init.js"></script>
+        <script src="visit-counter.js"></script>
+
+    </footer>
+</body>
+</html>

@@ -189,7 +189,9 @@
 
     <nav>
         <a href="index.html">Home</a>
+        <a href="speed-verb-challenge.html">Speed Verb Challenge</a>
         <a href="word-memory-game.html">Word Memory Game</a>
+        <a href="memory-matrix.html" class="active">Memory Matrix</a>
         <a href="contact.html">Contact</a>
     </nav>
 
@@ -744,6 +746,66 @@
         });
     </script>
 
+
+<!-- Scripts Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- Votre script d'initialisation Firebase -->
+<script src="firebase-init.js"></script>
+
+<!-- Le script du compteur de visites -->
+<script src="visit-counter.js"></script>
+
+<script>
+    // Ajoutez cette fonction à la fin du script existant
+    function incrementUniqueVisitCount() {
+        const visitorId = localStorage.getItem('visitorId') || Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('visitorId', visitorId);
+
+        const today = new Date().toISOString().split('T')[0];
+        const visitsRef = db.collection('visits').doc(today);
+
+        return db.runTransaction((transaction) => {
+            return transaction.get(visitsRef).then((doc) => {
+                if (!doc.exists) {
+                    transaction.set(visitsRef, { count: 1, visitors: [visitorId] });
+                } else {
+                    const data = doc.data();
+                    if (!data.visitors.includes(visitorId)) {
+                        transaction.update(visitsRef, {
+                            count: data.count + 1,
+                            visitors: firebase.firestore.FieldValue.arrayUnion(visitorId)
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    function displayVisitorCount() {
+        const today = new Date().toISOString().split('T')[0];
+        db.collection('visits').doc(today).get().then((doc) => {
+            if (doc.exists) {
+                const visitStats = document.getElementById('visit-stats');
+                visitStats.textContent = `Visiteurs uniques aujourd'hui : ${doc.data().count}`;
+            }
+        }).catch((error) => {
+            console.error("Error getting visitor count:", error);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        loadTopScores();
+        incrementUniqueVisitCount().then(() => {
+            displayVisitorCount();
+        }).catch((error) => {
+            console.error("Error updating visitor count:", error);
+        });
+    });
+</script>
+</body>
+</html>
 
 </body>
 </html>
