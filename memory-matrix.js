@@ -234,25 +234,52 @@ let score = 0;
 let timerInterval;
 let currentMatrix = [];
 let studyTime = 30; // 30 secondes pour étudier
-let guessTime = 60; // 1 minute pour replacer les mots
+let guessTime = 30; // 1 minute pour replacer les mots
 
 function startGame() {
     resetGame();
     generateMatrix();
     displayMatrixWithWords();
     startStudyPhase();
+    document.getElementById("start-button").innerText = "Reset Game";
+    document.getElementById("check-button").style.display = "none";
 }
 
 function resetGame() {
+    // Annule l'intervalle de temps s'il existe
     clearInterval(timerInterval);
+    
+    // Remet à zéro les variables de jeu
+    currentLevel = 1; // Reset au niveau 1
+    score = 0; // Remet le score à 0
     currentMatrix = [];
+
+    // Réinitialise les éléments d'affichage
     document.getElementById("level").innerText = currentLevel;
-    document.getElementById("message").innerText = "";
+    document.getElementById("message").innerText = "Game reset! Click 'Start Game' to play.";
     document.getElementById("matrix-container").innerHTML = "";
     document.getElementById("word-bank").innerHTML = "";
+    
+    // Réaffiche le bouton start
+    document.getElementById("start-button").style.display = "inline-block";
+    document.getElementById("start-button").innerText = "Start Game"; // Change le texte du bouton à "Start Game"
+    
+    // Cache le bouton de vérification (si visible)
     document.getElementById("check-button").style.display = "none";
-    document.getElementById("start-button").style.display = "none";
+
+    // Remet l'input container à l'état initial (optionnel)
+    document.getElementById("input-container").style.display = "none";
 }
+
+// Ajoute une vérification du texte du bouton pour basculer entre démarrer et réinitialiser
+document.getElementById("start-button").addEventListener("click", () => {
+    if (document.getElementById("start-button").innerText === "Reset Game") {
+        resetGame(); // Réinitialise le jeu
+    } else {
+        startGame(); // Démarre le jeu
+    }
+});
+
 
 function generateMatrix() {
     const wordCount = Math.pow(matrixSize, 2);
@@ -472,6 +499,7 @@ function endGame() {
     document.getElementById("check-button").style.display = "none";
     document.getElementById("input-container").style.display = "none";
     saveScore(score);
+    // Ajoute un affichage pour le bouton Reset si nécessaire
 }
 
 function displayWordBank() {
@@ -527,15 +555,16 @@ function dropToBank(e) {
 
 function loadTopScores() {
     db.collection("memory_matrix_scores")
-        .orderBy("score", "desc")
-        .limit(5)
+        .orderBy("score", "desc") // Trie les scores par ordre décroissant
+        .limit(5) // Limite à 5 meilleurs scores
         .get()
         .then((querySnapshot) => {
             const topScoresList = document.getElementById("top-scores-list");
-            topScoresList.innerHTML = "";
+            topScoresList.innerHTML = ""; // Vide la liste avant de la remplir
+
             querySnapshot.forEach((doc) => {
                 const li = document.createElement("li");
-                li.textContent = `${doc.data().name}: ${doc.data().score}`;
+                li.textContent = `${doc.data().score}`; // Affiche uniquement le score
                 topScoresList.appendChild(li);
             });
         })
