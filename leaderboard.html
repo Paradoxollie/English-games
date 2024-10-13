@@ -147,6 +147,21 @@
                      </tbody>
                  </table>
              </div>
+             <div id="lost-in-migration" class="game-leaderboard">
+                <h3>Lost in Migration</h3>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lost-in-migration-scores">
+                        <!-- Les scores seront insérés ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>            
          </section>
      </main>
  
@@ -240,6 +255,9 @@
              loadGameScores("scores", "speed-verb-scores");
              loadGameScores("word_memory_scores", "word-memory-scores");
              loadGameScores("memory_matrix_scores", "memory-matrix-scores");
+
+            loadGameScores("lost_in_migration_scores", "lost-in-migration-scores");
+
              
              incrementUniqueVisitCount().then(() => {
                  displayVisitorCount();
@@ -248,5 +266,6 @@
              });
          });
      </script>
+     
  </body>
  </html>
