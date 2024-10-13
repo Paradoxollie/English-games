@@ -505,3 +505,23 @@ footer {
         grid-template-columns: 1fr; /* 1 colonne pour les très petits écrans */
     }
 }
+#difficulty-selection {
+    font-size: 1.5em; /* Agrandir la taille du texte */
+    margin-bottom: 20px; /* Ajouter de l'espace autour */
+    padding: 15px; /* Ajouter de l'espace intérieur */
+    border: 2px solid #4CAF50; /* Ajouter une bordure pour la mettre en valeur */
+    border-radius: 10px; /* Arrondir les coins */
+    background-color: rgba(0, 0, 0, 0.5); /* Ajouter un fond semi-transparent */
+    text-align: center; /* Centrer le texte */
+    width: 100%; /* Prendre toute la largeur du conteneur */
+    max-width: 600px; /* Limiter la largeur maximum */
+    margin: 0 auto; /* Centrer horizontalement */
+}
+
+#difficulty {
+    font-size: 1em; /* Agrandir la taille du menu déroulant */
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000;
+}
