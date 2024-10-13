@@ -482,16 +482,17 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
-    db.collection("scores")
-        .orderBy("score", "desc")
-        .limit(5)
+    db.collection("memory_matrix_scores")
+        .orderBy("score", "desc") // Trie les scores par ordre décroissant
+        .limit(5) // Limite à 5 meilleurs scores
         .get()
         .then((querySnapshot) => {
             const topScoresList = document.getElementById("top-scores-list");
-            topScoresList.innerHTML = "";
+            topScoresList.innerHTML = ""; // Vide la liste avant de la remplir
+
             querySnapshot.forEach((doc) => {
                 const li = document.createElement("li");
-                li.textContent = `${scoreData.name}: ${scoreData.score}`;
+                li.textContent = `${doc.data().name}: ${doc.data().score}`; // Affiche le nom et le score
                 topScoresList.appendChild(li);
             });
         })

@@ -564,7 +564,7 @@ function loadTopScores() {
 
             querySnapshot.forEach((doc) => {
                 const li = document.createElement("li");
-                li.textContent = `${scoreData.name}: ${scoreData.score}`;
+                li.textContent = `${doc.data().name}: ${doc.data().score}`; // Affiche le nom et le score
                 topScoresList.appendChild(li);
             });
         })
