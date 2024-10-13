@@ -35,15 +35,15 @@ function startGame() {
 function setDifficulty() {
     const difficulty = document.getElementById('difficulty').value;
     if (difficulty === 'easy') {
-        difficultyMultiplier = 0.2;
+        difficultyMultiplier = 0.5;
         pointsPerLevel = 1;
         initialTime = 30; // Plus de temps en mode facile
     } else if (difficulty === 'medium') {
-        difficultyMultiplier = 0.3;
+        difficultyMultiplier = 0.75;
         pointsPerLevel = 2;
         initialTime = 20; // Temps moyen en mode normal
     } else if (difficulty === 'hard') {
-        difficultyMultiplier = 0.75;
+        difficultyMultiplier = 1;
         pointsPerLevel = 3;
         initialTime = 10; // Moins de temps en mode difficile
     }
@@ -433,7 +433,7 @@ function generateWordsByTheme(level) {
             ],
         }, 
         {
-            theme: "mammifères",
+            theme: "mammifères terrestres",
             correctWords: [
                 { word: "lion", explanation: "Mammifère carnivore de la famille des félidés." },
                 { word: "tiger", explanation: "Grand félidé rayé d'Asie." },
@@ -727,28 +727,7 @@ function generateWordsByTheme(level) {
             ],
         },                       
     ];
- // Sélectionner le thème en fonction du niveau
- const selectedTheme = themes[level % themes.length]; 
- currentTheme = selectedTheme.theme;
 
- // Sélectionner les mots corrects
- let correctWords = selectedTheme.correctWords.slice(0, 3); // Par exemple, on prend 3 mots corrects
-
- // Sélectionner un intrus
- let intruder = selectedTheme.intruderWords[Math.floor(Math.random() * selectedTheme.intruderWords.length)];
-
- // Mélanger les mots corrects
- correctWords = shuffleArray(correctWords);
-
- // Ajouter l'intrus
- correctWords.push(intruder);
-
- return correctWords.map((word) => ({
-     word: word.word,
-     explanation: word.explanation,
-     isIntruder: word === intruder
- }));
-}
     let numberOfWords = Math.min(3 + level, 10);
 
     let availableThemes = themes.filter(theme => {
@@ -777,7 +756,7 @@ function generateWordsByTheme(level) {
     wordsArray.push({ ...intruderWord, isIntruder: true });
 
     return shuffleArray(wordsArray);
-
+}
 
 function showExplanation(isCorrect, word, explanation) {
     const status = isCorrect ? "Correct" : "Incorrect";
@@ -989,10 +968,3 @@ document.addEventListener('DOMContentLoaded', (event) => {
     loadTopScores();
     // ... autres initialisations ...
 });
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
