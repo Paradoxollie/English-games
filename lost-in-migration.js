@@ -43,7 +43,7 @@ function setDifficulty() {
         pointsPerLevel = 2;
         initialTime = 20; // Temps moyen en mode normal
     } else if (difficulty === 'hard') {
-        difficultyMultiplier = 0.5;
+        difficultyMultiplier = 0.75;
         pointsPerLevel = 3;
         initialTime = 10; // Moins de temps en mode difficile
     }
@@ -433,7 +433,7 @@ function generateWordsByTheme(level) {
             ],
         }, 
         {
-            theme: "mammifères terrestres",
+            theme: "mammifères",
             correctWords: [
                 { word: "lion", explanation: "Mammifère carnivore de la famille des félidés." },
                 { word: "tiger", explanation: "Grand félidé rayé d'Asie." },
