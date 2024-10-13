@@ -487,3 +487,21 @@ footer {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+#matrix-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colonnes par défaut */
+    grid-gap: 10px; /* Espace entre les éléments */
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    #matrix-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour les écrans plus petits */
+    }
+}
+
+@media (max-width: 480px) {
+    #matrix-container {
+        grid-template-columns: 1fr; /* 1 colonne pour les très petits écrans */
+    }
+}

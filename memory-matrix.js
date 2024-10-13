@@ -578,3 +578,17 @@ document.addEventListener('keydown', function (event) {
 document.addEventListener('contextmenu', function (event) {
     event.preventDefault();
 });
+function autoScroll(event) {
+    const scrollMargin = 50; // Distance à partir du bord de l'écran pour déclencher le scroll
+    const scrollSpeed = 10;  // Vitesse du scroll
+    
+    if (event.clientY < scrollMargin) {
+        // Scrolling vers le haut
+        window.scrollBy(0, -scrollSpeed);
+    } else if (event.clientY > window.innerHeight - scrollMargin) {
+        // Scrolling vers le bas
+        window.scrollBy(0, scrollSpeed);
+    }
+}
+
+document.addEventListener('dragover', autoScroll);
