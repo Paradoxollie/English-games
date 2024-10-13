@@ -728,36 +728,39 @@ function generateWordsByTheme(level) {
         },                       
     ];
 
-    let numberOfWords = Math.min(3 + level, 10);
-
-    let availableThemes = themes.filter(theme => {
-        let availableCorrectWords = theme.correctWords.filter(word => !usedWords.has(word.word));
-        let availableIntruderWords = theme.intruderWords.filter(word => !usedWords.has(word.word));
-        return availableCorrectWords.length >= numberOfWords - 1 && availableIntruderWords.length > 0;
-    });
-
-    if (availableThemes.length === 0) {
-        return [];
-    }
-
-    let selectedTheme = availableThemes[Math.floor(Math.random() * availableThemes.length)];
-    currentTheme = selectedTheme.theme;
-
-    let correctWords = selectedTheme.correctWords.filter(word => !usedWords.has(word.word));
-    correctWords = correctWords.slice(0, numberOfWords - 1);
-
-    let intruderWords = selectedTheme.intruderWords.filter(word => !usedWords.has(word.word));
-    let intruderWord = intruderWords[Math.floor(Math.random() * intruderWords.length)];
-
-    correctWords.forEach(word => usedWords.add(word.word));
-    usedWords.add(intruderWord.word);
-
-    let wordsArray = correctWords.map(word => ({ ...word, isIntruder: false }));
-    wordsArray.push({ ...intruderWord, isIntruder: true });
-
-    return shuffleArray(wordsArray);
-}
-
+     // Choisir un thème aléatoire
+     const themeIndex = Math.floor(Math.random() * themes.length);
+     const selectedTheme = themes[themeIndex];
+     currentTheme = selectedTheme.theme;
+ 
+     // Mélanger les mots corrects pour garantir l'aléatoire
+     shuffleArray(selectedTheme.correctWords);
+ 
+     // Choisir un nombre de mots corrects en fonction du niveau
+     const numberOfCorrectWords = level + 3;  // Ajuste cette valeur selon le niveau
+     const correctWords = selectedTheme.correctWords.slice(0, numberOfCorrectWords);  // Prend les premiers N mots après le mélange
+ 
+     // Choisir un intrus aléatoire
+     const intruder = selectedTheme.intruderWords[Math.floor(Math.random() * selectedTheme.intruderWords.length)];
+     intruder.isIntruder = true;  // Marquer cet objet comme intrus
+ 
+     // Combiner les mots corrects et l'intrus
+     const allWords = [...correctWords, intruder];
+ 
+     // Mélanger tous les mots pour éviter que l'intrus soit toujours à la fin
+     shuffleArray(allWords);
+ 
+     return allWords;
+ }
+ 
+ // Fonction de mélange (shuffle)
+ function shuffleArray(array) {
+     for (let i = array.length - 1; i > 0; i--) {
+         const j = Math.floor(Math.random() * (i + 1));
+         [array[i], array[j]] = [array[j], array[i]];  // Échange les éléments
+     }
+ }
+ 
 function showExplanation(isCorrect, word, explanation) {
     const status = isCorrect ? "Correct" : "Incorrect";
     explanationElement.innerHTML = `
