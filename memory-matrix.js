@@ -246,30 +246,25 @@ function startGame() {
 }
 
 function resetGame() {
-    // Annule l'intervalle de temps s'il existe
-    clearInterval(timerInterval);
+    clearInterval(timerInterval); // Arrêter tout timer existant
     
-    // Remet à zéro les variables de jeu
-    currentLevel = 1; // Reset au niveau 1
-    score = 0; // Remet le score à 0
+    // Remettre à zéro les variables
+    currentLevel = 1;
+    score = 0;
     currentMatrix = [];
-
-    // Réinitialise les éléments d'affichage
+    
+    // Mettre à jour l'interface utilisateur
     document.getElementById("level").innerText = currentLevel;
     document.getElementById("message").innerText = "Game reset! Click 'Start Game' to play.";
     document.getElementById("matrix-container").innerHTML = "";
-    document.getElementById("word-bank").innerHTML = "";
     
-    // Réaffiche le bouton start
-    document.getElementById("start-button").style.display = "inline-block";
-    document.getElementById("start-button").innerText = "Start Game"; // Change le texte du bouton à "Start Game"
+    // S'assurer que le bouton affiche toujours "Start Game"
+    document.getElementById("start-button").innerText = "Start Game";
+    document.getElementById("check-button").style.display = "none"; // Masquer le bouton Check Answers
     
-    // Cache le bouton de vérification (si visible)
-    document.getElementById("check-button").style.display = "none";
-
-    // Remet l'input container à l'état initial (optionnel)
-    document.getElementById("input-container").style.display = "none";
+    document.getElementById("input-container").style.display = "none"; // Masquer l'input-container
 }
+
 
 // Ajoute une vérification du texte du bouton pour basculer entre démarrer et réinitialiser
 document.getElementById("start-button").addEventListener("click", () => {
@@ -339,13 +334,6 @@ function startTimer(seconds, callback) {
     }, 1000);
 }
 
-function startGuessPhase() {
-    document.getElementById("message").innerText = "Now, place the words back in their correct positions!";
-    hideWords();
-    displayWordBank();
-    setupDragAndDrop();
-    startTimer(guessTime, checkAnswers);
-}
 
 function hideWords() {
     const words = document.querySelectorAll(".matrix-cell .word");
