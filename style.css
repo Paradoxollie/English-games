@@ -445,3 +445,37 @@ footer {
 .red-text {
     color: #ff6b6b;
 }
+
+/* Ajustements pour les mots qui bougent à l'écran */
+.word {
+    user-select: none;
+    cursor: pointer;
+    /* Autres styles existants */
+}
+
+#word-list {
+    pointer-events: none; /* Empêche le conteneur de bloquer les clics */
+}
+
+#word-list * {
+    pointer-events: auto; /* Permet les clics sur les éléments à l'intérieur du conteneur */
+}
+
+#current-theme {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-align: center;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ffeb3b; /* Ajoute une ombre lumineuse */
+    animation: pulse 2s infinite; /* Animation de pulsation */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

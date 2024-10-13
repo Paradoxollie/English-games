@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <title>Lost in Migration - Verb Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Lost in Migration </h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="speed-verb-challenge.html">Speed Verb Challenge</a>
+        <a href="word-memory-game.html">Word Memory Game</a>
+        <a href="lost-in-migration.html" class="active">Lost In Migration</a>
+        <a href="memory-matrix.html" >Memory Matrix</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <div id="game-container">
+        <div id="level-display">Level: <span id="level">1</span></div>
+        <div id="timer">Time: <span id="time-left">10</span> seconds</div>
+        <div id="score-display">Score: <span id="score">0</span></div>
+        
+        <div id="difficulty-selection">
+            <label for="difficulty">Choose difficulty:</label>
+            <select id="difficulty">
+                <option value="easy">Easy - More time, slower words</option>
+                <option value="medium">Medium - Moderate time, moderate speed</option>
+                <option value="hard">Hard - Less time, faster words</option>
+            </select>
+        </div>
+        
+        <div id="current-theme"></div>
+        
+        <div id="word-list" class="word-list"></div>
+        
+        <button id="start-button">Start Game</button>
+        
+        <div id="message"></div>
+        
+        <div id="explanation"></div>
+        <div id="top-scores">
+            <ul id="top-scores-list"></ul>
+        </div>
+     
+    </div>
+
+    <footer>
+        <p>&copy; 2024 English Games by Pierre Marienne</p>
+    </footer>
+
+    <script src="lost-in-migration.js"></script>
+
+</body>
+</html>
