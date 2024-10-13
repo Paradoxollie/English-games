@@ -231,7 +231,7 @@ main {
     border-radius: 5px;
     text-align: center;
     font-size: 1.2em;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0);
     color: #ffffff;
 }
 
@@ -265,7 +265,7 @@ main {
     font-size: 1.2em;
     padding: 10px;
     margin: 5px 0;
-    background-color: rgba(41, 40, 40, 0.7); /* Fond similaire à Lost in Migration */
+    background-color: rgba(73, 68, 68, 0.7); /* Fond similaire à Lost in Migration */
     color: #fff;
     border: 1px solid #fff;
     border-radius: 10px;
