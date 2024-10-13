@@ -482,7 +482,7 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
-    db.collection("memory_matrix_scores")
+    db.collection("scores")
         .orderBy("score", "desc") // Trie les scores par ordre décroissant
         .limit(5) // Limite à 5 meilleurs scores
         .get()
