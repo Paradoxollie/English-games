@@ -11,3 +11,6 @@ const firebaseConfig = {
   
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+
+  // Expose Firebase globally if needed
+window.firebase = firebase;
