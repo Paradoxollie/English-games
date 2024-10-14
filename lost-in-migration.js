@@ -32,25 +32,31 @@ function startGame() {
     startTimer(initialTime);
 }
 
+let speedMultiplier = 1; // Multiplicateur de vitesse par défaut
+
 function setDifficulty() {
     const difficulty = document.getElementById('difficulty').value;
     if (difficulty === 'easy') {
         difficultyMultiplier = 0.2;
         pointsPerLevel = 1;
         initialTime = 30; // Plus de temps en mode facile
+        speedMultiplier = 0.5; // Vitesse plus lente
     } else if (difficulty === 'medium') {
         difficultyMultiplier = 0.3;
         pointsPerLevel = 2;
         initialTime = 20; // Temps moyen en mode normal
+        speedMultiplier = 0.7; // Vitesse normale
     } else if (difficulty === 'hard') {
         difficultyMultiplier = 0.5;
         pointsPerLevel = 3;
         initialTime = 10; // Moins de temps en mode difficile
+        speedMultiplier = 1; // Vitesse plus rapide
     }
 }
 function loadLevel() {
     wordList.innerHTML = '';
     words = generateWordsByTheme(level);
+    const wordElements = [];
 
     if (!words || words.length === 0) {
         endGame(true);
@@ -67,12 +73,16 @@ function loadLevel() {
         wordElement.style.position = 'absolute';
 
         wordList.appendChild(wordElement);
-        positionWord(wordElement);
+        wordElements.push(wordElement);
+
+        // Positionner chaque mot de manière aléatoire, en évitant le chevauchement
+        positionWord(wordElement, wordElements);
 
         moveElementRebounding(wordElement);
         wordElement.addEventListener('click', () => handleWordClick(wordObject, wordElement));
     });
 }
+
 
 function handleWordClick(wordObject, wordElement) {
     if (isTransitioning) return; // Ignorer les clics pendant la transition
@@ -770,66 +780,112 @@ function showExplanation(isCorrect, word, explanation) {
     `;
 }
 
-function positionWord(element) {
-    const wordWidth = element.offsetWidth;
-    const wordHeight = element.offsetHeight;
-    const maxTop = window.innerHeight - wordHeight;
-    const maxLeft = window.innerWidth - wordWidth;
-    
-    const top = Math.random() * maxTop;
-    const left = Math.random() * maxLeft;
-    
-    element.style.top = `${top}px`;
-    element.style.left = `${left}px`;
+function positionWord(wordElement, otherWords) {
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    const wordWidth = wordElement.offsetWidth;
+    const wordHeight = wordElement.offsetHeight;
+
+    let validPosition = false;
+    let attempts = 0;
+
+    while (!validPosition && attempts < 100) {  // On essaie jusqu'à 100 fois de trouver une position valide
+        const randomLeft = Math.random() * (containerWidth - wordWidth);
+        const randomTop = Math.random() * (containerHeight - wordHeight);
+
+        wordElement.style.left = `${randomLeft}px`;
+        wordElement.style.top = `${randomTop}px`;
+
+        validPosition = true;
+        for (let otherWord of otherWords) {
+            if (otherWord !== wordElement && detectCollision(wordElement, otherWord)) {
+                validPosition = false;  // Si une collision est détectée, on réessaye
+                break;
+            }
+        }
+
+        attempts++;
+    }
+
+    if (!validPosition) {
+        console.warn("Couldn't find a valid position for the word after multiple attempts");
+        if (randomLeft < 0) randomLeft = 0;
+if (randomTop < 0) randomTop = 0;
+if (randomLeft + wordWidth > containerWidth) randomLeft = containerWidth - wordWidth;
+if (randomTop + wordHeight > containerHeight) randomTop = containerHeight - wordHeight;
+    }
 }
 
-function moveElementRebounding(element) {
-    let speedX = (Math.random() * 1.5 + 0.5) * difficultyMultiplier * (Math.random() > 0.5 ? 1 : -1);
-    let speedY = (Math.random() * 1.5 + 0.5) * difficultyMultiplier * (Math.random() > 0.5 ? 1 : -1);
+function detectCollision(el1, el2) {
+    const rect1 = el1.getBoundingClientRect();
+    const rect2 = el2.getBoundingClientRect();
+
+    // Vérifier si les deux rectangles (mots) se chevauchent
+    return !(
+        rect1.top > rect2.bottom ||
+        rect1.bottom < rect2.top ||
+        rect1.left > rect2.right ||
+        rect1.right < rect2.left
+    );
+}
+
+
+function moveElementRebounding(wordElement) {
+    let velocityX = (Math.random() * 2 - 1) * 2*speedMultiplier; // vitesse aléatoire en X
+    let velocityY = (Math.random() * 2 - 1) * 2*speedMultiplier; // vitesse aléatoire en Y
+    // S'assurer que la vitesse n'est pas trop petite
+if (Math.abs(velocityX) < 0.5) velocityX = 0.5 * Math.sign(velocityX);
+if (Math.abs(velocityY) < 0.5) velocityY = 0.5 * Math.sign(velocityY);
+
+    wordElement.style.position = 'fixed';  // Position fixe par rapport à la fenêtre visible
 
     function move() {
-        if (!element.isConnected) return; // Arrêter le mouvement si l'élément n'est plus dans le DOM
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
+        const wordRect = wordElement.getBoundingClientRect();
 
-        const rect = element.getBoundingClientRect();
-        let newLeft = rect.left + speedX;
-        let newTop = rect.top + speedY;
-
-        // Vérifier et ajuster les limites
-        if (newLeft < 0) {
-            newLeft = 0;
-            speedX *= -1;
-        } else if (newLeft + rect.width > window.innerWidth) {
-            newLeft = window.innerWidth - rect.width;
-            speedX *= -1;
+        // Vérifier les collisions avec les bords de la fenêtre
+        if (wordRect.left <= 0) {
+            velocityX = Math.abs(velocityX);  // Rebondir vers la droite
+            wordElement.style.left = '0px';  // Empêcher de sortir du bord
+        }
+        if (wordRect.right >= containerWidth) {
+            velocityX = -Math.abs(velocityX);  // Rebondir vers la gauche
+            wordElement.style.left = `${containerWidth - wordRect.width}px`;  // Empêcher de sortir du bord
+        }
+        if (wordRect.top <= 0) {
+            velocityY = Math.abs(velocityY);  // Rebondir vers le bas
+            wordElement.style.top = '0px';  // Empêcher de sortir du bord
+        }
+        if (wordRect.bottom >= containerHeight) {
+            velocityY = -Math.abs(velocityY);  // Rebondir vers le haut
+            wordElement.style.top = `${containerHeight - wordRect.height}px`;  // Empêcher de sortir du bord
         }
 
-        if (newTop < 0) {
-            newTop = 0;
-            speedY *= -1;
-        } else if (newTop + rect.height > window.innerHeight) {
-            newTop = window.innerHeight - rect.height;
-            speedY *= -1;
-        }
+        // Déplacer l'élément en fonction de la vitesse ajustée
+        wordElement.style.left = `${wordElement.offsetLeft + velocityX}px`;
+        wordElement.style.top = `${wordElement.offsetTop + velocityY}px`;
 
-        element.style.left = `${newLeft}px`;
-        element.style.top = `${newTop}px`;
-
-        requestAnimationFrame(move);
+        requestAnimationFrame(move); // Continuer le mouvement
     }
     move();
 }
 
+
+
 function loadLevel() {
-    wordList.innerHTML = '';
+    wordList.innerHTML = ''; // Nettoyer la liste des mots
     words = generateWordsByTheme(level);
 
     if (!words || words.length === 0) {
-        endGame(true);
+        endGame(true); // Fin du jeu si aucun mot n'est généré
         return;
     }
 
     document.getElementById('current-theme').innerText = `Thème actuel : ${currentTheme}`;
     isTransitioning = false;
+
+    const wordElements = []; // Liste pour vérifier les collisions avec les autres mots
 
     words.forEach((wordObject) => {
         const wordElement = document.createElement('span');
@@ -837,14 +893,18 @@ function loadLevel() {
         wordElement.classList.add('word');
         wordElement.style.position = 'absolute';
         wordElement.style.userSelect = 'none'; // Empêcher la sélection du texte
-        wordElement.style.cursor = 'pointer'; // Changer le curseur en pointeur pour indiquer qu'il est cliquable
+        wordElement.style.cursor = 'pointer'; // Changer le curseur en pointeur
 
         wordList.appendChild(wordElement);
-        positionWord(wordElement);
+        wordElements.push(wordElement); // Ajouter chaque mot à la liste pour éviter les chevauchements
 
+        // Positionner chaque mot aléatoirement
+        positionWord(wordElement, wordElements);
+
+        // Appliquer le mouvement avec rebondissement
         moveElementRebounding(wordElement);
-        
-        // Utiliser addEventListener au lieu de onclick
+
+        // Ajout du gestionnaire de clics
         wordElement.addEventListener('click', (event) => {
             event.stopPropagation(); // Empêcher la propagation de l'événement
             if (!isTransitioning) {
@@ -853,6 +913,7 @@ function loadLevel() {
         });
     });
 }
+
 
 function startTimer(seconds) {
     let timeLeft = seconds;
@@ -971,3 +1032,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
     loadTopScores();
     // ... autres initialisations ...
 });
+
+window.addEventListener('resize', () => {
+    Array.from(wordList.children).forEach((wordElement) => {
+        const containerWidth = window.innerWidth;
+        const containerHeight = window.innerHeight;
+
+        // Vérifier si chaque mot reste dans la zone visible après redimensionnement
+        const wordRect = wordElement.getBoundingClientRect();
+        if (wordRect.left > containerWidth || wordRect.top > containerHeight) {
+            wordElement.style.left = `${Math.random() * (containerWidth - wordRect.width)}px`;
+            wordElement.style.top = `${Math.random() * (containerHeight - wordRect.height)}px`;
+        }
+    });
+});
+
+wordElement.style.zIndex = '1000';  // S'assurer que le mot est au-dessus de tous les autres éléments
