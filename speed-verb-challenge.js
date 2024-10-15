@@ -482,7 +482,7 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
-    db.collection("scores")
+    db.collection("speed_verb_scores")
         .orderBy("score", "desc") // Trie les scores par ordre décroissant
         .limit(5) // Limite à 5 meilleurs scores
         .get()
