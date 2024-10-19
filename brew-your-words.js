@@ -356,7 +356,7 @@ function generateClient(id) {
     return { 
         id: id, 
         clientPhrases: clientPhrases, 
-        time: 30 + (numPhrases * 5),
+        time: Math.floor(Math.random() * 6) + 7,
         errors: 0 // Initialiser le compteur d'erreurs
     };
 }
@@ -514,4 +514,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Autres initialisations...
 });
+// Ajoute cette fonction pour finir le jeu et montrer le formulaire
+function endGame(score) {
+    // Affiche le score final
+    document.getElementById('final-score').textContent = score;
+
+    // Affiche le formulaire pour entrer le nom du joueur
+    document.getElementById('end-game').style.display = 'block';
+
+    // Cache les autres éléments du jeu
+    document.getElementById('game-container').style.display = 'none';
+
+    // Écoute le formulaire de soumission du nom
+    document.getElementById('name-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const playerName = document.getElementById('player-name').value;
+
+        // Sauvegarder le score dans la base de données
+        saveScore(playerName, score);
+    });
+}
+
+// Fonction pour sauvegarder le score dans la base de données
+function saveScore(playerName, score) {
+    db.collection("brewYourWordsScores").add({
+        name: playerName,
+        score: score,
+        timestamp: new Date()
+    })
+    .then(() => {
+        document.getElementById('save-message').textContent = 'Score saved successfully!';
+    })
+    .catch((error) => {
+        document.getElementById('save-message').textContent = 'Error saving score: ' + error;
+    });
+}
+if (timeRemaining <= 0) {
+    endGame(score);  // Appelle endGame avec le score final
+}
 
