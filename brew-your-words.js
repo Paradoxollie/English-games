@@ -468,34 +468,25 @@ function saveScore(playerName, score) {
 
 // 3. Fonction fetchTopScores modifiée
 function fetchTopScores() {
-    console.log("Tentative de récupération des top scores");
-    return db.collection(COLLECTION_NAME)
+    db.collection("brewYourWordsScores")
         .orderBy("score", "desc")
         .limit(5)
         .get()
         .then((querySnapshot) => {
-            console.log(`Nombre de documents récupérés : ${querySnapshot.size}`);
-            const topScoresElement = document.getElementById('top-scores');
-            topScoresElement.innerHTML = '<h2>Top Scores</h2>';
+            const topScoresList = document.getElementById("top-scores-list");
+            topScoresList.innerHTML = ""; // Vide la liste avant de la remplir
 
-            if (querySnapshot.empty) {
-                console.log("Aucun score trouvé dans la base de données");
-                topScoresElement.innerHTML += '<p>Aucun score enregistré pour le moment.</p>';
-            } else {
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    console.log(`Score récupéré : ${data.name} - ${data.score}`);
-                    topScoresElement.innerHTML += `<p>${data.name}: ${data.score} points</p>`;
-                });
-            }
+            querySnapshot.forEach((doc) => {
+                const li = document.createElement("li");
+                li.textContent = `${doc.data().name}: ${doc.data().score}`;
+                topScoresList.appendChild(li);
+            });
         })
         .catch((error) => {
-            console.error("Erreur lors de la récupération des scores : ", error);
-            alert(`Erreur lors de la récupération des scores : ${error.message}`);
-            const topScoresElement = document.getElementById('top-scores');
-            topScoresElement.innerHTML = '<h2>Top Scores</h2><p>Impossible de charger les scores.</p>';
+            console.error("Error loading top scores: ", error);
         });
 }
+
 
 // 4. Fonction endGame modifiée
 function endGame(success) {
