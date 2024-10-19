@@ -12,6 +12,16 @@
         <h1>Brew Your Words</h1>
     </header>
 
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="speed-verb-challenge.html">Speed Verb Challenge</a>
+        <a href="word-memory-game.html">Word Memory Game</a>
+        <a href="lost-in-migration.html">Lost In Migration</a>
+        <a href="memory-matrix.html">Memory Matrix</a>
+        <a href="brew-your-words.html" class="active">Brew Your Words</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
     <div id="game-container">
         <div id="progress-bar">
             <div id="current-level">Prends les commandes des clients! <span id="level"></span></div>
@@ -27,14 +37,25 @@
         <button id="start-button" class="play-button">Start Game</button>
         <div id="message"></div>
     </div>
-    <div id="top-scores"></div>
+
+    <div id="top-scores">
+        <h3>Top 5 Scores:</h3>
+        <ul id="top-scores-list"></ul>
+    </div>
 
     <footer>
         <p>&copy; 2024 English Games by Pierre Marienne</p>
+        <div id="visit-stats"></div>
     </footer>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- Votre script personnalisé -->
     <script src="brew-your-words.js"></script>
+
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>
