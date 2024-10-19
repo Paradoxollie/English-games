@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew Your Words - Translation Café</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Brew Your Words</h1>
+    </header>
+
+    <div id="game-container">
+        <div id="progress-bar">
+            <div id="current-level">Prends les commandes des clients! <span id="level"></span></div>
+            <div id="stars">Il faut absolument traduire pour le chef!</div>
+            <div id="global-timer">Time left: <span id="time-remaining">90</span> seconds</div>
+            <div id="score-display">Score: <span id="score">0</span></div>
+        </div>
+
+        <div id="client-queue" class="client-queue">
+            <!-- Les clients apparaissent ici -->
+        </div>
+
+        <button id="start-button" class="play-button">Start Game</button>
+        <div id="message"></div>
+    </div>
+    <div id="top-scores"></div>
+
+    <footer>
+        <p>&copy; 2024 English Games by Pierre Marienne</p>
+    </footer>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
+    <script src="brew-your-words.js"></script>
+</body>
+</html>
