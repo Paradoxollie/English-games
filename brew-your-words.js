@@ -81,13 +81,14 @@ function completeClient(clientId) {
 }
 
 function failOrder(clientId) {
-    if (!gameActive) return; // Ne pas modifier si le jeu est terminé
-    score -= 10; // Malus supplémentaire
+    if (!gameActive) return;  // Ne fait rien si le jeu est terminé
+    score = Math.max(0, score - 10); // Malus supplémentaire, mais le score ne descend pas en dessous de 0
     updateScore();
     messageElement.innerText = `Failed to complete the order for client #${clientId}.`;
     removeClient(clientId);
-    addNewClient(); // Ajouter un nouveau client
+    addNewClient();
 }
+
 
 
 // Supprimer une commande complétée ou échouée
@@ -137,9 +138,10 @@ function removeClient(clientId) {
 // Démarrer un timer pour chaque commande
 function startOrderTimer(clientId, time) {
     const timerElement = document.getElementById(`timer-${clientId}`);
-    const interval = setInterval(() => {
+    const client = activeClients.find(c => c.id === clientId);  // Récupère le client
+    client.timer = setInterval(() => {
         if (time <= 0) {
-            clearInterval(interval);
+            clearInterval(client.timer);  // Arrête le timer de ce client
             failOrder(clientId);
         } else {
             time--;
@@ -147,6 +149,9 @@ function startOrderTimer(clientId, time) {
         }
     }, 1000);
 }
+
+
+
 
 // Gérer une commande échouée (temps écoulé ou trop d'erreurs)
 function failOrder(clientId) {
@@ -204,6 +209,7 @@ function checkAnswer(answer, clientId, phraseId) {
 
 // Compléter la commande d'un client
 function completeClient(clientId) {
+    if (!gameActive) return;  // Ne fait rien si le jeu est terminé
     const client = activeClients.find(c => c.id === clientId);
     score += 10 * client.clientPhrases.length; // Bonus pour chaque phrase correcte
     updateScore();
@@ -356,7 +362,7 @@ function generateClient(id) {
     return { 
         id: id, 
         clientPhrases: clientPhrases, 
-        time: Math.floor(Math.random() * 6) + 7,
+        time: Math.floor(Math.random() * 6) + 10,
         errors: 0 // Initialiser le compteur d'erreurs
     };
 }
@@ -368,17 +374,22 @@ function updateScore() {
 
 // Terminer le jeu
 function endGame(success) {
-    // Arrêter le timer global et la génération de clients
-    clearInterval(globalTimerInterval);
-    clearInterval(clientGenerationInterval);
+    clearInterval(globalTimerInterval);  // Arrêter le timer global
+    clearInterval(clientGenerationInterval);  // Arrêter la génération de clients
 
-    // Désactiver toutes les interactions avec les clients restants
+    // Arrêter les timers de chaque commande en cours
+    activeClients.forEach(client => {
+        if (client.timer) {
+            clearInterval(client.timer);  // Arrêter les timers des clients
+        }
+    });
+
+    // Désactiver les interactions avec les commandes restantes
     activeClients.forEach(client => {
         client.clientPhrases.forEach(phrase => {
             const phraseElement = document.getElementById(phrase.id);
             if (phraseElement) {
                 phraseElement.querySelectorAll('button').forEach(btn => btn.disabled = true);
-                fetchTopScores();
             }
         });
     });
@@ -387,13 +398,29 @@ function endGame(success) {
     const message = success ? "Congratulations, you won!" : "Game Over!";
     messageElement.innerText = message;
 
-    // Vider la file des clients et masquer le bouton start
+    // Vider la file des clients
     clientQueue.innerHTML = '';
     document.getElementById('start-button').style.display = 'block';
 
-    // Sauvegarder le score final
-    saveScore('PlayerName', score);
+    // Capture et affiche le score final
+    const finalScore = score;  // Capture la valeur actuelle du score
+    document.getElementById('final-score').textContent = finalScore;
+
+    // Affiche le formulaire de sauvegarde du score
+    document.getElementById('end-game').style.display = 'block';
+
+    // Écoute l'événement de soumission pour sauvegarder le score capturé
+    document.getElementById('name-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const playerName = document.getElementById('player-name').value;
+
+        // Sauvegarder le score capturé et affiché
+        saveScore(playerName, finalScore);
+    });
 }
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM chargé, attachement de l'événement au bouton de démarrage");
@@ -450,21 +477,26 @@ const COLLECTION_NAME = "brewYourWordsScores";
 
 // 2. Fonction saveScore modifiée
 function saveScore(playerName, score) {
-    console.log(`Tentative d'enregistrement du score : ${playerName} - ${score}`);
-    return db.collection(COLLECTION_NAME).add({
+    if (typeof score !== 'number' || isNaN(score)) {
+        console.error("Invalid score:", score);
+        document.getElementById('save-message').textContent = 'Error: Invalid score.';
+        return;
+    }
+
+    db.collection("brewYourWordsScores").add({
         name: playerName,
-        score: score,
-        date: firebase.firestore.FieldValue.serverTimestamp()
+        score: score,  // Vérifie que score est bien un nombre ici
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
-    .then((docRef) => {
-        console.log(`Score enregistré avec succès ! ID du document : ${docRef.id}`);
-        return fetchTopScores();
+    .then(() => {
+        document.getElementById('save-message').textContent = 'Score saved successfully!';
+        fetchTopScores();
     })
     .catch((error) => {
-        console.error("Erreur lors de l'enregistrement du score : ", error);
-        alert(`Erreur lors de l'enregistrement du score : ${error.message}`);
+        document.getElementById('save-message').textContent = 'Error saving score: ' + error;
     });
 }
+
 
 // 3. Fonction fetchTopScores modifiée
 function fetchTopScores() {
@@ -515,7 +547,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Autres initialisations...
 });
 // Ajoute cette fonction pour finir le jeu et montrer le formulaire
-function endGame(score) {
+function endGame() {
+    // Vérifie que le score est valide avant de l'afficher
+    if (typeof score !== 'number' || isNaN(score)) {
+        console.error("Invalid score:", score);
+        document.getElementById('final-score').textContent = 'Error: Invalid score.';
+        return;
+    }
+
     // Affiche le score final
     document.getElementById('final-score').textContent = score;
 
@@ -535,21 +574,28 @@ function endGame(score) {
     });
 }
 
+
 // Fonction pour sauvegarder le score dans la base de données
 function saveScore(playerName, score) {
+    // Vérifie que le score est bien un nombre valide avant de l'enregistrer
+    if (typeof score !== 'number' || isNaN(score)) {
+        console.error("Invalid score:", score);
+        document.getElementById('save-message').textContent = 'Error: Invalid score.';
+        return;
+    }
+
     db.collection("brewYourWordsScores").add({
         name: playerName,
         score: score,
-        timestamp: new Date()
+        timestamp: firebase.firestore.FieldValue.serverTimestamp() // Utilise Firebase pour le timestamp
     })
     .then(() => {
         document.getElementById('save-message').textContent = 'Score saved successfully!';
+        fetchTopScores();  // Recharge le tableau des scores
     })
     .catch((error) => {
         document.getElementById('save-message').textContent = 'Error saving score: ' + error;
     });
 }
-if (timeRemaining <= 0) {
-    endGame(score);  // Appelle endGame avec le score final
-}
+
 
