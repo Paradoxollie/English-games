@@ -6,7 +6,6 @@
     <title>English Quest - Learn English through Adventure</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Styles existants */
         body {
             background-image: url('images/background.webp');
             background-size: cover;
@@ -25,7 +24,21 @@
             margin: 20px;
         }
 
-        /* Nouveaux styles pour le carousel */
+        .cta-button {
+            display: inline-block;
+            background-color: #c9aa71;
+            color: #000;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #e0c589;
+        }
+
         .carousel-container {
             background-color: rgba(0, 0, 0, 0.8);
             border-radius: 15px;
@@ -183,7 +196,10 @@
             }
 
             init(items) {
-                console.log('Initializing carousel with items:', items);
+                if (!items || items.length === 0) {
+                    console.log('No items to initialize carousel');
+                    return;
+                }
                 this.items = items;
                 this.render();
                 this.createNav();
@@ -192,19 +208,19 @@
             }
 
             render() {
-    this.container.innerHTML = this.items.map((item, index) => `
-        <div class="carousel-item ${index === 0 ? 'active' : ''}">
-            <div class="game-card">
-                <img src="${item.image}" alt="${item.title}" class="game-image">
-                <div class="game-info">
-                    <h3>${item.title}</h3>
-                    <p>${item.description}</p>
-                    <a href="${item.link}" class="cta-button">Start Adventure</a>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
+                this.container.innerHTML = this.items.map((item, index) => `
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                        <div class="game-card">
+                            <img src="${item.image}" alt="${item.title}" class="game-image">
+                            <div class="game-info">
+                                <h3>${item.title}</h3>
+                                <p>${item.description}</p>
+                                <a href="${item.link}" class="cta-button">Start Adventure</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
 
             createNav() {
                 this.nav.innerHTML = this.items.map((_, index) => `
@@ -223,6 +239,8 @@
 
             showSlide(index) {
                 const items = this.container.querySelectorAll('.carousel-item');
+                if (!items.length) return;
+                
                 const dots = this.nav.querySelectorAll('.nav-dot');
                 
                 items.forEach(item => item.classList.remove('active'));
@@ -246,7 +264,9 @@
             }
 
             startAutoRotation() {
-                this.interval = setInterval(() => this.showNext(), 5000);
+                if (this.items && this.items.length > 0) {
+                    this.interval = setInterval(() => this.showNext(), 5000);
+                }
             }
 
             resetAutoRotation() {
@@ -256,71 +276,54 @@
         }
 
         function extractCardInfo(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    
-    // Log du contenu pour debug
-    console.log('Parsed HTML:', doc.body.innerHTML);
-    
-    // Recherche les blocs de jeux/cours
-    const gameBlocks = doc.body.innerHTML.split(':::: game-card');
-    
-    return gameBlocks.slice(1).map(block => {
-        try {
-            // Extraction des informations à partir du texte brut
-            const imageMatch = block.match(/!\[(.*?)\]\((.*?)\)/);
-            const titleMatch = block.match(/### (.*?)\n/);
-            const descriptionMatch = block.match(/### .*?\n\n(.*?)\n\n/s);
-            const linkMatch = block.match(/\[.*?\]\((.*?)\)/);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
             
-            if (imageMatch && titleMatch && descriptionMatch && linkMatch) {
-                return {
-                    title: titleMatch[1].trim(),
-                    description: descriptionMatch[1].trim(),
-                    image: imageMatch[2],
-                    link: linkMatch[1]
-                };
-            }
-            console.log('Extracted item:', {
-                title: titleMatch ? titleMatch[1] : 'No title found',
-                image: imageMatch ? imageMatch[2] : 'No image found',
-                description: descriptionMatch ? descriptionMatch[1] : 'No description found',
-                link: linkMatch ? linkMatch[1] : 'No link found'
-            });
-            return null;
-        } catch (error) {
-            console.error('Error parsing block:', error);
-            return null;
+            const gameGrid = doc.querySelector('[role="main"] .game-grid');
+            if (!gameGrid) return [];
+
+            const cards = gameGrid.querySelectorAll('.game-card');
+            
+            return Array.from(cards).map(card => {
+                try {
+                    const gameInfo = card.querySelector('.game-info');
+                    return {
+                        title: gameInfo.querySelector('h3').textContent.trim(),
+                        description: gameInfo.querySelector('p').textContent.trim(),
+                        image: card.querySelector('img').getAttribute('src'),
+                        link: gameInfo.querySelector('a').getAttribute('href')
+                    };
+                } catch (error) {
+                    console.error('Error extracting card info:', error);
+                    return null;
+                }
+            }).filter(card => card !== null);
         }
-    }).filter(item => item !== null);
-}
 
-        // Initialisation des carrousels
-        const gamesCarousel = new Carousel('games-carousel', 'games-nav');
-        const coursesCarousel = new Carousel('courses-carousel', 'courses-nav');
+        document.addEventListener('DOMContentLoaded', () => {
+            const gamesCarousel = new Carousel('games-carousel', 'games-nav');
+            const coursesCarousel = new Carousel('courses-carousel', 'courses-nav');
 
-        // Chargement des données
-        fetch('all-games.html')
-            .then(response => response.text())
-            .then(html => {
-                const games = extractCardInfo(html);
-                console.log('Extracted games:', games);
-                if (games.length > 0) {
-                    gamesCarousel.init(games);
-                }
-            })
-            .catch(error => console.error('Error loading games:', error));
+            fetch('all-games.html')
+                .then(response => response.text())
+                .then(html => {
+                    const games = extractCardInfo(html);
+                    if (games && games.length > 0) {
+                        gamesCarousel.init(games);
+                    }
+                })
+                .catch(error => console.error('Error loading games:', error));
 
-        fetch('courses.html')
-            .then(response => response.text())
-            .then(html => {
-                const courses = extractCardInfo(html);
-                console.log('Extracted courses:', courses);
-                if (courses.length > 0) {
-                    coursesCarousel.init(courses);
-                }
-            })
-            .catch(error => console.error('Error loading courses:', error));
+            fetch('courses.html')
+                .then(response => response.text())
+                .then(html => {
+                    const courses = extractCardInfo(html);
+                    if (courses && courses.length > 0) {
+                        coursesCarousel.init(courses);
+                    }
+                })
+                .catch(error => console.error('Error loading courses:', error));
+        });
     </script>
 </body>
 </html>
