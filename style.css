@@ -627,3 +627,52 @@ footer {
     max-width: none; /* Enlève la limite de 800px */
     margin: 20px auto; /* Garde un espacement fluide */
 }
+/* Style pour l'intro de jeu MMORPG */
+.game-intro {
+    background-color: rgba(0, 0, 0, 0.7); /* Fond sombre et semi-transparent */
+    border: 5px solid #c9aa71; /* Bordure dorée */
+    border-radius: 15px; /* Coins arrondis */
+    padding: 30px; /* Espacement interne */
+    width: 80%; /* Largeur réduite à 80% de l'écran */
+    max-width: 700px; /* Limitation de la largeur maximale */
+    margin: 20px auto; /* Centrage horizontal */
+    text-align: center; /* Centrage du texte */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Ombre pour plus de profondeur */
+    position: relative; /* Empêche l'expansion hors de la zone du conteneur */
+}
+
+.game-intro h2 {
+    font-size: 2.5em; /* Taille réduite du titre */
+    color: #ffcc00; /* Couleur dorée pour le titre */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); /* Ombre pour le titre */
+    margin-bottom: 20px;
+}
+
+.game-intro p {
+    font-size: 1.2em; /* Texte plus petit pour correspondre à la nouvelle largeur */
+    color: #f0e6d2; /* Couleur de texte claire */
+    line-height: 1.6; /* Espacement plus serré pour correspondre à la taille du texte */
+    margin-bottom: 15px;
+}
+
+/* Effet de hover pour l'expérience */
+.game-intro:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Style responsive pour mobile */
+@media (max-width: 768px) {
+    .game-intro {
+        width: 90%; /* La section occupe 90% de la largeur de l'écran sur mobile */
+        padding: 20px; /* Espacement interne réduit sur mobile */
+    }
+
+    .game-intro h2 {
+        font-size: 2em; /* Taille du titre ajustée pour mobile */
+    }
+
+    .game-intro p {
+        font-size: 1em; /* Texte légèrement plus petit pour mobile */
+    }
+}
