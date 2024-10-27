@@ -72,46 +72,45 @@
         }
 
         .carousel-nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        position: absolute;
+        bottom: -20px; /* Décale les points en dessous du carrousel */
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espace entre les points */
+    }
+    
+    .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-        .nav-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .nav-dot.active {
-            background-color: #4CAF50;
-            box-shadow: 0 0 10px #4CAF50;
-        }
+    .nav-dot.active {
+        background-color: #4CAF50;
+        box-shadow: 0 0 10px #4CAF50;
+    }
 
         .carousel-arrow {
-    top: 45%; /* Ajuste la position verticale */
-    padding: 20px; /* Augmente la taille des flèches */
-    background: rgba(0, 0, 0, 0.6); /* Fond plus visible pour les flèches */
-    border-radius: 50%;
-}
+        top: 50%; /* Centré verticalement */
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.6); /* Fond plus visible */
+        border-radius: 50%;
+        transform: translateY(-50%); /* Correction pour centrer */
+        z-index: 2; /* Met en avant les flèches */
+    }
 
-.carousel-arrow:hover {
-    background: rgba(255, 255, 255, 0.8); /* Effet de hover plus visible */
-    color: #000;
-}
+    .carousel-arrow.prev {
+        left: -30px; /* Décale la flèche gauche à l'extérieur du conteneur */
+    }
 
-
-        .carousel-arrow.prev {
-            left: 20px;
-        }
-
-        .carousel-arrow.next {
-            right: 20px;
-        }
+    .carousel-arrow.next {
+        right: -30px; /* Décale la flèche droite à l'extérieur du conteneur */
+    }
 
         .section-title {
             color: #c9aa71;
@@ -139,6 +138,16 @@
 
     .game-info p {
         font-size: 0.9em;  /* Taille légèrement plus petite pour la description */
+    }
+    .section-title {
+        color: #fff;
+        font-size: 2.5em;
+        text-align: center;
+        margin: 40px 0;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.5); /* Fond noir semi-transparent */
+        border-radius: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Effet de texte en relief */
     }
     </style>
 </head>
