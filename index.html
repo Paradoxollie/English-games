@@ -93,22 +93,17 @@
         }
 
         .carousel-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            padding: 15px;
-            border: none;
-            cursor: pointer;
-            border-radius: 50%;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
+    top: 45%; /* Ajuste la position verticale */
+    padding: 20px; /* Augmente la taille des flèches */
+    background: rgba(0, 0, 0, 0.6); /* Fond plus visible pour les flèches */
+    border-radius: 50%;
+}
 
-        .carousel-arrow:hover {
-            background: rgba(76, 175, 80, 0.8);
-        }
+.carousel-arrow:hover {
+    background: rgba(255, 255, 255, 0.8); /* Effet de hover plus visible */
+    color: #000;
+}
+
 
         .carousel-arrow.prev {
             left: 20px;
@@ -125,6 +120,26 @@
             margin: 40px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
+        .game-card {
+        max-width: 200px;  /* Diminue la largeur maximale des cartes */
+        margin: 0 auto;
+        padding: 10px;  /* Ajuste l'espacement intérieur */
+    }
+
+    /* Ajustement de la taille des images dans les cartes */
+    .game-image {
+        width: 100px;  /* Réduit la taille des images */
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .game-info h3 {
+        font-size: 1.1em;  /* Taille légèrement plus petite pour les titres */
+    }
+
+    .game-info p {
+        font-size: 0.9em;  /* Taille légèrement plus petite pour la description */
+    }
     </style>
 </head>
 <body>
