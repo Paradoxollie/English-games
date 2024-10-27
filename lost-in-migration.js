@@ -785,6 +785,8 @@ function positionWord(wordElement, otherWords) {
     const containerHeight = window.innerHeight;
     const wordWidth = wordElement.offsetWidth;
     const wordHeight = wordElement.offsetHeight;
+    const maxWidth = window.innerWidth - wordElement.offsetWidth;
+    const maxHeight = window.innerHeight - wordElement.offsetHeight;
 
     let validPosition = false;
     let attempts = 0;
@@ -972,7 +974,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ... (reste du code existant)
+
 
 function endGame(success) {
     clearInterval(timerInterval);

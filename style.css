@@ -458,15 +458,25 @@ footer {
 .word {
     user-select: none;
     cursor: pointer;
-    /* Autres styles existants */
+    font-size: 3vw; /* Les mots s'adapteront à la taille de l'écran */
+    padding: 10px;
+    margin: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 #word-list {
     pointer-events: none; /* Empêche le conteneur de bloquer les clics */
-}
-
-#word-list * {
     pointer-events: auto; /* Permet les clics sur les éléments à l'intérieur du conteneur */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    padding: 10px;
+    margin: 0 auto;
+    overflow: hidden;
 }
 
 #current-theme {
@@ -497,6 +507,9 @@ footer {
 @media (max-width: 768px) {
     #matrix-container {
         grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour les écrans plus petits */
+        .word {
+            font-size: 5vw; /* Augmente la taille des mots sur petits écrans */
+        }
     }
 }
 
