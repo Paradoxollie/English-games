@@ -101,43 +101,25 @@
         <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
     </footer>
 
+    <!-- EmailJS Script -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("Jb-SEyjWuw5gxUUpY");  // Clé publique EmailJS
+        })();
+    </script>
+
     <script>
         document.getElementById('contact-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            const data = {
-                name: name,
-                email: email,
-                message: message
-            };
-
-            // Envoi de l'email en utilisant un service tiers via une requête POST
-            fetch('https://your-backend-server.com/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    to: 'pierremarienne@gmail.com',
-                    subject: 'New Contact Form Submission',
-                    text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Your message has been sent successfully!');
-                    document.getElementById('contact-form').reset();
-                } else {
-                    alert('There was a problem sending your message. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+            emailjs.sendForm('service_syp7u45', 'template_cs40b8d', this)  // Utilise ton Service ID et Template ID
+            .then(function() {
+                alert('Your message has been sent successfully!');
+                document.getElementById('contact-form').reset();
+            }, function(error) {
                 alert('There was a problem sending your message. Please try again.');
+                console.log('FAILED...', error);
             });
         });
     </script>
