@@ -279,50 +279,37 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
-            const gameGrid = doc.querySelector('[role="main"] .game-grid');
+            const gameGrid = doc.querySelector('.game-grid');
             if (!gameGrid) return [];
 
             const cards = gameGrid.querySelectorAll('.game-card');
-            
-            return Array.from(cards).map(card => {
-                try {
-                    const gameInfo = card.querySelector('.game-info');
-                    return {
-                        title: gameInfo.querySelector('h3').textContent.trim(),
-                        description: gameInfo.querySelector('p').textContent.trim(),
-                        image: card.querySelector('img').getAttribute('src'),
-                        link: gameInfo.querySelector('a').getAttribute('href')
-                    };
-                } catch (error) {
-                    console.error('Error extracting card info:', error);
-                    return null;
-                }
-            }).filter(card => card !== null);
+            return Array.from(cards).map(card => ({
+                title: card.querySelector('h3').textContent.trim(),
+                description: card.querySelector('p').textContent.trim(),
+                image: card.querySelector('img').getAttribute('src'),
+                link: card.querySelector('a').getAttribute('href')
+            }));
+        }
+
+        function loadContent(url, carousel) {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const items = extractCardInfo(html);
+                    if (items.length > 0) {
+                        carousel.init(items);
+                    }
+                })
+                .catch(error => console.error('Error loading content:', error));
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             const gamesCarousel = new Carousel('games-carousel', 'games-nav');
             const coursesCarousel = new Carousel('courses-carousel', 'courses-nav');
 
-            fetch('all-games.html')
-                .then(response => response.text())
-                .then(html => {
-                    const games = extractCardInfo(html);
-                    if (games && games.length > 0) {
-                        gamesCarousel.init(games);
-                    }
-                })
-                .catch(error => console.error('Error loading games:', error));
-
-            fetch('courses.html')
-                .then(response => response.text())
-                .then(html => {
-                    const courses = extractCardInfo(html);
-                    if (courses && courses.length > 0) {
-                        coursesCarousel.init(courses);
-                    }
-                })
-                .catch(error => console.error('Error loading courses:', error));
+            // Load games and courses
+            loadContent('all-games.html', gamesCarousel);
+            loadContent('courses.html', coursesCarousel);
         });
     </script>
 </body>
