@@ -6,8 +6,8 @@
     <title>English Quest - Learn English through Adventure</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Styles existants */
         body {
-            
             background-image: url('images/background.webp');
             background-size: cover;
             background-attachment: fixed;
@@ -15,106 +15,103 @@
             margin: 0;
             padding: 0;
         }
+
         .hero {
             background-color: rgba(0, 0, 0, 0.7);
             text-align: center;
             padding: 100px 0;
-        }
-        .hero h1 {
-            font-size: 4em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px #000;
-        }
-        .hero p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-        }
-        .cta-button {
-            display: inline-block;
-            background-color: #c9aa71;
-            color: #000;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .cta-button:hover {
-            background-color: #e0c589;
-        }
-        .game-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 50px 20px;
-        }
-        .card {
-            background-color: rgba(0, 0, 0, 0.7);
             border: 2px solid #c9aa71;
             border-radius: 10px;
-            padding: 20px;
-            width: 250px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: scale(1.05);
-        }
-        .card img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 15px;
-        }
-        .card h3 {
-            color: #c9aa71;
-            margin-bottom: 10px;
-        }
-        .play-button {
-            display: inline-block;
-            background-color: #4a3f35;
-            color: #f0e6d2;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .play-button:hover {
-            background-color: #5e5145;
-        }
-        footer {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #f0e6d2;
-            text-align: center;
-            padding: 20px 0;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-        }
-        .site-title {
-            display: inline-block;
-            font-size: 2.5em;
-            color: #c9aa71;
-            border: 3px solid #c9aa71;
-            border: 5px solid #c9aa71;
-            border-radius: 10px;
-            padding: 20px;
-            transition: transform 0.3s;
-        }
-
-        .hero {
-            border: 20px solid transparent;
             margin: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 2px solid #c9aa71;
-            border-radius: 10px;
-            padding: 20px;
-            transition: transform 0.3s;
         }
 
+        /* Nouveaux styles pour le carousel */
+        .carousel-container {
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            position: relative;
+            border: 2px solid #c9aa71;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+        }
+
+        .carousel-content {
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .carousel-item {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 100%;
+            display: none;
+        }
+
+        .carousel-item.active {
+            opacity: 1;
+            display: block;
+            z-index: 1;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background-color: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(76, 175, 80, 0.8);
+        }
+
+        .carousel-arrow.prev {
+            left: 20px;
+        }
+
+        .carousel-arrow.next {
+            right: 20px;
+        }
+
+        .section-title {
+            color: #c9aa71;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 40px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -129,86 +126,201 @@
         </nav>
     </header>
 
-    <main>
+    <main role="main">
         <section class="hero">
             <h2>English Quest</h2>
             <p>Embark on an epic journey to master the English language!</p>
-            <a href="#games" class="cta-button">Start Your Adventure</a>
+            <a href="#explore-games" class="cta-button">Start Your Adventure</a>
         </section>
 
-        <section id="games" class="game-grid">
-            <div class="card">
-                <img src="images/speed-challenge.webp" alt="Speed Verb Challenge">
-                <h3>Speed Verb Challenge</h3>
-                <p>Test your knowledge of irregular verbs in this fast-paced challenge!</p>
-                <a href="speed-verb-challenge.html" class="play-button">Play Now</a>
+        <section id="explore-games">
+            <h2 class="section-title">Explore Games</h2>
+            <div class="carousel-container">
+                <button class="carousel-arrow prev">&#10094;</button>
+                <button class="carousel-arrow next">&#10095;</button>
+                <div id="games-carousel" class="carousel-content"></div>
+                <div class="carousel-nav" id="games-nav"></div>
             </div>
-            <div class="card">
-                <img src="images/fill-gaps.webp" alt="Fill in the Gaps">
-                <h3>Matrix</h3>
-                <p>Obtain great power by matching words and definitons</p>
-                <a href="memory-matrix.html" class="play-button">Play Now</a>
-            </div>
-            
-            <div class="card">
-                <img src="images/word-memory-game.webp" alt="Word Memory">
-                <h3>Word Memory</h3>
-                <p>Train your memory skills with this engaging word game.</p>
-                <a href="word-memory-game.html" class="play-button">Play Now</a>
-            </div>
-            <div class="card">
-                <img src="images/conditionnel-course.webp" alt="Conditional Course">
-                <h3>The Conditional</h3>
-                <p>Master the art of expressing hypothetical situations.</p>
-                <a href="conditional-course.html" class="play-button">Start Quest</a>
-            </div>
-            <div class="card">
-                <img src="images/Superlative.webp" alt="Superlative Course">
-                <h3>The Superlative</h3>
-                <p>Learn to express the highest degree of a quality or attribute.</p>
-                <a href="superlative.html" class="play-button">Start Quest</a>
-            </div>
-            <div class="card">
-                <img src="images/comparative.webp" alt="comparative course" class="game-image">
-                    <h3>Tame the Comparative!</h3>
-                    <p>Face off against fierce grammar guardians and claim your place as the true Grammar Champion.</p>
-                    <a href="comparative.html" class="play-button">Start Your Quest</a>
-                </div>
+        </section>
 
-
-                <div class="card">
-                    <img src="images/lost-in-migration.webp" alt="Lost in Migration" class="game-image">
-                    <div class="game-info">
-                        <h3>Lost in Migration</h3>
-                        <p>Catch the intruder! Test your English skills by identifying the odd word out in this fun and interactive game!</p>
-                        <a href="lost-in-migration.html" class="play-button">Play Now</a>
-                    </div>
-                </div>
-                    <div class="card">
-                        <img src="images/brew-your-words.webp" alt="Brew Your Words" class="game-image">
-                        <div class="game-info">
-                            <h3>Brew Your Words</h3>
-                            <p>Serve customers in this challenging word game! Get the right translations!</p>
-                            <a href="brew-your-words.html" class="play-button">Play Now</a>
-                        </div>
-                    </div>
+        <section id="discover-courses">
+            <h2 class="section-title">Discover Courses</h2>
+            <div class="carousel-container">
+                <button class="carousel-arrow prev">&#10094;</button>
+                <button class="carousel-arrow next">&#10095;</button>
+                <div id="courses-carousel" class="carousel-content"></div>
+                <div class="carousel-nav" id="courses-nav"></div>
+            </div>
         </section>
     </main>
 
     <footer>
         <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-        <div id="visit-stats"></div>
-
-        <!-- Scripts Firebase -->
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        
-        <!-- Votre script d'initialisation Firebase -->
-        <script src="firebase-init.js"></script>
-        
-        <!-- Le script du compteur de visites -->
-        <script src="visit-counter.js"></script>
-
     </footer>
+
+    <script>
+        class Carousel {
+            constructor(containerId, navId) {
+                this.container = document.getElementById(containerId);
+                this.nav = document.getElementById(navId);
+                this.currentIndex = 0;
+                this.items = [];
+                this.interval = null;
+                this.arrows = this.container.parentElement.querySelectorAll('.carousel-arrow');
+                this.setupArrows();
+            }
+
+            setupArrows() {
+                this.arrows.forEach(arrow => {
+                    arrow.addEventListener('click', () => {
+                        if (arrow.classList.contains('prev')) {
+                            this.showPrevious();
+                        } else {
+                            this.showNext();
+                        }
+                    });
+                });
+            }
+
+            init(items) {
+                console.log('Initializing carousel with items:', items);
+                this.items = items;
+                this.render();
+                this.createNav();
+                this.showSlide(0);
+                this.startAutoRotation();
+            }
+
+            render() {
+    this.container.innerHTML = this.items.map((item, index) => `
+        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+            <div class="game-card">
+                <img src="${item.image}" alt="${item.title}" class="game-image">
+                <div class="game-info">
+                    <h3>${item.title}</h3>
+                    <p>${item.description}</p>
+                    <a href="${item.link}" class="cta-button">Start Adventure</a>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+            createNav() {
+                this.nav.innerHTML = this.items.map((_, index) => `
+                    <div class="nav-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
+                `).join('');
+
+                this.nav.addEventListener('click', (e) => {
+                    const dot = e.target.closest('.nav-dot');
+                    if (dot) {
+                        const index = parseInt(dot.dataset.index);
+                        this.showSlide(index);
+                        this.resetAutoRotation();
+                    }
+                });
+            }
+
+            showSlide(index) {
+                const items = this.container.querySelectorAll('.carousel-item');
+                const dots = this.nav.querySelectorAll('.nav-dot');
+                
+                items.forEach(item => item.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+                
+                items[index].classList.add('active');
+                dots[index].classList.add('active');
+                this.currentIndex = index;
+            }
+
+            showNext() {
+                const nextIndex = (this.currentIndex + 1) % this.items.length;
+                this.showSlide(nextIndex);
+                this.resetAutoRotation();
+            }
+
+            showPrevious() {
+                const prevIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+                this.showSlide(prevIndex);
+                this.resetAutoRotation();
+            }
+
+            startAutoRotation() {
+                this.interval = setInterval(() => this.showNext(), 5000);
+            }
+
+            resetAutoRotation() {
+                clearInterval(this.interval);
+                this.startAutoRotation();
+            }
+        }
+
+        function extractCardInfo(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Log du contenu pour debug
+    console.log('Parsed HTML:', doc.body.innerHTML);
+    
+    // Recherche les blocs de jeux/cours
+    const gameBlocks = doc.body.innerHTML.split(':::: game-card');
+    
+    return gameBlocks.slice(1).map(block => {
+        try {
+            // Extraction des informations à partir du texte brut
+            const imageMatch = block.match(/!\[(.*?)\]\((.*?)\)/);
+            const titleMatch = block.match(/### (.*?)\n/);
+            const descriptionMatch = block.match(/### .*?\n\n(.*?)\n\n/s);
+            const linkMatch = block.match(/\[.*?\]\((.*?)\)/);
+            
+            if (imageMatch && titleMatch && descriptionMatch && linkMatch) {
+                return {
+                    title: titleMatch[1].trim(),
+                    description: descriptionMatch[1].trim(),
+                    image: imageMatch[2],
+                    link: linkMatch[1]
+                };
+            }
+            console.log('Extracted item:', {
+                title: titleMatch ? titleMatch[1] : 'No title found',
+                image: imageMatch ? imageMatch[2] : 'No image found',
+                description: descriptionMatch ? descriptionMatch[1] : 'No description found',
+                link: linkMatch ? linkMatch[1] : 'No link found'
+            });
+            return null;
+        } catch (error) {
+            console.error('Error parsing block:', error);
+            return null;
+        }
+    }).filter(item => item !== null);
+}
+
+        // Initialisation des carrousels
+        const gamesCarousel = new Carousel('games-carousel', 'games-nav');
+        const coursesCarousel = new Carousel('courses-carousel', 'courses-nav');
+
+        // Chargement des données
+        fetch('all-games.html')
+            .then(response => response.text())
+            .then(html => {
+                const games = extractCardInfo(html);
+                console.log('Extracted games:', games);
+                if (games.length > 0) {
+                    gamesCarousel.init(games);
+                }
+            })
+            .catch(error => console.error('Error loading games:', error));
+
+        fetch('courses.html')
+            .then(response => response.text())
+            .then(html => {
+                const courses = extractCardInfo(html);
+                console.log('Extracted courses:', courses);
+                if (courses.length > 0) {
+                    coursesCarousel.init(courses);
+                }
+            })
+            .catch(error => console.error('Error loading courses:', error));
+    </script>
 </body>
 </html>

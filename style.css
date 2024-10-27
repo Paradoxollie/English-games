@@ -611,3 +611,19 @@ footer {
     display: block;
     margin: 0 auto; /* Centrer l'image horizontalement */
 }
+
+.course-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border: 1px solid #4CAF50;
+    border-radius: 10px;
+    margin: 20px 0;
+    width: 100%; /* Assure que toutes les boîtes prennent toute la largeur disponible */
+    min-height: 200px; /* Assure que les boîtes aient une hauteur minimale uniforme */
+}
+
+.course-section {
+    width: 100%; /* Chaque section prend toute la largeur disponible */
+    max-width: none; /* Enlève la limite de 800px */
+    margin: 20px auto; /* Garde un espacement fluide */
+}
