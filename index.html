@@ -18,9 +18,9 @@
 /* Section hero améliorée */
 .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero-bg.jpg') center center/cover no-repeat;
-    height: 40vh; /* Hauteur réduite à 60% de la hauteur de l'écran */
-    width: 80vw;  /* Prend 80% de la largeur de l'écran */
-    max-width: 1200px; /* Limite la largeur maximale */
+    height: 40vh; /* Hauteur ajustée pour être plus basse */
+    width: 90%;  /* Utilise 90% de la largeur de l'écran pour éviter les décalages */
+    max-width: 1200px; /* Largeur maximale sur les grands écrans */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -28,37 +28,67 @@
     text-align: center;
     color: #fff;
     padding: 40px;
-    margin: 0 auto; /* Centre la section horizontalement */
-    border: 5px solid rgba(201, 170, 113, 0.8); /* Contour doré avec transparence */
-    border-radius: 20px; /* Arrondi les coins du contour */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Ajoute une ombre pour donner de la profondeur */
+    margin: 20px auto; /* Centre la section et ajoute de l'espace autour */
+    border: 5px solid rgba(201, 170, 113, 0.9); /* Contour doré avec transparence légère */
+    border-radius: 20px; /* Coins arrondis */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5); /* Ombre pour donner de la profondeur */
 }
 
+/* Texte amélioré dans la section hero */
+.hero h2 {
+    font-size: 3.5em;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.8);
+}
 
-        .hero h2 {
-            font-size: 4em;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
-        }
+.hero p {
+    font-size: 1.4em;
+    margin-bottom: 30px;
+    max-width: 800px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Ajoute une ombre légère au texte */
+}
 
-        .hero p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            max-width: 800px;
-        }
+/* Bouton d'appel à l'action amélioré */
+.cta-button {
+    display: inline-block;
+    background-color: #c9aa71;
+    color: #000;
+    padding: 15px 35px;
+    font-size: 1.5em;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
 
-        .cta-button {
-            display: inline-block;
-            background-color: #c9aa71;
-            color: #000;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
+.cta-button:hover {
+    background-color: #e0c589;
+    transform: translateY(-5px);
+}
+
+/* Styles pour petits écrans (mobiles) */
+@media (max-width: 768px) {
+    .hero {
+        height: auto; /* Ajuste la hauteur pour éviter l'écrasement sur mobile */
+        padding: 20px; /* Réduit les marges internes sur mobile */
+    }
+
+    .hero h2 {
+        font-size: 2.5em; /* Taille du texte ajustée pour les petits écrans */
+    }
+
+    .hero p {
+        font-size: 1.1em; /* Texte plus petit sur mobile */
+    }
+
+    .cta-button {
+        font-size: 1.2em;
+        padding: 12px 25px;
+    }
+}
+
 
         .cta-button:hover {
             background-color: #e0c589;
