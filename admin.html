@@ -23,8 +23,12 @@
 
     <div id="admin-panel" style="display: none;">
         <h1>Admin Panel - English Quest</h1>
-        <button onclick="loadScores('scores', 'speed-verb-scores')">Load Speed Verb Scores</button>
+        <button onclick="loadScores('speed_verb_scores', 'speed-verb-scores')">Load Speed Verb Scores</button>
         <button onclick="loadScores('word_memory_scores', 'word-memory-scores')">Load Word Memory Scores</button>
+        <button onclick="loadScores('memory_matrix_scores', 'memory-matrix-scores')">Load Memory Matrix Scores</button>
+        <button onclick="loadScores('lost_in_migration_scores', 'lost-in-migration-scores')">Load Lost in Migration Scores</button>
+        <button onclick="loadScores('brewYourWordsScores', 'brewYourWordsScores')">Load Brew Your Words Scores</button>
+
         <div id="scores-list"></div>
     </div>
 
@@ -62,12 +66,27 @@
                         <tr>
                             <td>${data.name}</td>
                             <td>${data.score}</td>
-                            <td><button onclick="editName('${collectionName}', '${doc.id}', '${data.name}')">Edit Name</button></td>
+                            <td>
+                                <button onclick="editName('${collectionName}', '${doc.id}', '${data.name}')">Edit Name</button>
+                                <button onclick="deleteScore('${collectionName}', '${doc.id}')">Delete</button> <!-- Nouveau bouton pour supprimer -->
+                            </td>
                         </tr>
                     `;
                 });
                 scoresList.innerHTML += '</table>';
             });
+        }
+
+        // Fonction pour supprimer un score
+        function deleteScore(collectionName, docId) {
+            if (confirm("Are you sure you want to delete this score?")) {
+                db.collection(collectionName).doc(docId).delete().then(() => {
+                    alert("Score deleted successfully");
+                    loadScores(collectionName, 'scores-list'); // Recharge la liste après suppression
+                }).catch((error) => {
+                    console.error("Error deleting score: ", error);
+                });
+            }
         }
 
         function editName(collectionName, docId, currentName) {
