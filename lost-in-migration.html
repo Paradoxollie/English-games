@@ -46,7 +46,7 @@
         <div id="level-display">Level: <span id="level">1</span></div>
         <div id="timer">Time: <span id="time-left">10</span> seconds</div>
         <div id="score-display">Score: <span id="score">0</span></div>
-        
+    
         <div id="difficulty-selection">
             <label for="difficulty">Choose difficulty:</label>
             <select id="difficulty">
@@ -55,13 +55,22 @@
                 <option value="hard">Hard - Less time, faster words</option>
             </select>
         </div>
-        
+    
         <div id="current-theme"></div>
+    
+        <!-- Nouveau conteneur pour les mots -->
+        <div id="word-box" style="position: relative; width: 80%; height: 400px; overflow: hidden; border: 2px solid black; margin: auto;">
+            <!-- Les mots apparaîtront ici -->
+            <div id="word-list">
+            </div>
+        </div>
         
-        <div id="word-list" class="word-list"></div>
-        
+    
         <button id="start-button">Start Game</button>
-        
+        <div id="message"></div>
+        <div id="explanation"></div>        
+    
+              
         <div id="message"></div>
         
         <div id="explanation"></div>

@@ -454,30 +454,58 @@ footer {
     color: #ff6b6b;
 }
 
-/* Ajustements pour les mots qui bougent à l'écran */
-.word {
-    user-select: none;
-    cursor: pointer;
-    font-size: 3vw; /* Les mots s'adapteront à la taille de l'écran */
-    padding: 10px;
-    margin: 5px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    cursor: pointer;
+/* Style pour la boîte contenant les mots */
+#word-box {
+    position: relative;
+    width: 80%;
+    height: 500px; /* Augmentation de la hauteur */
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    margin: 20px auto;
+    border: 3px solid #4CAF50;
 }
 
-#word-list {
-    pointer-events: none; /* Empêche le conteneur de bloquer les clics */
-    pointer-events: auto; /* Permet les clics sur les éléments à l'intérieur du conteneur */
+.word {
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px; /* Augmentation du padding */
+    border-radius: 10px;
+    font-size: 24px; /* Augmentation de la taille de police */
+    font-weight: bold;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.word-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    max-width: 100%;
-    padding: 10px;
-    margin: 0 auto;
-    overflow: hidden;
+    gap: 10px; /* Espace entre les mots */
 }
+
+
+
+.word:hover {
+    transform: scale(1.1);
+    background-color: #c9aa71;
+}
+
+/* Adaptation pour les petits écrans */
+@media (max-width: 768px) {
+    #word-box {
+        height: 200px; /* Réduit la hauteur pour mobile */
+    }
+}
+
 
 #current-theme {
     font-size: 2.5em;
@@ -507,9 +535,6 @@ footer {
 @media (max-width: 768px) {
     #matrix-container {
         grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour les écrans plus petits */
-        .word {
-            font-size: 5vw; /* Augmente la taille des mots sur petits écrans */
-        }
     }
 }
 

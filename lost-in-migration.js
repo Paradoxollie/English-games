@@ -49,7 +49,7 @@ function setDifficulty() {
     } else if (difficulty === 'hard') {
         difficultyMultiplier = 0.5;
         pointsPerLevel = 3;
-        initialTime = 10; // Moins de temps en mode difficile
+        initialTime = 15; // Moins de temps en mode difficile
         speedMultiplier = 1; // Vitesse plus rapide
     }
 }
@@ -785,8 +785,6 @@ function positionWord(wordElement, otherWords) {
     const containerHeight = window.innerHeight;
     const wordWidth = wordElement.offsetWidth;
     const wordHeight = wordElement.offsetHeight;
-    const maxWidth = window.innerWidth - wordElement.offsetWidth;
-    const maxHeight = window.innerHeight - wordElement.offsetHeight;
 
     let validPosition = false;
     let attempts = 0;
@@ -832,48 +830,96 @@ function detectCollision(el1, el2) {
 }
 
 
+
+
+
 function moveElementRebounding(wordElement) {
-    let velocityX = (Math.random() * 2 - 1) * 2*speedMultiplier; // vitesse aléatoire en X
-    let velocityY = (Math.random() * 2 - 1) * 2*speedMultiplier; // vitesse aléatoire en Y
-    // S'assurer que la vitesse n'est pas trop petite
-if (Math.abs(velocityX) < 0.5) velocityX = 0.5 * Math.sign(velocityX);
-if (Math.abs(velocityY) < 0.5) velocityY = 0.5 * Math.sign(velocityY);
+    const wordBox = document.getElementById('word-box');
+    const wordBoxRect = wordBox.getBoundingClientRect();
 
-    wordElement.style.position = 'fixed';  // Position fixe par rapport à la fenêtre visible
+    // Position initiale relative à la boîte de jeu
+    let posX = Math.random() * (wordBoxRect.width - wordElement.offsetWidth);
+    let posY = Math.random() * (wordBoxRect.height - wordElement.offsetHeight);
 
-    function move() {
-        const containerWidth = window.innerWidth;
-        const containerHeight = window.innerHeight;
-        const wordRect = wordElement.getBoundingClientRect();
+    // Vitesse aléatoire
+    let speedX = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 0.5 + 0.5) * speedMultiplier;
+    let speedY = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 0.5 + 0.5) * speedMultiplier;
 
-        // Vérifier les collisions avec les bords de la fenêtre
-        if (wordRect.left <= 0) {
-            velocityX = Math.abs(velocityX);  // Rebondir vers la droite
-            wordElement.style.left = '0px';  // Empêcher de sortir du bord
+    wordElement.style.position = 'absolute';
+    wordElement.style.left = `${posX}px`;
+    wordElement.style.top = `${posY}px`;
+
+    function updatePosition() {
+        // Mise à jour des positions
+        posX += speedX;
+        posY += speedY;
+
+        // Rebond sur les bords
+        if (posX <= 0) {
+            posX = 0;
+            speedX = Math.abs(speedX);
         }
-        if (wordRect.right >= containerWidth) {
-            velocityX = -Math.abs(velocityX);  // Rebondir vers la gauche
-            wordElement.style.left = `${containerWidth - wordRect.width}px`;  // Empêcher de sortir du bord
+        if (posX + wordElement.offsetWidth >= wordBoxRect.width) {
+            posX = wordBoxRect.width - wordElement.offsetWidth;
+            speedX = -Math.abs(speedX);
         }
-        if (wordRect.top <= 0) {
-            velocityY = Math.abs(velocityY);  // Rebondir vers le bas
-            wordElement.style.top = '0px';  // Empêcher de sortir du bord
+        if (posY <= 0) {
+            posY = 0;
+            speedY = Math.abs(speedY);
         }
-        if (wordRect.bottom >= containerHeight) {
-            velocityY = -Math.abs(velocityY);  // Rebondir vers le haut
-            wordElement.style.top = `${containerHeight - wordRect.height}px`;  // Empêcher de sortir du bord
+        if (posY + wordElement.offsetHeight >= wordBoxRect.height) {
+            posY = wordBoxRect.height - wordElement.offsetHeight;
+            speedY = -Math.abs(speedY);
         }
 
-        // Déplacer l'élément en fonction de la vitesse ajustée
-        wordElement.style.left = `${wordElement.offsetLeft + velocityX}px`;
-        wordElement.style.top = `${wordElement.offsetTop + velocityY}px`;
+        // Application des nouvelles positions
+        wordElement.style.left = `${posX}px`;
+        wordElement.style.top = `${posY}px`;
 
-        requestAnimationFrame(move); // Continuer le mouvement
+        requestAnimationFrame(updatePosition);
     }
-    move();
+
+    updatePosition();
 }
 
+// Mise à jour de la fonction loadLevel pour assurer le bon positionnement
+function loadLevel() {
+    const wordList = document.getElementById('word-list');
+    wordList.innerHTML = '';
+    words = generateWordsByTheme(level);
 
+    if (!words || words.length === 0) {
+        endGame(true);
+        return;
+    }
+
+    document.getElementById('current-theme').innerText = `Thème actuel : ${currentTheme}`;
+    isTransitioning = false;
+
+    // S'assurer que word-box existe
+    let wordBox = document.getElementById('word-box');
+    if (!wordBox) {
+        wordBox = document.createElement('div');
+        wordBox.id = 'word-box';
+        wordList.appendChild(wordBox);
+    }
+
+    words.forEach((wordObject) => {
+        const wordElement = document.createElement('span');
+        wordElement.innerText = wordObject.word;
+        wordElement.classList.add('word');
+        
+        wordBox.appendChild(wordElement);
+        moveElementRebounding(wordElement);
+
+        wordElement.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (!isTransitioning) {
+                handleWordClick(wordObject, wordElement);
+            }
+        });
+    });
+}
 
 function loadLevel() {
     wordList.innerHTML = ''; // Nettoyer la liste des mots
@@ -900,10 +946,7 @@ function loadLevel() {
         wordList.appendChild(wordElement);
         wordElements.push(wordElement); // Ajouter chaque mot à la liste pour éviter les chevauchements
 
-        // Positionner chaque mot aléatoirement
-        positionWord(wordElement, wordElements);
-
-        // Appliquer le mouvement avec rebondissement
+        // Positionner chaque mot au centre de la boîte
         moveElementRebounding(wordElement);
 
         // Ajout du gestionnaire de clics
