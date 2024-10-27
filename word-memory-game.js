@@ -263,7 +263,7 @@ function saveScore(score) {
     const playerName = localStorage.getItem('playerName') || prompt("Enter your name for the leaderboard:");
     if (playerName) {
         localStorage.setItem('playerName', playerName);
-        db.collection("scores").add({
+        db.collection("word_memory_game_scores").add({
             name: playerName,
             score: score,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -279,7 +279,7 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
-    db.collection("memory_matrix_scores")
+    db.collection("word_memory_game_scores")
         .orderBy("score", "desc") // Trie les scores par ordre décroissant
         .limit(5) // Limite à 5 meilleurs scores
         .get()
