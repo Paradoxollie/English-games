@@ -50,21 +50,22 @@
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Ajoute une ombre légère au texte */
 }
 
+/* Bouton d'appel à l'action amélioré */
 .cta-button {
     display: inline-block;
     background-color: #c9aa71;
     color: #000;
-    padding: 10px 20px; /* Ajuste la taille ici */
-    font-size: 1.2em; /* Réduit la taille du texte */
+    padding: 15px 35px;
+    font-size: 1.5em;
     text-decoration: none;
-    border-radius: 30px; /* Garde une forme arrondie mais plus petite */
+    border-radius: 50px;
     transition: background-color 0.3s, transform 0.3s;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* Réduis l'ombre pour une apparence plus subtile */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .cta-button:hover {
     background-color: #e0c589;
-    transform: translateY(-3px); /* Réduction de l'animation */
+    transform: translateY(-5px);
 }
 
 /* Styles pour petits écrans (mobiles) */
@@ -134,7 +135,23 @@
         justify-content: center;
         gap: 10px; /* Espace entre les points */
     }
-    
+    .carousel-cta-button {
+    display: inline-block;
+    background-color: #c9aa71;
+    color: #000;
+    padding: 8px 15px; /* Taille plus petite spécifique pour le carrousel */
+    font-size: 1em; /* Taille du texte ajustée */
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* Ombre plus subtile */
+}
+
+.carousel-cta-button:hover {
+    background-color: #e0c589;
+    transform: translateY(-3px);
+}
+
     .nav-dot {
         width: 12px;
         height: 12px;
