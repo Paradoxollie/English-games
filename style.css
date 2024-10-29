@@ -689,7 +689,6 @@ footer {
 
 .game-intro h2 {
     font-size: 2.5em; /* Taille réduite du titre */
-    color: #ffcc00; /* Couleur dorée pour le titre */
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); /* Ombre pour le titre */
     margin-bottom: 20px;
 }
@@ -737,4 +736,18 @@ footer {
 .carousel-cta-button:hover {
     background-color: #45a049; /* Couleur du bouton au survol */
     transform: translateY(-2px); /* Légère animation au survol */
+}
+/* Trouve et retire les styles comme ceux-ci */
+.site-title {
+    border: none; /* Retire la bordure */
+    box-shadow: none; /* Retire toute ombre */
+    padding: 0; /* Supprime tout espacement */
+    background: none; /* Retire le fond */
+    margin: 0 !important; /* Supprime toute marge */
+    padding: 0 !important; /* Supprime tout padding */
+}
+
+header {
+    margin: -10; /* Supprime les marges autour du header */
+    padding: -10; /* Supprime les padding autour du header */
 }
