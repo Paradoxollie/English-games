@@ -81,17 +81,24 @@
     animation: bounce 2s infinite;
 }
 
-/* Section Hero améliorée */
 .hero {
     background: url('images/hero-bg.jpg') center center/cover no-repeat;
-    height: 50vh; /* Réduction de la hauteur pour moins d'espace */
+    height: 40vh; /* Hauteur plus petite pour les grands écrans */
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: #fff;
-    margin-bottom: 20px; /* Réduction de l'espace sous la section */
-    padding-top: 10px; /* Réduction de l'espace au-dessus */
+    margin-bottom: 20px;
+}
+
+/* Media Query pour les petits écrans (téléphones et tablettes) */
+@media (max-width: 768px) {
+    .hero {
+        height: auto; /* Ajustement de la hauteur pour qu'elle soit flexible sur téléphone */
+        padding: 40px 20px; /* Ajout de padding pour aérer le contenu */
+        margin-bottom: 40px; /* Espace supplémentaire sous la section pour téléphone */
+    }
 }
 .hero-overlay {
     background: rgba(0, 0, 0, 0.7);
