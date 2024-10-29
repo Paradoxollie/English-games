@@ -169,18 +169,22 @@
     right: -50px; /* Décale la flèche droite à l'extérieur du conteneur */
 }
 
-        .game-card {
-        max-width: 200px;  /* Diminue la largeur maximale des cartes */
-        margin: 0 auto;
-        padding: 10px;  /* Ajuste l'espacement intérieur */
-    }
+.game-card {
+            max-width: 250px; /* Fixe une taille maximale pour les cartes */
+            margin: 0 auto; /* Centre les cartes */
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1); /* Fond transparent léger */
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Ombre légère */
+        }
 
-    /* Ajustement de la taille des images dans les cartes */
-    .game-image {
-        width: 90px;  /* Réduit la taille des images */
-        height: 90px;
-        margin-bottom: 10px;
-    }
+        .game-image {
+            width: 100%; /* Les images s'ajustent à la taille des cartes */
+            height: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
 
     .game-info h3 {
         font-size: 1.1em;  /* Taille légèrement plus petite pour les titres */
@@ -200,6 +204,8 @@
             position: relative;
             border: 2px solid #c9aa71;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+            max-width: 100%; /* Limite la largeur du conteneur */
+            overflow: hidden; /* Cache les éléments qui débordent */  
         }
 
     </style>
