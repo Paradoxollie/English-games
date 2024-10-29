@@ -29,200 +29,191 @@
             ; /* Couleur du texte blanche pour contraster */
             font-size: 2.5em; /* Ajuste la taille du texte */
         }
-/* Section hero améliorée */
+/* Animations générales */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.8); }
+    to { transform: scale(1); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.animated-section {
+    opacity: 0;
+    animation: fadeIn 1s ease-out forwards;
+}
+
+.fade-in {
+    animation: fadeIn 1.5s ease-out forwards;
+}
+
+.slide-in-left {
+    animation: slideInLeft 1s ease-out forwards;
+}
+
+.slide-in-right {
+    animation: slideInRight 1s ease-out forwards;
+}
+
+.scale-up {
+    animation: scaleUp 1.5s ease-out forwards;
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+/* Section Hero améliorée */
 .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero-bg.jpg') center center/cover no-repeat;
-    height: 40vh; /* Hauteur ajustée pour être plus basse */
-    width: 90%;  /* Utilise 90% de la largeur de l'écran pour éviter les décalages */
-    max-width: 1200px; /* Largeur maximale sur les grands écrans */
+    background: url('images/hero-bg.jpg') center center/cover no-repeat;
+    height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
+    position: relative;
     color: #fff;
-    padding: 40px;
-    margin: 20px auto; /* Centre la section et ajoute de l'espace autour */
-    border: 5px solid rgba(201, 170, 113, 0.9); /* Contour doré avec transparence légère */
-    border-radius: 20px; /* Coins arrondis */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5); /* Ombre pour donner de la profondeur */
+    text-align: center;
+    overflow: hidden;
 }
 
-/* Texte amélioré dans la section hero */
-.hero h2 {
-    font-size: 3.5em;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.8);
-}
-
-.hero p {
-    font-size: 1.4em;
-    margin-bottom: 30px;
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 50px;
+    border-radius: 15px;
     max-width: 800px;
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Ajoute une ombre légère au texte */
 }
 
-/* Bouton d'appel à l'action amélioré */
+.hero-title {
+    font-size: 4.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8);
+    margin-bottom: 20px;
+    animation: fadeIn 1.5s ease-out forwards;
+}
+
+.hero-description {
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+    animation: fadeIn 1.8s ease-out forwards;
+}
+
+/* Bouton Call to Action avec hover animé */
 .cta-button {
-    display: inline-block;
-    background-color: #c9aa71;
+    background-color: #ffcc00;
     color: #000;
-    padding: 15px 35px;
+    padding: 15px 40px;
     font-size: 1.5em;
-    text-decoration: none;
     border-radius: 50px;
-    transition: background-color 0.3s, transform 0.3s;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+    animation: bounce 2s infinite;
 }
 
 .cta-button:hover {
-    background-color: #e0c589;
-    transform: translateY(-5px);
+    background-color: #ffd700;
+    transform: scale(1.05);
 }
 
-/* Styles pour petits écrans (mobiles) */
-@media (max-width: 768px) {
-    .hero {
-        height: auto; /* Ajuste la hauteur pour éviter l'écrasement sur mobile */
-        padding: 20px; /* Réduit les marges internes sur mobile */
-    }
+/* Centrage et style distinct pour les titres */
+.section-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+}
 
-    .hero h2 {
-        font-size: 2.5em; /* Taille du texte ajustée pour les petits écrans */
-    }
+.section-title {
+    font-size: 4em; /* Taille augmentée pour un impact visuel */
+    font-weight: bold;
+    color: #ffcc00; /* Couleur dorée distinctive */
+    text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8); /* Ombre pour donner de la profondeur */
+    text-align: center;
+    letter-spacing: 2px; /* Espacement des lettres pour un effet haut de gamme */
+    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(110, 110, 110) 100%);
+    color: transparent;
+    animation: fadeIn 1.5s ease-out forwards;
+}
 
-    .hero p {
-        font-size: 1.1em; /* Texte plus petit sur mobile */
-    }
+/* Animation subtile pour les titres */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-    .cta-button {
-        font-size: 1.2em;
-        padding: 12px 25px;
-    }
+/* Ajustements pour éviter les chevauchements */
+.carousel-container {
+    padding: 40px;
+    border-radius: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.8); /* Arrière-plan sombre pour faire ressortir le contenu */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+/* Éviter que les flèches de carrousel se chevauchent */
+.carousel-arrow {
+    background-color: rgba(28, 110, 234, 0.8);
+    border-radius: 50%;
+    color: #000;
+    font-size: 2em;
+    padding: 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+.carousel-arrow.prev {
+    left: -50px;
+}
+
+.carousel-arrow.next {
+    right: -50px;
+}
+
+/* Amélioration du style des points de navigation du carrousel */
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.nav-dot.active {
+    background-color: #642828;
+    box-shadow: 0 0 10px #160741;
+}
+
+/* Style général pour éviter tout conflit avec le reste du site */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
 }
 
 
-        .cta-button:hover {
-            background-color: #e0c589;
-        }
-
-        .carousel-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 40px;
-            margin: 20px 0;
-            position: relative;
-            border: 2px solid #c9aa71;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-        }
-
-        .carousel-content {
-            position: relative;
-            min-height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .carousel-item {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            width: 100%;
-            display: none;
-        }
-
-        .carousel-item.active {
-            opacity: 1;
-            display: block;
-            z-index: 1;
-        }
-
-        .carousel-nav {
-        position: absolute;
-        bottom: -20px; /* Décale les points en dessous du carrousel */
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        justify-content: center;
-        gap: 10px; /* Espace entre les points */
-    }
-    
-    .nav-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.3);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .nav-dot.active {
-        background-color: #4CAF50;
-        box-shadow: 0 0 10px #4CAF50;
-    }
-
-        .carousel-arrow {
-            position: absolute;
-        top: 50%; /* Centré verticalement */
-        padding: 10px;
-        background: rgba(0, 0, 0, 0.6); /* Fond plus visible */
-        border-radius: 50%;
-        transform: translateY(-50%); /* Correction pour centrer */
-        z-index: 2; /* Met en avant les flèches */
-    }
-
-    .carousel-arrow.prev {
-        left: -50px; /* Décale la flèche gauche à l'extérieur du conteneur */
-    }
-
-    .carousel-arrow.next {
-        right: -50px; /* Décale la flèche droite à l'extérieur du conteneur */
-    }
-
-        /* Amélioration du contenu de la section "Explore Games" */
-        .section-title {
-            color: #c9aa71;
-            font-size: 3em;
-            text-align: center;
-            margin: 60px 0;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-        }
-        .game-card {
-        max-width: 200px;  /* Diminue la largeur maximale des cartes */
-        margin: 0 auto;
-        padding: 10px;  /* Ajuste l'espacement intérieur */
-    }
-
-    /* Ajustement de la taille des images dans les cartes */
-    .game-image {
-        width: 100px;  /* Réduit la taille des images */
-        height: auto;
-        margin-bottom: 10px;
-    }
-
-    .game-info h3 {
-        font-size: 1.1em;  /* Taille légèrement plus petite pour les titres */
-    }
-
-    .game-info p {
-        font-size: 0.9em;  /* Taille légèrement plus petite pour la description */
-    }
-
-
-        /* Carousel container with padding adjustments */
-        .carousel-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 50px;
-            margin: 40px 0;
-            position: relative;
-            border: 2px solid #c9aa71;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
-        }
-    
     </style>
 </head>
 <body>
@@ -239,33 +230,41 @@
         </nav>
     </header>
 
-    <main role="main">
-        <!-- Section d'introduction améliorée -->
-        <section class="hero">
-            <h2>English Quest</h2>
-            <p>Embark on an epic journey to master the English language!</p>
-            <a href="#explore-games" class="cta-button">Start Your Adventure</a>
-        </section>
+ <!-- Section Hero améliorée avec animations -->
+<section class="hero">
+    <div class="hero-overlay">
+        <h2 class="hero-title">English Quest</h2>
+        <p class="hero-description">Embark on an epic journey to master the English language!</p>
+        <a href="#explore-games" class="cta-button">Start Your Adventure</a>
+    </div>
+</section>
 
-        <section id="explore-games">
-            <h2 class="section-title">Explore Games</h2>
-            <div class="carousel-container">
-                <button class="carousel-arrow prev">&#10094;</button>
-                <button class="carousel-arrow next">&#10095;</button>
-                <div id="games-carousel" class="carousel-content"></div>
-                <div class="carousel-nav" id="games-nav"></div>
-            </div>
-        </section>
+<!-- Master English Through Play Section avec effets modernisés et centrage -->
+<section id="explore-games" class="animated-section">
+    <div class="section-wrapper">
+        <h2 class="section-title">Master English Through Play</h2>
+    </div>
+    <div class="carousel-container">
+        <button class="carousel-arrow prev bounce">&#10094;</button>
+        <div id="games-carousel" class="carousel-content"></div>
+        <button class="carousel-arrow next bounce">&#10095;</button>
+        <div class="carousel-nav" id="games-nav"></div>
+    </div>
+</section>
 
-        <section id="discover-courses">
-            <h2 class="section-title">Discover Courses</h2>
-            <div class="carousel-container">
-                <button class="carousel-arrow prev">&#10094;</button>
-                <button class="carousel-arrow next">&#10095;</button>
-                <div id="courses-carousel" class="carousel-content"></div>
-                <div class="carousel-nav" id="courses-nav"></div>
-            </div>
-        </section>
+<!-- Unlock Your English Mastery Section avec ajustement du style et centrage -->
+<section id="discover-courses" class="animated-section">
+    <div class="section-wrapper">
+        <h2 class="section-title">Unlock Your English Mastery</h2>
+    </div>
+    <div class="carousel-container">
+        <button class="carousel-arrow prev bounce">&#10094;</button>
+        <div id="courses-carousel" class="carousel-content"></div>
+        <button class="carousel-arrow next bounce">&#10095;</button>
+        <div class="carousel-nav" id="courses-nav"></div>
+    </div>
+</section>
+
     </main>
 
     <footer>
