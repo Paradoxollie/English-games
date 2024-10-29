@@ -95,15 +95,14 @@
         }
 
         .carousel-container {
-    position: relative; /* Nécessaire pour que les flèches s'alignent correctement */
-    padding: 50px;
-    margin: 40px 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 15px;
-    border: 2px solid #c9aa71;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
-}
-
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            position: relative;
+            border: 2px solid #c9aa71;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+        }
 
         .carousel-content {
             position: relative;
@@ -151,40 +150,43 @@
         box-shadow: 0 0 10px #4CAF50;
     }
 
-    .carousel-arrow {
-    position: absolute;
-    top: 50%; /* Centre verticalement les flèches */
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.6); /* Fond plus visible */
-    border-radius: 50%;
-    transform: translateY(-50%); /* Correction pour centrer */
-    z-index: 2; /* Met en avant les flèches */
-}
+        .carousel-arrow {
+        top: 50%; /* Centré verticalement */
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.6); /* Fond plus visible */
+        border-radius: 50%;
+        transform: translateY(-50%); /* Correction pour centrer */
+        z-index: 2; /* Met en avant les flèches */
+    }
 
-.carousel-arrow.prev {
-    left: -50px; /* Décale la flèche gauche à l'extérieur du conteneur */
-}
+    .carousel-arrow.prev {
+        left: -30px; /* Décale la flèche gauche à l'extérieur du conteneur */
+    }
 
-.carousel-arrow.next {
-    right: -50px; /* Décale la flèche droite à l'extérieur du conteneur */
-}
+    .carousel-arrow.next {
+        right: -30px; /* Décale la flèche droite à l'extérieur du conteneur */
+    }
 
-.game-card {
-            max-width: 250px; /* Fixe une taille maximale pour les cartes */
-            margin: 0 auto; /* Centre les cartes */
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.1); /* Fond transparent léger */
-            border-radius: 10px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Ombre légère */
+                   /* Amélioration du contenu de la section "Explore Games" */
+                   .section-title {
+            color: #c9aa71;
+            font-size: 3em;
+            text-align: center;
+            margin: 60px 0;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
         }
+        .game-card {
+        max-width: 200px;  /* Diminue la largeur maximale des cartes */
+        margin: 0 auto;
+        padding: 10px;  /* Ajuste l'espacement intérieur */
+    }
 
-        .game-image {
-            width: 100%; /* Les images s'ajustent à la taille des cartes */
-            height: auto;
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
+    /* Ajustement de la taille des images dans les cartes */
+    .game-image {
+        width: 100px;  /* Réduit la taille des images */
+        height: auto;
+        margin-bottom: 10px;
+    }
 
     .game-info h3 {
         font-size: 1.1em;  /* Taille légèrement plus petite pour les titres */
@@ -204,8 +206,6 @@
             position: relative;
             border: 2px solid #c9aa71;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
-            max-width: 100%; /* Limite la largeur du conteneur */
-            overflow: hidden; /* Cache les éléments qui débordent */  
         }
 
     </style>
@@ -313,7 +313,7 @@
                             <div class="game-info">
                                 <h3>${item.title}</h3>
                                 <p>${item.description}</p>
-                               <a href="${item.link}" class="carousel-cta-button">Start Adventure</a>
+                                <a href="${item.link}" class="carousel-cta-button">Start Adventure</a>
                             </div>
                         </div>
                     </div>
