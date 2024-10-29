@@ -722,3 +722,19 @@ footer {
         font-size: 1em; /* Texte légèrement plus petit pour mobile */
     }
 }
+.carousel-cta-button {
+    display: inline-block;
+    background-color: #c9aa71;
+    color: #000;
+    padding: 8px 15px; /* Taille plus petite spécifique pour le carrousel */
+    font-size: 1em; /* Taille du texte ajustée */
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* Ombre plus subtile */
+}
+
+.carousel-cta-button:hover {
+    background-color: #e0c589;
+    transform: translateY(-3px);
+}
