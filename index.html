@@ -129,19 +129,20 @@
 }
 
 /* Bouton Call to Action avec hover animé */
-.cta-button {
+.cta-button-start {
     background-color: #ffcc00;
     color: #000;
-    padding: 15px 40px;
+    padding: 15px 20px;
     font-size: 1.5em;
     border-radius: 50px;
     text-decoration: none;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     transition: all 0.3s ease;
-    animation: bounce 2s infinite;
+    animation: bounce 2s infinite !important;
+    transform: translateY(-50%);
 }
 
-.cta-button:hover {
+.cta-button-start:hover {
     background-color: #ffd700;
     transform: scale(1.05);
 }
@@ -291,7 +292,7 @@
     <div class="hero-overlay">
         <h2 class="hero-title">English Quest</h2>
         <p class="hero-description">Embark on an epic journey to master the English language!</p>
-        <a href="#explore-games" class="cta-button">Start Your Adventure</a>
+        <a href="#explore-games" class="cta-button-start">Start Your Adventure</a>
     </div>
 </section>
 
@@ -483,6 +484,7 @@ loadContent('/courses.html', coursesCarousel);
 
 
         });
+
     </script>
 </body>
 </html>
