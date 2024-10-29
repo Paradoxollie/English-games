@@ -14,7 +14,21 @@
             margin: 0;
             padding: 0;
         }
+        /* Style pour le fond derrière les titres Explore Games et Discover Courses */
+        #explore-games .section-title, #discover-courses .section-title {
+            background-color: rgba(0, 0, 0, 0.7); /* Fond noir transparent */
+            padding: 10px 20px; /* Espacement autour du texte */
+            border-radius: 10px; /* Coins arrondis pour un effet agréable */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Ombre pour donner du relief */
+            display: inline-block; /* Garde le fond derrière uniquement le texte */
+        }
 
+        /* Optionnel: Ajuste la couleur et la taille du texte si nécessaire */
+        #explore-games .section-title, #discover-courses .section-title {
+            color:#ffcc00; /* Couleur dorée pour le titre */
+            ; /* Couleur du texte blanche pour contraster */
+            font-size: 2.5em; /* Ajuste la taille du texte */
+        }
 /* Section hero améliorée */
 .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero-bg.jpg') center center/cover no-repeat;
