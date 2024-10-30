@@ -269,6 +269,58 @@ function addPlayAgainButton() {
     document.getElementById("message").appendChild(button);
 }
 
+
+function handleButtonClick(event) {
+    if (gameState.gameStatus !== 'playing') return;
+    
+    const button = event.target;
+    if (button.tagName === 'BUTTON') {
+        // Empêcher le comportement par défaut pour éviter les doubles clics
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const key = button.textContent;
+        
+        if (key === '←') {
+            handleDelete();
+        } else if (key === 'Enter') {
+            handleGuess();
+        } else if (/^[A-Z]$/.test(key)) {
+            handleKeyInput(key);
+        }
+    }
+}
+
+function initializeVirtualKeyboard() {
+    const keyboard = document.getElementById('keyboard');
+    if (!keyboard) return;
+    
+    // Nettoyer tous les anciens event listeners
+    const newKeyboard = keyboard.cloneNode(true);
+    keyboard.parentNode.replaceChild(newKeyboard, keyboard);
+    
+    // Ajouter un seul event listener pour gérer les clics
+    newKeyboard.addEventListener('click', handleButtonClick);
+}
+
+// Remplacer les multiples event listeners par un seul
+document.addEventListener('DOMContentLoaded', () => {
+    initGame();
+    initializeVirtualKeyboard();
+    
+    // Gestion du clavier physique
+    document.addEventListener('keydown', (event) => {
+        const key = event.key.toUpperCase();
+        
+        if (key === 'BACKSPACE' || key === '←') {
+            handleDelete();
+        } else if (key === 'ENTER') {
+            handleGuess();
+        } else if (/^[A-Z]$/.test(key)) {
+            handleKeyInput(key);
+        }
+    });
+});
 // Event Listeners
 document.addEventListener('DOMContentLoaded', initGame);
 
@@ -346,29 +398,3 @@ async function handleGuess() {
     // Si le mot est valide, soumets la réponse
     submitGuess(cleanGuess);
 }
-
-// Ajouter cette fonction pour initialiser le clavier virtuel
-function initializeVirtualKeyboard() {
-    const keyboard = document.getElementById('keyboard');
-    
-    // Gérer les clics sur les touches
-    keyboard.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
-            const key = event.target.textContent;
-            
-            if (key === '←') {
-                handleDelete();
-            } else if (key === 'Enter') {
-                handleGuess();
-            } else if (/^[A-Z]$/.test(key)) {
-                handleKeyInput(key);
-            }
-        }
-    });
-}
-
-// Ajouter cet appel à la fin du code existant
-document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-    initializeVirtualKeyboard();
-});
