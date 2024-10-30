@@ -1091,31 +1091,28 @@ header {
     transform: scale(1.05); /* Agrandissement léger au survol */
 }
 
+/* Limiter la taille du clavier à l'intérieur de la boîte de jeu */
 #keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
+    justify-content: center;
+    max-width: 100%; /* Limite le clavier à la largeur de la boîte de jeu */
+    margin: 0 auto;
 }
 
-.keyboard-row {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
+
 /* Ajuster la taille du clavier pour les petits écrans */
 @media (max-width: 600px) {
-    #virtual-keyboard button {
-        min-width: 30px;
-        height: 35px;
-        font-size: 14px;
-        padding: 0 8px;
+    #keyboard {
+        max-width: 90%; /* Réduire la largeur du clavier encore plus sur mobile */
     }
 
-    #virtual-keyboard {
-        width: 90%;
-        max-width: 300px;
+    #keyboard button {
+        min-width: 20px;
+        height: 25px;
+        font-size: 10px;
+        padding: 0 4px;
     }
 }
 
