@@ -1092,44 +1092,43 @@ header {
     transform: scale(1.05); /* Agrandissement léger au survol */
 }
 
-/* Styles pour le clavier virtuel */
+#keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 10px;
+}
+
 .keyboard-row {
     display: flex;
     justify-content: center;
-    flex-wrap: nowrap; /* Empêche le retour à la ligne */
-    gap: 4px; /* Réduit l'espace entre les touches */
+    gap: 4px;
     width: 100%;
-    margin-bottom: 4px; /* Espace entre les rangées */
 }
 
 .keyboard-row button {
     flex: 1;
-    min-width: 20px; /* Largeur minimum réduite */
-    padding: 10px 5px; /* Padding horizontal réduit */
+    height: 45px;
+    border: 1px solid #c9aa71;
+    border-radius: 5px;
     background-color: #333;
     color: #f0e6d2;
-    border: 2px solid #c9aa71;
-    border-radius: 5px;
-    font-size: 0.9em; /* Taille de police légèrement réduite */
+    font-size: 1em;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    padding: 0;
+    min-width: 0; /* Important pour permettre aux boutons de se rétrécir */
 }
 
-/* Style pour les touches spéciales (Enter et Backspace) */
 .keyboard-row button.special {
-    flex: 1.5; /* Leur donne un peu plus d'espace */
+    flex: 1.5;
 }
 
-/* Responsive design pour petit écran */
 @media (max-width: 480px) {
-    .keyboard-row {
-        gap: 2px; /* Espace encore plus réduit sur mobile */
-    }
-    
     .keyboard-row button {
-        padding: 8px 3px; /* Padding encore plus réduit */
-        font-size: 0.8em; /* Police plus petite sur mobile */
-        border-width: 1px; /* Bordure plus fine */
+        height: 40px;
+        font-size: 0.9em;
     }
 }

@@ -299,11 +299,6 @@ async function isValidWord(word) {
     }
 }
 
-
-
-
-
-
 function submitGuess(guess) {
     // Vérifier le mot complet
     const completeGuess = gameState.currentWord[0] + guess.slice(1);
