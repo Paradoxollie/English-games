@@ -65,7 +65,7 @@ function startClientGeneration() {
     console.log("Démarrage de la génération de clients");
     clientGenerationInterval = setInterval(() => {
         addNewClient();
-    }, 5000);
+    }, 10000);
 }
 
 let gameActive = true;
@@ -80,24 +80,18 @@ function completeClient(clientId) {
     addNewClient(); // Ajouter un nouveau client
 }
 
-function failOrder(clientId) {
-    if (!gameActive) return;  // Ne fait rien si le jeu est terminé
-    score = Math.max(0, score - 10); // Malus supplémentaire, mais le score ne descend pas en dessous de 0
-    updateScore();
-    messageElement.innerText = `Failed to complete the order for client #${clientId}.`;
-    removeClient(clientId);
-    addNewClient();
-}
 
 
-
-// Supprimer une commande complétée ou échouée
+// Modification de la fonction removeClient pour vérifier le minimum
 function removeClient(clientId) {
     activeClients = activeClients.filter(c => c.id !== clientId);
     const clientElement = document.getElementById(`client-${clientId}`);
     if (clientElement) {
         clientElement.remove();
     }
+    
+    // Vérifier et maintenir le minimum après la suppression
+    checkMinimumClients();
 }
 
 // Afficher chaque client dans une boîte séparée avec un timer pour chaque commande
@@ -161,7 +155,7 @@ function failOrder(clientId) {
     removeClient(clientId);
 }
 
-// Vérifier la réponse sélectionnée pour une phrase spécifique
+// Mise à jour de la fonction checkAnswer pour la gestion cohérente des erreurs
 function checkAnswer(answer, clientId, phraseId) {
     const client = activeClients.find(c => c.id === clientId);
     const clientPhrase = client.clientPhrases.find(p => p.id === phraseId);
@@ -171,37 +165,40 @@ function checkAnswer(answer, clientId, phraseId) {
     const normalizedCorrectTranslation = clientPhrase.correctTranslation.trim().toLowerCase();
 
     if (normalizedAnswer === normalizedCorrectTranslation) {
+        // Réponse correcte
         clientPhrase.completed = true;
         const phraseElement = document.getElementById(phraseId);
         if (phraseElement) {
-            phraseElement.style.backgroundColor = 'lightgreen';
+            phraseElement.style.backgroundColor = '#2ECC71'; // Vert pour correct
             phraseElement.querySelectorAll('button').forEach(btn => btn.disabled = true);
-        } else {
-            console.error(`Phrase element with id ${phraseId} not found.`);
         }
-        // Vérifier si toutes les phrases de la commande sont complétées
+        
+        // Vérifier si toutes les phrases sont complétées
         if (client.clientPhrases.every(p => p.completed)) {
             completeClient(clientId);
         }
     } else {
-        client.errors++; // Incrémenter le compteur d'erreurs
-        score -= 5;  // Malus en cas de mauvaise réponse
+        // Réponse incorrecte
+        client.errors++;
+        score = Math.max(0, score - 5);
         updateScore();
         
         const clientElement = document.getElementById(`client-${clientId}`);
-        clientElement.style.backgroundColor = 'lightcoral'; // Changer la couleur de fond en rouge
+        if (clientElement) {
+            clientElement.style.backgroundColor = '#E74C3C'; // Rouge pour incorrect
+            
+            // Remettre la couleur normale après 1 seconde
+            setTimeout(() => {
+                clientElement.style.backgroundColor = '';
+            }, 1000);
+        }
         
         messageElement.innerText = `Incorrect translation for client #${clientId}.`;
 
-        // Faire disparaître la commande après 3 erreurs
+        // Faire échouer la commande après 2 erreurs
         if (client.errors >= 2) {
             setTimeout(() => {
                 failOrder(clientId);
-            }, 1000); // Attendre 1 seconde avant de faire disparaître la commande
-        } else {
-            // Remettre la couleur de fond normale après 1 seconde
-            setTimeout(() => {
-                clientElement.style.backgroundColor = '';
             }, 1000);
         }
     }
@@ -223,7 +220,34 @@ function completeClient(clientId) {
     }
 }
 
+// Modification de la fonction failOrder pour ajouter un nouveau client
+function failOrder(clientId) {
+    if (!gameActive) return;
+    
+    // Pénalité de score
+    score = Math.max(0, score - 10);
+    updateScore();
+    
+    // Message d'échec
+    messageElement.innerText = `Failed to complete the order for client #${clientId}.`;
+    
+    // Supprimer le client actuel
+    removeClient(clientId);
+    
+    // Ajouter un nouveau client pour remplacer celui qui a échoué
+    addNewClient();
+    
+    // Vérifier le minimum de clients après tout
+    checkMinimumClients();
+}
 
+// Fonction pour vérifier et maintenir le minimum de clients
+function checkMinimumClients() {
+    if (activeClients.length === 0 && gameActive) {
+        console.log("Aucun client actif, ajout d'un nouveau client");
+        addNewClient();
+    }
+}
 
 // Fonction pour mélanger un tableau
 function shuffleArray(array) {
@@ -237,105 +261,116 @@ function shuffleArray(array) {
 // Générer un client avec un nombre aléatoire de phrases (1 à 3)
 function generateClient(id) {
     const phrases = [
-        { phrase: "Advantage", correctTranslation: "Avantage", options: ["Avantage", "Desavantage", "Benefice"], time: 9 },
-        { phrase: "Nevertheless", correctTranslation: "Neanmoins", options: ["Neanmoins", "Toutefois", "Parce que"], time: 8 },
-        { phrase: "Eventually", correctTranslation: "Finalement", options: ["Finalement", "Bientot", "Prochainement"], time: 10 },
-        { phrase: "Despite", correctTranslation: "Malgre", options: ["Malgre", "Grace a", "En raison de"], time: 7 },
-        { phrase: "However", correctTranslation: "Cependant", options: ["Cependant", "Toujours", "Parce que"], time: 9 },
-        { phrase: "Although", correctTranslation: "Bien que", options: ["Bien que", "Parce que", "Puisque"], time: 8 },
-        { phrase: "Therefore", correctTranslation: "Par consequent", options: ["Par consequent", "Neanmoins", "Car"], time: 11 },
-        { phrase: "Moreover", correctTranslation: "De plus", options: ["De plus", "En outre", "Par contre"], time: 10 },
-        { phrase: "Consequently", correctTranslation: "En consequence", options: ["En consequence", "Cependant", "Neanmoins"], time: 10 },
-        { phrase: "According to", correctTranslation: "Selon", options: ["Selon", "Contre", "Avec"], time: 8 },
-        { phrase: "In spite of", correctTranslation: "En depit de", options: ["En depit de", "Grace a", "Malgre"], time: 9 },
-        { phrase: "Furthermore", correctTranslation: "En outre", options: ["En outre", "De plus", "A cote"], time: 7 },
-        { phrase: "In addition to", correctTranslation: "En plus de", options: ["En plus de", "En dehors de", "A cause de"], time: 9 },
-        { phrase: "On the other hand", correctTranslation: "D un autre cote", options: ["D un autre cote", "Par ailleurs", "Ainsi"], time: 11 },
-        { phrase: "Due to", correctTranslation: "En raison de", options: ["En raison de", "Grace a", "En depit de"], time: 9 },
-        { phrase: "As a result", correctTranslation: "Par consequent", options: ["Par consequent", "Ainsi", "En revanche"], time: 12 },
-        { phrase: "Despite the fact", correctTranslation: "Bien que", options: ["Bien que", "Malgre", "Car"], time: 8 },
-        { phrase: "In order to", correctTranslation: "Afin de", options: ["Afin de", "Pour", "Avec"], time: 9 },
-        { phrase: "Unless", correctTranslation: "A moins que", options: ["A moins que", "Si", "Bien que"], time: 7 },
-        { phrase: "Even though", correctTranslation: "Meme si", options: ["Meme si", "Bien que", "Car"], time: 8 },
-        { phrase: "Regardless of", correctTranslation: "Independamment de", options: ["Independamment de", "En raison de", "Malgre"], time: 10 },
-        { phrase: "As soon as", correctTranslation: "Des que", options: ["Des que", "Lorsque", "Si"], time: 9 },
-        { phrase: "Provided that", correctTranslation: "A condition que", options: ["A condition que", "Si", "Parce que"], time: 11 },
-        { phrase: "By the time", correctTranslation: "D ici a ce que", options: ["D ici a ce que", "Lorsque", "Avant"], time: 10 },
-        { phrase: "Once in a while", correctTranslation: "De temps en temps", options: ["De temps en temps", "Jamais", "Toujours"], time: 9 },
-        { phrase: "On condition that", correctTranslation: "A condition que", options: ["A condition que", "Si", "Lorsque"], time: 10 },
-        { phrase: "On the whole", correctTranslation: "Dans l ensemble", options: ["Dans l ensemble", "Partiellement", "Completement"], time: 8 },
-        { phrase: "In contrast to", correctTranslation: "Contrairement a", options: ["Contrairement a", "A cause de", "Grace a"], time: 9 },
-        { phrase: "In terms of", correctTranslation: "En termes de", options: ["En termes de", "Au niveau de", "A propos de"], time: 10 },
-        { phrase: "When it comes to", correctTranslation: "Quand il s agit de", options: ["Quand il s agit de", "Dans le cas ou", "Lorsque"], time: 10 },
-        { phrase: "Not to mention", correctTranslation: "Sans parler de", options: ["Sans parler de", "Grace a", "De plus"], time: 8 },
-        { phrase: "To sum up", correctTranslation: "Pour resumer", options: ["Pour resumer", "En consequence", "Cependant"], time: 8 },
-        { phrase: "To put it simply", correctTranslation: "Pour simplifier", options: ["Pour simplifier", "Pour clarifier", "En resume"], time: 9 },
-        { phrase: "For instance", correctTranslation: "Par exemple", options: ["Par exemple", "Ainsi", "En resume"], time: 9 },
-        { phrase: "That being said", correctTranslation: "Cela dit", options: ["Cela dit", "En conclusion", "Toutefois"], time: 10 },
-        { phrase: "In other words", correctTranslation: "En d autres termes", options: ["En d autres termes", "Pour resumer", "Car"], time: 9 },
-        { phrase: "To a certain extent", correctTranslation: "Dans une certaine mesure", options: ["Dans une certaine mesure", "Completement", "Rarement"], time: 10 },
-        { phrase: "Even if", correctTranslation: "Meme si", options: ["Meme si", "Car", "Ainsi"], time: 8 },
-        { phrase: "Rather than", correctTranslation: "Plutot que", options: ["Plutot que", "Au lieu de", "Si"], time: 9 },
-        { phrase: "As far as", correctTranslation: "En ce qui concerne", options: ["En ce qui concerne", "Dans le cadre de", "Concernant"], time: 10 },
-        { phrase: "At the same time", correctTranslation: "En meme temps", options: ["En meme temps", "Pendant", "Apres"], time: 9 },
-        { phrase: "In the meantime", correctTranslation: "Entre-temps", options: ["Entre-temps", "Cependant", "Pendant"], time: 8 },
-        { phrase: "For the time being", correctTranslation: "Pour le moment", options: ["Pour le moment", "Actuellement", "Bientot"], time: 10 },
-        { phrase: "From now on", correctTranslation: "Desormais", options: ["Desormais", "Prochainement", "Recemment"], time: 9 },
-        { phrase: "By no means", correctTranslation: "En aucun cas", options: ["En aucun cas", "Peut-etre", "Certainement"], time: 9 },
-        { phrase: "As well as", correctTranslation: "Aussi bien que", options: ["Aussi bien que", "En plus de", "Au moins de"], time: 10 },
-        { phrase: "In case", correctTranslation: "Au cas ou", options: ["Au cas ou", "Bien que", "Si"], time: 9 },
-        { phrase: "In the long run", correctTranslation: "A long terme", options: ["A long terme", "En fin de compte", "A court terme"], time: 9 },
-        { phrase: "More often than not", correctTranslation: "Le plus souvent", options: ["Le plus souvent", "Rarement", "Toujours"], time: 9 },
-        { phrase: "In my opinion", correctTranslation: "A mon avis", options: ["A mon avis", "En fait", "En outre"], time: 7 },
-        { phrase: "As far as I know", correctTranslation: "Autant que je sache", options: ["Autant que je sache", "Grace a", "A condition que"], time: 9 },
-        { phrase: "To be honest", correctTranslation: "Pour etre honnete", options: ["Pour etre honnete", "Finalement", "Evidemment"], time: 8 },
-        { phrase: "Without a doubt", correctTranslation: "Sans aucun doute", options: ["Sans aucun doute", "Malheureusement", "Avec hesitation"], time: 10 },
-        { phrase: "All of a sudden", correctTranslation: "Tout a coup", options: ["Tout a coup", "Petit a petit", "Malheureusement"], time: 9 },
-        { phrase: "Without hesitation", correctTranslation: "Sans hesitation", options: ["Sans hesitation", "Avec peur", "Avec doute"], time: 8 },
-        { phrase: "Little by little", correctTranslation: "Petit a petit", options: ["Petit a petit", "Tout a coup", "Immediatement"], time: 9 },
-        { phrase: "Step by step", correctTranslation: "Pas a pas", options: ["Pas a pas", "En une fois", "Soudainement"], time: 10 },
-        { phrase: "At the end of the day", correctTranslation: "Au final", options: ["Au final", "En revanche", "Cependant"], time: 9 },
-        { phrase: "To a certain degree", correctTranslation: "Dans une certaine mesure", options: ["Dans une certaine mesure", "Absolument", "Rarement"], time: 9 },
-        { phrase: "For the sake of", correctTranslation: "Pour le bien de", options: ["Pour le bien de", "A cause de", "Malgre"], time: 8 },
-        { phrase: "On behalf of", correctTranslation: "Au nom de", options: ["Au nom de", "A cause de", "Par contre"], time: 8 },
-        { phrase: "It is worth noting", correctTranslation: "Il est a noter", options: ["Il est a noter", "En conclusion", "En resume"], time: 9 },
-        { phrase: "In other respects", correctTranslation: "Sur d autres aspects", options: ["Sur d autres aspects", "Sur ces bases", "Sur cette condition"], time: 10 },
-        { phrase: "Be that as it may", correctTranslation: "Quoi qu il en soit", options: ["Quoi qu il en soit", "En revanche", "En d autres termes"], time: 10 },
-        { phrase: "There is no doubt", correctTranslation: "Il n y a aucun doute", options: ["Il n y a aucun doute", "Il y a un doute", "A ce sujet"], time: 8 },
-        { phrase: "As I said before", correctTranslation: "Comme je l ai dit avant", options: ["Comme je l ai dit avant", "Comme je dirais", "Comme c est le cas"], time: 8 },
-        { phrase: "In the same vein", correctTranslation: "Dans la meme ligne", options: ["Dans la meme ligne", "Dans le meme ordre", "Dans cette direction"], time: 9 },
-        { phrase: "It should be noted", correctTranslation: "Il faut noter", options: ["Il faut noter", "Il est a noter", "C est a dire"], time: 9 },
-        { phrase: "At your convenience", correctTranslation: "A votre convenance", options: ["A votre convenance", "A votre place", "En votre faveur"], time: 10 },
-        { phrase: "For the most part", correctTranslation: "Pour la plupart", options: ["Pour la plupart", "Dans certains cas", "Dans tous les cas"], time: 8 },
-        { phrase: "In the context of", correctTranslation: "Dans le contexte de", options: ["Dans le contexte de", "Dans le cadre de", "Par rapport a"], time: 9 },
-        { phrase: "For the purpose of", correctTranslation: "Dans le but de", options: ["Dans le but de", "A des fins de", "A cause de"], time: 9 },
-        { phrase: "In the aftermath of", correctTranslation: "A la suite de", options: ["A la suite de", "En depit de", "Par consequent"], time: 10 },
-        { phrase: "In light of", correctTranslation: "A la lumiere de", options: ["A la lumiere de", "En depit de", "Grace a"], time: 9 },
-        { phrase: "As a general rule", correctTranslation: "En regle generale", options: ["En regle generale", "Par consequence", "Par hasard"], time: 9 },
-        { phrase: "In no way", correctTranslation: "En aucune maniere", options: ["En aucune maniere", "De toute maniere", "Sans doute"], time: 9 },
-        { phrase: "At first glance", correctTranslation: "A premiere vue", options: ["A premiere vue", "A la fin", "A tout moment"], time: 9 },
-        { phrase: "All things considered", correctTranslation: "Tout bien considere", options: ["Tout bien considere", "En tout cas", "A vrai dire"], time: 9 },
-        { phrase: "For better or for worse", correctTranslation: "Pour le meilleur ou pour le pire", options: ["Pour le meilleur ou pour le pire", "A bon ou a mauvais", "Pour de bon"], time: 10 },
-        { phrase: "On the contrary", correctTranslation: "Au contraire", options: ["Au contraire", "En revanche", "De l autre cote"], time: 9 },
-        { phrase: "In the midst of", correctTranslation: "Au milieu de", options: ["Au milieu de", "Au cours de", "En marge de"], time: 8 },
-        { phrase: "As a last resort", correctTranslation: "En dernier recours", options: ["En dernier recours", "A la fin", "En conclusion"], time: 9 },
-        { phrase: "Under no circumstances", correctTranslation: "En aucun cas", options: ["En aucun cas", "Dans tous les cas", "Dans ce cas"], time: 9 },
-        { phrase: "To some extent", correctTranslation: "Dans une certaine mesure", options: ["Dans une certaine mesure", "Partiellement", "Completement"], time: 9 },
-        { phrase: "Out of the blue", correctTranslation: "Sans prevenir", options: ["Sans prevenir", "Tout a coup", "Petit a petit"], time: 8 },
-        { phrase: "For the time being", correctTranslation: "Pour le moment", options: ["Pour le moment", "Desormais", "A jamais"], time: 8 },
-        { phrase: "For instance", correctTranslation: "Par exemple", options: ["Par exemple", "En resume", "En revanche"], time: 7 },
-        { phrase: "All of a sudden", correctTranslation: "Tout a coup", options: ["Tout a coup", "Petit a petit", "Graduellement"], time: 8 },
-        { phrase: "As far as", correctTranslation: "Autant que", options: ["Autant que", "A cause de", "Parce que"], time: 9 },
-        { phrase: "To be honest", correctTranslation: "Pour etre honnete", options: ["Pour etre honnete", "En resume", "En depit de"], time: 7 },
-        { phrase: "For the purpose of", correctTranslation: "Dans le but de", options: ["Dans le but de", "A cause de", "Pour le bien de"], time: 9 },
-        { phrase: "More or less", correctTranslation: "Plus ou moins", options: ["Plus ou moins", "En fin de compte", "Sans doute"], time: 8 },
-        { phrase: "Under these circumstances", correctTranslation: "Dans ces circonstances", options: ["Dans ces circonstances", "Dans tous les cas", "Dans ce cadre"], time: 9 },
-        { phrase: "With all due respect", correctTranslation: "Avec tout le respect", options: ["Avec tout le respect", "Avec hesitation", "Avec honneur"], time: 8 },
-        { phrase: "For what it's worth", correctTranslation: "Pour ce que ca vaut", options: ["Pour ce que ca vaut", "Pour le meilleur ou pour le pire", "Pour de bon"], time: 9 },
-        { phrase: "By the way", correctTranslation: "Au fait", options: ["Au fait", "En fait", "De toute facon"], time: 7 },
-        { phrase: "In the same way", correctTranslation: "De la meme facon", options: ["De la meme facon", "A tout moment", "A la fois"], time: 8 },
-        { phrase: "After all", correctTranslation: "Apres tout", options: ["Apres tout", "Tout bien considere", "A la suite"], time: 7 },
-    
+        { phrase: "Nevertheless", correctTranslation: "Neanmoins", options: ["Neanmoins", "Maintenant", "Pour toujours"], time: 8 },
+        { phrase: "However", correctTranslation: "Cependant", options: ["Cependant", "Jamais", "Aujourd'hui"], time: 9 },
+        { phrase: "Therefore", correctTranslation: "Par consequent", options: ["Par consequent", "Par hasard", "Avec plaisir"], time: 11 },
+        { phrase: "Moreover", correctTranslation: "De plus", options: ["De plus", "De moins", "Au revoir"], time: 10 },
+        { phrase: "According to", correctTranslation: "Selon", options: ["Selon", "Avant", "Apres"], time: 8 },
+        { phrase: "Furthermore", correctTranslation: "En outre", options: ["En outre", "En dessous", "En retard"], time: 7 },
+        { phrase: "Due to", correctTranslation: "En raison de", options: ["En raison de", "Pour le plaisir", "Dans la joie"], time: 9 },
+        { phrase: "As a result", correctTranslation: "Par consequent", options: ["Par consequent", "Par accident", "Par amour"], time: 12 },
+        { phrase: "In order to", correctTranslation: "Afin de", options: ["Afin de", "Derriere", "Devant"], time: 9 },
+        { phrase: "Unless", correctTranslation: "A moins que", options: ["A moins que", "Plus tard", "Bientot"], time: 7 },
+        { phrase: "Even though", correctTranslation: "Meme si", options: ["Meme si", "Plus tard", "Hier soir"], time: 8 },
+        { phrase: "As soon as", correctTranslation: "Des que", options: ["Des que", "Pour jamais", "Sans fin"], time: 9 },
+        { phrase: "By the time", correctTranslation: "D'ici a ce que", options: ["D'ici a ce que", "Pour toujours", "Sans limite"], time: 10 },
+        { phrase: "Once in a while", correctTranslation: "De temps en temps", options: ["De temps en temps", "Pour toujours", "Sans arret"], time: 9 },
+        { phrase: "To sum up", correctTranslation: "Pour resumer", options: ["Pour resumer", "Pour commencer", "Pour le plaisir"], time: 8 },
+        { phrase: "For instance", correctTranslation: "Par exemple", options: ["Par exemple", "Par magie", "Par chance"], time: 9 },
+        { phrase: "In other words", correctTranslation: "En d'autres termes", options: ["En d'autres termes", "En silence", "En secret"], time: 9 },
+        { phrase: "Rather than", correctTranslation: "Plutot que", options: ["Plutot que", "Jamais que", "Toujours que"], time: 9 },
+        { phrase: "From now on", correctTranslation: "Desormais", options: ["Desormais", "Autrefois", "Jadis"], time: 9 },
+        { phrase: "By no means", correctTranslation: "En aucun cas", options: ["En aucun cas", "En tout temps", "Pour toujours"], time: 9 },
+        { phrase: "In case", correctTranslation: "Au cas ou", options: ["Au cas ou", "En secret", "Par hasard"], time: 9 },
+        { phrase: "In my opinion", correctTranslation: "A mon avis", options: ["A mon avis", "A mon gout", "A ma faim"], time: 7 },
+        { phrase: "To be honest", correctTranslation: "Pour etre honnete", options: ["Pour etre honnete", "Pour etre drole", "Pour etre gentil"], time: 8 },
+        { phrase: "Without a doubt", correctTranslation: "Sans aucun doute", options: ["Sans aucun doute", "Sans aucun plaisir", "Sans aucune joie"], time: 10 },
+        { phrase: "Step by step", correctTranslation: "Pas a pas", options: ["Pas a pas", "Vite fait", "D'un coup"], time: 10 },
+        { phrase: "Under these circumstances", correctTranslation: "Dans ces circonstances", options: ["Dans ces circonstances", "Dans ces moments", "Dans ces endroits"], time: 9 },
+        { phrase: "As well as", correctTranslation: "Aussi bien que", options: ["Aussi bien que", "Aussi mal que", "Aussi vite que"], time: 10 },
+        { phrase: "All things considered", correctTranslation: "Tout bien considere", options: ["Tout bien considere", "Tout bien mange", "Tout bien dormi"], time: 9 },
+        { phrase: "On the contrary", correctTranslation: "Au contraire", options: ["Au contraire", "Au dessus", "Au dessous"], time: 9 },
+        { phrase: "As a last resort", correctTranslation: "En dernier recours", options: ["En dernier recours", "En premier choix", "En plein milieu"], time: 9 },
+        { phrase: "In spite of", correctTranslation: "En depit de", options: ["En depit de", "En faveur de", "En riant de"], time: 9 },
+        { phrase: "As far as I know", correctTranslation: "Pour autant que je sache", options: ["Pour autant que je sache", "Pour autant que je mange", "Pour autant que je dorme"], time: 10 },
+        { phrase: "In the meantime", correctTranslation: "Entre-temps", options: ["Entre-temps", "Pour toujours", "Sans arret"], time: 8 },
+        { phrase: "Although", correctTranslation: "Bien que", options: ["Bien que", "Mal que", "Sans que"], time: 7 },
+        { phrase: "In addition", correctTranslation: "En plus", options: ["En plus", "En moins", "En dormant"], time: 8 },
+        { phrase: "On the other hand", correctTranslation: "D'un autre cote", options: ["D'un autre cote", "D'un autre monde", "D'un autre pays"], time: 9 },
+        { phrase: "At least", correctTranslation: "Au moins", options: ["Au moins", "Au plus", "Au mieux"], time: 7 },
+        { phrase: "At most", correctTranslation: "Au plus", options: ["Au plus", "Au pire", "Au mieux"], time: 7 },
+        { phrase: "Besides", correctTranslation: "D'ailleurs", options: ["D'ailleurs", "D'ici", "De la-bas"], time: 8 },
+        { phrase: "Meanwhile", correctTranslation: "Pendant ce temps", options: ["Pendant ce temps", "Apres ce temps", "Avant ce temps"], time: 9 },
+        { phrase: "Otherwise", correctTranslation: "Sinon", options: ["Sinon", "Alors", "Donc"], time: 7 },
+        { phrase: "Similarly", correctTranslation: "De meme", options: ["De meme", "De moins", "De plus"], time: 8 },
+        { phrase: "Subsequently", correctTranslation: "Par la suite", options: ["Par la suite", "Par hasard", "Par chance"], time: 9 },
+        { phrase: "That is to say", correctTranslation: "C'est-a-dire", options: ["C'est-a-dire", "C'est-a-faire", "C'est-a-voir"], time: 10 },
+        { phrase: "Yet", correctTranslation: "Pourtant", options: ["Pourtant", "Maintenant", "Toujours"], time: 6 },
+        { phrase: "Indeed", correctTranslation: "En effet", options: ["En effet", "En fait", "En plus"], time: 7 },
+        { phrase: "Hence", correctTranslation: "Donc", options: ["Donc", "Puis", "Alors"], time: 6 },
+        { phrase: "Nonetheless", correctTranslation: "Toutefois", options: ["Toutefois", "Toujours", "Parfois"], time: 8 },
+        { phrase: "Given that", correctTranslation: "Etant donne que", options: ["Etant donne que", "Etant fait que", "Etant vu que"], time: 9 },
+        { phrase: "As though", correctTranslation: "Comme si", options: ["Comme si", "Comme ca", "Comme quoi"], time: 8 },
+        { phrase: "In fact", correctTranslation: "En realite", options: ["En realite", "En verite", "En secret"], time: 8 },
+        { phrase: "Actually", correctTranslation: "En fait", options: ["En fait", "En vrai", "En plus"], time: 7 },
+        { phrase: "Likewise", correctTranslation: "De meme", options: ["De meme", "De moins", "De plus"], time: 7 },
+        { phrase: "Apart from", correctTranslation: "Mis a part", options: ["Mis a part", "Mis ensemble", "Mis de cote"], time: 8 },
+        { phrase: "Except for", correctTranslation: "A l'exception de", options: ["A l'exception de", "A l'inclusion de", "A l'attention de"], time: 9 },
+        { phrase: "Instead of", correctTranslation: "Au lieu de", options: ["Au lieu de", "A la place de", "En face de"], time: 8 },
+        { phrase: "Despite", correctTranslation: "Malgre", options: ["Malgre", "Grace a", "Pour"], time: 7 },
+        { phrase: "Provided that", correctTranslation: "A condition que", options: ["A condition que", "Au moment que", "A l'instant que"], time: 9 },
+        { phrase: "Since", correctTranslation: "Puisque", options: ["Puisque", "Lorsque", "Quand"], time: 7 },
+        { phrase: "First and foremost", correctTranslation: "Avant tout", options: ["Avant tout", "Apres tout", "Par tout"], time: 9 },
+        { phrase: "With regard to", correctTranslation: "En ce qui concerne", options: ["En ce qui concerne", "En ce qui mange", "En ce qui dort"], time: 10 },
+        { phrase: "By the same token", correctTranslation: "De la meme facon", options: ["De la meme facon", "De la meme couleur", "De la meme taille"], time: 11 },
+        { phrase: "In essence", correctTranslation: "En substance", options: ["En substance", "En apparence", "En surface"], time: 8 },
+        { phrase: "For fear of", correctTranslation: "De peur de", options: ["De peur de", "De joie de", "De chance de"], time: 8 },
+        { phrase: "Owing to", correctTranslation: "En raison de", options: ["En raison de", "En faveur de", "En honneur de"], time: 9 },
+        { phrase: "Accordingly", correctTranslation: "Par consequent", options: ["Par consequent", "Par hasard", "Par chance"], time: 10 },
+        { phrase: "Incidentally", correctTranslation: "Par ailleurs", options: ["Par ailleurs", "Par ici", "Par la"], time: 9 },
+        { phrase: "Conversely", correctTranslation: "Inversement", options: ["Inversement", "Pareillement", "Egalement"], time: 8 },
+        { phrase: "Practically", correctTranslation: "Pratiquement", options: ["Pratiquement", "Theoriquement", "Mystiquement"], time: 9 },
+        { phrase: "Alternatively", correctTranslation: "Autrement", options: ["Autrement", "Maintenant", "Rapidement"], time: 9 },
+        { phrase: "Granted that", correctTranslation: "Certes", options: ["Certes", "Jamais", "Toujours"], time: 8 },
+        { phrase: "Beforehand", correctTranslation: "Au prealable", options: ["Au prealable", "Au final", "Au hasard"], time: 9 },
+        { phrase: "Thereafter", correctTranslation: "Par la suite", options: ["Par la suite", "Par erreur", "Par chance"], time: 8 },
+        { phrase: "To this end", correctTranslation: "A cette fin", options: ["A cette fin", "A ce debut", "A ce moment"], time: 9 },
+        { phrase: "Primarily", correctTranslation: "Principalement", options: ["Principalement", "Rarement", "Jamais"], time: 9 },
+        { phrase: "Invariably", correctTranslation: "Invariablement", options: ["Invariablement", "Variablement", "Rarement"], time: 10 },
+        { phrase: "In reality", correctTranslation: "En realite", options: ["En realite", "En imagination", "En reve"], time: 8 },
+        { phrase: "Occasionally", correctTranslation: "De temps a autre", options: ["De temps a autre", "Tout le temps", "Sans arret"], time: 10 },
+        { phrase: "Supposedly", correctTranslation: "Supposement", options: ["Supposement", "Certainement", "Evidemment"], time: 9 },
+        { phrase: "Ultimately", correctTranslation: "En fin de compte", options: ["En fin de compte", "Au debut", "Au milieu"], time: 9 },
+        { phrase: "In parallel", correctTranslation: "En parallele", options: ["En parallele", "En opposition", "En conflit"], time: 8 },
+        { phrase: "All at once", correctTranslation: "Tout d'un coup", options: ["Tout d'un coup", "Petit a petit", "Lentement"], time: 9 },
+        { phrase: "As a matter of fact", correctTranslation: "En fait", options: ["En fait", "En reve", "En theorie"], time: 10 },
+        { phrase: "To begin with", correctTranslation: "Pour commencer", options: ["Pour commencer", "Pour finir", "Pour continuer"], time: 9 },
+        { phrase: "Not to mention", correctTranslation: "Sans parler de", options: ["Sans parler de", "En parlant de", "Pour parler de"], time: 10 },
+        { phrase: "On balance", correctTranslation: "Tout compte fait", options: ["Tout compte fait", "Sans compter", "Mal compte"], time: 9 },
+        { phrase: "In doing so", correctTranslation: "Ce faisant", options: ["Ce faisant", "Ce voyant", "Ce disant"], time: 8 },
+        { phrase: "Put differently", correctTranslation: "Dit autrement", options: ["Dit autrement", "Dit pareil", "Dit ainsi"], time: 9 },
+        { phrase: "Under normal circumstances", correctTranslation: "En temps normal", options: ["En temps normal", "En temps special", "En temps rare"], time: 11 },
+    { phrase: "In all likelihood", correctTranslation: "Selon toute vraisemblance", options: ["Selon toute vraisemblance", "Selon toute apparence", "Selon tout hasard"], time: 12 },
+    { phrase: "At any rate", correctTranslation: "En tout cas", options: ["En tout cas", "En aucun cas", "Dans le cas"], time: 8 },
+    { phrase: "To that effect", correctTranslation: "A cet effet", options: ["A cet effet", "A cette cause", "A ce propos"], time: 9 },
+    { phrase: "In the event of", correctTranslation: "En cas de", options: ["En cas de", "Au lieu de", "Au moment de"], time: 9 },
+    { phrase: "By all means", correctTranslation: "A tout prix", options: ["A tout prix", "Sans prix", "Pour rien"], time: 8 },
+    { phrase: "For the purpose of", correctTranslation: "Dans le but de", options: ["Dans le but de", "Sans le but de", "Avec l'idee de"], time: 10 },
+    { phrase: "In the long term", correctTranslation: "A long terme", options: ["A long terme", "A court terme", "Sans terme"], time: 9 },
+    { phrase: "At the outset", correctTranslation: "Des le depart", options: ["Des le depart", "A l'arrivee", "Au milieu"], time: 9 },
+    { phrase: "On account of", correctTranslation: "A cause de", options: ["A cause de", "Grace a", "Pour"], time: 8 },
+    { phrase: "Broadly speaking", correctTranslation: "En gros", options: ["En gros", "En detail", "En bref"], time: 9 },
+    { phrase: "All things being equal", correctTranslation: "Toutes choses egales", options: ["Toutes choses egales", "Toutes choses differentes", "Toutes choses melangees"], time: 11 },
+    { phrase: "In this regard", correctTranslation: "A cet egard", options: ["A cet egard", "A ce sujet", "A cette fin"], time: 9 },
+    { phrase: "In a sense", correctTranslation: "Dans un sens", options: ["Dans un sens", "Sans sens", "Pour un sens"], time: 8 },
+    { phrase: "On the basis of", correctTranslation: "Sur la base de", options: ["Sur la base de", "Sur le sommet de", "Sur le cote de"], time: 9 },
+    { phrase: "In conjunction with", correctTranslation: "En liaison avec", options: ["En liaison avec", "En conflit avec", "En opposition avec"], time: 10 },
+    { phrase: "As far as possible", correctTranslation: "Dans la mesure du possible", options: ["Dans la mesure du possible", "Dans l'impossibilite de", "Sans possibilite de"], time: 11 },
+    { phrase: "In any event", correctTranslation: "En tout etat de cause", options: ["En tout etat de cause", "Sans aucune cause", "Pour toute cause"], time: 10 },
+    { phrase: "With reference to", correctTranslation: "En reference a", options: ["En reference a", "Sans reference a", "Pour reference a"], time: 10 },
+    { phrase: "On reflection", correctTranslation: "A la reflexion", options: ["A la reflexion", "Sans reflexion", "Pour reflexion"], time: 9 },
+    { phrase: "In brief", correctTranslation: "En bref", options: ["En bref", "En long", "En detail"], time: 7 }
+        
     ];
     
 
@@ -359,11 +394,16 @@ function generateClient(id) {
         }
     }
 
+    // Calcul du temps en fonction du nombre de phrases
+    const baseTime = 2; // Temps de base augmenté
+    const timePerPhrase = 5; // Temps supplémentaire par phrase
+    const totalTime = baseTime + (timePerPhrase * numPhrases);
+
     return { 
         id: id, 
         clientPhrases: clientPhrases, 
-        time: Math.floor(Math.random() * 6) + 10,
-        errors: 0 // Initialiser le compteur d'erreurs
+        time: totalTime, // Temps dynamique basé sur le nombre de phrases
+        errors: 0
     };
 }
 

@@ -6,6 +6,96 @@
     <title>Brew Your Words - Translation Café</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
+<style>
+    /* Style pour la bulle contenant la phrase et les options */
+    .bubble {
+        background-color: rgba(0, 0, 0, 0.9);  /* Fond plus foncé pour plus de contraste */
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 15px;
+        border: 3px solid #4CAF50;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Style pour la phrase anglaise */
+    .bubble p {
+        font-size: 1.4em;
+        color: #FFD700;  /* Texte doré pour la phrase à traduire */
+        margin-bottom: 20px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+    }
+    
+    /* Style pour les boutons de réponse */
+    .bubble button {
+        width: 100%;
+        padding: 15px 20px;
+        margin: 10px 0;
+        font-size: 1.3em;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        background-color: #2C3E50;  /* Bleu foncé pour le fond des boutons */
+        color: white;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        border: 2px solid #34495E;  /* Bordure légèrement plus claire */
+    }
+    
+    /* Effet de survol pour les boutons */
+    .bubble button:hover {
+        background-color: #34495E;  /* Légèrement plus clair au survol */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Style pour le bouton actif/pressé */
+    .bubble button:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Style pour le bouton correct */
+    .bubble button.correct {
+        background-color: #2ECC71;  /* Vert distinct */
+        border-color: #27AE60;
+    }
+    
+    /* Style pour le bouton incorrect */
+    .bubble button.incorrect {
+        background-color: #E74C3C;  /* Rouge distinct */
+        border-color: #C0392B;
+    }
+    
+    /* Style pour les boutons désactivés */
+    .bubble button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    /* Adaptation mobile */
+    @media (max-width: 768px) {
+        .bubble {
+            padding: 15px;
+            margin: 15px 0;
+        }
+    
+        .bubble p {
+            font-size: 1.6em;  /* Plus grand sur mobile */
+        }
+    
+        .bubble button {
+            padding: 20px;
+            font-size: 1.5em;  /* Plus grand sur mobile */
+            margin: 15px 0;
+        }
+    }
+    </style>
+
 <body>
 
     <header>
