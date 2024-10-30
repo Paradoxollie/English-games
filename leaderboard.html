@@ -187,7 +187,22 @@
                         <!-- Les scores seront insérés ici par JavaScript -->
                     </tbody>
                 </table>
-            </div>                
+            </div>   
+            <div id="enigma-scroll" class="game-leaderboard">
+                <h3>Enigma Scroll</h3>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enigma-scroll-scores">
+                        <!-- Les scores seront insérés ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>             
          </section>
      </main>
  
@@ -283,6 +298,7 @@
              loadGameScores("memory_matrix_scores", "memory-matrix-scores");
             loadGameScores("lost_in_migration_scores", "lost-in-migration-scores");
             loadGameScores("brewYourWordsScores", "brewYourWordsScores");
+            loadGameScores("enigma_scroll_scores", "enigma-scroll-scores");
 
 
              
