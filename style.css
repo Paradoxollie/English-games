@@ -1092,36 +1092,36 @@ header {
     transform: scale(1.05); /* Agrandissement léger au survol */
 }
 
-/* Clavier pour mobile avec seulement 3 lignes */
-@media (max-width: 600px) {
+/* Organiser le clavier sur 3 lignes pour mobile */
+@media (max-width: 700px) {
     #keyboard {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        max-width: 100%; /* Limite la largeur du clavier */
+        max-width: 100%; /* Assure que le clavier reste à l'intérieur de la boîte du jeu */
     }
 
     /* Organiser les boutons du clavier sur 3 lignes */
     .keyboard-row {
         display: flex;
         justify-content: center;
-        flex-wrap: nowrap; /* Empêche l'enroulement des lignes */
+        flex-wrap: nowrap;
     }
 
     /* Réduire la taille des boutons sur mobile */
     #keyboard button {
-        flex: 1 1 9%; /* Chaque touche occupe environ 9% de la ligne pour être sur 3 lignes */
-        max-width: 9%;
-        height: 40px; /* Taille ajustée pour tenir sur l'écran */
+        flex: 1 1 8%; /* Chaque touche occupe environ 8% de la ligne */
+        max-width: 8%;
+        height: 35px; /* Taille ajustée pour tenir sur l'écran */
         font-size: 14px;
-        margin: 2px;
+        margin: 1px;
     }
 
     /* Ajustement des touches 'Delete' et 'Enter' */
     #keyboard button:nth-last-child(2),
     #keyboard button:nth-last-child(1) {
-        flex: 1 1 15%; /* Les touches 'Delete' et 'Enter' prennent plus de place */
+        flex: 1 1 15%;
         max-width: 15%;
     }
 }
