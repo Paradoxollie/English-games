@@ -223,336 +223,243 @@ const vocabularyBank = [
     { word: "undertake", definition: "To commit oneself to begin and complete a task or responsibility." },
     { word: "utilize", definition: "To make practical and effective use of something." },
     { word: "verify", definition: "To make sure or demonstrate that something is true, accurate, or justified." },
-    
-    // ... Add more words and definitions here
+
 ];
 
-let currentLevel = 1;
-let maxLevel = 10;
-let matrixSize = 3; // Commencer avec une grille 3x3
+// Configuration du jeu
+let selectedWord = null;
+let selectedDefinition = null;
 let score = 0;
 let timerInterval;
+let timeLeft = 60;
 let currentMatrix = [];
-let studyTime = 30; // 30 secondes pour étudier
-let guessTime = 30; // 1 minute pour replacer les mots
+let gameOver = false;
+let roundsPlayed = 0;
+let maxRounds = 5;
+let penalty = 5;
 
+// Démarrage du jeu
 function startGame() {
-    resetGame();
-    generateMatrix();
-    displayMatrixWithWords();
-    startStudyPhase();
-    document.getElementById("start-button").innerText = "Reset Game";
-    document.getElementById("check-button").style.display = "none";
-}
-
-function resetGame() {
-    clearInterval(timerInterval); // Arrêter tout timer existant
-    
-    // Remettre à zéro les variables
-    currentLevel = 1;
     score = 0;
-    currentMatrix = [];
-    
-    // Mettre à jour l'interface utilisateur
-    document.getElementById("level").innerText = currentLevel;
-    document.getElementById("message").innerText = "Game reset! Click 'Start Game' to play.";
-    document.getElementById("matrix-container").innerHTML = "";
-    
-    // S'assurer que le bouton affiche toujours "Start Game"
-    document.getElementById("start-button").innerText = "Start Game";
-    document.getElementById("check-button").style.display = "none"; // Masquer le bouton Check Answers
-    
-    document.getElementById("input-container").style.display = "none"; // Masquer l'input-container
+    roundsPlayed = 0;
+    gameOver = false;
+    timeLeft = 60;
+    document.getElementById("start-button").style.display = "none";
+    // Démarrer le timer une seule fois au début du jeu
+    startTimer();
+    startNewRound();
 }
 
-
-// Ajoute une vérification du texte du bouton pour basculer entre démarrer et réinitialiser
-document.getElementById("start-button").addEventListener("click", () => {
-    if (document.getElementById("start-button").innerText === "Reset Game") {
-        resetGame(); // Réinitialise le jeu
-    } else {
-        startGame(); // Démarre le jeu
+// Démarrage d'un nouveau round
+function startNewRound() {
+    if (roundsPlayed >= maxRounds || timeLeft <= 0) {
+        endGame();
+        return;
     }
-});
 
+    selectedWord = null;
+    selectedDefinition = null;
+    document.getElementById("score").innerText = score;
+    document.getElementById("message").innerText = "";
 
-function generateMatrix() {
-    const wordCount = Math.pow(matrixSize, 2);
-    const shuffled = vocabularyBank.sort(() => 0.5 - Math.random());
-    currentMatrix = shuffled.slice(0, wordCount);
+    generateMatrix();
+    displayWordsAndDefinitions();
+    roundsPlayed++;
 }
 
-function displayMatrixWithWords() {
-    const matrixContainer = document.getElementById("matrix-container");
-    matrixContainer.innerHTML = "";
-    matrixContainer.style.display = "grid";
-    matrixContainer.style.gridTemplateColumns = `repeat(${matrixSize}, 1fr)`;
-    matrixContainer.style.gap = "10px";
+// Génération de la matrice de mots et définitions
+function generateMatrix() {
+    const selectedWords = [...vocabularyBank]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 8);
+
+    currentMatrix = selectedWords.map(word => ({
+        word: word.word,
+        correctDefinition: word.definition
+    }));
+
+    // Mélanger les définitions pour l'affichage
+    const shuffledDefinitions = [...currentMatrix]
+        .map(item => item.correctDefinition)
+        .sort(() => 0.5 - Math.random());
 
     currentMatrix.forEach((item, index) => {
-        const cell = document.createElement("div");
-        cell.className = "matrix-cell";
-        cell.innerHTML = `
-            <div class="definition">${item.definition}</div>
-            <div class="word-slot" data-index="${index}">
-                <div class="word">${item.word}</div>
-            </div>
-        `;
-        cell.style.padding = "10px";
-        cell.style.border = "1px solid #fff";
-        cell.style.textAlign = "center";
-        cell.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-        matrixContainer.appendChild(cell);
+        item.displayedDefinition = shuffledDefinitions[index];
     });
 }
 
-function startStudyPhase() {
-    document.getElementById("message").innerText = "Study the words and their definitions!";
-    startTimer(studyTime, startGuessPhase);
-}
+// Affichage des mots et définitions
+function displayWordsAndDefinitions() {
+    const wordContainer = document.getElementById("word-container");
+    const definitionContainer = document.getElementById("definition-container");
+    wordContainer.innerHTML = "";
+    definitionContainer.innerHTML = "";
 
-function startGuessPhase() {
-    document.getElementById("message").innerText = "Now, place the words back in their correct positions!";
-    hideWords();
-    displayWordBank();
-    setupDragAndDrop();
-    startTimer(guessTime, checkAnswers);
-}
-
-function startTimer(seconds, callback) {
-    let timeLeft = seconds;
-    const timeLeftElement = document.getElementById("time-left");
-    timeLeftElement.innerText = timeLeft;
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        timeLeftElement.innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            callback();
-        }
-    }, 1000);
-}
-
-
-function hideWords() {
-    const words = document.querySelectorAll(".matrix-cell .word");
-    words.forEach(word => {
-        word.style.display = "none";
-    });
-}
-
-function displayWordBank() {
-    const wordBank = document.getElementById("word-bank");
-    wordBank.innerHTML = "";
-    wordBank.style.display = "flex";
-    wordBank.style.flexWrap = "wrap";
-    wordBank.style.justifyContent = "center";
-    wordBank.style.marginTop = "20px";
-
-    const shuffledWords = [...currentMatrix].sort(() => 0.5 - Math.random());
-
-    shuffledWords.forEach((item, index) => {
+    // Afficher les mots
+    currentMatrix.forEach((item, index) => {
         const wordElement = document.createElement("div");
-        wordElement.className = "word-bank-item";
-        wordElement.id = `word-${index}`;
-        wordElement.draggable = true;
+        wordElement.className = "word-item";
         wordElement.textContent = item.word;
-        wordElement.addEventListener('dragstart', drag);
-        wordBank.appendChild(wordElement);
+        wordElement.dataset.index = index;
+        wordElement.onclick = () => selectWord(item.word, wordElement);
+        wordContainer.appendChild(wordElement);
+    });
+
+    // Afficher les définitions mélangées
+    currentMatrix.forEach((item, index) => {
+        const definitionElement = document.createElement("div");
+        definitionElement.className = "definition-item";
+        definitionElement.textContent = item.displayedDefinition;
+        definitionElement.dataset.index = index;
+        definitionElement.onclick = () => selectDefinition(item.displayedDefinition, definitionElement);
+        definitionContainer.appendChild(definitionElement);
     });
 }
 
-function createWordElement(word, isFromBank = false) {
-    const wordElement = document.createElement('div');
-    wordElement.textContent = word;
-    wordElement.className = isFromBank ? 'word-bank-item' : 'word';
-    wordElement.draggable = true;
-    wordElement.addEventListener('dragstart', drag);
-    return wordElement;
-}
-
-function setupDragAndDrop() {
-    const wordSlots = document.querySelectorAll('.word-slot');
-    const wordBankItems = document.querySelectorAll('.word-bank-item');
+// Sélection d'un mot
+function selectWord(word, element) {
+    // Réinitialiser les couleurs de tous les mots
+    document.querySelectorAll('.word-item').forEach(el => {
+        el.style.backgroundColor = "#333";
+    });
     
-    wordSlots.forEach(slot => {
-        slot.addEventListener('dragover', dragOver);
-        slot.addEventListener('drop', drop);
+    element.style.backgroundColor = "#4CAF50";
+    selectedWord = word;
+    checkMatch();
+}
+
+// Sélection d'une définition
+function selectDefinition(definition, element) {
+    // Réinitialiser les couleurs de toutes les définitions
+    document.querySelectorAll('.definition-item').forEach(el => {
+        el.style.backgroundColor = "#333";
     });
-
-    wordBankItems.forEach(item => {
-        item.addEventListener('dragstart', drag);
-    });
-
-    const wordBank = document.getElementById('word-bank');
-    wordBank.addEventListener('dragover', dragOver);
-    wordBank.addEventListener('drop', dropToBank);
-}
-
-function drag(e) {
-    e.dataTransfer.setData('text/plain', e.target.textContent);
-    e.dataTransfer.setData('sourceId', e.target.id);
-}
-
-function dragOver(e) {
-    e.preventDefault();
-}
-
-function drop(e) {
-    e.preventDefault();
-    const data = e.dataTransfer.getData('text/plain');
-    const sourceId = e.dataTransfer.getData('sourceId');
-    const targetSlot = e.target.closest('.word-slot');
-
-    if (!targetSlot) return;
-
-    const sourceElement = document.getElementById(sourceId);
-    if (!sourceElement) return;
-
-    // If the word is already in a slot, remove it from that slot
-    const currentSlot = sourceElement.closest('.word-slot');
-    if (currentSlot) {
-        currentSlot.removeChild(sourceElement);
-    }
-
-    // If there's already a word in the target slot, move it back to the word bank
-    const existingWord = targetSlot.querySelector('.word');
-    if (existingWord) {
-        const wordBank = document.getElementById('word-bank');
-        wordBank.appendChild(existingWord);
-    }
-
-    // Move the dragged word to the new slot
-    targetSlot.appendChild(sourceElement);
-}
-
-function startTimer(seconds, callback) {
-    let timeLeft = seconds;
-    const timeLeftElement = document.getElementById("time-left");
-    timeLeftElement.innerText = timeLeft;
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        timeLeftElement.innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            callback();
-        }
-    }, 1000);
-}
-
-function checkAnswers() {
-    clearInterval(timerInterval);
-    let correctAnswers = 0;
-    const cells = document.querySelectorAll('.matrix-cell');
     
-    cells.forEach((cell, index) => {
-        const wordSlot = cell.querySelector('.word-slot');
-        const placedWord = wordSlot.querySelector('.word-bank-item');
-        const placedWordText = placedWord ? placedWord.textContent.trim().toLowerCase() : '';
-        const correctWord = currentMatrix[index].word.toLowerCase();
+    element.style.backgroundColor = "#4CAF50";
+    selectedDefinition = definition;
+    checkMatch();
+}
+
+// Vérification de l'association
+function checkMatch() {
+    if (selectedWord && selectedDefinition) {
+        const wordObject = currentMatrix.find(item => item.word === selectedWord);
         
-        if (placedWordText && placedWordText === correctWord) {
-            correctAnswers++;
-            cell.style.backgroundColor = "rgba(0, 255, 0, 0.3)"; // Vert pour correct
+        if (wordObject && wordObject.correctDefinition === selectedDefinition) {
+            // Bonne association
+            score += 10;
+            document.getElementById("score").innerText = score;
+            
+            // Masquer les éléments associés
+            const wordElements = document.querySelectorAll('.word-item');
+            const definitionElements = document.querySelectorAll('.definition-item');
+            
+            wordElements.forEach(el => {
+                if (el.textContent === selectedWord) {
+                    el.style.visibility = 'hidden';
+                }
+            });
+            
+            definitionElements.forEach(el => {
+                if (el.textContent === selectedDefinition) {
+                    el.style.visibility = 'hidden';
+                }
+            });
+            
+            document.getElementById("message").innerText = "Correct! +10 points";
+            document.getElementById("message").style.color = "#4CAF50";
+            
+            // Vérifier si tous les mots sont associés
+            const remainingWords = document.querySelectorAll('.word-item:not([style*="visibility: hidden"])');
+            if (remainingWords.length === 0 && timeLeft > 0) {
+                setTimeout(() => {
+                    if (roundsPlayed < maxRounds) {
+                        startNewRound();
+                    } else {
+                        endGame();
+                    }
+                }, 1000);
+            }
         } else {
-            cell.style.backgroundColor = "rgba(255, 0, 0, 0.3)"; // Rouge pour incorrect ou vide
+            // Mauvaise association
+            score -= penalty;
+            if (score < 0) score = 0;
+            document.getElementById("score").innerText = score;
+            document.getElementById("message").innerText = "Incorrect! -5 points";
+            document.getElementById("message").style.color = "#ff4444";
         }
-    });
-
-    score += correctAnswers;
-    updateScore();
-
-    if (correctAnswers === currentMatrix.length) {
-        currentLevel++;
-        if (currentLevel > maxLevel) {
-            endGame();
-        } else {
-            document.getElementById("message").innerText = `Well done! You've passed Level ${currentLevel - 1}. Moving to Level ${currentLevel}.`;
-            document.getElementById("level").innerText = currentLevel;
-            matrixSize = Math.min(matrixSize + 1, 5);
-            setTimeout(startGame, 2000);
-        }
-    } else {
-        endGame();
+        
+        // Réinitialiser les sélections
+        setTimeout(() => {
+            if (!gameOver) {
+                selectedWord = null;
+                selectedDefinition = null;
+                document.querySelectorAll('.word-item, .definition-item').forEach(el => {
+                    if (el.style.visibility !== 'hidden') {
+                        el.style.backgroundColor = "#333";
+                    }
+                });
+                document.getElementById("message").innerText = "";
+            }
+        }, 1000);
     }
 }
 
-function endGame() {
+// Gestion du timer
+function startTimer() {
     clearInterval(timerInterval);
-    document.getElementById("message").innerText = `Game Over. Final Score: ${score}`;
-    document.getElementById("start-button").style.display = "inline-block";
-    document.getElementById("start-button").innerText = "New Game";
-    document.getElementById("check-button").style.display = "none";
-    document.getElementById("input-container").style.display = "none";
-    saveScore(score);
-    // Ajoute un affichage pour le bouton Reset si nécessaire
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time-left").innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            endGame();
+        }
+    }, 1000);
 }
 
-function displayWordBank() {
-    const wordBank = document.getElementById("word-bank");
-    wordBank.innerHTML = "";
-    wordBank.style.display = "flex";
-    wordBank.style.flexWrap = "wrap";
-    wordBank.style.justifyContent = "center";
-    wordBank.style.marginTop = "20px";
-
-    const shuffledWords = [...currentMatrix].sort(() => 0.5 - Math.random());
-
-    shuffledWords.forEach((item, index) => {
-        const wordElement = document.createElement("div");
-        wordElement.className = "word-bank-item";
-        wordElement.id = `word-${index}`;
-        wordElement.draggable = true;
-        wordElement.textContent = item.word;
-        wordElement.addEventListener('dragstart', drag);
-        wordBank.appendChild(wordElement);
-    });
-}
-
-// Assurez-vous que cette fonction est appelée au début de chaque niveau
-function setupDragAndDrop() {
-    const wordSlots = document.querySelectorAll('.word-slot');
-    const wordBankItems = document.querySelectorAll('.word-bank-item');
+// Fin du jeu
+function endGame() {
+    gameOver = true;
+    clearInterval(timerInterval);
     
-    wordSlots.forEach(slot => {
-        slot.addEventListener('dragover', dragOver);
-        slot.addEventListener('drop', drop);
-    });
-
-    wordBankItems.forEach(item => {
-        item.addEventListener('dragstart', drag);
-    });
-
-    const wordBank = document.getElementById('word-bank');
-    wordBank.addEventListener('dragover', dragOver);
-    wordBank.addEventListener('drop', dropToBank);
-}
-
-function dropToBank(e) {
-    e.preventDefault();
-    const data = e.dataTransfer.getData('text/plain');
-    const sourceId = e.dataTransfer.getData('sourceId');
-    const wordElement = document.getElementById(sourceId);
-
-    if (wordElement && !e.target.contains(wordElement)) {
-        e.target.appendChild(wordElement);
+    let message = "Game Over! ";
+    if (timeLeft <= 0) {
+        message += "Time's up! ";
+    } else if (roundsPlayed >= maxRounds) {
+        message += "All rounds completed! ";
+    }
+    message += `Final score: ${score}`;
+    
+    document.getElementById("message").innerText = message;
+    document.getElementById("start-button").style.display = "block";
+    
+    // Demander le nom du joueur et sauvegarder le score
+    const playerName = prompt("Enter your name to save your score:");
+    if (playerName) {
+        saveScore(playerName, score);
     }
 }
 
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    const startButton = document.getElementById("game-controls");
+    startButton.textContent = "Start Game";
+    startButton.id = "start-button";
+    startButton.onclick = startGame;
+});
+// Charger les meilleurs scores depuis Firebase
 function loadTopScores() {
     db.collection("memory_matrix_scores")
-        .orderBy("score", "desc") // Trie les scores par ordre décroissant
-        .limit(5) // Limite à 5 meilleurs scores
+        .orderBy("score", "desc")
+        .limit(5)
         .get()
         .then((querySnapshot) => {
             const topScoresList = document.getElementById("top-scores-list");
-            topScoresList.innerHTML = ""; // Vide la liste avant de la remplir
-
+            topScoresList.innerHTML = "";
             querySnapshot.forEach((doc) => {
                 const li = document.createElement("li");
-                li.textContent = `${doc.data().name}: ${doc.data().score}`; // Affiche le nom et le score
+                li.textContent = `${doc.data().name}: ${doc.data().score}`;
                 topScoresList.appendChild(li);
             });
         })
@@ -564,31 +471,4 @@ function loadTopScores() {
 document.addEventListener('DOMContentLoaded', () => {
     loadTopScores();
     document.getElementById("start-button").addEventListener("click", startGame);
-    document.getElementById("check-button").addEventListener("click", checkAnswers);
 });
-
-// Désactiver les raccourcis clavier et le clic droit
-document.addEventListener('keydown', function (event) {
-    if ((event.ctrlKey && (event.key === 'c' || event.key === 'v' || event.key === 'x')) || 
-        (event.metaKey && (event.key === 'c' || event.key === 'v' || event.key === 'x'))) {
-        event.preventDefault();
-    }
-});
-
-document.addEventListener('contextmenu', function (event) {
-    event.preventDefault();
-});
-function autoScroll(event) {
-    const scrollMargin = 50; // Distance à partir du bord de l'écran pour déclencher le scroll
-    const scrollSpeed = 10;  // Vitesse du scroll
-    
-    if (event.clientY < scrollMargin) {
-        // Scrolling vers le haut
-        window.scrollBy(0, -scrollSpeed);
-    } else if (event.clientY > window.innerHeight - scrollMargin) {
-        // Scrolling vers le bas
-        window.scrollBy(0, scrollSpeed);
-    }
-}
-
-document.addEventListener('dragover', autoScroll);

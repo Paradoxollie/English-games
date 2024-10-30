@@ -751,3 +751,58 @@ header {
     margin: -10; /* Supprime les marges autour du header */
     padding: -10; /* Supprime les padding autour du header */
 }
+#word-container, #definition-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.word-item, .definition-item {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+}
+
+.word-item:hover, .definition-item:hover {
+    background-color: #555;
+}
+
+@media (max-width: 768px) {
+    .word-item, .definition-item {
+        width: 120px;
+    }
+}
+#game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.divider {
+    width: 80%;
+    height: 3px;
+    background-color: #c9aa71;
+    margin: 20px auto;
+}
+
+.word-item, .definition-item {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+    margin: 10px;
+}
+
+.word-item:hover, .definition-item:hover {
+    background-color: #555;
+}
