@@ -463,7 +463,7 @@ footer {
 #word-box {
     position: relative;
     width: 80%;
-    height: 500px; /* Augmentation de la hauteur */
+    height: 800px; /* Augmente cette valeur pour plus de hauteur */
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
@@ -472,6 +472,7 @@ footer {
     margin: 20px auto;
     border: 3px solid #4CAF50;
 }
+
 
 .word {
     position: absolute;
@@ -805,4 +806,121 @@ header {
 
 .word-item:hover, .definition-item:hover {
     background-color: #555;
+}
+
+/* Styles pour le conteneur principal */
+#game-container.lost-in-migration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+}
+
+/* Style pour la section de difficulté */
+#game-container.lost-in-migration #difficulty-selection {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.5em;
+    order: -1; /* Assure que la sélection de difficulté apparaît en premier */
+}
+
+/* Style pour le bouton de démarrage */
+#game-container.lost-in-migration #start-button {
+    position: relative;
+    z-index: 200;
+    margin: 20px auto;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    order: 0; /* Place le bouton après la sélection de difficulté */
+}
+
+/* Style pour les informations de jeu */
+#game-container.lost-in-migration #level-display,
+#game-container.lost-in-migration #timer,
+#game-container.lost-in-migration #score-display {
+    font-size: 1.2em;
+    margin: 10px;
+}
+
+/* Style pour le thème actuel */
+#game-container.lost-in-migration #current-theme {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Style pour la boîte de mots */
+#game-container.lost-in-migration #word-box {
+    position: relative;
+    width: 80% !important;
+    height: 600px !important;
+    min-height: 600px !important;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    margin: 20px auto;
+    border: 3px solid #4CAF50;
+    order: 1; /* Place la boîte après le bouton de démarrage */
+}
+
+/* Style pour les mots */
+#game-container.lost-in-migration .word {
+    position: absolute;
+    cursor: pointer;
+    user-select: none;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+#game-container.lost-in-migration .word:hover {
+    transform: scale(1.1);
+    background-color: #c9aa71;
+    z-index: 101;
+}
+
+/* Zone de message */
+#game-container.lost-in-migration #message {
+    text-align: center;
+    font-size: 1.2em;
+    margin: 20px 0;
+    order: 2; /* Place le message après la boîte de mots */
+}
+
+/* Styles responsifs */
+@media (max-width: 768px) {
+    #game-container.lost-in-migration #word-box {
+        height: 400px !important;
+        width: 90% !important;
+    }
+    
+    #game-container.lost-in-migration .word {
+        font-size: 20px;
+        padding: 10px 20px;
+    }
+    
+    #game-container.lost-in-migration #difficulty-selection {
+        width: 90%;
+        font-size: 1.2em;
+    }
 }
