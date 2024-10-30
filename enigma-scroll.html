@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma Scroll</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase App (obligatoire) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        .word-cell {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2px;
+        }
+        .word-row {
+            margin: 5px 0;
+        }
+        .correct { background-color: #6aaa64; }
+        .present { background-color: #c9b458; }
+        .incorrect { background-color: #787c7e; }
+    </style>
+</head>
+
+            <header>
+                <h1>Enigma Scroll</h1>
+            </header>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="all-games.html" class="active">Games</a>
+                <a href="courses.html">Courses</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <main>
+                <div id="game-container">
+                    <div id="word-grid"></div>
+                    <div id="message"></div>
+                    <div id="score">0</div>
+                    <div id="keyboard">
+                        <div class="keyboard-row">
+                            <button onclick="handleKeyInput('A')">A</button>
+                            <button onclick="handleKeyInput('Z')">Z</button>
+                            <button onclick="handleKeyInput('E')">E</button>
+                            <button onclick="handleKeyInput('R')">R</button>
+                            <button onclick="handleKeyInput('T')">T</button>
+                            <button onclick="handleKeyInput('Y')">Y</button>
+                            <button onclick="handleKeyInput('U')">U</button>
+                            <button onclick="handleKeyInput('I')">I</button>
+                            <button onclick="handleKeyInput('O')">O</button>
+                            <button onclick="handleKeyInput('P')">P</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button onclick="handleKeyInput('Q')">Q</button>
+                            <button onclick="handleKeyInput('S')">S</button>
+                            <button onclick="handleKeyInput('D')">D</button>
+                            <button onclick="handleKeyInput('F')">F</button>
+                            <button onclick="handleKeyInput('G')">G</button>
+                            <button onclick="handleKeyInput('H')">H</button>
+                            <button onclick="handleKeyInput('J')">J</button>
+                            <button onclick="handleKeyInput('K')">K</button>
+                            <button onclick="handleKeyInput('L')">L</button>
+                            <button onclick="handleKeyInput('M')">M</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button onclick="handleKeyInput('W')">W</button>
+                            <button onclick="handleKeyInput('X')">X</button>
+                            <button onclick="handleKeyInput('C')">C</button>
+                            <button onclick="handleKeyInput('V')">V</button>
+                            <button onclick="handleKeyInput('B')">B</button>
+                            <button onclick="handleKeyInput('N')">N</button>
+                            <button onclick="handleDelete()">←</button>
+                            <button onclick="handleGuess()">Enter</button>
+                        </div>
+                    </div>
+                </div>
+                <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+                <script src="enigma-scroll.js"></script>
+
+                <!-- Top Scores Section -->
+                <div id="top-scores">
+                    <h3>Top Scores</h3>
+                    <ul id="top-scores-list"></ul>
+                </div>
+            </main>
+
+            <footer>
+                <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="enigma-scroll.js"></script>
+</body>
+</html>

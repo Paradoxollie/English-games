@@ -924,3 +924,184 @@ header {
         font-size: 1.2em;
     }
 }
+/* Conteneur principal du jeu */
+#game-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Style pour le score */
+#score-display {
+    color: #4CAF50;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Grille de mot */
+#word-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    width: 100%;
+    max-width: 600px;
+}
+
+.word-row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.word-cell {
+    width: 45px;
+    height: 45px;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-transform: uppercase;
+}
+
+/* Clavier virtuel */
+#virtual-keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+#virtual-keyboard .row {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+}
+
+#virtual-keyboard button {
+    min-width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 10px;
+}
+
+#virtual-keyboard button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+#virtual-keyboard button.control-button {
+    min-width: 80px;
+    background-color: #2196F3;
+}
+
+#virtual-keyboard button.control-button:hover {
+    background-color: #1976D2;
+}
+
+/* Messages et définitions */
+#message, #definition {
+    text-align: center;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Couleurs des cellules */
+.correct {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+}
+
+.present {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+}
+
+.incorrect {
+    background-color: #4b5563 !important;
+    border-color: #4b5563 !important;
+}
+
+.empty {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .word-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 20px;
+    }
+
+    #virtual-keyboard button {
+        min-width: 30px;
+        height: 35px;
+        font-size: 16px;
+    }
+
+    #game-container {
+        padding: 10px;
+        margin: 10px;
+    }
+}
+
+/* Style du clavier pour un thème MMORPG */
+#keyboard button {
+    background-color: #333; /* Couleur sombre pour le bouton */
+    color: #f0e6d2; /* Couleur claire du texte */
+    border: 2px solid #c9aa71; /* Bordure dorée */
+    border-radius: 10px; /* Boutons arrondis */
+    font-size: 1.2em; /* Taille du texte agrandie */
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#keyboard button:hover {
+    background-color: #4CAF50; /* Couleur de fond au survol */
+    transform: scale(1.05); /* Agrandissement léger au survol */
+}
+
+#keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
