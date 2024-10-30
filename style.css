@@ -1114,7 +1114,7 @@ header {
     }
 
     #virtual-keyboard {
-        width: 100%;
+        width: 90%;
         max-width: 300px;
     }
 }
