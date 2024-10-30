@@ -1104,7 +1104,7 @@ header {
 
 
 /* Ajuster la taille du clavier pour les petits écrans */
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     #keyboard {
         max-width: 90%;
     }
