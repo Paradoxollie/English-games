@@ -1092,28 +1092,35 @@ header {
     transform: scale(1.05); /* Agrandissement léger au survol */
 }
 
-/* Limiter la taille du clavier à l'intérieur de la boîte de jeu */
-#keyboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 100%; /* Limite le clavier à la largeur de la boîte de jeu */
-    margin: 0 auto;
-}
-
-
-/* Ajuster la taille du clavier pour les petits écrans */
-@media (max-width: 750px) {
+/* Organiser le clavier sur 3 lignes sur les petits écrans */
+@media (max-width: 700px) {
     #keyboard {
-        max-width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%; /* Assure que le clavier ne dépasse pas la boîte de jeu */
     }
 
+    /* Organiser les boutons sur chaque ligne */
+    .keyboard-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Réduire la taille des boutons sur mobile */
     #keyboard button {
-        min-width: 30px;
-        height: 35px;
+        flex: 1 1 20%; /* Chaque touche occupe environ 20% de la ligne pour tenir sur 3 lignes */
+        max-width: 20%;
+        height: 40px;
         font-size: 14px;
-        padding: 0 8px;
+        margin: 2px;
+    }
+
+    /* Réduire la taille des touches spéciales (delete et enter) */
+    #keyboard button:nth-last-child(2), #keyboard button:nth-last-child(1) {
+        flex: 1 1 40%;
+        max-width: 40%;
     }
 }
-
