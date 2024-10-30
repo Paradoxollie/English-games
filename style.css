@@ -1106,14 +1106,14 @@ header {
 /* Ajuster la taille du clavier pour les petits écrans */
 @media (max-width: 600px) {
     #keyboard {
-        max-width: 100%; /* Réduire la largeur du clavier encore plus sur mobile */
+        max-width: 90%;
     }
 
     #keyboard button {
-        min-width: 20px;
-        height: 35px;
-        font-size: 20px;
-        padding: 0 4px;
+        min-width: 40px;
+        height: 50px;
+        font-size: 14px;
+        padding: 0 8px;
     }
 }
 
