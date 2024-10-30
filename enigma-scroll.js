@@ -285,10 +285,16 @@ document.addEventListener('keydown', (event) => {
 });
 async function isValidWord(word) {
     try {
+        // Appel à l'API pour vérifier si le mot existe
         const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
-        return response.ok;  // Renvoie true si le mot existe
+        if (response.ok) {
+            const data = await response.json();
+            return data.length > 0;  // Le mot existe s'il y a une réponse
+        } else {
+            return false;  // Si le mot n'existe pas, la réponse de l'API est invalide
+        }
     } catch (error) {
-        console.error('Erreur lors de la vérification via l\'API:', error);
+        console.error("Erreur lors de la vérification du mot via l'API:", error);
         return false;  // Si l'API échoue, on considère que le mot n'existe pas
     }
 }
@@ -325,16 +331,23 @@ function submitGuess(guess) {
     renderGrid();
 }
 
-// Simplifier handleGuess
-function handleGuess() {
+async function handleGuess() {
     if (gameState.gameStatus !== 'playing') return;
-    
+
     const cleanGuess = gameState.currentGuess.trim().toUpperCase();
-    
+
     if (cleanGuess.length !== gameState.currentWord.length) {
         updateMessage(`Le mot doit faire ${gameState.currentWord.length} lettres !`);
         return;
     }
-    
+
+    // Appeler la fonction pour vérifier si le mot existe via l'API
+    const isValid = await isValidWord(cleanGuess);
+    if (!isValid) {
+        updateMessage("Ce mot n'existe pas. Réessayez !");
+        return;  // Ne valide pas le mot s'il n'existe pas
+    }
+
+    // Si le mot est valide, soumets la réponse
     submitGuess(cleanGuess);
 }
