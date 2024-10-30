@@ -1080,7 +1080,7 @@ header {
     color: #f0e6d2; /* Couleur claire du texte */
     border: 2px solid #c9aa71; /* Bordure dorée */
     border-radius: 10px; /* Boutons arrondis */
-    font-size: 1.2em; /* Taille du texte agrandie */
+    font-size: 1em; /* Taille du texte agrandie */
     padding: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
