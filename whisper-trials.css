@@ -1,0 +1,98 @@
+/* Isolation des styles sous l'ID #whisper-trials-container */
+#whisper-trials-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    border: 3px solid #4CAF50;
+}
+
+/* Zone de jeu avec animation 3D */
+#whisper-trials-container .animated-3d-box {
+    perspective: 1000px;
+    transition: transform 0.5s ease;
+    background-color: #333;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    max-width: 600px;
+    width: 100%;
+    animation: glow 3s infinite alternate;
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 20px #4CAF50; }
+    100% { box-shadow: 0 0 40px #c9aa71; }
+}
+
+/* Boutons avec effet 3D */
+#whisper-trials-container #play-sound,
+#whisper-trials-container #submit-word {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.2em;
+    border: none;
+    cursor: pointer;
+    margin: 10px 5px;
+    transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 10px #4CAF50;
+}
+
+#whisper-trials-container #play-sound:hover,
+#whisper-trials-container #submit-word:hover {
+    background-color: #c9aa71;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 0 20px #c9aa71;
+}
+
+/* Input stylisé pour saisir le mot */
+#whisper-trials-container #current-word {
+    width: 80%;
+    max-width: 400px;
+    padding: 15px;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.2em;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 15px 0;
+    transition: border 0.3s;
+}
+
+#whisper-trials-container #current-word:focus {
+    border: 2px solid #4CAF50;
+    outline: none;
+}
+
+/* Timer */
+#whisper-trials-container #timer {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffcc00;
+    margin-top: 10px;
+}
+
+/* Message pour les retours au joueur */
+#whisper-trials-container #message {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
+}
