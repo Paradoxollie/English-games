@@ -26,14 +26,16 @@ const gameState = {
 
 async function getRandomWord() {
     try {
-        const response = await fetch('https://random-word-api.herokuapp.com/word?length=5');
-        const [word] = await response.json();
+        const response = await fetch('https://api.datamuse.com/words?sp=?????&max=300');
+        const words = await response.json();
+        const word = words[Math.floor(Math.random() * words.length)].word;
         return word.toUpperCase();
     } catch (error) {
         console.error('Error fetching word:', error);
         return 'ERROR';
     }
 }
+
 
 async function initGame() {
     resetGameState();
@@ -64,20 +66,35 @@ function prepareNextGuess(lockedLetters) {
     gameState.currentGuess = lockedLetters.join('');
 }
 
-function handleCorrectGuess() {
-    gameState.score += 10;  // Ajoute 10 points pour chaque mot trouvé
-    updateMessage('Bravo ! Vous avez trouvé le mot ! +10 points.');
-    document.getElementById("score").textContent = gameState.score;
-    gameState.gameStatus = 'won';  // Marque le jeu comme gagné
-    setTimeout(startNewWord, 2000);  // Lance un nouveau mot après 2 secondes
+async function getWordDefinition(word) {
+    try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+        if (response.ok) {
+            const data = await response.json();
+            const definition = data[0].meanings[0].definitions[0].definition;
+            return definition;
+        } else {
+            return "Definition not found.";
+        }
+    } catch (error) {
+        console.error("Error fetching definition:", error);
+        return "Definition not available.";
+    }
 }
 
+async function handleCorrectGuess() {
+    gameState.score += 10;
+    const definition = await getWordDefinition(gameState.currentWord);
+    updateMessage(`Bravo ! Vous avez trouvé le mot ! +10 points. Définition : ${definition}`);
+    document.getElementById("score").textContent = gameState.score;
+    gameState.gameStatus = 'won';
+    setTimeout(startNewWord, 2000);
+}
 
-
-
-function handleGameOver() {
+async function handleGameOver() {
     gameState.gameStatus = 'lost';
-    updateMessage(`Game Over! Le mot était ${gameState.currentWord}. Score: ${gameState.score}`);
+    const definition = await getWordDefinition(gameState.currentWord);
+    updateMessage(`Game Over! Le mot était ${gameState.currentWord}. Définition : ${definition}. Score: ${gameState.score}`);
     promptForScore();
     addPlayAgainButton();
 }
@@ -295,32 +312,33 @@ function initializeVirtualKeyboard() {
     const keyboard = document.getElementById('keyboard');
     if (!keyboard) return;
     
-    // Nettoyer tous les anciens event listeners
+    // Supprime les anciens écouteurs s'ils existent
     const newKeyboard = keyboard.cloneNode(true);
     keyboard.parentNode.replaceChild(newKeyboard, keyboard);
-    
-    // Ajouter un seul event listener pour gérer les clics
+
+    // Ajoute un seul écouteur d'événements
     newKeyboard.addEventListener('click', handleButtonClick);
 }
 
-// Remplacer les multiples event listeners par un seul
-document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-    initializeVirtualKeyboard();
-    
-    // Gestion du clavier physique
-    document.addEventListener('keydown', (event) => {
-        const key = event.key.toUpperCase();
-        
-        if (key === 'BACKSPACE' || key === '←') {
+function handleButtonClick(event) {
+    if (gameState.gameStatus !== 'playing') return;
+
+    const button = event.target;
+    if (button.tagName === 'BUTTON') {
+        const key = button.textContent;
+        if (key === '←') {
             handleDelete();
-        } else if (key === 'ENTER') {
+        } else if (key === 'Enter') {
             handleGuess();
         } else if (/^[A-Z]$/.test(key)) {
             handleKeyInput(key);
         }
-    });
-});
+    }
+}
+
+
+
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', initGame);
 
@@ -335,6 +353,8 @@ document.addEventListener('keydown', (event) => {
         handleKeyInput(key);
     }
 });
+
+
 async function isValidWord(word) {
     try {
         // Appel à l'API pour vérifier si le mot existe

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Bubbles</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase App (obligatoire) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+<body class="page-with-sidebar">
+    <header>
+        <h1 class="site-title">Word Bubbles</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="all-games.html" class="active">Games</a>
+            <a href="courses.html">Courses</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="content-wrapper">
+        <main>
+            <section id="game-container" class="lost-in-migration">
+                <div id="word-box"></div>
+                <div id="word-input">
+                    <input type="text" id="current-word" placeholder="Type a word..." autofocus>
+                    <button id="submit-word">Submit</button>
+                </div>
+                <div id="score-display">Score: 0</div>
+                <div id="level-display">Level: 1</div>
+                <button id="start-reset" class="play-button">Start Game</button>
+                <div id="message"></div>
+            </section>
+
+            <!-- Top Scores Section -->
+            <div id="top-scores">
+                <h3>Top Scores</h3>
+                <ul id="top-scores-list"></ul>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+    </footer>
+
+    <script src="word-bubbles.js"></script>
+</body>
+</html>
