@@ -34,7 +34,7 @@ async function fetchRandomWord() {
         const [word] = await wordResponse.json();
 
         // Étape 2 : Obtenir la définition du mot via DictionaryAPI
-        const definitionResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const definitionResponse = await fetch(`filtered_words.txt`);
         const definitionData = await definitionResponse.json();
 
         // Vérifie si une définition existe pour le mot
@@ -51,9 +51,10 @@ async function fetchRandomWord() {
 }
 
 
+// Met à jour la vitesse de descente des bulles
 function updateSpeed() {
     const gameTimeInSeconds = (Date.now() - gameStartTime) / 1000;
-    speedMultiplier = 1 + (gameTimeInSeconds / 60) * 0.3; // Modifie ici pour ralentir
+    speedMultiplier = 1 + (gameTimeInSeconds / 30) * 0.5;
     return baseSpeed * speedMultiplier;
 }
 

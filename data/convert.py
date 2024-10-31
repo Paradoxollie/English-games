@@ -1,18 +1,17 @@
-import json
+# Charger la liste complète des mots
+with open('words_alpha.txt', 'r') as f:
+    all_words = set(word.strip().lower() for word in f if len(word.strip()) >= 3)  # Filtrer les mots de moins de 3 lettres directement
 
-def convert_to_json():
-    # Lire le fichier texte existant
-    with open('words-5-letters.json', 'r', encoding='utf-8') as f:
-        words = f.read().splitlines()
-    
-    # Nettoyer les mots (enlever les lignes vides et les espaces)
-    words = [word.strip() for word in words if word.strip()]
-    
-    # Créer le nouveau fichier JSON
-    with open('words-5-letters.json', 'w', encoding='utf-8') as f:
-        json.dump(words, f, indent=2)
-    
-    print(f"Converti {len(words)} mots en format JSON")
+# Charger la liste des mots offensants
+with open('en.txt', 'r') as f:
+    inappropriate_words = set(word.strip().lower() for word in f)
 
-if __name__ == "__main__":
-    convert_to_json()
+# Filtrer les mots offensants
+filtered_words = all_words - inappropriate_words
+
+# Sauvegarder la liste filtrée
+with open('filtered_words.txt', 'w') as f:
+    for word in sorted(filtered_words):
+        f.write(word + '\n')
+
+print("La liste filtrée a été créée dans 'filtered_words.txt'.")
