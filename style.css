@@ -1139,26 +1139,27 @@ header {
     .keyboard-row {
         display: flex;
         justify-content: center;
-        flex-wrap: nowrap;
+        flex-wrap: nowrap; /* Empêche le passage à une nouvelle ligne */
     }
 
-    /* Réduire la taille des boutons sur mobile */
+    /* Ajuster la taille et les marges des boutons pour les petits écrans */
     #keyboard button {
-        flex: 1 1 8%; /* Chaque touche occupe environ 8% de la ligne */
-        max-width: 8%;
-        height: 35px; /* Taille ajustée pour tenir sur l'écran */
-        width: 15px;
-        font-size: 14px;
-        margin: 1px;
+        flex: 1 1 9%; /* Chaque touche occupe environ 9% de la ligne */
+        max-width: 9%;
+        height: 40px; /* Taille légèrement plus grande pour la lisibilité */
+        width: auto;
+        font-size: 13px;
+        margin: 1px 2px; /* Réduire les marges pour gagner de l'espace */
     }
 
-    /* Ajustement des touches 'Delete' et 'Enter' */
+    /* Ajustement des touches 'Delete' et 'Enter' pour plus de largeur */
     #keyboard button:nth-last-child(2),
     #keyboard button:nth-last-child(1) {
-        flex: 1 1 15%;
-        max-width: 15%;
+        flex: 1 1 18%;
+        max-width: 18%;
     }
 }
+
 
 button.correct {
     background-color: #6aaa64; /* Vert pour les lettres correctes */
