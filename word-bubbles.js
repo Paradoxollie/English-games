@@ -26,29 +26,53 @@ modeSelect.addEventListener('change', (e) => {
     if (gameRunning) resetGame();
 });
 
-// Fonction pour obtenir un mot aléatoire et sa définition via une API
-async function fetchRandomWord() {
+// Charger la liste des mots depuis le fichier JSON
+let wordsList = [];
+
+async function loadWords() {
     try {
-        // Étape 1 : Obtenir un mot aléatoire avec l'API de mots aléatoires
-        const wordResponse = await fetch('https://random-word-api.herokuapp.com/word?number=1');
-        const [word] = await wordResponse.json();
+        const response = await fetch('words.json'); // Charger le fichier JSON à la racine
+        wordsList = await response.json();  // Charger le tableau JSON directement
+        console.log('Liste des mots chargée avec succès :', wordsList.slice(0, 10)); // Vérification
+    } catch (error) {
+        console.error('Erreur lors du chargement des mots :', error);
+    }
+}
+
+// Fonction pour obtenir un mot aléatoire de la liste et sa définition via DictionaryAPI
+async function fetchRandomWord() {
+    // Assurez-vous que la liste des mots est chargée
+    if (wordsList.length === 0) {
+        await loadWords();
+    }
+
+    try {
+        // Étape 1 : Sélectionner un mot aléatoire dans la liste locale
+        const word = wordsList[Math.floor(Math.random() * wordsList.length)];
 
         // Étape 2 : Obtenir la définition du mot via DictionaryAPI
-        const definitionResponse = await fetch(`words.json`);
+        const definitionResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const definitionData = await definitionResponse.json();
 
         // Vérifie si une définition existe pour le mot
         let definition = "Définition introuvable.";
-        if (Array.isArray(definitionData) && definitionData[0]?.meanings[0]?.definitions[0]?.definition) {
+        if (Array.isArray(definitionData) && definitionData[0]?.meanings?.[0]?.definitions?.[0]?.definition) {
             definition = definitionData[0].meanings[0].definitions[0].definition;
         }
 
         return { word, definition };
     } catch (error) {
-        console.error('Erreur lors de la récupération du mot ou de la définition:', error);
+        console.error('Erreur lors de la récupération de la définition:', error);
         return { word: null, definition: null };
     }
 }
+
+// Exemple d'utilisation
+loadWords().then(async () => {
+    const { word, definition } = await fetchRandomWord();
+    console.log(`Mot : ${word}\nDéfinition : ${definition}`);
+});
+
 
 
 // Met à jour la vitesse de descente des bulles
