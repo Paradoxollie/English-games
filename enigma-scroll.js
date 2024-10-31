@@ -287,39 +287,17 @@ function addPlayAgainButton() {
 }
 
 
-function handleButtonClick(event) {
-    if (gameState.gameStatus !== 'playing') return;
-    
-    const button = event.target;
-    if (button.tagName === 'BUTTON') {
-        // Empêcher le comportement par défaut pour éviter les doubles clics
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const key = button.textContent;
-        
-        if (key === '←') {
-            handleDelete();
-        } else if (key === 'Enter') {
-            handleGuess();
-        } else if (/^[A-Z]$/.test(key)) {
-            handleKeyInput(key);
-        }
-    }
-}
 
+
+// Fonction pour initialiser le clavier virtuel
 function initializeVirtualKeyboard() {
     const keyboard = document.getElementById('keyboard');
     if (!keyboard) return;
     
-    // Supprime les anciens écouteurs s'ils existent
-    const newKeyboard = keyboard.cloneNode(true);
-    keyboard.parentNode.replaceChild(newKeyboard, keyboard);
-
-    // Ajoute un seul écouteur d'événements
-    newKeyboard.addEventListener('click', handleButtonClick);
+    keyboard.addEventListener('click', handleButtonClick); // Ajoute un seul écouteur
 }
 
+// Gère les clics sur le clavier virtuel
 function handleButtonClick(event) {
     if (gameState.gameStatus !== 'playing') return;
 
@@ -336,7 +314,11 @@ function handleButtonClick(event) {
     }
 }
 
-
+// Fonction principale qui initialise le jeu et le clavier
+document.addEventListener('DOMContentLoaded', () => {
+    initGame();
+    initializeVirtualKeyboard(); // Active le clavier virtuel ici
+});
 
 
 // Event Listeners
