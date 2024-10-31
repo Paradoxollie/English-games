@@ -1187,6 +1187,24 @@ button.present {
 button.incorrect {
     background-color: #000000; /* Gris pour les lettres absentes */
 }
-#word-box {
-    border: 2px dashed red;
+/* Style spécifique pour Word Bubbles */
+.word-bubbles #word-box {
+    position: relative;
+    width: 80%;
+    height: 800px;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    margin: 20px auto;
+    border: 3px solid #4CAF50;
+}
+
+@media (max-width: 768px) {
+    .word-bubbles #word-box {
+        width: 90%;
+        height: calc(100vh - 300px);
+        min-height: 400px;
+    }
 }
