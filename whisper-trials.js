@@ -5,6 +5,7 @@ const wordInput = document.getElementById('current-word');
 const submitButton = document.getElementById('submit-word');
 const playSoundButton = document.getElementById('play-sound');
 const modeSelect = document.getElementById('game-mode');
+const startGameButton = document.getElementById('start-game');
 let messageDisplay = document.getElementById('message');
 let score = 0;
 let gameRunning = false;
@@ -12,18 +13,21 @@ let gameMode = 'easy';
 let currentWord = '';
 let timeRemaining = 60; // Temps en secondes
 let timerInterval;
+let scoreSaved = false; // Ajoute cette variable
 
 // Initialisation du mode de jeu
 modeSelect.addEventListener('change', (e) => {
     gameMode = e.target.value;
-    resetGame();
 });
 
-// Fonction pour démarrer le jeu
 function startGame() {
+    // Arrêter tout timer existant
+    clearInterval(timerInterval);
+    
     gameRunning = true;
     score = 0;
-    timeRemaining = 60; // Réinitialiser le temps
+    scoreSaved = false;
+    timeRemaining = 60;
     scoreDisplay.textContent = 'Score: 0';
     timerDisplay.textContent = `Time: ${timeRemaining}s`;
     messageDisplay.textContent = '';
@@ -31,24 +35,46 @@ function startGame() {
     startTimer();
 }
 
-// Fonction pour démarrer le timer
+// Modification de la fonction startTimer
 function startTimer() {
+    // S'assurer qu'il n'y a pas de timer en cours
+    clearInterval(timerInterval);
+    
+    if (!gameRunning) return;
+
     timerInterval = setInterval(() => {
-        timeRemaining--;
-        timerDisplay.textContent = `Time: ${timeRemaining}s`;
-        
         if (timeRemaining <= 0) {
             clearInterval(timerInterval);
             endGame();
+            return;
         }
+        timeRemaining--;
+        timerDisplay.textContent = `Time: ${timeRemaining}s`;
     }, 1000);
 }
 
-// Fonction pour terminer le jeu
+// Modification de la fonction endGame
 function endGame() {
     gameRunning = false;
+    clearInterval(timerInterval);
+    timeRemaining = 0; // Forcer le timer à 0
+    timerDisplay.textContent = `Time: ${timeRemaining}s`;
     showMessage(`Game Over! Final Score: ${score}`, 'red');
-    saveScoreToFirebase(score);
+
+    if (!scoreSaved) {
+        scoreSaved = true;
+        setTimeout(() => {
+            saveScoreToFirebase(score);
+        }, 100);
+    }
+}
+
+// Modification de la fonction resetGame
+function resetGame() {
+    clearInterval(timerInterval);
+    gameRunning = false;
+    timeRemaining = 60;
+    startGame();
 }
 
 // Vérification du mot saisi
@@ -315,8 +341,17 @@ playSoundButton.addEventListener('click', () => playWordSound(currentWord));
 submitButton.addEventListener('click', checkWord);
 wordInput.addEventListener('keydown', (e) => e.key === 'Enter' && checkWord());
 
-// Démarre le jeu automatiquement
-document.addEventListener('DOMContentLoaded', () => {
+startGameButton.addEventListener('click', () => {
     loadTopScores();
     startGame();
+});
+// Charger les scores dès le chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    loadTopScores(); // Charge uniquement les scores
+    // Ne pas démarrer le jeu automatiquement
+});
+
+// Démarre le jeu uniquement lorsque l'utilisateur clique sur "Start Game"
+startGameButton.addEventListener('click', () => {
+    startGame(); // Démarre le jeu
 });
