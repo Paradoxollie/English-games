@@ -34,7 +34,7 @@ async function fetchRandomWord() {
         const [word] = await wordResponse.json();
 
         // Étape 2 : Obtenir la définition du mot via DictionaryAPI
-        const definitionResponse = await fetch(`filtered_words.txt`);
+        const definitionResponse = await fetch(`words.json`);
         const definitionData = await definitionResponse.json();
 
         // Vérifie si une définition existe pour le mot
