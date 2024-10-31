@@ -370,6 +370,24 @@ async function isValidWord(word) {
         return false;  // Si l'API échoue, on considère que le mot n'existe pas
     }
 }
+function updateKeyboardColors(guess) {
+    guess.split('').forEach((letter, index) => {
+        const buttons = document.querySelectorAll('#keyboard button');
+        buttons.forEach((button) => {
+            if (button.textContent === letter) {
+                button.classList.remove('correct', 'present', 'incorrect'); // Enlève les classes pour éviter les conflits
+
+                if (letter === gameState.currentWord[index]) {
+                    button.classList.add('correct'); // Lettre correctement placée
+                } else if (gameState.currentWord.includes(letter)) {
+                    button.classList.add('present'); // Lettre présente mais mal placée
+                } else {
+                    button.classList.add('incorrect'); // Lettre absente
+                }
+            }
+        });
+    });
+}
 
 function submitGuess(guess) {
     // Vérifier le mot complet
@@ -396,6 +414,8 @@ function submitGuess(guess) {
     gameState.currentGuess = lockedLetters.join('');
     
     renderGrid();
+
+    updateKeyboardColors(guess); 
 }
 
 async function handleGuess() {

@@ -1158,3 +1158,14 @@ button {
     cursor: pointer;
 }
 
+button.correct {
+    background-color: #6aaa64; /* Vert pour les lettres correctement placées */
+}
+
+button.present {
+    background-color: #c9b458; /* Jaune pour les lettres présentes mais mal placées */
+}
+
+button.incorrect {
+    background-color: #000000; /* Gris pour les lettres absentes */
+}
