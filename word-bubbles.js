@@ -51,10 +51,9 @@ async function fetchRandomWord() {
 }
 
 
-// Met à jour la vitesse de descente des bulles
 function updateSpeed() {
     const gameTimeInSeconds = (Date.now() - gameStartTime) / 1000;
-    speedMultiplier = 1 + (gameTimeInSeconds / 30) * 0.5;
+    speedMultiplier = 1 + (gameTimeInSeconds / 60) * 0.3; // Modifie ici pour ralentir
     return baseSpeed * speedMultiplier;
 }
 
