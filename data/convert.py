@@ -1,17 +1,12 @@
-# Charger la liste complète des mots
-with open('words_alpha.txt', 'r') as f:
-    all_words = set(word.strip().lower() for word in f if len(word.strip()) >= 3)  # Filtrer les mots de moins de 3 lettres directement
+import json
 
-# Charger la liste des mots offensants
-with open('en.txt', 'r') as f:
-    inappropriate_words = set(word.strip().lower() for word in f)
+# Charger les mots depuis un fichier JSON
+with open('words.json', 'r') as file:
+    words = json.load(file)
 
-# Filtrer les mots offensants
-filtered_words = all_words - inappropriate_words
+# Filtrer les mots entre 3 et 5 lettres
+filtered_words = [word for word in words if 8 <= len(word) <= 22]
 
-# Sauvegarder la liste filtrée
-with open('filtered_words.txt', 'w') as f:
-    for word in sorted(filtered_words):
-        f.write(word + '\n')
-
-print("La liste filtrée a été créée dans 'filtered_words.txt'.")
+# Afficher les mots dans le format souhaité
+formatted_output = ", ".join(f'"{word}"' for word in filtered_words)
+print(formatted_output)

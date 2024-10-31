@@ -54,10 +54,12 @@ async function fetchRandomWord() {
         const definitionResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
         const definitionData = await definitionResponse.json();
 
-        // Vérifie si une définition existe pour le mot
+        // Vérifie si la réponse contient une définition valide
         let definition = "Définition introuvable.";
-        if (Array.isArray(definitionData) && definitionData[0]?.meanings?.[0]?.definitions?.[0]?.definition) {
+        if (Array.isArray(definitionData) && definitionData.length > 0 && definitionData[0]?.meanings?.[0]?.definitions?.[0]?.definition) {
             definition = definitionData[0].meanings[0].definitions[0].definition;
+        } else {
+            console.warn(`Aucune définition trouvée pour le mot : ${word}`);
         }
 
         return { word, definition };
