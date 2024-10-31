@@ -1126,16 +1126,37 @@ header {
     flex: 1.5;
 }
 
-@media (max-width: 480px) {
-    .keyboard-row button {
-        height: 40px;
-        font-size: 0.9em;
+@media (max-width: 600px) {
+    #keyboard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%; /* Assure que le clavier reste à l'intérieur de la boîte du jeu */
     }
-}
-.keyboard-row {
-    display: flex;
-    justify-content: center;
-    margin: 5px 0;
+
+    /* Organiser les boutons du clavier sur 3 lignes */
+    .keyboard-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+
+    /* Réduire la taille des boutons sur mobile */
+    #keyboard button {
+        flex: 1 1 8%; /* Chaque touche occupe environ 8% de la ligne */
+        max-width: 8%;
+        height: 35px; /* Taille ajustée pour tenir sur l'écran */
+        font-size: 14px;
+        margin: 1px;
+    }
+
+    /* Ajustement des touches 'Delete' et 'Enter' */
+    #keyboard button:nth-last-child(2),
+    #keyboard button:nth-last-child(1) {
+        flex: 1 1 15%;
+        max-width: 15%;
+    }
 }
 
 button.correct {
