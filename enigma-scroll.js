@@ -51,6 +51,7 @@ function resetGameState() {
 }
 
 async function startNewWord() {
+    resetKeyboardColors(); // Réinitialise les couleurs du clavier
     gameState.currentWord = await getRandomWord();
     gameState.currentGuess = '';
     gameState.guesses = [];
@@ -58,6 +59,7 @@ async function startNewWord() {
     renderGrid();
     updateMessage('Devinez le mot ! La première lettre est révélée.');
 }
+
 
 
 
@@ -85,11 +87,12 @@ async function getWordDefinition(word) {
 async function handleCorrectGuess() {
     gameState.score += 10;
     const definition = await getWordDefinition(gameState.currentWord);
-    updateMessage(`Bravo ! Vous avez trouvé le mot ! +10 points. Définition : ${definition}`);
+    updateMessage(`Bravo ! Vous avez trouvé le mot : ${gameState.currentWord}. +10 points. Définition : ${definition}`);
     document.getElementById("score").textContent = gameState.score;
     gameState.gameStatus = 'won';
     setTimeout(startNewWord, 2000);
 }
+
 
 async function handleGameOver() {
     gameState.gameStatus = 'lost';
@@ -275,7 +278,12 @@ async function loadTopScores() {
 }
 
 function updateMessage(text) {
-    document.getElementById("message").textContent = text;
+    const messageElement = document.getElementById("message");
+    if (text.includes('Définition')) {
+        messageElement.textContent = text; // Affiche la définition
+    } else if (!messageElement.textContent.includes('Définition')) {
+        messageElement.textContent = text; // Affiche uniquement si pas de définition
+    }
 }
 
 function addPlayAgainButton() {
@@ -419,4 +427,10 @@ async function handleGuess() {
 
     // Si le mot est valide, soumets la réponse
     submitGuess(cleanGuess);
+}
+function resetKeyboardColors() {
+    const buttons = document.querySelectorAll('#keyboard button');
+    buttons.forEach(button => {
+        button.classList.remove('correct', 'present', 'incorrect');
+    });
 }
