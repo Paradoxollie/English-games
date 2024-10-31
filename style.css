@@ -1144,9 +1144,10 @@ header {
 
     /* Réduire la taille des boutons sur mobile */
     #keyboard button {
-        flex: 1 1 6%; /* Chaque touche occupe environ 8% de la ligne */
-        max-width: 6%;
+        flex: 1 1 8%; /* Chaque touche occupe environ 8% de la ligne */
+        max-width: 8%;
         height: 35px; /* Taille ajustée pour tenir sur l'écran */
+        width: 15px;
         font-size: 14px;
         margin: 1px;
     }
