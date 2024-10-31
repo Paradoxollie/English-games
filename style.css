@@ -471,6 +471,7 @@ footer {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
     margin: 20px auto;
     border: 3px solid #4CAF50;
+    
 }
 
 
@@ -1185,4 +1186,7 @@ button.present {
 
 button.incorrect {
     background-color: #000000; /* Gris pour les lettres absentes */
+}
+#word-box {
+    border: 2px dashed red;
 }

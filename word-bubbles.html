@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Bubbles</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase App (obligatoire) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Supprimé les imports Firebase du head car ils sont dans le body -->
 </head>
 <body class="page-with-sidebar">
     <header>
@@ -20,32 +18,55 @@
         </nav>
     </header>
 
-    <div class="content-wrapper">
-        <main>
-            <section id="game-container" class="lost-in-migration">
-                <div id="word-box"></div>
-                <div id="word-input">
-                    <input type="text" id="current-word" placeholder="Type a word..." autofocus>
-                    <button id="submit-word">Submit</button>
-                </div>
-                <div id="score-display">Score: 0</div>
-                <div id="level-display">Level: 1</div>
-                <button id="start-reset" class="play-button">Start Game</button>
-                <div id="message"></div>
-            </section>
+    <div id="game-container" class="word-bubbles">
+        <!-- Sélection du mode de jeu -->
+        <div id="mode-selection">
+            <label for="game-mode">Choose Game Mode:</label>
+            <select id="game-mode">
+                <option value="normal">Normal</option>
+                <option value="training">Training</option>
+            </select>
+        </div>
 
-            <!-- Top Scores Section -->
-            <div id="top-scores">
-                <h3>Top Scores</h3>
-                <ul id="top-scores-list"></ul>
-            </div>
-        </main>
+        <!-- Zone de jeu -->
+        <div id="word-box"></div>
+        
+        <!-- Contrôles du jeu -->
+        <div id="game-controls">
+            <input type="text" id="current-word" placeholder="Enter word...">
+            <button id="submit-word">Submit</button>
+            <button id="start-reset">Start Game</button>
+        </div>
+        
+        <!-- Affichage du score et messages -->
+        <div id="score-display">Score: 0</div>
+        <div id="message"></div>
+        
+        <!-- Top Scores -->
+        <div id="top-scores">
+            <ul id="top-scores-list"></ul>
+        </div>
     </div>
 
     <footer>
         <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
     </footer>
 
+    <!-- Firebase version 8 (qui correspond à votre code JS) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
     <script src="word-bubbles.js"></script>
 </body>
 </html>
