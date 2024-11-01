@@ -14,50 +14,85 @@
 
 /* Barre de vie */
 #health-container {
-    width: 100%;
-    height: 20px;
-    background-color: #333;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 10px;
+    width: 80%;
+    height: 24px;
+    background-color: #2a2a2a;
+    border: 2px solid #555;
+    border-radius: 12px;
+    padding: 3px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
 
 #health-bar {
-    width: 100%; /* Commence à 100% et se réduit */
+    width: 100%;
     height: 100%;
-    background-color: #ff4c4c;
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, #ff4c4c, #ff1e1e, #d60000);
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Section des lettres */
-#letters-container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+/* Timer et Score */
+#timer-display {
+    font-size: 1.2em;
+    color: white;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#score-display {
+    color: #4CAF50;
+    font-size: 24px;
+    font-weight: bold;
     margin-bottom: 20px;
 }
 
+/* Style pour le conteneur des lettres en deux colonnes */
+#letters-container.flower-shape {
+    display: grid !important;
+    grid-template-columns: repeat(2, auto) !important;
+    gap: 15px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 20px auto !important;
+    width: auto !important;
+}
+
+/* Container pour chaque colonne */
+.column {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    align-items: center !important;
+}
+
+/* Style pour toutes les lettres */
 .letter {
     background-color: #4CAF50;
     color: white;
-    font-size: 2.5em;
+    font-size: 2em;
     padding: 15px;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    clip-path: polygon(50% 0%, 95% 20%, 80% 80%, 20% 80%, 5% 20%);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s, background-color 0.3s;
 }
 
-/* Lettre bonus */
+/* Style spécial pour la lettre bonus */
 .letter.bonus {
-    background-color: #FFD700; /* Couleur or pour la lettre bonus */
-    color: #000;
-    font-weight: bold;
-    border: 2px solid #ffeb3b;
+    grid-column: 1 / -1 !important;
+    background-color: #FFD700 !important;
+    color: #000 !important;
+    font-weight: bold !important;
+    border: 2px solid #ffeb3b !important;
     animation: pulse 1s infinite;
+    margin: 10px auto !important;
+    justify-self: center !important;
 }
 
 /* Animation pour la lettre bonus */
@@ -70,12 +105,20 @@
     }
 }
 
-/* Champ de saisie et boutons */
+/* Effet hover sur les lettres */
+.letter:hover {
+    transform: scale(1.1);
+    background-color: #ffeb3b;
+}
+
+/* Contrôles du jeu */
 #game-controls {
     display: flex;
     gap: 10px;
+    margin-top: 20px;
 }
 
+/* Style pour l'input */
 #current-word {
     padding: 10px;
     font-size: 1.2em;
@@ -87,8 +130,9 @@
     width: 200px;
 }
 
-#submit-word {
-    padding: 10px 15px;
+/* Style pour les boutons */
+#submit-word, #reset-game, #start-game {
+    padding: 10px 20px;
     font-size: 1.2em;
     background-color: #4CAF50;
     color: white;
@@ -98,85 +142,65 @@
     transition: background-color 0.3s;
 }
 
-#submit-word:hover {
+#submit-word:hover, #reset-game:hover, #start-game:hover {
     background-color: #c9aa71;
 }
 
-/* Score et messages */
-#score-display {
-    color: #ffeb3b;
-    font-size: 1.5em;
-    font-weight: bold;
+#submit-word:disabled, #reset-game:disabled, #start-game:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
+/* Message */
 #message {
-    color: #ff6b6b;
     font-size: 1.2em;
-    margin-top: 10px;
+    margin-top: 20px;
     font-weight: bold;
+    color: white;
     text-align: center;
 }
 
-/* Section des scores */
+/* Top Scores */
 #top-scores {
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 15px;
+    padding: 20px;
     border-radius: 15px;
-    max-width: 250px;
+    margin-top: 20px;
     width: 100%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    text-align: center;
+    max-width: 250px;
 }
 
 #top-scores h3 {
-    color: #ffffff;
+    color: white;
     margin-bottom: 10px;
-}
-
-#top-scores-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-#top-scores-list li {
-    background-color: rgba(73, 68, 68, 0.7);
-    color: #ffffff;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    font-size: 1.1em;
-}
-
-/* Effets de transition pour les lettres */
-.letter {
-    transition: transform 0.3s, background-color 0.3s;
-}
-
-.letter:hover {
-    transform: scale(1.1);
-    background-color: #ffeb3b;
+    text-align: center;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-    #game-container {
-        width: 90%;
+    #game-container.echoes-of-lexicon {
+        width: 95%;
         padding: 10px;
     }
 
     .letter {
-        width: 50px;
-        height: 50px;
-        font-size: 2em;
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.8em;
     }
 
-    #submit-word {
-        font-size: 1em;
-        padding: 8px 12px;
+    #game-controls {
+        flex-direction: column;
+        align-items: center;
     }
 
     #current-word {
-        font-size: 1em;
-        width: 150px;
+        width: 90%;
+        margin-bottom: 10px;
+    }
+
+    #submit-word, #reset-game, #start-game {
+        width: 90%;
+        margin: 5px 0;
     }
 }
