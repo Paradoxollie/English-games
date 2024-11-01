@@ -40,13 +40,13 @@ main {
 #keyboard .enigma-keyboard {
     display: flex;
     justify-content: center;
-    margin: 5px 0;
+    margin: 2px 0;
 }
 
 button {
-    padding: 10px;
+    padding: 8px;
     font-size: 1em;
-    margin: 3px;
+    margin: 2px;
     cursor: pointer;
 }
 
