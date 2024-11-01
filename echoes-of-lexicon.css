@@ -1,0 +1,146 @@
+/* Container principal du jeu */
+#game-container.echoes-of-lexicon {
+    background-color: rgba(0, 0, 0, 0.85);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Section des lettres */
+#letters-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.letter {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 2.5em;
+    padding: 15px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Champ de saisie et boutons */
+#game-controls {
+    display: flex;
+    gap: 10px;
+}
+
+#current-word {
+    padding: 10px;
+    font-size: 1.2em;
+    border: 2px solid #c9aa71;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    text-align: center;
+    width: 200px;
+}
+
+#submit-word {
+    padding: 10px 15px;
+    font-size: 1.2em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#submit-word:hover {
+    background-color: #c9aa71;
+}
+
+/* Score et messages */
+#score-display {
+    color: #ffeb3b;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#message {
+    color: #ff6b6b;
+    font-size: 1.2em;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Section des scores */
+#top-scores {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 250px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+#top-scores h3 {
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+#top-scores-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#top-scores-list li {
+    background-color: rgba(73, 68, 68, 0.7);
+    color: #ffffff;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+
+/* Effets de transition pour les lettres */
+.letter {
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.letter:hover {
+    transform: scale(1.1);
+    background-color: #ffeb3b;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #game-container {
+        width: 90%;
+        padding: 10px;
+    }
+
+    .letter {
+        width: 50px;
+        height: 50px;
+        font-size: 2em;
+    }
+
+    #submit-word {
+        font-size: 1em;
+        padding: 8px 12px;
+    }
+
+    #current-word {
+        font-size: 1em;
+        width: 150px;
+    }
+}

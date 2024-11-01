@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes of Lexicon</title>
+    <link rel="stylesheet" href="style.css"> <!-- Style principal -->
+    <link rel="stylesheet" href="echoes-of-lexicon.css"> <!-- Style spécifique pour le jeu -->
+</head>
+<body class="page-with-sidebar">
+    <header>
+        <h1 class="site-title">Echoes of Lexicon</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="all-games.html" class="active">Games</a>
+            <a href="courses.html">Courses</a>
+            <a href="leaderboard.html">Leaderboard</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+    
+    <div class="game-intro">
+        <h2>Echoes of Lexicon</h2>
+        <p>Discover hidden words whispered through ancient scrolls. Unravel each word to uncover powerful secrets!</p>
+    </div>
+    
+    <div id="game-container" class="echoes-of-lexicon">
+        <!-- Zone de jeu -->
+        <div id="letters-container">
+            <div id="central-letter" class="letter"></div>
+            <div id="other-letters"></div>
+        </div>
+        
+        <!-- Contrôles du jeu -->
+        <div id="game-controls">
+            <input type="text" id="current-word" placeholder="Enter word..." autofocus>
+            <button id="submit-word">Submit</button>
+        </div>
+        
+        <!-- Affichage du score et messages -->
+        <div id="score-display">Score: 0</div>
+        <div id="message"></div>
+        
+        <!-- Top Scores -->
+        <div id="top-scores">
+            <h3>Top Scores</h3>
+            <ul id="top-scores-list"></ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase et script de jeu -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="echoes-of-lexicon.js"></script>
+</body>
+</html>
