@@ -6,12 +6,14 @@ const submitWordButton = document.getElementById('submit-word');
 const scoreDisplay = document.getElementById('score-display');
 const messageEl = document.getElementById('message');
 const topScoresList = document.getElementById('top-scores-list');
+const healthBarEl = document.getElementById('health-bar');
 
 // Variables de jeu
 let centralLetter = '';
 let otherLetters = [];
 let bonusLetter = '';
 let score = 0;
+let health = 10;  // Points de vie
 let usedWords = new Set();
 let validWords = [];
 
@@ -20,10 +22,11 @@ fetch('words.json')
     .then(response => response.json())
     .then(data => {
         validWords = data.words;
+        console.log("Words loaded:", validWords.length);  // Vérifier le nombre de mots chargés
     })
     .catch(error => console.error('Error loading words:', error));
 
-// Initialiser les lettres du jeu avec un équilibre de voyelles et consonnes
+// Initialiser les lettres du jeu avec un équilibre de voyelles/consonnes + bonus
 function initializeGame() {
     const letters = generateBalancedLetters();
     centralLetter = letters[0];
@@ -37,15 +40,17 @@ function initializeGame() {
     otherLettersEl.innerHTML += `<div class="letter bonus">${bonusLetter.toUpperCase()}</div>`;
 
     score = 0;
+    health = 10;
     usedWords.clear();
     updateScore();
+    updateHealth();
     messageEl.textContent = '';
 }
 
-// Générer des lettres avec équilibre voyelles/consonnes + bonus
+// Générer des lettres avec équilibre voyelles/consonnes + bonus et ratio d'apparition
 function generateBalancedLetters() {
-    const vowels = 'aeiou';
-    const consonants = 'bcdfghjklmnpqrstvwxyz';
+    const vowels = 'aaaaeeeeiiiioou'; // Voyelles plus fréquentes
+    const consonants = 'bbccddffgghjkllmmnnppqrrssttvwxyzz'; // Consonnes ajustées en fréquence
     const letters = [];
 
     // Choisir une voyelle centrale
@@ -68,8 +73,10 @@ function generateBalancedLetters() {
     return letters;
 }
 
-// Vérifier si un mot est valide
+// Vérifier si un mot est valide en utilisant le fichier words.json
 function isValidWord(word) {
+    console.log(`Checking word: ${word}`);
+    console.log("Valid words array:", validWords);
     return word.length >= 4 &&
            word.includes(centralLetter) &&
            !usedWords.has(word) &&
@@ -92,6 +99,8 @@ function submitWord() {
         messageEl.textContent = usedWords.has(word) ? 'Word already used!' : 'Invalid word!';
         messageEl.style.color = 'red';
         score -= 1;  // Pénalité pour mot invalide ou déjà utilisé
+        health -= 1; // Réduction de vie pour mot invalide
+        updateHealth();
         updateScore();
     }
     currentWordEl.value = '';
@@ -117,6 +126,17 @@ function fetchDefinition(word, points) {
 // Mettre à jour l'affichage du score
 function updateScore() {
     scoreDisplay.textContent = `Score: ${score}`;
+}
+
+// Mettre à jour la barre de vie
+function updateHealth() {
+    healthBarEl.style.width = `${health * 10}%`;
+    if (health <= 0) {
+        messageEl.textContent = 'Game over! Try again.';
+        messageEl.style.color = 'red';
+        submitWordButton.disabled = true;
+        currentWordEl.disabled = true;
+    }
 }
 
 // Événement de clic sur le bouton de soumission
