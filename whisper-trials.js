@@ -200,7 +200,7 @@ function loadTopScores() {
         const db = firebase.firestore();
         db.collection("whisper_trials_scores")
           .orderBy("score", "desc")
-          .limit(10)
+          .limit(5)
           .get()
           .then((querySnapshot) => {
               const topScoresList = document.getElementById("top-scores-list");
