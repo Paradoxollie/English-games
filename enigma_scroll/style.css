@@ -1,0 +1,69 @@
+/* Styles généraux pour le jeu */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header, nav, footer {
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+}
+
+header h1 {
+    font-size: 2em;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-intro {
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+#game-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#keyboard .enigma-keyboard {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+button {
+    padding: 10px;
+    font-size: 1em;
+    margin: 3px;
+    cursor: pointer;
+}
+
+button.correct { background-color: #6aaa64; color: #fff; }
+button.present { background-color: #c9b458; color: #fff; }
+button.incorrect { background-color: #787c7e; color: #fff; }
+
+#top-scores ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#top-scores li {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+footer p {
+    margin: 0;
+}

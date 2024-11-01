@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wordle</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        <link rel="stylesheet" href="style.css"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    </head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="script.js" type="module"></script>
+    <body>
+        <h1 id="title">Customized Wordle</h1>
+
+        <div id="timersDisplay">
+            <table>
+                <tr id="mainTimerDisplay" hidden>
+                    <td class="mediumText">Total Time Left</td>
+                    <td class="shortText" id="mainTimer" style="border-right: none;"></td>
+                    <td class="shortText" id="change" style="border-left: none; width: 50px;"></td>
+                </tr>
+                <tr id="per-GuessTimerDisplay" hidden>
+                    <td class="mediumText">Time to Make a Guess</td>
+                    <td class="shortText" id="per-GuessTimer" colspan="2"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="firework" hidden></div>
+        <div class="firework" hidden></div>
+        <div class="firework" hidden></div>
+        <div class="firework" hidden></div>
+
+        <p id="error">Loading.... if this message doesn't disappear after a few seconds, then there is an error in the script file (or it doesn't exist / incorrect path to it) or this isn't opened as a live server</p>
+
+        <div id="game-board"></div>
+        
+        <div id="keyboard-cont">
+            <div class="first-row">
+                <button class="keyboard-button">q</button>
+                <button class="keyboard-button">w</button>
+                <button class="keyboard-button">e</button>
+                <button class="keyboard-button">r</button>
+                <button class="keyboard-button">t</button>
+                <button class="keyboard-button">y</button>
+                <button class="keyboard-button">u</button>
+                <button class="keyboard-button">i</button>
+                <button class="keyboard-button">o</button>
+                <button class="keyboard-button">p</button>
+            </div>
+            <div class="second-row">
+                <button class="keyboard-button">a</button>
+                <button class="keyboard-button">s</button>
+                <button class="keyboard-button">d</button>
+                <button class="keyboard-button">f</button>
+                <button class="keyboard-button">g</button>
+                <button class="keyboard-button">h</button>
+                <button class="keyboard-button">j</button>
+                <button class="keyboard-button">k</button>
+                <button class="keyboard-button">l</button>
+            </div>
+            <div class="third-row">
+                <button class="keyboard-button">Del</button>
+                <button class="keyboard-button">z</button>
+                <button class="keyboard-button">x</button>
+                <button class="keyboard-button">c</button>
+                <button class="keyboard-button">v</button>
+                <button class="keyboard-button">b</button>
+                <button class="keyboard-button">n</button>
+                <button class="keyboard-button">m</button>
+                <button class="keyboard-button">Enter</button>
+            </div>
+        </div>
+        
+        <p id="settingsLine"><button id="showSettings" class="button"><img src="settings.png" alt="Show/Hide Settings" title="Show/Hide Settings" style="width: 76px;"></button><button id="openColorConfig" class="button" onclick="var a = document.getElementById('main'); if (a.hidden === true) {a.hidden = false;} else {a.hidden = true;}"><img src="colors_2.png" alt="Customize Colors" title="Customize Colors" style="width: 51px;"></button><button id="restart" class="button"><img src="restart.png" alt="Restart" title="Restart" style="width: 54px;"></button><button id="openTimers" class="button" onclick="var a = document.getElementById('timers'); if (a.hidden === true) {a.hidden = false;} else {a.hidden = true;}"><img src="timers.jpg" alt="Open Timer Config" title="Open Timer Config" style="width: 51.5px;"></button><button class="button" id="openDebugOptions" onclick="var a = document.getElementById('debug'); if (a.hidden === true) {a.hidden = false;} else {a.hidden = true;}"><img src="debug.png" alt="Open Debug Options" title="Open Debug Options" style="width: 60px;"></button></p>
+        <p id="countdownLine"><span id="countdown"></span><input type="button" value="cancel" id="cancel" hidden></p>
+        <div id="settings" hidden>
+            <p id="autoRestartLine"><label><input type="checkbox" name="autoRestart" id="autoRestart">Auto Restart after correct guess</label><br>Cooldown: <input type="number" name="autoRestartCooldown" id="autoRestartCooldown" value="3" min="1" class="input"></p>
+            <p id="animationsLine"><label><input type="checkbox" name="animations" id="animations" checked>Enable Animations</label></p>
+            <p id="numOfGuesses" title="Changing this value automatically restarts the game and generates a new word to guess.">Number of Guesses: <input type="number" name="numOfGuessesType" id="numOfGuessesType" min="1" max="20" value="9" class="input"></p>
+            <p id="wordLength" title="Changing this value automatically restarts the game and generates a new word to guess.">Word Length: <input type="number" name="wordLengthInput" id="wordLengthInput" min="3" max="16" value="5" class="input"> <span id="tooFewWords" hidden title="The database is a bit weak of words in the length you chose. Some valid words may not be accepted.">⚠️</span></p>
+            <p id="squareFontLine"><label><input type="checkbox" name="squareFont" id="squareFont">Square Font for Timers</label></p>
+        </div>
+        <div id="main" hidden>
+            <h2 style="color: rgb(0, 255, 200);" id="h2title">Color customization</h2>
+                <table>
+                    <tr>
+                        <td class="shortText">Background color <input type="color" name="BackgroundColor" id="BackgroundColor" value="#191919"></td>
+                        <td class="shortText">Text color <input type="color" name="letterColor" id="letterColor" value="#ffffff"></td>
+                        <td class="shortText">Outline color <input type="color" name="outlineColor" id="outlineColor" value="#a9a9a9"></td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Current guessing row's <br> background color <input type="color" name="currentGuessBGColor" id="currentGuessBGColor" value="#141432"></td>
+                        <td class="mediumText">Current guessing row's <br> letter color <input type="color" name="currentGuessLetterColor" id="currentGuessLetterColor" value="#00ffff"></td>
+                        <td class="longText">Current guessing row's temporary <br> background color on invalid guess <input type="color" name="incorrectGuessRowColor" id="incorrectGuessRowColor" value="#ff0000"></td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Green letters' color <input type="color" name="greenColor" id="greenColor" value="#008000"></td>
+                        <td class="mediumText">Yellow letters' color <input type="color" name="yellowColor" id="yellowColor" value="#afaf00"></td>
+                        <td class="mediumText">Grey letters' color <input type="color" name="greyColor" id="greyColor" value="#000000"></td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Keyboard button <br> background color <input type="color" name="keyboardBGColor" id="keyboardBGColor" value="#0c0c0c"></td>
+                        <td class="mediumText">Keyboard button <br> default letter color <input type="color" name="keyboardLetterColor" id="keyboardLetterColor" value="#d3d3d3"></td>
+                        <td class="shortText">h1 title color <input type="color" name="titleColor" id="titleColor" value="#FFFFFF"></td>
+                    </tr>
+                    <tr>
+                        <td class="longText">Buttons' background color <input type="color" name="buttonBGColor" id="buttonBGColor" value="#000000"></td>
+                        <td class="longText" id="happyEaster">This text's color <br> (easter egg) <input type="color" name="easterEgg" id="easterEgg" value="#ffffff"></td>
+                        <td class="shortText">h2 title color <input type="color" name="h2TitleColor" id="h2TitleColor" value="#00ffc8"></td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Input section's <br> background color <input type="color" name="inputBGColor" id="inputBGColor" value="#000000"></td>
+                        <td class="mediumText">Input section's <br> text color <input type="color" name="inputBGColor" id="inputLetterColor" value="#ffffff"></td>
+                        <td class="mediumText">Input section's <br> border color <input type="color" name="inputBorderColor" id="inputBorderColor" value="#d3d3d3"></td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Timer warning color <input type="color" name="timerWarningColor" id="timerWarningColor" value="#ffff00"></td>
+                        <td class="mediumText">Timer expired color <input type="color" name="timerExpiredColor" id="timerExpiredColor" value="#ff0000"></td>
+                        <td class="mediumText">Inactive timer color <input type="color" name="inactiveTimerColor" id="inactiveTimerColor" value="#777777"></td>
+                    </tr>
+                    <tr>
+                        <td class="shortText">Time change + <input type="color" name="timePlusColor" id="timePlusColor" value="#00ff00"></td>
+                        <td class="shortText">Time change = <input type="color" name="timeStaysColor" id="timeStaysColor" value="#ffe135"></td>
+                        <td class="shortText">Time change - <input type="color" name="timeMinusColor" id="timeMinusColor" value="#ff0000"></td>
+                    </tr>
+                </table>
+            <div id="saveColorConfig" style="margin-top: 50px;">
+                <p id="save"><button id="saveColorConfigButton" class="button"><img src="apply.png" alt="Save" title="Note: A restart or a guess may be needed for the changes to take effect." style="width: 60px;"></button></p>
+            </div>
+        </div>
+        <div id="timers" hidden>
+            <p id="enableMainTimerLine"><label><input type="checkbox" name="enableMainTimer" id="enableMainTimer" onclick="var a = document.getElementById('mainTimerSettings'); if (a.hidden === true) {a.hidden = false} else {a.hidden = true}">Enable Main Time Limit</label></p>
+            <div id="mainTimerSettings" hidden>
+                <table>
+                    <tr>
+                        <td class="shortText">Main Time Limit</td>
+                        <td class="mediumText"><input type="number" name="mainTimeLimitMinutes" id="mainTimeLimitMinutes" class="input" value="2" min="0"> m <input type="number" name="mainTimeLimitSeconds" id="mainTimeLimitSeconds" class="input" value="30" min="0" max="59"> s</td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Time bonus after each <br> green letter found</td>
+                        <td class="shortText"><input type="number" name="mainTimeBonusGreen" id="mainTimeBonusGreen" class="input" value="40" min="0" max="59"> s</td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Time bonus after each <br> yellow letter found</td>
+                        <td class="shortText"><input type="number" name="mainTimeBonusYellow" id="mainTimeBonusYellow" class="input" value="10" min="0" max="59"> s</td>
+                    </tr>
+                    <tr>
+                        <td class="mediumText">Time penalty after each <br> grey letter</td>
+                        <td class="shortText"><input type="number" name="mainTimePenaltyGrey" id="mainTimePenaltyGrey" class="input" value="5" min="0" max="59"> s</td>
+                    </tr>
+                    <tr>
+                        <td class="shortText">Show warning when</td><td class="mediumText"><input type="number" name="warningAtSeconds" id="warningAtSeconds" class="input" value="55" max="59" min="1"> s left</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><button class="button" id="startTimer"><img src="start_1.png" alt="Start/Restart Timer" title="Start/Restart Timer (Note: Also generates a new word to guess)" style="width: 125px;"></button><button class="button" id="cancelMainTimer"><img src="cancel.png" alt="Cancel Timer" title="Cancel Timer (Note: this also generates a new word to guess)" style="width: 47px;"></button></td>
+                    </tr>
+                </table>
+            </div>
+            <p id="enablePer-GuessTimerLine"><label><input type="checkbox" name="enablePer-GuessTimer" id="enablePer-GuessTimer" onclick="var a = document.getElementById('per-GuessTimerSettings'); if (a.hidden === true) {a.hidden = false} else {a.hidden = true}">Enable Time Limit for Each Guess</label></p>
+            <div id="per-GuessTimerSettings" hidden>
+                <table>
+                    <tr>
+                        <td class="shortText">Time to make a Guess (individual)</td>
+                        <td class="mediumText"><input type="number" name="per-GuessTimerMinutes" id="per-GuessTimerMinutes" class="input" value="1" min="0"> m <input type="number" name="per-GuessTimerSeconds" id="per-GuessTimerSeconds" class="input" value="25" min="0" max="59"> s</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><button class="button" id="startTimer2"><img src="start_1.png" alt="Start/Restart Timer" title="Start/Restart Timer (Note: Also generates a new word to guess)" style="width: 125px;"></button><button class="button" id="cancelPer-GuessTimer"><img src="cancel.png" alt="Cancel Timer" title="Cancel Timer (Note: this also generates a new word to guess)" style="width: 47px;"></button></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="debug" hidden>
+            <p id="enableLoggingLine"><label><input type="checkbox" name="enableLogging" id="enableLogging">Enable Logging to Console</label></p>
+        </div>
+        <footer style="font-size: 0.1em; color: black !important; text-align: center;"><a href='https://pngtree.com/so/start' target="_blank" style="font-size: 0.1em; color: black !important; text-decoration: none;">start png from pngtree.com/</a></footer>
+    </body>
+</html>
