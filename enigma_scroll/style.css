@@ -41,10 +41,11 @@ main {
     display: flex;
     justify-content: center;
     margin: 2px 0;
+    margin-bottom: 0px;
 }
 
 button {
-    padding: 8px;
+    padding: 7px;
     font-size: 1em;
     margin: 2px;
     cursor: pointer;
