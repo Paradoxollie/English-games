@@ -83,20 +83,22 @@ async function getWordDefinition(word) {
 async function handleCorrectGuess() {
     gameState.score += 10;
     const definition = await getWordDefinition(gameState.currentWord);
-    updateMessage(`Bravo ! Vous avez trouvé le mot : ${gameState.currentWord}. +10 points. Définition : ${definition}`);
+    const translation = await getWordTranslation(gameState.currentWord);
+    updateMessage(`Bravo ! Vous avez trouvé le mot : ${gameState.currentWord}. +10 points. Définition : ${definition}. Traduction : ${translation}`);
     document.getElementById("score").textContent = gameState.score;
     gameState.gameStatus = 'won';
     setTimeout(startNewWord, 2000);
 }
 
-
 async function handleGameOver() {
     gameState.gameStatus = 'lost';
     const definition = await getWordDefinition(gameState.currentWord);
-    updateMessage(`Game Over! Le mot était ${gameState.currentWord}. Définition : ${definition}. Score: ${gameState.score}`);
+    const translation = await getWordTranslation(gameState.currentWord);
+    updateMessage(`Game Over! Le mot était ${gameState.currentWord}. Définition : ${definition}. Traduction : ${translation}. Score: ${gameState.score}`);
     promptForScore();
     addPlayAgainButton();
 }
+
 
 function prepareNextGuess() {
     const lastGuess = gameState.guesses[gameState.guesses.length - 1].guess;
@@ -429,4 +431,18 @@ function resetKeyboardColors() {
     buttons.forEach(button => {
         button.classList.remove('correct', 'present', 'incorrect');
     });
+}
+async function getWordTranslation(word) {
+    try {
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${word}&langpair=en|fr`);
+        if (response.ok) {
+            const data = await response.json();
+            return data.responseData.translatedText || "Translation not available.";
+        } else {
+            return "Translation not available.";
+        }
+    } catch (error) {
+        console.error("Error fetching translation:", error);
+        return "Translation not available.";
+    }
 }
