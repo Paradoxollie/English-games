@@ -1,11 +1,27 @@
 import json
 
-# Charger les mots depuis le fichier .txt
-with open('filtered_words.txt', 'r') as txt_file:
-    words = [line.strip() for line in txt_file if line.strip()]  # Supprime les lignes vides
+# Nom du fichier texte d'entrée et du fichier JSON de sortie
+input_file = 'filtered_words.txt'  # Remplace par le nom de ton fichier texte
+output_file = 'filtered_words.json'
 
-# Sauvegarder sous format JSON
-with open('words.json', 'w') as json_file:
-    json.dump(words, json_file, indent=4)
+# Fonction pour convertir le fichier texte en fichier JSON
+def convert_txt_to_json(input_file, output_file):
+    try:
+        # Lire tous les mots du fichier texte et les stocker dans une liste
+        with open(input_file, 'r', encoding='utf-8') as file:
+            words = [line.strip() for line in file if line.strip()]
 
-print("Le fichier 'words.json' a été créé avec succès.")
+        # Créer un dictionnaire au format voulu
+        data = {"words": words}
+
+        # Écrire le dictionnaire dans un fichier JSON
+        with open(output_file, 'w', encoding='utf-8') as json_file:
+            json.dump(data, json_file, ensure_ascii=False, indent=4)
+
+        print(f"Fichier JSON '{output_file}' créé avec succès!")
+
+    except Exception as e:
+        print(f"Erreur lors de la conversion: {e}")
+
+# Appeler la fonction
+convert_txt_to_json(input_file, output_file)

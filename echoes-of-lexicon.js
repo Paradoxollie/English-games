@@ -18,13 +18,19 @@ let usedWords = new Set();
 let validWords = [];
 
 // Charger la liste des mots depuis words.json
-fetch('words.json')
-    .then(response => response.json())
+fetch('https://www.englishquest.me/data/filtered_words.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        validWords = data.words;
+        validWords = data;  // `data` est directement le tableau de mots
         console.log("Words loaded:", validWords.length);  // Vérifier le nombre de mots chargés
     })
     .catch(error => console.error('Error loading words:', error));
+
 
 // Initialiser les lettres du jeu avec un équilibre de voyelles/consonnes + bonus
 function initializeGame() {
