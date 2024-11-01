@@ -1127,7 +1127,7 @@ header {
     flex: 1.5;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 600px) {
     #keyboard {
         display: flex;
         flex-direction: column;
