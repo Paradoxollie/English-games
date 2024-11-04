@@ -31,7 +31,7 @@
 
     <main>
 
-        <div class="game-grid">
+        <div class="game-grid" id="gameGrid">
             <div class="game-card">
                 <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
                 <div class="game-info">
@@ -112,17 +112,20 @@
     <footer>
         <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
         <div id="visit-stats"></div>
-
-        <!-- Scripts Firebase -->
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        
-        <!-- Votre script d'initialisation Firebase -->
         <script src="firebase-init.js"></script>
-        
-        <!-- Le script du compteur de visites -->
         <script src="visit-counter.js"></script>
-
+        <script>
+            // Script to shuffle game cards
+            function shuffleGames() {
+                const grid = document.getElementById('gameGrid');
+                const cards = Array.from(grid.children);
+                cards.sort(() => Math.random() - 0.5);
+                cards.forEach(card => grid.appendChild(card));
+            }
+            document.addEventListener('DOMContentLoaded', shuffleGames);
+        </script>
     </footer>
 </body>
 </html>
