@@ -45,60 +45,234 @@
 
         <!-- Games Carousel Section -->
         <div class="quest-panel max-w-7xl mx-auto mb-16">
-            <h2 class="section-title">Featured Games</h2>
-            <div class="carousel-container">
-                <div class="carousel-wrapper overflow-hidden">
-                    <div class="carousel flex transition-transform duration-500" id="gamesCarousel" style="gap: 2rem;">
-                        <div class="carousel-item min-w-[300px]">
-                            <img src="images/games/speed-verb.webp" alt="Speed Verb Challenge" class="carousel-image">
-                            <div class="carousel-info">
-                                <h3 class="carousel-title">Speed Verb Challenge</h3>
-                                <p class="carousel-description">Test your knowledge of irregular verbs!</p>
-                                <a href="speed-verb-challenge.html" class="quest-button">Play Now</a>
+            <h2 class="section-title">Available Games</h2>
+            <div class="games-carousel-container">
+                <button class="carousel-nav prev">❮</button>
+                <div class="games-carousel" id="gamesCarousel">
+                    <!-- Speed Verb Challenge -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
+                        <div class="game-info">
+                            <h3>Speed Verb Challenge</h3>
+                            <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Verbs</span>
+                                <span class="feature-tag">Time Challenge</span>
+                                <span class="feature-tag">Grammar</span>
                             </div>
+                            <a href="speed-verb-challenge.html" class="quest-button">Play Now</a>
                         </div>
-                        <div class="carousel-item min-w-[300px]">
-                            <img src="images/games/word-memory.webp" alt="Word Memory Game" class="carousel-image">
-                            <div class="carousel-info">
-                                <h3 class="carousel-title">Word Memory Game</h3>
-                                <p class="carousel-description">Challenge your memory!</p>
-                                <a href="word-memory-game.html" class="quest-button">Play Now</a>
+                    </div>
+
+                    <!-- Enigma Scroll -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/enigma-scroll.webp" alt="Enigma Scroll" class="game-image">
+                        <div class="game-info">
+                            <h3>Enigma Scroll</h3>
+                            <p>Uncover the mysteries of the enchanted scroll! Test your English skills by solving magical word puzzles in this epic fantasy adventure!</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Puzzles</span>
+                                <span class="feature-tag">Vocabulary</span>
+                                <span class="feature-tag">Adventure</span>
                             </div>
+                            <a href="enigma-scroll.html" class="quest-button">Play Now</a>
                         </div>
-                        <!-- Ajoutez les autres jeux ici -->
+                    </div>
+
+                    <!-- Word Bubbles -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/word-bubbles.webp" alt="Word Bubbles" class="game-image">
+                        <div class="game-info">
+                            <h3>Word Bubbles</h3>
+                            <p>Challenge your typing and vocabulary skills! Type the correct words as they fall before time runs out.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Typing</span>
+                                <span class="feature-tag">Speed</span>
+                                <span class="feature-tag">Vocabulary</span>
+                            </div>
+                            <a href="word-bubbles.html" class="quest-button">Play Now</a>
+                        </div>
+                    </div>
+
+                    <!-- Whisper Trials -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/whisper-trials.webp" alt="Whisper Trials" class="game-image">
+                        <div class="game-info">
+                            <h3>Whisper Trials</h3>
+                            <p>Recognize the enchanted words whispered in diverse accents and level up your skills.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Listening</span>
+                                <span class="feature-tag">Pronunciation</span>
+                                <span class="feature-tag">Accents</span>
+                            </div>
+                            <a href="whisper-trials.html" class="quest-button">Play Now</a>
+                        </div>
+                    </div>
+
+                    <!-- Matrix -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/matrix-game.webp" alt="Matrix" class="game-image">
+                        <div class="game-info">
+                            <h3>Fill in the Gaps</h3>
+                            <p>Obtain great power by matching words and definitions</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Matching</span>
+                                <span class="feature-tag">Definitions</span>
+                                <span class="feature-tag">Vocabulary</span>
+                            </div>
+                            <a href="memory-matrix.html" class="quest-button">Play Now</a>
+                        </div>
+                    </div>
+
+                    <!-- Word Memory Game -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/word-memory-game.webp" alt="Word Memory Game" class="game-image">
+                        <div class="game-info">
+                            <h3>Word Memory Game</h3>
+                            <p>Test your memory skills by remembering and recalling English words!</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Memory</span>
+                                <span class="feature-tag">Vocabulary</span>
+                                <span class="feature-tag">Recall</span>
+                            </div>
+                            <a href="word-memory-game.html" class="quest-button">Play Now</a>
+                        </div>
+                    </div>
+
+                    <!-- Lost in Migration -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/lost-in-migration.webp" alt="Lost in Migration" class="game-image">
+                        <div class="game-info">
+                            <h3>Lost in Migration</h3>
+                            <p>Catch the intruder! Test your English skills by identifying the odd word out in this fun and interactive game!</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Vocabulary</span>
+                                <span class="feature-tag">Logic</span>
+                                <span class="feature-tag">Categories</span>
+                            </div>
+                            <a href="lost-in-migration.html" class="quest-button">Play Now</a>
+    </div>
+    </div>
+
+                    <!-- Brew Your Words -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/brew-your-words.webp" alt="Brew Your Words" class="game-image">
+                        <div class="game-info">
+                            <h3>Brew Your Words</h3>
+                            <p>Serve customers in this challenging word game! Get the right translations under pressure and become the ultimate language barista!</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Translation</span>
+                                <span class="feature-tag">Time Management</span>
+                                <span class="feature-tag">Vocabulary</span>
+                            </div>
+                            <a href="brew-your-words.html" class="quest-button">Play Now</a>
+    </div>
+    </div>
+
+                    <!-- Echoes of Lexicon -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/echoes-lexicon.webp" alt="Echoes of Lexicon" class="game-image">
+                        <div class="game-info">
+                            <h3>Echoes of Lexicon</h3>
+                            <p>Explore les mystères d'un parchemin ancien ! Trouve des mots en utilisant les lettres affichées pour révéler les secrets du Lexicon.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Word Formation</span>
+                                <span class="feature-tag">Vocabulary</span>
+                                <span class="feature-tag">Puzzle</span>
+                            </div>
+                            <a href="echoes-of-lexicon.html" class="quest-button">Play Now</a>
+                        </div>
                     </div>
                 </div>
-                <button class="carousel-nav prev">&lt;</button>
-                <button class="carousel-nav next">&gt;</button>
+                <button class="carousel-nav next">❯</button>
+                <div class="carousel-dots" id="carouselDots"></div>
             </div>
         </div>
+    </main>
 
-        <!-- Courses Carousel Section -->
-        <div class="quest-panel max-w-7xl mx-auto mb-16">
-            <h2 class="section-title">Featured Courses</h2>
-            <div class="carousel-container">
-                <div class="carousel-wrapper overflow-hidden">
-                    <div class="carousel flex transition-transform duration-500" style="gap: 2rem;">
-                        <div class="carousel-item min-w-[300px]">
-                            <img src="images/comparative.webp" alt="Comparative Course" class="carousel-image">
-                            <div class="carousel-info">
-                                <h3 class="carousel-title">Comparative</h3>
-                                <p class="carousel-description">Master the art of comparing in English!</p>
-                                <a href="comparative.html" class="quest-button">Start Learning</a>
+         <!-- Courses Grid Section -->
+         <div class="quest-panel max-w-7xl mx-auto mb-16">
+            <h2 class="section-title">Available Learning Paths</h2>
+            <div class="courses-carousel-container">
+                <button class="carousel-nav prev">❮</button>
+                <div class="courses-carousel" id="coursesCarousel">
+                    <!-- The Conditional -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/conditionnel-course.webp" alt="The Conditional" class="game-image">
+                        <div class="game-info">
+                            <h3>The Conditional</h3>
+                            <p>Master the different forms and usage of the conditional with this comprehensive guide.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Grammar</span>
+                                <span class="feature-tag">Advanced</span>
+                                <span class="feature-tag">Conditional</span>
                             </div>
+                            <a href="conditional-course.html" class="quest-button">Start Learning</a>
                         </div>
-                        <div class="carousel-item min-w-[300px]">
-                            <img src="images/modaux.webp" alt="Modal Verbs Course" class="carousel-image">
-                            <div class="carousel-info">
-                                <h3 class="carousel-title">Modal Verbs</h3>
-                                <p class="carousel-description">Learn to express possibility, obligation, and more!</p>
-                                <a href="modaux.html" class="quest-button">Start Learning</a>
+                    </div>
+
+                    <!-- The Superlative -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/superlative.webp" alt="The Superlative" class="game-image">
+                        <div class="game-info">
+                            <h3>The Superlative</h3>
+                            <p>Learn the art of comparison and reach the pinnacle of excellence with superlatives.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Grammar</span>
+                                <span class="feature-tag">Comparison</span>
+                                <span class="feature-tag">Superlative</span>
                             </div>
+                            <a href="superlative.html" class="quest-button">Start Learning</a>
+                        </div>
+                    </div>
+
+                    <!-- Comparative -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/comparative.webp" alt="Comparative" class="game-image">
+                        <div class="game-info">
+                            <h3>Comparative</h3>
+                            <p>Face off against fierce grammar guardians and claim your place as the true Grammar Champion.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Grammar</span>
+                                <span class="feature-tag">Comparison</span>
+                                <span class="feature-tag">Comparative</span>
+                            </div>
+                            <a href="comparative.html" class="quest-button">Start Your Quest</a>
+                        </div>
+                    </div>
+
+                    <!-- Since and For -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/for-since.webp" alt="Since and For" class="game-image">
+                        <div class="game-info">
+                            <h3>Since and For</h3>
+                            <p>Prove your worth as the ultimate Time Master in the realm of English.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Time</span>
+                                <span class="feature-tag">Duration</span>
+                                <span class="feature-tag">Prepositions</span>
+                            </div>
+                            <a href="for-and-since.html" class="quest-button">Start Your Quest</a>
+                        </div>
+                    </div>
+
+                    <!-- Modals Mastery -->
+                    <div class="game-card transform hover:scale-105 transition-all duration-300">
+                        <img src="images/modaux.webp" alt="Modals Mastery" class="game-image">
+                            <div class="game-info">
+                            <h3>Modals Mastery</h3>
+                            <p>Devenez le Maître des Arcanes Modaux et manipulez la puissance des verbes anglais.</p>
+                            <div class="game-features mb-4">
+                                <span class="feature-tag">Modals</span>
+                                <span class="feature-tag">Verbs</span>
+                                <span class="feature-tag">Advanced</span>
+                            </div>
+                            <a href="modaux.html" class="quest-button">Start Your Quest</a>
                         </div>
                     </div>
                 </div>
-                <button class="carousel-nav prev">&lt;</button>
-                <button class="carousel-nav next">&gt;</button>
+                <button class="carousel-nav next">❯</button>
+                <div class="carousel-dots" id="carouselDots"></div>
             </div>
         </div>
     </main>
@@ -123,41 +297,43 @@
     <script src="visit-counter.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        function initializeCarousel(carouselId, navPrevClass, navNextClass) {
-            const carousel = document.getElementById(carouselId);
-            const prevBtn = carousel.parentElement.parentElement.querySelector(navPrevClass);
-            const nextBtn = carousel.parentElement.parentElement.querySelector(navNextClass);
+        function initializeCarousel(containerId) {
+            const container = document.querySelector(`.${containerId}`);
+            const carousel = container.querySelector('.games-carousel, .courses-carousel');
+            const prevBtn = container.querySelector('.prev');
+            const nextBtn = container.querySelector('.next');
             let currentPosition = 0;
             
-            function updateCarousel() {
+            function updateCarousel(smooth = true) {
+                if (smooth) {
+                    carousel.style.transition = 'transform 0.5s ease';
+                } else {
+                    carousel.style.transition = 'none';
+                }
                 carousel.style.transform = `translateX(${currentPosition}px)`;
             }
             
             function moveNext() {
                 const carouselWidth = carousel.scrollWidth;
-                const containerWidth = carousel.parentElement.offsetWidth;
+                const containerWidth = container.offsetWidth;
                 const maxScroll = -(carouselWidth - containerWidth);
                 
-                currentPosition -= 320; // Largeur d'une carte + gap
-                
+                currentPosition -= containerWidth;
                 if (currentPosition < maxScroll) {
                     currentPosition = 0;
                 }
-                
                 updateCarousel();
             }
             
             function movePrev() {
                 const carouselWidth = carousel.scrollWidth;
-                const containerWidth = carousel.parentElement.offsetWidth;
+                const containerWidth = container.offsetWidth;
                 const maxScroll = -(carouselWidth - containerWidth);
                 
-                currentPosition += 320; // Largeur d'une carte + gap
-                
+                currentPosition += containerWidth;
                 if (currentPosition > 0) {
                     currentPosition = maxScroll;
                 }
-                
                 updateCarousel();
             }
             
@@ -168,54 +344,28 @@
             let autoplayInterval = setInterval(moveNext, 5000);
             
             // Arrêter le défilement automatique au survol
-            carousel.parentElement.addEventListener('mouseenter', () => {
+            container.addEventListener('mouseenter', () => {
                 clearInterval(autoplayInterval);
             });
             
-            carousel.parentElement.addEventListener('mouseleave', () => {
+            container.addEventListener('mouseleave', () => {
                 autoplayInterval = setInterval(moveNext, 5000);
             });
         }
 
         // Initialiser les deux carousels
-        initializeCarousel('gamesCarousel', '.prev', '.next');
-        initializeCarousel('coursesCarousel', '.prev', '.next');
+        initializeCarousel('games-carousel-container');
+        initializeCarousel('courses-carousel-container');
     });
     </script>
 
     <!-- Ajoutez ces styles dans la section <style> ou dans votre fichier CSS -->
     <style>
-    .carousel-container {
+    .games-carousel-container, .courses-carousel-container {
         position: relative;
-        max-width: 100%;
-        padding: 0 40px;
-        margin: 0 auto;
-    }
-
-    .carousel-wrapper {
+        padding: 0 20px;
+        margin: 0 40px;
         overflow: hidden;
-        margin: 0 auto;
-    }
-
-    .carousel {
-        display: flex;
-        transition: transform 0.5s ease;
-        gap: 2rem;
-    }
-
-    .carousel-item {
-        flex: 0 0 auto;
-        width: 300px;
-        background: rgba(0, 0, 0, 0.6);
-        border: 1px solid var(--quest-gold);
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .carousel-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
     }
 
     .carousel-nav {
@@ -224,8 +374,8 @@
         transform: translateY(-50%);
         width: 40px;
         height: 40px;
-        background: rgba(0, 0, 0, 0.6);
-        border: 1px solid var(--quest-gold);
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid var(--quest-gold);
         color: var(--quest-gold);
         border-radius: 50%;
         cursor: pointer;
@@ -233,14 +383,32 @@
         align-items: center;
         justify-content: center;
         z-index: 10;
+        font-size: 24px;
+        transition: all 0.3s ease;
+    }
+
+    .carousel-nav:hover {
+        background: rgba(201, 170, 113, 0.2);
     }
 
     .carousel-nav.prev {
-        left: 0;
+        left: -20px;
     }
 
     .carousel-nav.next {
-        right: 0;
+        right: -20px;
+    }
+
+    .games-carousel, .courses-carousel {
+        display: flex;
+        gap: 2rem;
+        transition: transform 0.5s ease;
+    }
+
+    .game-card {
+        flex: 0 0 auto;
+        width: 300px;
+        /* ... autres styles ... */
     }
     </style>
 </body>
