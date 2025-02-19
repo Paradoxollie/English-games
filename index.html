@@ -44,26 +44,60 @@
         </div>
 
         <!-- Games Carousel Section -->
-        <div class="carousel-section games-section">
-            <h2>Featured Games</h2>
+        <div class="quest-panel max-w-7xl mx-auto mb-16">
+            <h2 class="section-title">Featured Games</h2>
             <div class="carousel-container">
-                <button class="carousel-nav prev">❮</button>
-                <div class="carousel-content" id="gamesCarousel">
-                    <!-- Copier les cartes de jeux depuis all-games.html -->
+                <div class="carousel-wrapper overflow-hidden">
+                    <div class="carousel flex transition-transform duration-500" style="gap: 2rem;">
+                        <div class="carousel-item min-w-[300px]">
+                            <img src="images/speed_verb.webp" alt="Speed Verb Challenge" class="carousel-image">
+                            <div class="carousel-info">
+                                <h3 class="carousel-title">Speed Verb Challenge</h3>
+                                <p class="carousel-description">Test your knowledge of irregular verbs in this fast-paced challenge!</p>
+                                <a href="speed-verb-challenge.html" class="quest-button">Play Now</a>
+                            </div>
+                        </div>
+                        <div class="carousel-item min-w-[300px]">
+                            <img src="images/word_memory.webp" alt="Word Memory Game" class="carousel-image">
+                            <div class="carousel-info">
+                                <h3 class="carousel-title">Word Memory Game</h3>
+                                <p class="carousel-description">Challenge your memory with English vocabulary!</p>
+                                <a href="word-memory-game.html" class="quest-button">Play Now</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="carousel-nav next">❯</button>
+                <button class="carousel-nav prev">&lt;</button>
+                <button class="carousel-nav next">&gt;</button>
             </div>
         </div>
 
         <!-- Courses Carousel Section -->
-        <div class="carousel-section courses-section">
-            <h2>Featured Courses</h2>
+        <div class="quest-panel max-w-7xl mx-auto mb-16">
+            <h2 class="section-title">Featured Courses</h2>
             <div class="carousel-container">
-                <button class="carousel-nav prev">❮</button>
-                <div class="carousel-content" id="coursesCarousel">
-                    <!-- Copier les cartes de cours depuis courses.html -->
+                <div class="carousel-wrapper overflow-hidden">
+                    <div class="carousel flex transition-transform duration-500" style="gap: 2rem;">
+                        <div class="carousel-item min-w-[300px]">
+                            <img src="images/comparative.webp" alt="Comparative Course" class="carousel-image">
+                            <div class="carousel-info">
+                                <h3 class="carousel-title">Comparative</h3>
+                                <p class="carousel-description">Master the art of comparing in English!</p>
+                                <a href="comparative.html" class="quest-button">Start Learning</a>
+                            </div>
+                        </div>
+                        <div class="carousel-item min-w-[300px]">
+                            <img src="images/modaux.webp" alt="Modal Verbs Course" class="carousel-image">
+                            <div class="carousel-info">
+                                <h3 class="carousel-title">Modal Verbs</h3>
+                                <p class="carousel-description">Learn to express possibility, obligation, and more!</p>
+                                <a href="modaux.html" class="quest-button">Start Learning</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="carousel-nav next">❯</button>
+                <button class="carousel-nav prev">&lt;</button>
+                <button class="carousel-nav next">&gt;</button>
             </div>
         </div>
     </main>
@@ -184,5 +218,58 @@
         loadCourses();
     });
     </script>
+
+    <!-- Ajoutez ces styles dans la section <style> ou dans votre fichier CSS -->
+    <style>
+    .carousel-container {
+        position: relative;
+        max-width: 100%;
+        padding: 0 40px;
+    }
+
+    .carousel-wrapper {
+        overflow: hidden;
+    }
+
+    .carousel {
+        display: flex;
+        transition: transform 0.5s ease;
+        gap: 2rem;
+    }
+
+    .carousel-item {
+        flex: 0 0 auto;
+        width: 300px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid var(--quest-gold);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid var(--quest-gold);
+        color: var(--quest-gold);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .carousel-nav.prev {
+        left: 0;
+    }
+
+    .carousel-nav.next {
+        right: 0;
+    }
+    </style>
 </body>
 </html>
