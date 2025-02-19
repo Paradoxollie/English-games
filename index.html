@@ -48,23 +48,24 @@
             <h2 class="section-title">Featured Games</h2>
             <div class="carousel-container">
                 <div class="carousel-wrapper overflow-hidden">
-                    <div class="carousel flex transition-transform duration-500" style="gap: 2rem;">
+                    <div class="carousel flex transition-transform duration-500" id="gamesCarousel" style="gap: 2rem;">
                         <div class="carousel-item min-w-[300px]">
-                            <img src="images/speed_verb.webp" alt="Speed Verb Challenge" class="carousel-image">
+                            <img src="images/games/speed-verb.webp" alt="Speed Verb Challenge" class="carousel-image">
                             <div class="carousel-info">
                                 <h3 class="carousel-title">Speed Verb Challenge</h3>
-                                <p class="carousel-description">Test your knowledge of irregular verbs in this fast-paced challenge!</p>
+                                <p class="carousel-description">Test your knowledge of irregular verbs!</p>
                                 <a href="speed-verb-challenge.html" class="quest-button">Play Now</a>
                             </div>
                         </div>
                         <div class="carousel-item min-w-[300px]">
-                            <img src="images/word_memory.webp" alt="Word Memory Game" class="carousel-image">
+                            <img src="images/games/word-memory.webp" alt="Word Memory Game" class="carousel-image">
                             <div class="carousel-info">
                                 <h3 class="carousel-title">Word Memory Game</h3>
-                                <p class="carousel-description">Challenge your memory with English vocabulary!</p>
+                                <p class="carousel-description">Challenge your memory!</p>
                                 <a href="word-memory-game.html" class="quest-button">Play Now</a>
                             </div>
                         </div>
+                        <!-- Ajoutez les autres jeux ici -->
                     </div>
                 </div>
                 <button class="carousel-nav prev">&lt;</button>
@@ -121,101 +122,64 @@
     <script src="firebase-init.js"></script>
     <script src="visit-counter.js"></script>
     <script>
-    // Fonction pour charger et afficher les jeux
-    function loadGames() {
-        fetch('all-games.html')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                // Sélectionne les cartes depuis la grille de jeux
-                const gameCards = Array.from(doc.querySelectorAll('.games-carousel .game-card'));
-                
-                const gamesContainer = document.getElementById('gamesCarousel');
-                gamesContainer.innerHTML = '';
-                
-                gameCards.forEach(card => {
-                    const cardClone = card.cloneNode(true);
-                    // Supprime les classes Tailwind qui pourraient interférer
-                    cardClone.className = 'carousel-item';
-                    gamesContainer.appendChild(cardClone);
-                });
-
-                // Initialise le carousel des jeux
-                initializeCarousel('gamesCarousel');
-            });
-    }
-
-    // Fonction pour charger et afficher les cours
-    function loadCourses() {
-        fetch('courses.html')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                // Sélectionne les cartes depuis la grille de cours
-                const courseCards = Array.from(doc.querySelectorAll('.courses-grid .game-card'));
-                
-                const coursesContainer = document.getElementById('coursesCarousel');
-                coursesContainer.innerHTML = '';
-                
-                courseCards.forEach(card => {
-                    const cardClone = card.cloneNode(true);
-                    // Supprime les classes Tailwind qui pourraient interférer
-                    cardClone.className = 'carousel-item';
-                    coursesContainer.appendChild(cardClone);
-                });
-
-                // Initialise le carousel des cours
-                initializeCarousel('coursesCarousel');
-            });
-    }
-
-    // Fonction pour initialiser un carousel
-    function initializeCarousel(carouselId) {
-        const carousel = document.getElementById(carouselId);
-        const container = carousel.parentElement;
-        const prevBtn = container.querySelector('.carousel-nav.prev');
-        const nextBtn = container.querySelector('.carousel-nav.next');
-        let currentPosition = 0;
-        
-        function updateCarousel() {
-            carousel.style.transform = `translateX(${currentPosition}px)`;
-        }
-
-        function moveNext() {
-            const carouselWidth = carousel.scrollWidth;
-            const containerWidth = container.offsetWidth;
-            const maxPosition = -(carouselWidth - containerWidth);
-            
-            currentPosition -= 300; // Largeur d'une carte + gap
-            if (currentPosition < maxPosition) {
-                currentPosition = 0; // Retour au début
-            }
-            updateCarousel();
-        }
-
-        function movePrev() {
-            currentPosition += 300; // Largeur d'une carte + gap
-            if (currentPosition > 0) {
-                const carouselWidth = carousel.scrollWidth;
-                const containerWidth = container.offsetWidth;
-                currentPosition = -(carouselWidth - containerWidth);
-            }
-            updateCarousel();
-        }
-
-        prevBtn.addEventListener('click', movePrev);
-        nextBtn.addEventListener('click', moveNext);
-
-        // Défilement automatique
-        setInterval(moveNext, 5000);
-    }
-
-    // Charger le contenu au démarrage
     document.addEventListener('DOMContentLoaded', () => {
-        loadGames();
-        loadCourses();
+        function initializeCarousel(carouselId, navPrevClass, navNextClass) {
+            const carousel = document.getElementById(carouselId);
+            const prevBtn = carousel.parentElement.parentElement.querySelector(navPrevClass);
+            const nextBtn = carousel.parentElement.parentElement.querySelector(navNextClass);
+            let currentPosition = 0;
+            
+            function updateCarousel() {
+                carousel.style.transform = `translateX(${currentPosition}px)`;
+            }
+            
+            function moveNext() {
+                const carouselWidth = carousel.scrollWidth;
+                const containerWidth = carousel.parentElement.offsetWidth;
+                const maxScroll = -(carouselWidth - containerWidth);
+                
+                currentPosition -= 320; // Largeur d'une carte + gap
+                
+                if (currentPosition < maxScroll) {
+                    currentPosition = 0;
+                }
+                
+                updateCarousel();
+            }
+            
+            function movePrev() {
+                const carouselWidth = carousel.scrollWidth;
+                const containerWidth = carousel.parentElement.offsetWidth;
+                const maxScroll = -(carouselWidth - containerWidth);
+                
+                currentPosition += 320; // Largeur d'une carte + gap
+                
+                if (currentPosition > 0) {
+                    currentPosition = maxScroll;
+                }
+                
+                updateCarousel();
+            }
+            
+            prevBtn.addEventListener('click', movePrev);
+            nextBtn.addEventListener('click', moveNext);
+            
+            // Défilement automatique
+            let autoplayInterval = setInterval(moveNext, 5000);
+            
+            // Arrêter le défilement automatique au survol
+            carousel.parentElement.addEventListener('mouseenter', () => {
+                clearInterval(autoplayInterval);
+            });
+            
+            carousel.parentElement.addEventListener('mouseleave', () => {
+                autoplayInterval = setInterval(moveNext, 5000);
+            });
+        }
+
+        // Initialiser les deux carousels
+        initializeCarousel('gamesCarousel', '.prev', '.next');
+        initializeCarousel('coursesCarousel', '.prev', '.next');
     });
     </script>
 
@@ -225,10 +189,12 @@
         position: relative;
         max-width: 100%;
         padding: 0 40px;
+        margin: 0 auto;
     }
 
     .carousel-wrapper {
         overflow: hidden;
+        margin: 0 auto;
     }
 
     .carousel {
@@ -244,6 +210,12 @@
         border: 1px solid var(--quest-gold);
         border-radius: 12px;
         overflow: hidden;
+    }
+
+    .carousel-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
     }
 
     .carousel-nav {
