@@ -7,7 +7,6 @@
     <title>English Quest - Learn English through Adventure</title>
     
     <!-- Styles -->
-    <link href="/dist/output.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
     
@@ -151,8 +150,8 @@
                                 <span class="feature-tag">Categories</span>
                             </div>
                             <a href="lost-in-migration.html" class="quest-button">Play Now</a>
-    </div>
-    </div>
+                        </div>
+                    </div>
 
                     <!-- Brew Your Words -->
                     <div class="game-card transform hover:scale-105 transition-all duration-300">
@@ -166,8 +165,8 @@
                                 <span class="feature-tag">Vocabulary</span>
                             </div>
                             <a href="brew-your-words.html" class="quest-button">Play Now</a>
-    </div>
-    </div>
+                        </div>
+                    </div>
 
                     <!-- Echoes of Lexicon -->
                     <div class="game-card transform hover:scale-105 transition-all duration-300">
@@ -297,13 +296,13 @@
     <script src="visit-counter.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        function initializeCarousel(containerId) {
-            const container = document.querySelector(`.${containerId}`);
-            const carousel = container.querySelector('.games-carousel, .courses-carousel');
-            const prevBtn = container.querySelector('.prev');
-            const nextBtn = container.querySelector('.next');
+        function loadCarousel(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            const container = carousel.parentElement;
+            const prevBtn = container.parentElement.querySelector('.prev');
+            const nextBtn = container.parentElement.querySelector('.next');
             let currentPosition = 0;
-            
+
             function updateCarousel(smooth = true) {
                 if (smooth) {
                     carousel.style.transition = 'transform 0.5s ease';
@@ -312,60 +311,64 @@
                 }
                 carousel.style.transform = `translateX(${currentPosition}px)`;
             }
-            
+
             function moveNext() {
-                const carouselWidth = carousel.scrollWidth;
-                const containerWidth = container.offsetWidth;
-                const maxScroll = -(carouselWidth - containerWidth);
-                
-                currentPosition -= containerWidth;
+                const maxScroll = -(carousel.scrollWidth - container.offsetWidth);
+                currentPosition -= container.offsetWidth;
                 if (currentPosition < maxScroll) {
                     currentPosition = 0;
                 }
                 updateCarousel();
             }
-            
+
             function movePrev() {
-                const carouselWidth = carousel.scrollWidth;
-                const containerWidth = container.offsetWidth;
-                const maxScroll = -(carouselWidth - containerWidth);
-                
-                currentPosition += containerWidth;
+                currentPosition += container.offsetWidth;
                 if (currentPosition > 0) {
+                    const maxScroll = -(carousel.scrollWidth - container.offsetWidth);
                     currentPosition = maxScroll;
                 }
                 updateCarousel();
             }
-            
+
             prevBtn.addEventListener('click', movePrev);
             nextBtn.addEventListener('click', moveNext);
-            
-            // Défilement automatique
+
             let autoplayInterval = setInterval(moveNext, 5000);
-            
-            // Arrêter le défilement automatique au survol
+
             container.addEventListener('mouseenter', () => {
                 clearInterval(autoplayInterval);
             });
-            
+
             container.addEventListener('mouseleave', () => {
                 autoplayInterval = setInterval(moveNext, 5000);
             });
+
+            window.addEventListener('resize', () => {
+                const maxScroll = -(carousel.scrollWidth - container.offsetWidth);
+                if (currentPosition < maxScroll) {
+                    currentPosition = maxScroll;
+                    updateCarousel(false);
+                }
+            });
         }
 
-        // Initialiser les deux carousels
-        initializeCarousel('games-carousel-container');
-        initializeCarousel('courses-carousel-container');
+        loadCarousel('gamesCarousel');
+        loadCarousel('coursesCarousel');
     });
     </script>
 
-    <!-- Ajoutez ces styles dans la section <style> ou dans votre fichier CSS -->
+    <!-- Remplacer les styles existants par ceux-ci -->
     <style>
     .games-carousel-container, .courses-carousel-container {
         position: relative;
-        padding: 0 20px;
-        margin: 0 40px;
         overflow: hidden;
+        margin: 0 40px;
+    }
+
+    .games-carousel, .courses-carousel {
+        display: flex;
+        gap: 2rem;
+        transition: transform 0.5s ease;
     }
 
     .carousel-nav {
@@ -389,6 +392,7 @@
 
     .carousel-nav:hover {
         background: rgba(201, 170, 113, 0.2);
+        transform: translateY(-50%) scale(1.1);
     }
 
     .carousel-nav.prev {
@@ -399,16 +403,19 @@
         right: -20px;
     }
 
-    .games-carousel, .courses-carousel {
-        display: flex;
-        gap: 2rem;
-        transition: transform 0.5s ease;
+    .game-card {
+        flex: 0 0 300px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid var(--quest-gold);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
 
-    .game-card {
-        flex: 0 0 auto;
-        width: 300px;
-        /* ... autres styles ... */
+    .game-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--quest-gold);
+        box-shadow: 0 5px 15px rgba(201, 170, 113, 0.3);
     }
     </style>
 </body>
