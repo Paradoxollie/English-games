@@ -2,619 +2,546 @@
 <html lang="fr">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Les Modaux : L'Art Suprême | English Quest</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: #ffffff;
-        }
-        .course-section {
-    max-width: 100%; /* Permet au contenu d'occuper toute la largeur */
-    margin: 20px auto; /* Ajuste le margin pour une continuité plus fluide */
-    padding: 30px;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-}
-        .course-section h2, .course-section h3 {
-            font-size: 1.8em;
-            color: #4CAF50;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .course-section p, .course-section li {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin: 15px 0;
-        }
-        .course-section ul {
-            margin-left: 20px;
-            list-style: disc;
-        }
-        .course-box {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border: 1px solid #4CAF50;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .example-box {
-            background-color: rgba(73, 68, 68, 0.7);
-            padding: 15px;
-            border-left: 4px solid #4CAF50;
-            margin: 15px 0;
-        }
-        .concept-box {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border: 2px solid #c9aa71;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .important-note {
-            background-color: rgba(255, 193, 7, 0.2);
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .compare-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .compare-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .code-example {
-            font-family: 'Courier New', Courier, monospace;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            color: #4CAF50;
-        }
-        .section-title {
-            color: #c9aa71;
-            font-size: 2em;
-            text-align: center;
-            margin: 30px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        .game-image {
-            width: 150px;
-            height: auto;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 10px;
-        }
-        .en {
-            color: #4CAF50;
-            font-style: italic;
-        }
-        .fr {
-            color: #ffc107;
-            font-style: italic;
-        }
-    </style>
+    <title>Modal Verbs - English Quest</title>
+    
+    <!-- Styles -->
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed courses-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
+
     <nav>
-        <a href="index.html">Accueil</a>
-        <a href="all-games.html">Jeux</a>
-        <a href="courses.html" class="active">Cours</a>
-        <a href="contact.html">Contact</a>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Accueil</a>
+            <a href="all-games.html" class="nav-link">Jeux</a>
+            <a href="courses.html" class="nav-link active">Cours</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
     </nav>
 
-    
+    <main class="min-h-screen pt-32">
+        <!-- Hero Section -->
+        <div class="quest-panel max-w-2xl mx-auto mb-16">
+            <h1 class="glow-text">LES GARDIENS DES MODAUX</h1>
+            <p>Maîtrisez l'art suprême des verbes modaux</p>
+        </div>
 
-    <main role="main">
-        <!-- Introduction Section -->
-        <section id="introduction" class="section course-section">
-            <img src="images/modaux.webp" alt="Modal Mastery Quest" class="game-image">
+        <!-- Course Content -->
+        <div class="quest-panel max-w-4xl mx-auto mb-16">
+            <!-- Introduction Section -->
+            <section id="introduction" class="section course-section">
+                <img src="images/modaux.webp" alt="Modal Mastery Quest" class="game-image">
 
-            <h1 class="section-title">Les Gardiens des Modaux : L'Art Suprême</h1>
+                <h1 class="section-title">Les Gardiens des Modaux : L'Art Suprême</h1>
 
-            <div class="concept-box">
-                <h2>⚔️ Votre Mission Légendaire</h2>
-                <p>Bienvenue, valeureux Apprenti du Verbe ! Le Conseil Suprême des Arcanes Grammaticaux vous a choisi pour la plus noble des quêtes. 🌟</p>
+                <div class="concept-box">
+                    <h2>⚔️ Votre Mission Légendaire</h2>
+                    <p>Bienvenue, valeureux Apprenti du Verbe ! Le Conseil Suprême des Arcanes Grammaticaux vous a choisi pour la plus noble des quêtes. 🌟</p>
 
-                <p>Dans les anciennes prophéties de Grammairium, il est dit que seul un héros maîtrisant l'art des modaux pourra déverrouiller les secrets les plus profonds de la langue anglaise.</p>
+                    <p>Dans les anciennes prophéties de Grammairium, il est dit que seul un héros maîtrisant l'art des modaux pourra déverrouiller les secrets les plus profonds de la langue anglaise.</p>
 
-                <div class="quest-objectives">
-                    <h3>🎯 Vos Objectifs de Quête</h3>
-                    <ul>
-                        <li>🛡️ Maîtriser chaque modal dans ses moindres nuances</li>
-                        <li>⚡ Comprendre les subtilités entre les différents modaux</li>
-                        <li>🎭 Manipuler les temps et aspects avec les modaux</li>
-                        <li>🏆 Devenir un Maître incontesté des Modaux</li>
-                    </ul>
-                </div>
-
-                <div class="important-note">
-                    <h3>💫 Votre Destinée</h3>
-                    <p>Cette quête vous mènera à travers les différents royaumes des modaux, chacun gardant ses propres secrets et défis. Êtes-vous prêt à commencer votre voyage ?</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Fundamentals Section -->
-        <section id="basics" class="section course-section">
-            <h2 class="section-title">1. Les Fondements Mystiques des Modaux</h2>
-
-            <div class="concept-box">
-                <h3>L'Essence des Modaux</h3>
-
-                <div class="compare-box">
-                    <div class="compare-item">
-                        <h4>Nature Magique</h4>
+                    <div class="quest-objectives">
+                        <h3>🎯 Vos Objectifs de Quête</h3>
                         <ul>
-                            <li>Invariables (ne changent jamais de forme)</li>
-                            <li>Suivis de l'infinitif sans "to"</li>
-                            <li>Expriment des nuances spéciales</li>
+                            <li>🛡️ Maîtriser chaque modal dans ses moindres nuances</li>
+                            <li>⚡ Comprendre les subtilités entre les différents modaux</li>
+                            <li>🎭 Manipuler les temps et aspects avec les modaux</li>
+                            <li>🏆 Devenir un Maître incontesté des Modaux</li>
                         </ul>
                     </div>
-                    <div class="compare-item">
-                        <h4>Pouvoirs Uniques</h4>
+
+                    <div class="important-note">
+                        <h3>💫 Votre Destinée</h3>
+                        <p>Cette quête vous mènera à travers les différents royaumes des modaux, chacun gardant ses propres secrets et défis. Êtes-vous prêt à commencer votre voyage ?</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Fundamentals Section -->
+            <section id="basics" class="section course-section">
+                <h2 class="section-title">1. Les Fondements Mystiques des Modaux</h2>
+
+                <div class="concept-box">
+                    <h3>L'Essence des Modaux</h3>
+
+                    <div class="compare-box">
+                        <div class="compare-item">
+                            <h4>Nature Magique</h4>
+                            <ul>
+                                <li>Invariables (ne changent jamais de forme)</li>
+                                <li>Suivis de l'infinitif sans "to"</li>
+                                <li>Expriment des nuances spéciales</li>
+                            </ul>
+                        </div>
+                        <div class="compare-item">
+                            <h4>Pouvoirs Uniques</h4>
+                            <ul>
+                                <li>Capacités et permissions</li>
+                                <li>Obligations et nécessités</li>
+                                <li>Possibilités et probabilités</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Structure Fondamentale</h4>
+                        <p class="en">Subject + Modal + Base Verb + Rest of sentence</p>
                         <ul>
-                            <li>Capacités et permissions</li>
-                            <li>Obligations et nécessités</li>
-                            <li>Possibilités et probabilités</li>
+                            <li class="en">I can speak English</li>
+                            <li class="en">She must go home</li>
+                            <li class="en">They might come later</li>
                         </ul>
                     </div>
-                </div>
 
-                <div class="example-box">
-                    <h4>Structure Fondamentale</h4>
-                    <p class="en">Subject + Modal + Base Verb + Rest of sentence</p>
-                    <ul>
-                        <li class="en">I can speak English</li>
-                        <li class="en">She must go home</li>
-                        <li class="en">They might come later</li>
-                    </ul>
-                </div>
-
-                <div class="important-note">
-                    <h4>🔍 Règle d'Or</h4>
-                    <p>Contrairement au français, les modaux en anglais ne se conjuguent jamais et sont toujours suivis du verbe à l'infinitif sans "to"!</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="can-could" class="section course-section">
-            <h2 class="section-title">2. CAN & COULD : Les Premiers Pouvoirs</h2>
-        
-            <div class="concept-box">
-                <h3>Le Pouvoir de CAN</h3>
-        
-                <div class="example-box">
-                    <h4>Capacité Physique</h4>
-                    <p class="en">I can swim very well.</p>
-                    <p class="fr">Je peux très bien nager.</p>
-                    <p class="explanation">S'utilise pour une capacité concrète et démontrable.</p>
-        
-                    <h4>Capacité Acquise</h4>
-                    <p class="en">She can speak three languages.</p>
-                    <p class="fr">Elle peut parler trois langues.</p>
-                    <p class="explanation">Pour les compétences apprises avec le temps.</p>
-        
-                    <h4>Permission Informelle</h4>
-                    <p class="en">Can I use your phone?</p>
-                    <p class="fr">Puis-je utiliser ton téléphone ?</p>
-                    <p class="explanation">Pour des demandes entre amis ou en famille.</p>
-                </div>
-        
-                <div class="compare-box">
-                    <div class="compare-item">
-                        <h4>Présent</h4>
-                        <p class="en">I can help you now.</p>
-                        <p class="fr">Je peux t'aider maintenant.</p>
-                    </div>
-                    <div class="compare-item">
-                        <h4>Négatif</h4>
-                        <p class="en">I can't (cannot) come tonight.</p>
-                        <p class="fr">Je ne peux pas venir ce soir.</p>
+                    <div class="important-note">
+                        <h4>🔍 Règle d'Or</h4>
+                        <p>Contrairement au français, les modaux en anglais ne se conjuguent jamais et sont toujours suivis du verbe à l'infinitif sans "to"!</p>
                     </div>
                 </div>
-        
-                <h3>Le Pouvoir de COULD</h3>
-        
-                <div class="example-box">
-                    <h4>Passé de CAN</h4>
-                    <p class="en">When I was young, I could run very fast.</p>
-                    <p class="fr">Quand j'étais jeune, je pouvais courir très vite.</p>
-                    <p class="explanation">Capacité que l'on avait dans le passé.</p>
-        
-                    <h4>Politesse</h4>
-                    <p class="en">Could you help me, please?</p>
-                    <p class="fr">Pourriez-vous m'aider, s'il vous plaît ?</p>
-                    <p class="explanation">Version polie, idéale en situation formelle.</p>
-        
-                    <h4>Possibilité Future</h4>
-                    <p class="en">This could be interesting.</p>
-                    <p class="fr">Cela pourrait être intéressant.</p>
-                    <p class="explanation">Pour une possibilité future moins certaine.</p>
-                </div>
-        
-                <div class="important-note">
-                    <h4>🎯 Points Clés</h4>
-                    <ul>
-                        <li>CAN est plus direct et informel</li>
-                        <li>COULD est plus poli et formel</li>
-                        <li>COULD exprime plus d'incertitude</li>
-                        <li>Pour une action unique réussie dans le passé, utilisez "was/were able to"</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-        <!-- Must & Have to Section -->
-        <section id="must-have-to" class="section course-section">
-            <h2 class="section-title">3. MUST & HAVE TO : Les Décrets de l'Obligation</h2>
+            </section>
 
-            <div class="concept-box">
-                <h3>Le Pouvoir de MUST</h3>
-
-                <div class="example-box">
-                    <h4>Obligation Personnelle</h4>
-                    <p class="en">I must study harder.</p>
-                    <p class="fr">Je dois étudier plus dur.</p>
-                    <p class="explanation">Pour une obligation que l'on s'impose soi-même.</p>
-
-                    <h4>Forte Recommandation</h4>
-                    <p class="en">You must try this restaurant!</p>
-                    <p class="fr">Tu dois absolument essayer ce restaurant !</p>
-                    <p class="explanation">Pour insister sur l'importance d'une action.</p>
-
-                    <h4>Interdiction (must not)</h4>
-                    <p class="en">You must not tell anyone.</p>
-                    <p class="fr">Tu ne dois absolument pas le dire à qui que ce soit.</p>
-                    <p class="explanation">Exprime une interdiction stricte et absolue.</p>
-                </div>
-
-                <h3>Le Pouvoir de HAVE TO</h3>
-
-                <div class="example-box">
-                    <h4>Obligation Externe</h4>
-                    <p class="en">I have to wear a uniform at work.</p>
-                    <p class="fr">Je dois porter un uniforme au travail.</p>
-                    <p class="explanation">Pour une règle ou obligation imposée de l'extérieur.</p>
-
-                    <h4>Nécessité Générale</h4>
-                    <p class="en">You have to have a ticket to enter.</p>
-                    <p class="fr">Il faut avoir un ticket pour entrer.</p>
-                    <p class="explanation">Pour une règle établie ou une nécessité objective.</p>
-                </div>
-
-                <div class="compare-box">
-                    <div class="compare-item">
-                        <h4>MUST</h4>
+            <section id="can-could" class="section course-section">
+                <h2 class="section-title">2. CAN & COULD : Les Premiers Pouvoirs</h2>
+            
+                <div class="concept-box">
+                    <h3>Le Pouvoir de CAN</h3>
+            
+                    <div class="example-box">
+                        <h4>Capacité Physique</h4>
+                        <p class="en">I can swim very well.</p>
+                        <p class="fr">Je peux très bien nager.</p>
+                        <p class="explanation">S'utilise pour une capacité concrète et démontrable.</p>
+            
+                        <h4>Capacité Acquise</h4>
+                        <p class="en">She can speak three languages.</p>
+                        <p class="fr">Elle peut parler trois langues.</p>
+                        <p class="explanation">Pour les compétences apprises avec le temps.</p>
+            
+                        <h4>Permission Informelle</h4>
+                        <p class="en">Can I use your phone?</p>
+                        <p class="fr">Puis-je utiliser ton téléphone ?</p>
+                        <p class="explanation">Pour des demandes entre amis ou en famille.</p>
+                    </div>
+            
+                    <div class="compare-box">
+                        <div class="compare-item">
+                            <h4>Présent</h4>
+                            <p class="en">I can help you now.</p>
+                            <p class="fr">Je peux t'aider maintenant.</p>
+                        </div>
+                        <div class="compare-item">
+                            <h4>Négatif</h4>
+                            <p class="en">I can't (cannot) come tonight.</p>
+                            <p class="fr">Je ne peux pas venir ce soir.</p>
+                        </div>
+                    </div>
+            
+                    <h3>Le Pouvoir de COULD</h3>
+            
+                    <div class="example-box">
+                        <h4>Passé de CAN</h4>
+                        <p class="en">When I was young, I could run very fast.</p>
+                        <p class="fr">Quand j'étais jeune, je pouvais courir très vite.</p>
+                        <p class="explanation">Capacité que l'on avait dans le passé.</p>
+            
+                        <h4>Politesse</h4>
+                        <p class="en">Could you help me, please?</p>
+                        <p class="fr">Pourriez-vous m'aider, s'il vous plaît ?</p>
+                        <p class="explanation">Version polie, idéale en situation formelle.</p>
+            
+                        <h4>Possibilité Future</h4>
+                        <p class="en">This could be interesting.</p>
+                        <p class="fr">Cela pourrait être intéressant.</p>
+                        <p class="explanation">Pour une possibilité future moins certaine.</p>
+                    </div>
+            
+                    <div class="important-note">
+                        <h4>🎯 Points Clés</h4>
                         <ul>
-                            <li>Obligation personnelle</li>
-                            <li>Conviction forte</li>
-                            <li>Recommandation intense</li>
-                        </ul>
-                    </div>
-                    <div class="compare-item">
-                        <h4>HAVE TO</h4>
-                        <ul>
-                            <li>Obligation externe</li>
-                            <li>Règles établies</li>
-                            <li>Nécessité pratique</li>
+                            <li>CAN est plus direct et informel</li>
+                            <li>COULD est plus poli et formel</li>
+                            <li>COULD exprime plus d'incertitude</li>
+                            <li>Pour une action unique réussie dans le passé, utilisez "was/were able to"</li>
                         </ul>
                     </div>
                 </div>
+            </section>
+            <!-- Must & Have to Section -->
+            <section id="must-have-to" class="section course-section">
+                <h2 class="section-title">3. MUST & HAVE TO : Les Décrets de l'Obligation</h2>
 
-                <div class="important-note">
-                    <h4>🎯 Points Clés</h4>
-                    <ul>
-                        <li>MUST NOT = interdiction absolue</li>
-                        <li>DON'T HAVE TO = absence d'obligation</li>
-                        <li>HAVE TO peut se conjuguer à tous les temps</li>
-                        <li>MUST ne se conjuge pas</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+                <div class="concept-box">
+                    <h3>Le Pouvoir de MUST</h3>
 
-        <!-- May & Might Section -->
-        <section id="may-might" class="section course-section">
-            <h2 class="section-title">4. MAY & MIGHT : Les Arcanes de la Possibilité</h2>
+                    <div class="example-box">
+                        <h4>Obligation Personnelle</h4>
+                        <p class="en">I must study harder.</p>
+                        <p class="fr">Je dois étudier plus dur.</p>
+                        <p class="explanation">Pour une obligation que l'on s'impose soi-même.</p>
 
-            <div class="concept-box">
-                <h3>Le Pouvoir de MAY</h3>
+                        <h4>Forte Recommandation</h4>
+                        <p class="en">You must try this restaurant!</p>
+                        <p class="fr">Tu dois absolument essayer ce restaurant !</p>
+                        <p class="explanation">Pour insister sur l'importance d'une action.</p>
 
-                <div class="example-box">
-                    <h4>Permission Formelle</h4>
-                    <p class="en">May I come in?</p>
-                    <p class="fr">Puis-je entrer ?</p>
-                    <p class="explanation">La forme la plus polie pour demander une permission.</p>
-
-                    <h4>Possibilité (50%)</h4>
-                    <p class="en">It may rain tomorrow.</p>
-                    <p class="fr">Il se peut qu'il pleuve demain.</p>
-                    <p class="explanation">Pour une possibilité moyennement probable.</p>
-                </div>
-
-                <h3>Le Pouvoir de MIGHT</h3>
-
-                <div class="example-box">
-                    <h4>Possibilité Moindre</h4>
-                    <p class="en">I might go to the party.</p>
-                    <p class="fr">Je pourrais aller à la fête.</p>
-                    <p class="explanation">Pour une possibilité moins certaine que MAY.</p>
-
-                    <h4>Suggestion Polie</h4>
-                    <p class="en">You might want to check your email.</p>
-                    <p class="fr">Tu voudrais peut-être vérifier tes emails.</p>
-                    <p class="explanation">Pour une suggestion très douce.</p>
-                </div>
-
-                <div class="important-note">
-                    <h4>📊 Échelle de Probabilité</h4>
-                    <ul>
-                        <li>WILL : 90-100% de certitude</li>
-                        <li>MAY : 50% de probabilité</li>
-                        <li>MIGHT : 30% de probabilité</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-        <!-- Would Section -->
-        <section id="would" class="section course-section">
-            <h2 class="section-title">5. WOULD : Le Maître du Conditionnel</h2>
-
-            <div class="concept-box">
-                <h3>Les Multiples Visages de WOULD</h3>
-
-                <div class="example-box">
-                    <h4>Politesse</h4>
-                    <p class="en">Would you like some tea?</p>
-                    <p class="fr">Voudriez-vous du thé ?</p>
-                    <p class="explanation">Pour des offres ou demandes très polies.</p>
-
-                    <h4>Conditionnel</h4>
-                    <p class="en">I would help if I could.</p>
-                    <p class="fr">J'aiderais si je pouvais.</p>
-                    <p class="explanation">Pour des situations hypothétiques.</p>
-
-                    <h4>Habitude Passée</h4>
-                    <p class="en">When I was young, I would play in the garden.</p>
-                    <p class="fr">Quand j'étais jeune, j'avais l'habitude de jouer dans le jardin.</p>
-                    <p class="explanation">Pour décrire des actions répétées dans le passé.</p>
-                </div>
-
-                <div class="compare-box">
-                    <div class="compare-item">
-                        <h4>Présent/Futur</h4>
-                        <p class="en">I would love to come.</p>
-                        <p class="fr">J'aimerais venir.</p>
+                        <h4>Interdiction (must not)</h4>
+                        <p class="en">You must not tell anyone.</p>
+                        <p class="fr">Tu ne dois absolument pas le dire à qui que ce soit.</p>
+                        <p class="explanation">Exprime une interdiction stricte et absolue.</p>
                     </div>
-                    <div class="compare-item">
-                        <h4>Passé</h4>
-                        <p class="en">I would have helped.</p>
-                        <p class="fr">J'aurais aidé.</p>
+
+                    <h3>Le Pouvoir de HAVE TO</h3>
+
+                    <div class="example-box">
+                        <h4>Obligation Externe</h4>
+                        <p class="en">I have to wear a uniform at work.</p>
+                        <p class="fr">Je dois porter un uniforme au travail.</p>
+                        <p class="explanation">Pour une règle ou obligation imposée de l'extérieur.</p>
+
+                        <h4>Nécessité Générale</h4>
+                        <p class="en">You have to have a ticket to enter.</p>
+                        <p class="fr">Il faut avoir un ticket pour entrer.</p>
+                        <p class="explanation">Pour une règle établie ou une nécessité objective.</p>
+                    </div>
+
+                    <div class="compare-box">
+                        <div class="compare-item">
+                            <h4>MUST</h4>
+                            <ul>
+                                <li>Obligation personnelle</li>
+                                <li>Conviction forte</li>
+                                <li>Recommandation intense</li>
+                            </ul>
+                        </div>
+                        <div class="compare-item">
+                            <h4>HAVE TO</h4>
+                            <ul>
+                                <li>Obligation externe</li>
+                                <li>Règles établies</li>
+                                <li>Nécessité pratique</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>🎯 Points Clés</h4>
+                        <ul>
+                            <li>MUST NOT = interdiction absolue</li>
+                            <li>DON'T HAVE TO = absence d'obligation</li>
+                            <li>HAVE TO peut se conjuguer à tous les temps</li>
+                            <li>MUST ne se conjuge pas</li>
+                        </ul>
                     </div>
                 </div>
+            </section>
 
-                <div class="important-note">
-                    <h4>🎯 Points Clés</h4>
-                    <ul>
-                        <li>WOULD est plus poli que WILL</li>
-                        <li>Parfait pour les hypothèses</li>
-                        <li>Souvent utilisé avec IF</li>
-                        <li>Peut exprimer des regrets au passé (would have)</li>
-                    </ul>
+            <!-- May & Might Section -->
+            <section id="may-might" class="section course-section">
+                <h2 class="section-title">4. MAY & MIGHT : Les Arcanes de la Possibilité</h2>
+
+                <div class="concept-box">
+                    <h3>Le Pouvoir de MAY</h3>
+
+                    <div class="example-box">
+                        <h4>Permission Formelle</h4>
+                        <p class="en">May I come in?</p>
+                        <p class="fr">Puis-je entrer ?</p>
+                        <p class="explanation">La forme la plus polie pour demander une permission.</p>
+
+                        <h4>Possibilité (50%)</h4>
+                        <p class="en">It may rain tomorrow.</p>
+                        <p class="fr">Il se peut qu'il pleuve demain.</p>
+                        <p class="explanation">Pour une possibilité moyennement probable.</p>
+                    </div>
+
+                    <h3>Le Pouvoir de MIGHT</h3>
+
+                    <div class="example-box">
+                        <h4>Possibilité Moindre</h4>
+                        <p class="en">I might go to the party.</p>
+                        <p class="fr">Je pourrais aller à la fête.</p>
+                        <p class="explanation">Pour une possibilité moins certaine que MAY.</p>
+
+                        <h4>Suggestion Polie</h4>
+                        <p class="en">You might want to check your email.</p>
+                        <p class="fr">Tu voudrais peut-être vérifier tes emails.</p>
+                        <p class="explanation">Pour une suggestion très douce.</p>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>📊 Échelle de Probabilité</h4>
+                        <ul>
+                            <li>WILL : 90-100% de certitude</li>
+                            <li>MAY : 50% de probabilité</li>
+                            <li>MIGHT : 30% de probabilité</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+            <!-- Would Section -->
+            <section id="would" class="section course-section">
+                <h2 class="section-title">5. WOULD : Le Maître du Conditionnel</h2>
 
-        <!-- Advanced Combinations -->
-        <section id="advanced" class="section course-section">
-            <h2 class="section-title">6. Les Combinaisons Avancées</h2>
+                <div class="concept-box">
+                    <h3>Les Multiples Visages de WOULD</h3>
+
+                    <div class="example-box">
+                        <h4>Politesse</h4>
+                        <p class="en">Would you like some tea?</p>
+                        <p class="fr">Voudriez-vous du thé ?</p>
+                        <p class="explanation">Pour des offres ou demandes très polies.</p>
+
+                        <h4>Conditionnel</h4>
+                        <p class="en">I would help if I could.</p>
+                        <p class="fr">J'aiderais si je pouvais.</p>
+                        <p class="explanation">Pour des situations hypothétiques.</p>
+
+                        <h4>Habitude Passée</h4>
+                        <p class="en">When I was young, I would play in the garden.</p>
+                        <p class="fr">Quand j'étais jeune, j'avais l'habitude de jouer dans le jardin.</p>
+                        <p class="explanation">Pour décrire des actions répétées dans le passé.</p>
+                    </div>
+
+                    <div class="compare-box">
+                        <div class="compare-item">
+                            <h4>Présent/Futur</h4>
+                            <p class="en">I would love to come.</p>
+                            <p class="fr">J'aimerais venir.</p>
+                        </div>
+                        <div class="compare-item">
+                            <h4>Passé</h4>
+                            <p class="en">I would have helped.</p>
+                            <p class="fr">J'aurais aidé.</p>
+                        </div>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>🎯 Points Clés</h4>
+                        <ul>
+                            <li>WOULD est plus poli que WILL</li>
+                            <li>Parfait pour les hypothèses</li>
+                            <li>Souvent utilisé avec IF</li>
+                            <li>Peut exprimer des regrets au passé (would have)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advanced Combinations -->
+            <section id="advanced" class="section course-section">
+                <h2 class="section-title">6. Les Combinaisons Avancées</h2>
+
+                <div class="concept-box">
+                    <h3>Les Formes Parfaites</h3>
+
+                    <div class="example-box">
+                        <h4>Modal + have + participe passé</h4>
+                        <p class="en">She must have been tired.</p>
+                        <p class="fr">Elle devait être fatiguée.</p>
+                        <p class="explanation">Pour une déduction sur le passé.</p>
+
+                        <p class="en">They could have won.</p>
+                        <p class="fr">Ils auraient pu gagner.</p>
+                        <p class="explanation">Pour une possibilité passée non réalisée.</p>
+
+                        <p class="en">You should have told me.</p>
+                        <p class="fr">Tu aurais dû me le dire.</p>
+                        <p class="explanation">Pour un reproche ou un regret.</p>
+                    </div>
+
+                    <div class="example-box">
+                        <h4>Formes Progressives</h4>
+                        <p class="en">He must be sleeping.</p>
+                        <p class="fr">Il doit être en train de dormir.</p>
+                        <p class="explanation">Pour une action en cours probable.</p>
+
+                        <p class="en">They might be working.</p>
+                        <p class="fr">Ils sont peut-être en train de travailler.</p>
+                        <p class="explanation">Pour une action en cours possible.</p>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>🔥 Structures Clés</h4>
+                        <ul>
+                            <li>Modal + be + -ing : action en cours</li>
+                            <li>Modal + have been + -ing : action passée en cours</li>
+                            <li>Modal + have + participe passé : action passée terminée</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Common Mistakes -->
+            <section id="mistakes" class="section course-section">
+                <h2 class="section-title">7. Les Pièges à Éviter</h2>
+
+                <div class="concept-box">
+                    <div class="example-box">
+                        <h4>❌ Erreurs Courantes</h4>
+                        <ul>
+                            <li>
+                                <p class="en">I must to go ❌</p>
+                                <p class="en">I must go ✅</p>
+                                <p class="explanation">Jamais de 'to' après un modal</p>
+                            </li>
+                            <li>
+                                <p class="en">He cans swim ❌</p>
+                                <p class="en">He can swim ✅</p>
+                                <p class="explanation">Les modaux sont invariables</p>
+                            </li>
+                            <li>
+                                <p class="en">I will can help you ❌</p>
+                                <p class="en">I will be able to help you ✅</p>
+                                <p class="explanation">Pas de double modal</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="important-note">
+                        <h4>⚠️ À Retenir Absolument</h4>
+                        <ul>
+                            <li>Un seul modal par proposition</li>
+                            <li>Toujours suivi de l'infinitif sans 'to'</li>
+                            <li>Jamais de 's' à la troisième personne</li>
+                            <li>La négation se forme directement (modal + not)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- Real Life Usage -->
+           <section id="real-life" class="section course-section">
+            <h2 class="section-title">8. Situations de la Vie Réelle</h2>
 
             <div class="concept-box">
-                <h3>Les Formes Parfaites</h3>
-
                 <div class="example-box">
-                    <h4>Modal + have + participe passé</h4>
-                    <p class="en">She must have been tired.</p>
-                    <p class="fr">Elle devait être fatiguée.</p>
-                    <p class="explanation">Pour une déduction sur le passé.</p>
-
-                    <p class="en">They could have won.</p>
-                    <p class="fr">Ils auraient pu gagner.</p>
-                    <p class="explanation">Pour une possibilité passée non réalisée.</p>
-
-                    <p class="en">You should have told me.</p>
-                    <p class="fr">Tu aurais dû me le dire.</p>
-                    <p class="explanation">Pour un reproche ou un regret.</p>
-                </div>
-
-                <div class="example-box">
-                    <h4>Formes Progressives</h4>
-                    <p class="en">He must be sleeping.</p>
-                    <p class="fr">Il doit être en train de dormir.</p>
-                    <p class="explanation">Pour une action en cours probable.</p>
-
-                    <p class="en">They might be working.</p>
-                    <p class="fr">Ils sont peut-être en train de travailler.</p>
-                    <p class="explanation">Pour une action en cours possible.</p>
-                </div>
-
-                <div class="important-note">
-                    <h4>🔥 Structures Clés</h4>
-                    <ul>
-                        <li>Modal + be + -ing : action en cours</li>
-                        <li>Modal + have been + -ing : action passée en cours</li>
-                        <li>Modal + have + participe passé : action passée terminée</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Common Mistakes -->
-        <section id="mistakes" class="section course-section">
-            <h2 class="section-title">7. Les Pièges à Éviter</h2>
-
-            <div class="concept-box">
-                <div class="example-box">
-                    <h4>❌ Erreurs Courantes</h4>
+                    <h4>🗣️ Au Restaurant</h4>
                     <ul>
                         <li>
-                            <p class="en">I must to go ❌</p>
-                            <p class="en">I must go ✅</p>
-                            <p class="explanation">Jamais de 'to' après un modal</p>
+                            <p class="en">Could I have the menu, please?</p>
+                            <p class="fr">Pourrais-je avoir le menu, s'il vous plaît ?</p>
+                            <p class="explanation">Demande polie au serveur</p>
                         </li>
                         <li>
-                            <p class="en">He cans swim ❌</p>
-                            <p class="en">He can swim ✅</p>
-                            <p class="explanation">Les modaux sont invariables</p>
+                            <p class="en">May I take your order?</p>
+                            <p class="fr">Puis-je prendre votre commande ?</p>
+                            <p class="explanation">Question formelle du serveur</p>
+                        </li>
+                    </ul>
+
+                    <h4>💼 Au Travail</h4>
+                    <ul>
+                        <li>
+                            <p class="en">You must submit your report by Friday.</p>
+                            <p class="fr">Vous devez soumettre votre rapport avant vendredi.</p>
+                            <p class="explanation">Obligation professionnelle</p>
                         </li>
                         <li>
-                            <p class="en">I will can help you ❌</p>
-                            <p class="en">I will be able to help you ✅</p>
-                            <p class="explanation">Pas de double modal</p>
+                            <p class="en">Could you help me with this project?</p>
+                            <p class="fr">Pourriez-vous m'aider avec ce projet ?</p>
+                            <p class="explanation">Demande professionnelle polie</p>
+                        </li>
+                    </ul>
+
+                    <h4>🏫 En Situation Formelle</h4>
+                    <ul>
+                        <li>
+                            <p class="en">May I be excused?</p>
+                            <p class="fr">Puis-je être excusé(e) ?</p>
+                            <p class="explanation">Demande très formelle</p>
+                        </li>
+                        <li>
+                            <p class="en">You must follow the dress code.</p>
+                            <p class="fr">Vous devez respecter le code vestimentaire.</p>
+                            <p class="explanation">Règle institutionnelle</p>
                         </li>
                     </ul>
                 </div>
 
                 <div class="important-note">
-                    <h4>⚠️ À Retenir Absolument</h4>
+                    <h4>💡 Guide Rapide</h4>
                     <ul>
-                        <li>Un seul modal par proposition</li>
-                        <li>Toujours suivi de l'infinitif sans 'to'</li>
-                        <li>Jamais de 's' à la troisième personne</li>
-                        <li>La négation se forme directement (modal + not)</li>
+                        <li>Situation formelle → May/Could/Would</li>
+                        <li>Situation informelle → Can</li>
+                        <li>Obligation stricte → Must</li>
+                        <li>Suggestion douce → Might</li>
                     </ul>
                 </div>
             </div>
         </section>
-        <!-- Real Life Usage -->
-       <section id="real-life" class="section course-section">
-        <h2 class="section-title">8. Situations de la Vie Réelle</h2>
 
-        <div class="concept-box">
-            <div class="example-box">
-                <h4>🗣️ Au Restaurant</h4>
-                <ul>
-                    <li>
-                        <p class="en">Could I have the menu, please?</p>
-                        <p class="fr">Pourrais-je avoir le menu, s'il vous plaît ?</p>
-                        <p class="explanation">Demande polie au serveur</p>
-                    </li>
-                    <li>
-                        <p class="en">May I take your order?</p>
-                        <p class="fr">Puis-je prendre votre commande ?</p>
-                        <p class="explanation">Question formelle du serveur</p>
-                    </li>
-                </ul>
+        <!-- Final Summary -->
+        <section id="summary" class="section course-section">
+            <h2 class="section-title">9. Le Testament du Maître des Modaux</h2>
 
-                <h4>💼 Au Travail</h4>
-                <ul>
-                    <li>
-                        <p class="en">You must submit your report by Friday.</p>
-                        <p class="fr">Vous devez soumettre votre rapport avant vendredi.</p>
-                        <p class="explanation">Obligation professionnelle</p>
-                    </li>
-                    <li>
-                        <p class="en">Could you help me with this project?</p>
-                        <p class="fr">Pourriez-vous m'aider avec ce projet ?</p>
-                        <p class="explanation">Demande professionnelle polie</p>
-                    </li>
-                </ul>
+            <div class="concept-box">
+                <h3>🏆 Votre Arsenal Complet</h3>
 
-                <h4>🏫 En Situation Formelle</h4>
-                <ul>
-                    <li>
-                        <p class="en">May I be excused?</p>
-                        <p class="fr">Puis-je être excusé(e) ?</p>
-                        <p class="explanation">Demande très formelle</p>
-                    </li>
-                    <li>
-                        <p class="en">You must follow the dress code.</p>
-                        <p class="fr">Vous devez respecter le code vestimentaire.</p>
-                        <p class="explanation">Règle institutionnelle</p>
-                    </li>
-                </ul>
+                <div class="compare-box">
+                    <div class="compare-item">
+                        <h4>Capacité et Permission</h4>
+                        <ul>
+                            <li>CAN : capacité et permission informelle</li>
+                            <li>COULD : politesse et passé</li>
+                            <li>MAY : permission formelle</li>
+                        </ul>
+                    </div>
+                    <div class="compare-item">
+                        <h4>Obligation et Nécessité</h4>
+                        <ul>
+                            <li>MUST : obligation personnelle forte</li>
+                            <li>HAVE TO : obligation externe</li>
+                            <li>SHOULD : conseil, recommandation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h4>Règles d'Or à Mémoriser</h4>
+                    <ul>
+                        <li>Un seul modal par phrase</li>
+                        <li>Toujours suivi de l'infinitif sans "to"</li>
+                        <li>Pas de conjugaison</li>
+                        <li>Structure négative simple : modal + not</li>
+                    </ul>
+                </div>
+
+                <div class="important-note">
+                    <h4>🌟 Message Final du Grand Conseil</h4>
+                    <p>Félicitations, brave aventurier ! Vous possédez maintenant la maîtrise des modaux anglais. Ces outils puissants vous permettront d'exprimer nuances et subtilités dans toutes vos conversations. Utilisez-les avec sagesse dans vos futures quêtes linguistiques !</p>
+                </div>
             </div>
+        </section>
+        </div>
+    </main>
 
-            <div class="important-note">
-                <h4>💡 Guide Rapide</h4>
-                <ul>
-                    <li>Situation formelle → May/Could/Would</li>
-                    <li>Situation informelle → Can</li>
-                    <li>Obligation stricte → Must</li>
-                    <li>Suggestion douce → Might</li>
-                </ul>
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
             </div>
         </div>
-    </section>
+    </footer>
 
-    <!-- Final Summary -->
-    <section id="summary" class="section course-section">
-        <h2 class="section-title">9. Le Testament du Maître des Modaux</h2>
-
-        <div class="concept-box">
-            <h3>🏆 Votre Arsenal Complet</h3>
-
-            <div class="compare-box">
-                <div class="compare-item">
-                    <h4>Capacité et Permission</h4>
-                    <ul>
-                        <li>CAN : capacité et permission informelle</li>
-                        <li>COULD : politesse et passé</li>
-                        <li>MAY : permission formelle</li>
-                    </ul>
-                </div>
-                <div class="compare-item">
-                    <h4>Obligation et Nécessité</h4>
-                    <ul>
-                        <li>MUST : obligation personnelle forte</li>
-                        <li>HAVE TO : obligation externe</li>
-                        <li>SHOULD : conseil, recommandation</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="example-box">
-                <h4>Règles d'Or à Mémoriser</h4>
-                <ul>
-                    <li>Un seul modal par phrase</li>
-                    <li>Toujours suivi de l'infinitif sans "to"</li>
-                    <li>Pas de conjugaison</li>
-                    <li>Structure négative simple : modal + not</li>
-                </ul>
-            </div>
-
-            <div class="important-note">
-                <h4>🌟 Message Final du Grand Conseil</h4>
-                <p>Félicitations, brave aventurier ! Vous possédez maintenant la maîtrise des modaux anglais. Ces outils puissants vous permettront d'exprimer nuances et subtilités dans toutes vos conversations. Utilisez-les avec sagesse dans vos futures quêtes linguistiques !</p>
-            </div>
-        </div>
-    </section>
-</main>
-
-<footer>
-    <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-</footer>
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

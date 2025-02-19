@@ -12,127 +12,89 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - English Quest</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-attachment: fixed;
-            color: #f0e6d2;
-            margin: 0;
-            padding: 0;
-        }
-
-        .contact-container {
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 20px solid transparent;
-            border-image: url('images/fantasy-border.png') 30 round;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 15px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #c9aa71;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        label {
-            font-size: 1.2em;
-            color: #e0c589;
-        }
-
-        input[type="text"], input[type="email"], textarea {
-            padding: 10px;
-            font-size: 1.1em;
-            border: 1px solid #c9aa71;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-
-        input[type="submit"] {
-            background-color: #c9aa71;
-            color: #000;
-            padding: 15px;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #e0c589;
-        }
-    </style>
+    <meta name="description" content="English Quest Contact - Get in touch with us">
+    <title>English Quest - Contact</title>
+    
+    <!-- Styles -->
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1 class="site-title" style="margin: -10; padding: -10;">
-            <img src="images/logo.gif" alt="English Quest Logo" style="width: 70%; height: auto; max-width: 600px;">
-        </h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="all-games.html">Games</a>
-            <a href="courses.html">Courses</a>
-            <a href="leaderboard.html">Leaderboard</a>
-            <a href="contact.html" class="active">Contact</a>
-        </nav>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed contact-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
-    <main>
-        <div class="contact-container">
-            <h2>Contact me</h2>
-            <form id="contact-form">
-                <label for="name">Your Name:</label>
-                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link active">Contact</a>
+        </div>
+    </nav>
 
-                <label for="email">Your Email:</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    <main class="min-h-screen pt-32">
+        <!-- Hero Section -->
+        <div class="quest-panel max-w-2xl mx-auto mb-16">
+            <h1 class="glow-text">CONTACT THE GUILD</h1>
+            <p>Have questions or suggestions? Send a message to our council of elders!</p>
+        </div>
 
-                <label for="message">Your Message:</label>
-                <textarea id="message" name="message" rows="6" placeholder="Enter your message" required></textarea>
+        <!-- Contact Form Section -->
+        <div class="quest-panel max-w-3xl mx-auto mb-16">
+            <h2 class="section-title">Send a Message</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
 
-                <input type="submit" value="Send Message">
+                <div class="form-group">
+                    <label for="email">Your Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select a subject...</option>
+                        <option value="bug">Report a Bug</option>
+                        <option value="suggestion">Suggestion</option>
+                        <option value="question">Question</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Your Message</label>
+                    <textarea id="message" name="message" rows="6" required></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="quest-button">
+                        Send Message
+                    </button>
+                </div>
             </form>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- EmailJS Script -->
-    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init("Jb-SEyjWuw5gxUUpY");  // Clé publique EmailJS
-        })();
-    </script>
-
-    <script>
-        document.getElementById('contact-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            emailjs.sendForm('service_syp7u45', 'template_cs40b8d', this)  // Utilise ton Service ID et Template ID
-            .then(function() {
-                alert('Your message has been sent successfully!');
-                document.getElementById('contact-form').reset();
-            }, function(error) {
-                alert('There was a problem sending your message. Please try again.');
-                console.log('FAILED...', error);
-            });
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

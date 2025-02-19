@@ -1,249 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
     <title>Speed Verb Challenge</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: #ffffff;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            margin: 0;
-        }
-
-        header {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px 0;
-            text-align: center;
-        }
-
-        header h1 {
-            display: inline-block;
-            font-size: 2.5em;
-            color: #c9aa71;
-            border: 3px solid #c9aa71;
-            border: 5px solid #c9aa71;
-            border-radius: 10px;
-            padding: 20px;
-            transition: transform 0.3s;
-        }
-
-        nav {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        nav a {
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 0 5px;
-            font-size: 1.1em;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, nav a.active {
-            background-color: #4CAF50;
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #game-container {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-            max-width: 600px;
-            width: 100%;
-        }
-
-        #timer, #score {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        #difficulty {
-            font-size: 1.5em;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .verb-input {
-            padding: 15px;
-            font-size: 1.2em;
-            width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            margin-bottom: 15px;
-        }
-
-        #start-button, #check-button, #skip-button, #home-button {
-            background-color: #4CAF50;
-            color: #ffffff;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.2em;
-            margin-top: 20px;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        #start-button:hover, #check-button:hover, #skip-button:hover, #home-button:hover {
-            background-color: #45a049;
-            transform: translateY(-5px);
-        }
-
-        #top-scores {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 300px;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        #top-scores h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        #top-scores-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        #top-scores-list li {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        footer {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            text-align: center;
-            padding: 10px 0;
-            width: 100%;
-            margin-top: auto;
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2em;
-                padding: 0.2em 0.5em;
-            }
-
-            #game-container, #top-scores {
-                max-width: 100%;
-            }
-        }
-
-        .shake {
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-    </style>
 </head>
-<body>
+<body class="games-theme speed-verb-page">
     <header>
-        <h1>Speed Verb Challenge</h1>
+        <div class="logo-container">
+            <img src="images/logo.gif" alt="English Quest Logo">
+        </div>
+        <nav>
+            <div class="flex gap-8">
+                <a href="index.html" class="nav-link">Accueil</a>
+                <a href="all-games.html" class="nav-link active">Jeux</a>
+                <a href="courses.html" class="nav-link">Cours</a>
+                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+        </nav>
     </header>
 
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="all-games.html" class="active">Games</a>
-        <a href="courses.html">Courses</a>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-    <div class="game-intro">
-        <h2>Bienvenue dans l'Arène des Verbes ! ⚔️</h2>
-        <p><strong>🎯 Objectif :</strong> Conjugue correctement les verbes irréguliers en anglais et accumule des points. Fais vite, le chrono est lancé !</p>
-    
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Sélectionne ton niveau de difficulté, puis appuie sur "Start Game" pour démarrer.</p>
-        <p>2️⃣ Lis le verbe et entre sa conjugaison dans les cases demandées.</p>
-        <p>3️⃣ Appuie sur "Check Answer" pour vérifier ta réponse. Si elle est correcte, tu gagnes des points !</p>
-        <p>4️⃣ Si tu es bloqué, appuie sur "Skip" pour passer au verbe suivant. Attention, pas de points pour les verbes ignorés !</p>
-    
-        <p><strong>⏳ Timer :</strong> Tu disposes de 90 secondes pour marquer le maximum de points. Le jeu se termine quand le temps est écoulé.</p>
-    
-        <p><strong>💡 Conseil :</strong> La précision et la rapidité sont clés. Prépare-toi pour des défis de plus en plus intenses ! Bonne chance !</p>
-    </div>
-    
-    
     <main>
+        <div class="quest-panel max-w-2xl mx-auto">
+            <h1 class="glow-text">SPEED VERB CHALLENGE</h1>
+            <p>Testez votre maîtrise des verbes irréguliers !</p>
+        </div>
+
+        <div class="game-intro">
+            <h2>Bienvenue dans l'Arène des Verbes ! ⚔️</h2>
+            <p><strong>🎯 Objectif :</strong> Conjugue correctement les verbes irréguliers en anglais et accumule des points. Fais vite, le chrono est lancé !</p>
+        
+            <p><strong>🕹️ Instructions :</strong></p>
+            <p>1️⃣ Sélectionne ton niveau de difficulté, puis appuie sur "Start Game" pour démarrer.</p>
+            <p>2️⃣ Lis le verbe et entre sa conjugaison dans les cases demandées.</p>
+            <p>3️⃣ Appuie sur "Check Answer" pour vérifier ta réponse. Si elle est correcte, tu gagnes des points !</p>
+            <p>4️⃣ Si tu es bloqué, appuie sur "Skip" pour passer au verbe suivant. Attention, pas de points pour les verbes ignorés !</p>
+        
+            <p><strong>⏳ Timer :</strong> Tu disposes de 90 secondes pour marquer le maximum de points. Le jeu se termine quand le temps est écoulé.</p>
+        
+            <p><strong>💡 Conseil :</strong> La précision et la rapidité sont clés. Prépare-toi pour des défis de plus en plus intenses ! Bonne chance !</p>
+        </div>
+        
         <div id="game-container">
             <div id="game-area">
                 <label for="difficulty">Choose Difficulty:</label>
-                <select id="difficulty">
+                <select id="difficulty" class="verb-input">
                     <option value="1">Level 1: 1 correct answer = 1 point</option>
                     <option value="2">Level 2: 1 correct answer = 2 points</option>
                     <option value="3">Level 3: 1 correct answer = 3 points</option>
                 </select>
 
                 <div id="timer">Time: <span id="time-left">90</span> seconds</div>
-                <div id="verb-prompt">Verb: <span id="verb-display">---</span> (<span id="verb-translation" class="red-text">---</span>)</div>
+                <div id="verb-prompt">Verb: <span id="verb-display">---</span> (<span id="verb-translation">---</span>)</div>
                 <div id="verb-forms">
                     <div id="input-container"></div>
                 </div>
 
-                <button id="start-button">Start Game</button>
-                <button id="check-button" disabled>Check Answer</button>
-                <button id="skip-button" disabled>Skip</button>
+                <button id="start-button" class="game-button">Start Game</button>
+                <button id="check-button" class="game-button" disabled>Check Answer</button>
+                <button id="skip-button" class="game-button" disabled>Skip</button>
 
                 <div id="score">Score: <span id="score-value">0</span></div>
-
                 <div id="message"></div>
-
-                <div id="skipped-verbs" style="display:none;">
-                    <h3>Skipped Verbs:</h3>
-                    <ul id="skipped-verbs-list"></ul>
-                </div>
             </div>
         </div>
 
@@ -255,19 +85,28 @@
         <button id="home-button" onclick="location.href='index.html';">Back to Home</button>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Games by Pierre Marienne</p>
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <!-- Notre script principal -->
+    <!-- D'abord Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- Ensuite notre configuration Firebase -->
+    <script src="firebase-init.js"></script>
+
+    <!-- Puis nos scripts spécifiques -->
     <script src="speed-verb-challenge.js"></script>
 
-<script src="firebase-init.js"></script>
-<script src="visit-counter.js"></script>
-
-
+    <!-- Le compteur de visites en dernier -->
+    <script src="visit-counter.js"></script>
 </body>
 </html>

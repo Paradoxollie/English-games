@@ -2,96 +2,102 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <title>Lost in Migration - Verb Game</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Lost in Migration - English Quest</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="lost-in-migration.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-
-    <header>
-        <h1>Lost in Migration </h1>
-    </header>
+<body class="min-h-screen bg-cover bg-fixed games-theme" style="background-image: url('images/background.webp');">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="all-games.html" class="active">Games</a>
-        <a href="courses.html">Courses</a>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="contact.html">Contact</a>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
     </nav>
 
-    <div class="game-intro">
-        <h2>Bienvenue dans la Forêt des Faux Amis 🌲</h2>
-        <p><strong>🎯 Objectif :</strong> Trouve le mot intrus caché!</p>
-    
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Choisis un niveau de difficulté dans le menu.</p>
-        <p>2️⃣ Clique sur "Start Game" pour commencer.</p>
-        <p>3️⃣ Lis le thème et cherche le mot qui n’appartient pas au groupe.</p>
-        <p>4️⃣ Appuie sur le mot intrus pour gagner des points et passer au niveau suivant.</p>
-        
-        <p><strong>⏳ Timer :</strong> Chaque niveau a un temps limité, alors sois rapide !</p>
-    
-        <p><strong>💡 Conseil :</strong> Utilise ton intuition et méfie-toi des mots qui semblent familiers en français.</p>
-    </div>
-    
-    
+    <main class="pt-32">
+        <div class="container mx-auto px-4">
+            <!-- Introduction du jeu -->
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Bienvenue dans la Forêt des Faux Amis 🌲</h2>
+                <p class="text-white mb-4"><strong>🎯 Objectif :</strong> Trouve le mot intrus caché!</p>
+                
+                <div class="text-white space-y-2">
+                    <p><strong>🕹️ Instructions :</strong></p>
+                    <p>1️⃣ Choisis un niveau de difficulté dans le menu.</p>
+                    <p>2️⃣ Des mots apparaîtront à l'écran, dont un intrus qui n'appartient pas au thème.</p>
+                    <p>3️⃣ Clique sur l'intrus avant qu'il ne disparaisse!</p>
+                    <p>4️⃣ Plus tu es rapide, plus tu gagnes de points.</p>
+                </div>
+            </div>
 
-    <div id="game-container" class="lost-in-migration">
-        <div id="level-display">Level: <span id="level">1</span></div>
-        <div id="timer">Time: <span id="time-left">10</span> seconds</div>
-        <div id="score-display">Score: <span id="score">0</span></div>
-    
-        <div id="difficulty-selection">
-            <label for="difficulty">Choose difficulty:</label>
-            <select id="difficulty">
-                <option value="easy">Easy - More time, slower words</option>
-                <option value="medium">Medium - Moderate time, moderate speed</option>
-                <option value="hard">Hard - Less time, faster words</option>
-            </select>
-        </div>
-    
-        <div id="current-theme"></div>
-    
-        <!-- Nouveau conteneur pour les mots -->
-        <div id="word-box" style="position: relative; width: 80%; height: 400px; overflow: hidden; border: 2px solid black; margin: auto;">
-            <!-- Les mots apparaîtront ici -->
-            <div id="word-list">
+            <!-- Zone de jeu -->
+            <div class="game-container bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <div class="game-controls mb-6">
+                    <select id="difficulty" class="quest-select">
+                        <option value="easy">Easy - More time, slower words</option>
+                        <option value="medium">Medium - Moderate time, moderate speed</option>
+                        <option value="hard">Hard - Less time, faster words</option>
+                    </select>
+                    <button id="start-button" class="quest-button">Start Game</button>
+                </div>
+
+                <div class="game-stats flex justify-between mb-4">
+                    <div id="level-display" class="text-quest-gold">Level: <span id="level">1</span></div>
+                    <div id="timer" class="text-quest-gold">Time: <span id="time-left">30</span>s</div>
+                    <div id="score-display" class="text-quest-gold">Score: <span id="score">0</span></div>
+                </div>
+
+                <div id="current-theme" class="text-quest-gold text-xl mb-4 text-center"></div>
+
+                <div id="word-box" class="relative w-full h-[400px] bg-black/80 rounded-xl border-2 border-quest-gold/30 overflow-hidden">
+                    <div id="word-list" class="p-4"></div>
+                </div>
+
+                <div id="message" class="text-white text-center mt-4"></div>
+                <div id="explanation" class="text-quest-gold text-center mt-2"></div>
+            </div>
+
+            <!-- Top Scores -->
+            <div id="top-scores" class="mt-8 bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <h3 class="text-quest-gold text-xl mb-4">Top Scores</h3>
+                <ul id="top-scores-list" class="space-y-2"></ul>
             </div>
         </div>
-        
-    
-        <button id="start-button">Start Game</button>
-        <div id="message"></div>
-        <div id="explanation"></div>        
-    
-              
-        <div id="message"></div>
-        
-        <div id="explanation"></div>
+    </main>
 
+    <footer class="relative bottom-0 w-full">
+        <div class="container mx-auto px-4 py-3">
+            <div class="text-center">
+                <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+            </div>
         </div>
-     
     </div>
-    <div id="top-scores">
-        <ul id="top-scores-list"></ul>
-    </div>
-    <footer>
-        <p>&copy; 2024 English Games by Pierre Marienne</p>
-    </footer>
+</footer>
 
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
     <script src="lost-in-migration.js"></script>
-
+    <script src="visit-counter.js"></script>
 </body>
 </html>

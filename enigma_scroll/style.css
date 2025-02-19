@@ -1,46 +1,184 @@
-/* Styles généraux pour le jeu */
-
-
-
-
-header h1 {
-    font-size: 2em;
-    margin: 0;
+/* Styles de base pour le jeu */
+.game-intro {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--quest-blue);
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 800px;
+    margin: 20px auto;
+    color: white;
 }
 
-main {
+.game-intro h2 {
+    color: var(--quest-blue);
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.game-intro p {
+    margin: 10px 0;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+/* Conteneur principal du jeu */
+#game-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 600px;
+    margin: 20px auto;
+    border: 2px solid var(--quest-blue);
+}
+
+/* Grille de jeu */
+#word-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-}
-
-.game-intro {
-    text-align: center;
-    max-width: 600px;
-    margin-bottom: 20px;
-}
-
-#game-container {
-    text-align: center;
+    gap: 5px;
     margin: 20px 0;
 }
 
-#keyboard .enigma-keyboard {
+.word-row {
     display: flex;
     justify-content: center;
-    margin: 2px 0;
-    margin-bottom: 0px;
+    margin: 5px 0;
 }
 
-button {
-    padding: 7px;
-    font-size: 1em;
+.word-cell {
+    width: 50px;
+    height: 50px;
+    border: 2px solid var(--quest-blue);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 2px;
-    cursor: pointer;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
 }
 
-button.correct { background-color: #6aaa64; color: #fff; }
-button.present { background-color: #c9b458; color: #fff; }
-button.incorrect { background-color: #787c7e; color: #fff; }
+/* États des cellules */
+.correct { background-color: #6aaa64; }
+.present { background-color: #c9b458; }
+.incorrect { background-color: #787c7e; }
+
+/* Contrôles du jeu */
+#game-controls {
+    margin: 20px 0;
+}
+
+.game-button {
+    background-color: var(--quest-blue);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin: 0 5px;
+}
+
+.game-button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+/* Clavier */
+.enigma-keyboard {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+.enigma-keyboard button {
+    margin: 2px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #818384;
+    color: white;
+    border: none;
+}
+
+.enigma-keyboard button.special {
+    padding: 15px 25px;
+}
+
+/* Message et Score */
+#message {
+    min-height: 50px;
+    margin: 15px 0;
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+}
+
+#score {
+    font-size: 1.5rem;
+    color: var(--quest-blue);
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+/* Top Scores */
+#top-scores {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--quest-blue);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+#top-scores h3 {
+    color: var(--quest-blue);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+#top-scores-list {
+    list-style: none;
+    padding: 0;
+}
+
+#top-scores-list li {
+    background-color: rgba(113, 169, 201, 0.1);
+    border: 1px solid var(--quest-blue);
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .word-cell {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+
+    #keyboard button {
+        min-width: 32px;
+        height: 45px;
+        font-size: 1rem;
+    }
+
+    #keyboard button.special {
+        min-width: 55px;
+    }
+
+    .game-intro, #game-container {
+        margin: 15px;
+        padding: 15px;
+    }
+}
 

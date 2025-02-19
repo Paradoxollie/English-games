@@ -1,0 +1,126 @@
+/* Conteneur principal du jeu */
+#game-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Zone de jeu */
+#game-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Grilles de mots et définitions */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.word-item, .definition-item {
+    background: rgba(201, 170, 113, 0.1);
+    border: 2px solid var(--quest-gold);
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    color: white;
+    font-size: 1.1em;
+}
+
+.word-item:hover, .definition-item:hover {
+    background: rgba(201, 170, 113, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201, 170, 113, 0.2);
+}
+
+.word-item.selected, .definition-item.selected {
+    background: rgba(201, 170, 113, 0.3);
+    border-color: var(--quest-gold);
+    box-shadow: 0 0 15px rgba(201, 170, 113, 0.4);
+}
+
+.word-item.correct, .definition-item.correct {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: var(--quest-green);
+    pointer-events: none;
+}
+
+/* Informations de jeu */
+#game-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: var(--quest-gold);
+}
+
+/* Contrôles */
+#game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* Message */
+#message {
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    color: white;
+    border-radius: 6px;
+}
+
+/* Ligne de séparation */
+.divider {
+    border: none;
+    border-top: 2px solid rgba(201, 170, 113, 0.3);
+    margin: 20px 0;
+}
+
+/* Top scores */
+#top-scores {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+#top-scores h3 {
+    color: var(--quest-blue);
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#top-scores-list {
+    list-style: none;
+    padding: 0;
+}
+
+#top-scores-list li {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(201, 170, 113, 0.3);
+    padding: 8px 16px;
+    margin: 5px 0;
+    border-radius: 6px;
+    color: var(--quest-gold);
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #game-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+} 

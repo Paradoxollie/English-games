@@ -2,184 +2,104 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brew Your Words - Translation Café</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Brew Your Words - English Quest</title>
+    
+    <!-- Styles -->
+
+    <link href="style.css" rel="stylesheet">
+    <link href="brew-your-words.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
-<style>
-    /* Style pour la bulle contenant la phrase et les options */
-    .bubble {
-        background-color: rgba(0, 0, 0, 0.9);  /* Fond plus foncé pour plus de contraste */
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 15px;
-        border: 3px solid #4CAF50;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    }
-    
-    /* Style pour la phrase anglaise */
-    .bubble p {
-        font-size: 1.4em;
-        color: #FFD700;  /* Texte doré pour la phrase à traduire */
-        margin-bottom: 20px;
-        font-weight: bold;
-        text-shadow: 1px 1px 2px black;
-    }
-    
-    /* Style pour les boutons de réponse */
-    .bubble button {
-        width: 100%;
-        padding: 15px 20px;
-        margin: 10px 0;
-        font-size: 1.3em;
-        font-weight: bold;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        background-color: #2C3E50;  /* Bleu foncé pour le fond des boutons */
-        color: white;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        border: 2px solid #34495E;  /* Bordure légèrement plus claire */
-    }
-    
-    /* Effet de survol pour les boutons */
-    .bubble button:hover {
-        background-color: #34495E;  /* Légèrement plus clair au survol */
-        transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
-    }
-    
-    /* Style pour le bouton actif/pressé */
-    .bubble button:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    }
-    
-    /* Style pour le bouton correct */
-    .bubble button.correct {
-        background-color: #2ECC71;  /* Vert distinct */
-        border-color: #27AE60;
-    }
-    
-    /* Style pour le bouton incorrect */
-    .bubble button.incorrect {
-        background-color: #E74C3C;  /* Rouge distinct */
-        border-color: #C0392B;
-    }
-    
-    /* Style pour les boutons désactivés */
-    .bubble button:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        transform: none;
-    }
-    
-    /* Adaptation mobile */
-    @media (max-width: 768px) {
-        .bubble {
-            padding: 15px;
-            margin: 15px 0;
-        }
-    
-        .bubble p {
-            font-size: 1.6em;  /* Plus grand sur mobile */
-        }
-    
-        .bubble button {
-            padding: 20px;
-            font-size: 1.5em;  /* Plus grand sur mobile */
-            margin: 15px 0;
-        }
-    }
-    </style>
-
-<body>
-
-    <header>
-        <h1>Brew Your Words</h1>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="all-games.html" class="active">Games</a>
-        <a href="courses.html">Courses</a>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="contact.html">Contact</a>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
     </nav>
-
-   
-    <div class="game-intro">
-        <h2>Bienvenue dans le Café de la Traduction ! ☕️</h2>
-        <p><strong>🎯 Objectif :</strong> Sers les clients en traduisant les phrases en anglais rapidement et sans erreur. Plus tu es rapide et précis, plus tu gagnes de points !</p>
     
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Clique sur "Start Game" pour commencer.</p>
-        <p>2️⃣ Lis la phrase dans la bulle.</p>
-        <p>3️⃣ Choisis la traduction correcte en appuyant sur le bouton.</p>
-        <p>4️⃣ Si ta réponse est correcte, un nouveau client arrive. Sinon, tu perds des points !</p>
-        <p>5️⃣ Attention, après deux erreurs, le client part mécontent.</p>
-    
-        <p><strong>⏳ Timer :</strong> Chaque client a un timer individuel, et le jeu a un timer global de 90 secondes. Sers un maximum de clients avant la fin du temps pour maximiser ton score.</p>
-    
-        <p><strong>💡 Conseil :</strong> Chaque commande compte ! Agis vite et vise le meilleur score !</p>
-    </div>
-      
-
-
-    <div id="game-container">
-        <div id="progress-bar">
-            <div id="global-timer">Time left: <span id="time-remaining">90</span> seconds</div>
-            <div id="score-display">Score: <span id="score">0</span></div>
+    <!-- Contenu principal -->
+    <main class="pt-32">
+        <div class="container mx-auto px-4">
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Brew Your Words</h2>
+            <div class="game-instructions text-left mt-6 mb-4">
+                <h3 class="text-quest-blue mb-4 font-medieval">🎯 Instructions:</h3>
+                <ul class="space-y-2">
+                    <li>1️⃣ Cliquez sur "Start" pour commencer à servir les clients.</li>
+                    <li>2️⃣ Lisez attentivement chaque commande.</li>
+                    <li>3️⃣ Choisissez la bonne traduction parmi les options.</li>
+                    <li>4️⃣ Attention au temps - chaque client a son propre timer !</li>
+                    <li>5️⃣ Plus vous êtes rapide, plus vous gagnez de points !</li>
+                </ul>
+            </div>
         </div>
 
-        <div id="client-queue" class="client-queue">
-            <!-- Les clients apparaissent ici -->
+        <div class="game-container max-w-4xl mx-auto bg-black/85 rounded-xl p-6 border border-quest-blue/30">
+            <div class="game-stats flex justify-between mb-4 text-quest-blue">
+                <div>LEVEL: <span id="level">1</span></div>
+                <div>SCORE: <span id="score">0</span></div>
+                <div>TIME: <span id="global-timer">90</span>s</div>
+            </div>
+
+            <div id="client-queue" class="space-y-4 mb-8 min-h-[300px]"></div>
+
+            <div class="text-center">
+                <button id="start-button" class="quest-button">START GAME</button>
+            </div>
+
+            <div class="top-scores mt-8 bg-black/60 rounded-xl p-6 border border-quest-blue/30">
+                <h3 class="text-quest-blue text-xl mb-4 font-medieval">TOP SCORES</h3>
+                <div id="top-scores-list" class="space-y-2"></div>
+            </div>
         </div>
+    </main>
 
-        <button id="start-button" class="play-button">Start Game</button>
-        <div id="message"></div>
+    <!-- Modal de fin de jeu -->
+    <div id="game-over-modal" class="game-modal">
+        <div class="modal-content">
+            <h2>Game Over</h2>
+            <form id="score-form">
+                <label for="player-name">Enter your name:</label>
+                <input type="text" id="player-name" required>
+                <button type="submit">Save Score</button>
+            </form>
+        </div>
     </div>
 
-    <div id="top-scores">
-        <h3>Top 5 Scores:</h3>
-        <ul id="top-scores-list"></ul>
-    </div>
-    <div id="end-game" style="display: none;">
-        <h2>Game Over</h2>
-        <form id="name-form">
-            <label for="player-name">Enter your name:</label>
-            <input type="text" id="player-name" required>
-            <button type="submit">Save Score</button>
-        </form>
-        <p id="save-message"></p>
-    </div>
-    
-
-    <footer>
-        <p>&copy; 2024 English Games by Pierre Marienne</p>
-        <div id="visit-stats"></div>
+    <!-- Footer -->
+    <footer class="relative bottom-0 w-full">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Firebase SDK -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <!-- Votre script personnalisé -->
-    <script src="brew-your-words.js"></script>
-
     <script src="firebase-init.js"></script>
-    <script src="visit-counter.js"></script>
+    <script src="brew-your-words.js"></script>
 </body>
 </html>

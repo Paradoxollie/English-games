@@ -5,49 +5,61 @@ console.log = console.warn = console.error = function() {};
 setInterval(function(){
     debugger;
 }, 100);
-// Configuration Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-    authDomain: "english-games-41017.firebaseapp.com",
-    projectId: "english-games-41017",
-    storageBucket: "english-games-41017.appspot.com",
-    messagingSenderId: "452279652544",
-    appId: "1:452279652544:web:916f93e0ab29183e739d25",
-    measurementId: "G-RMCQTMKDVP"
-  };
-  
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  
-  const wordBank = [
-"time", "person", "year", "way", "day", "thing", "man", "world", "life", "hand",
-"part", "child", "eye", "woman", "place", "work", "week", "case", "point", "government",
-"company", "number", "group", "problem", "fact", "system", "program", "question", "night", "word",
-"home", "water", "room", "mother", "area", "money", "story", "month", "right", "study",
-"book", "job", "business", "issue", "side", "kind", "head", "house", "service", "friend",
-"power", "hour", "game", "line", "end", "member", "law", "car", "city", "community", "name",
-"president", "team", "minute", "idea", "body", "information", "back", "parent", "face", "others",
-"level", "office", "door", "health", "person", "art", "war", "history", "party", "result",
-"change", "morning", "reason", "research", "girl", "guy", "food", "authority", "education", "foot",
-"voice", "price", "decision", "communication", "skill", "plan", "goal", "experience", "product",
-"relationship", "market", "policy", "process", "action", "effort", "performance", "technology", "development", "opportunity",
-"and", "but", "so", "because", "however", "therefore", "although", "meanwhile", "moreover", "furthermore",
-"nevertheless", "consequently", "besides", "otherwise", "instead", "thus", "yet", "still", "beside", "then"
 
-  ];
-  
-  let currentLevel = 1;
-  let maxLevel = 10;
-  let wordsToRemember = [];
-  let score = 0;
-  let timerInterval;
-  
-  function resetGame() {
+// Commencer directement avec les variables du jeu
+let level = 1;
+let score = 0;
+let timeLeft = 30;
+let timerInterval;
+let currentWords = [];
+let isGameRunning = false;
+
+// Utiliser l'instance db globale de firebase-init.js
+const db = firebase.firestore();
+
+const wordBank = [
+    "time", "person", "year", "thing", "world", "life", "hand", "part", "child", "eye",
+    "woman", "place", "work", "week", "case", "point", "government", "company", "number", "group",
+    "problem", "fact", "night", "house", "water", "mother", "father", "country", "school", "family",
+    "system", "question", "friend", "state", "story", "money", "market", "policy", "study", "issue",
+    "result", "body", "reason", "moment", "history", "social", "office", "power", "order", "change",
+    "force", "morning", "value", "health", "decision", "process", "sense", "service", "area", "table",
+    "center", "condition", "control", "knowledge", "research", "evidence", "action", "position", "effect", "society",
+    "minute", "quality", "project", "chance", "example", "product", "teacher", "choice", "development", "language",
+    "purpose", "nature", "opinion", "technology", "subject", "culture", "practice", "truth", "meaning", "energy",
+    "difference", "future", "community", "opportunity", "experience", "ability", "movement", "moment", "direction", "situation",
+    "management", "character", "interest", "communication", "education", "responsibility", "understanding", "relationship", "knowledge", "improvement",
+    "economy", "population", "president", "industry", "experience", "opinion", "analysis", "security", "strategy", "customer",
+    "individual", "discussion", "government", "investment", "knowledge", "education", "performance", "environment", "technology", "situation", "development",
+    "understanding", "communication", "relationship", "application", "responsibility", "organization", "perspective", "community", "leadership", "motivation",
+    "difference", "influence", "expression", "improvement", "measurement", "opportunity", "conclusion", "inspiration", "direction", "comparison",
+    "expectation", "reflection", "experience", "realization", "negotiation", "interaction", "perception", "generation", "recognition", "observation",
+    "recommendation", "innovation", "presentation", "appreciation", "satisfaction", "celebration", "interpretation", "participation", "definition", "explanation",
+    "representation", "contribution", "cooperation", "evaluation", "identification", "simplification", "clarification", "modification", "acceleration", "confirmation",
+    "implementation", "transformation", "participation", "complication", "organization", "collaboration", "administration", "regulation", "standardization", "verification",
+    "appreciation", "investigation", "documentation", "specification", "classification", "illustration", "authentication", "interpretation", "conversation", "publication",
+    "destination", "manifestation", "reproduction", "notification", "intervention", "qualification", "constitution", "determination", "revolution", "elaboration",
+    "agreement", "attention", "attitude", "behavior", "challenge", "collection", "competition", "connection", "creativity", "curiosity",
+    "decision", "direction", "discovery", "education", "efficiency", "emotion", "employment", "entertainment", "equipment", "evaluation",
+    "excitement", "expectation", "explanation", "flexibility", "foundation", "friendship", "frustration", "function", "generation", "happiness",
+    "imagination", "importance", "impression", "independence", "information", "innovation", "inspiration", "interaction", "investment", "invitation",
+    "leadership", "limitation", "management", "motivation", "movement", "negotiation", "observation", "opportunity", "organization", "participation",
+    "performance", "perception", "permission", "perspective", "possibility", "preparation", "presentation", "prevention", "productivity", "profession",
+    "progress", "protection", "publication", "qualification", "reaction", "realization", "recommendation", "reflection", "relationship", "relaxation",
+    "reliability", "reputation", "requirement", "resolution", "resource", "responsibility", "satisfaction", "situation", "solution", "stability",
+    "structure", "substance", "suggestion", "supervision", "support", "technology", "tendency", "tension", "tradition", "transformation",
+    "understanding", "university", "variation", "verification", "victory", "visibility", "volunteer", "wonder", "workshop", "youth"
+
+];
+
+let maxLevel = 10;
+let wordsToRemember = [];
+
+function resetGame() {
     console.log("Resetting game...");
     clearInterval(timerInterval);
     wordsToRemember = [];
-    document.getElementById("level").innerText = currentLevel;
+    document.getElementById("level").innerText = level;
     document.getElementById("message").innerText = "";
     document.getElementById("word-list").innerHTML = "";
     document.getElementById("input-container").innerHTML = "";
@@ -56,7 +68,7 @@ const firebaseConfig = {
 
 function startGame() {
     console.log("Starting game...");
-    console.log("Current level:", currentLevel);
+    console.log("Current level:", level);
     console.log("Current score:", score);
     
     resetGame();
@@ -72,12 +84,16 @@ function startGame() {
     if (startButtonElement) startButtonElement.style.display = "none";
     if (checkButtonElement) checkButtonElement.style.display = "none";
 
-    const wordCount = Math.min(currentLevel + 2, 15);
-    console.log(`Generating ${wordCount} words for level ${currentLevel}`);
+    const wordCount = Math.min(level + 2, 15);
+    console.log(`Generating ${wordCount} words for level ${level}`);
     wordsToRemember = generateWords(wordCount);
     console.log("Words to remember:", wordsToRemember);
     
-    if (wordListElement) wordListElement.innerText = wordsToRemember.join(" ");
+    if (wordListElement) {
+        wordListElement.innerHTML = wordsToRemember.map((word, index) => {
+            return `<span class="memory-word">${word}</span>`;
+        }).join('');
+    }
     if (timeLeftElement) timeLeftElement.innerText = "20";
     
     updateScore(); // Assurez-vous que le score est correctement affiché
@@ -85,19 +101,19 @@ function startGame() {
     console.log("Game started successfully. Score:", score);
 }
   
-  function generateWords(count) {
-      let words = [];
-      while (words.length < count) {
-          const randomIndex = Math.floor(Math.random() * wordBank.length);
-          const word = wordBank[randomIndex];
-          if (!words.includes(word)) {
-              words.push(word);
-          }
-      }
-      return words;
-  }
+function generateWords(count) {
+    let words = [];
+    while (words.length < count) {
+        const randomIndex = Math.floor(Math.random() * wordBank.length);
+        const word = wordBank[randomIndex];
+        if (!words.includes(word)) {
+            words.push(word);
+        }
+    }
+    return words;
+}
   
-  function hideWords() {
+function hideWords() {
     console.log("Hiding words and showing input boxes");
     clearInterval(timerInterval);
     
@@ -167,20 +183,7 @@ function startTimer(seconds) {
     }, 1000);
 }
   
-  function generateInputBoxes(count) {
-      console.log(`Generating ${count} input boxes`);
-      const inputBoxes = document.getElementById("input-boxes");
-      inputBoxes.innerHTML = "";
-      for (let i = 0; i < count; i++) {
-          const inputBox = document.createElement("input");
-          inputBox.type = "text";
-          inputBox.className = "input-box";
-          inputBox.id = `input-${i}`;
-          inputBoxes.appendChild(inputBox);
-      }
-  }
-  
-  function checkWords() {
+function checkWords() {
     console.log("Checking words...");
     const enteredWords = Array.from(document.getElementsByClassName("input-box")).map(input => input.value.trim().toLowerCase());
     const correctWords = enteredWords.filter(word => wordsToRemember.includes(word));
@@ -193,12 +196,12 @@ function startTimer(seconds) {
 
     if (correctWords.length === wordsToRemember.length) {
         // Tous les mots sont corrects
-        currentLevel++;
-        if (currentLevel > maxLevel) {
+        level++;
+        if (level > maxLevel) {
             endGame();
         } else {
-            document.getElementById("message").innerText = `Well done! You've passed Level ${currentLevel - 1}. Moving to Level ${currentLevel}.`;
-            document.getElementById("level").innerText = currentLevel;
+            document.getElementById("message").innerText = `Well done! You've passed Level ${level - 1}. Moving to Level ${level}.`;
+            document.getElementById("level").innerText = level;
             setTimeout(() => {
                 startGame(); // Démarrer le niveau suivant après un court délai
             }, 2000);
@@ -212,12 +215,13 @@ function startTimer(seconds) {
         saveScore(score);  // Save the score when the game is lost
     }
 }
+
 function newGame() {
     console.log("Starting new game...");
     if (score > 0) {
         saveScore(score);
     }
-    currentLevel = 1;
+    level = 1;
     score = 0;
     updateScore();
     startGame();
@@ -237,6 +241,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     
 
 });
+
 function updateScore() {
     const scoreElement = document.getElementById("score");
     if (scoreElement) {
@@ -246,6 +251,7 @@ function updateScore() {
     }
     console.log("Score updated:", score);
 }
+
 function endGame() {
     clearInterval(timerInterval);
     document.getElementById("message").innerText = `Congratulations! You've completed all levels. Final Score: ${score}`;
@@ -257,7 +263,6 @@ function endGame() {
     console.log("Game ended. Saving final score:", score);
     saveScore(score);
 }
-
 
 function saveScore(score) {
     const playerName = localStorage.getItem('playerName') || prompt("Enter your name for the leaderboard:");
@@ -308,7 +313,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // ... autres initialisations ...
 });
   
-  document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', (event) => {
     console.log("DOM fully loaded");
     loadTopScores();
     const startButton = document.getElementById("start-button");
@@ -327,14 +332,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 });
   
-  // Désactiver les raccourcis clavier et le clic droit
-  document.addEventListener('keydown', function (event) {
-      if ((event.ctrlKey && (event.key === 'c' || event.key === 'v' || event.key === 'x')) || 
-          (event.metaKey && (event.key === 'c' || event.key === 'v' || event.key === 'x'))) {
-          event.preventDefault();
-      }
-  });
+// Désactiver les raccourcis clavier et le clic droit
+document.addEventListener('keydown', function (event) {
+    if ((event.ctrlKey && (event.key === 'c' || event.key === 'v' || event.key === 'x')) || 
+        (event.metaKey && (event.key === 'c' || event.key === 'v' || event.key === 'x'))) {
+        event.preventDefault();
+    }
+});
   
-  document.addEventListener('contextmenu', function (event) {
-      event.preventDefault();
-  });
+document.addEventListener('contextmenu', function (event) {
+    event.preventDefault();
+});
+
+// Ajouter après les autres event listeners
+document.getElementById('reset-button').addEventListener('click', () => {
+    // Réinitialiser toutes les variables du jeu
+    level = 1;
+    score = 0;
+    clearInterval(timerInterval);
+    
+    // Réinitialiser l'affichage
+    document.getElementById("level").innerText = level;
+    document.getElementById("score").innerText = score;
+    document.getElementById("time-left").innerText = "30";
+    document.getElementById("message").innerText = "";
+    document.getElementById("word-list").innerHTML = "";
+    document.getElementById("input-container").style.display = "none";
+    
+    // Réactiver le bouton start
+    const startButton = document.getElementById("start-button");
+    startButton.style.display = "inline-block";
+    startButton.innerText = "Start Game";
+    
+    // Recharger les meilleurs scores
+    loadTopScores();
+});

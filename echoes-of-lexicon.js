@@ -1,3 +1,14 @@
+// Variables de jeu
+let letters = [];
+let bonusLetter = '';
+let score = 0;
+let health = 10;
+let timer = 90;
+let timerInterval;
+let gameActive = false;
+let usedWords = new Set();
+let wordList = {}; // Stocke les mots
+
 // Récupération des éléments DOM
 const centralLetterEl = document.getElementById('central-letter');
 const otherLettersEl = document.getElementById('other-letters');
@@ -9,10 +20,12 @@ currentWordEl.placeholder = 'Type your word here...';
 const submitWordButton = document.createElement('button');
 submitWordButton.id = 'submit-word';
 submitWordButton.textContent = 'Submit';
+submitWordButton.className = 'quest-button';
 
 const startButton = document.createElement('button');
 startButton.id = 'start-game';
 startButton.textContent = 'Start';
+startButton.className = 'quest-button';
 
 // Ajout des éléments au conteneur de contrôles
 const gameControls = document.getElementById('game-controls');
@@ -25,81 +38,51 @@ const scoreDisplay = document.getElementById('score-display');
 const messageEl = document.getElementById('message');
 const healthBarEl = document.getElementById('health-bar');
 const timerDisplay = document.getElementById('timer-display');
+const foundWordsList = document.getElementById('found-words-list');
 
-// Variables de jeu
-let letters = [];
-let bonusLetter = '';
-let score = 0;
-let health = 10;
-let timer = 90;
-let timerInterval;
-let gameActive = false;
-let usedWords = new Set();
-let wordList = {}; // Stocke les mots
-
-// Charger filtered_words.json depuis l'adresse spécifiée
+// Charger les mots
 fetch('https://www.englishquest.me/data/filtered_words.json')
     .then(response => response.json())
     .then(data => {
-        // Vérifier si data.words existe et est un tableau
         if (data.words && Array.isArray(data.words)) {
-            // Convertir le tableau en un objet pour une recherche rapide
             wordList = data.words.reduce((acc, word) => {
                 acc[word.toLowerCase()] = true;
                 return acc;
             }, {});
-        } else {
-            console.error("Format de JSON inattendu.");
+            console.log("Mots chargés :", Object.keys(wordList).length);
         }
-
-        console.log("Mots chargés :", Object.keys(wordList).length);
-        initializeGame();
     })
     .catch(error => console.error("Erreur de chargement des mots :", error));
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadTopScores();
-    });
-
-// Générer des lettres avec équilibre voyelles/consonnes + bonus
+// Générer des lettres
 function generateBalancedLetters() {
     const vowels = 'aaaaeeeeiiiioou';
     const consonants = 'bbccddffgghjkllmmnnppqrrssttvwxyzz';
     const letters = [];
     
-    // Génère exactement 6 lettres principales (2 voyelles, 4 consonnes)
+    // 2 voyelles, 4 consonnes
     for (let i = 0; i < 2; i++) {
-        let vowel;
-        do {
-            vowel = vowels[Math.floor(Math.random() * vowels.length)];
-        } while (letters.includes(vowel));
-        letters.push(vowel);
+        letters.push(vowels[Math.floor(Math.random() * vowels.length)]);
     }
-
     for (let i = 0; i < 4; i++) {
-        let consonant;
-        do {
-            consonant = consonants[Math.floor(Math.random() * consonants.length)];
-        } while (letters.includes(consonant));
-        letters.push(consonant);
+        letters.push(consonants[Math.floor(Math.random() * consonants.length)]);
     }
     
-    // Génère une lettre bonus unique
-    let bonus;
-    do {
-        bonus = (vowels + consonants)[Math.floor(Math.random() * (vowels.length + consonants.length))];
-    } while (letters.includes(bonus));
+    // Lettre bonus
+    const bonus = (Math.random() < 0.5 ? vowels : consonants)[Math.floor(Math.random() * (Math.random() < 0.5 ? vowels.length : consonants.length))];
     
     return { mainLetters: letters, bonusLetter: bonus };
 }
 
+// Initialiser le jeu
 function initializeGame() {
     const { mainLetters, bonusLetter: bonus } = generateBalancedLetters();
     letters = mainLetters;
     bonusLetter = bonus;
     
-    otherLettersEl.innerHTML = ''; // Vide le conteneur
-
+    otherLettersEl.innerHTML = '';
+    
+    // Afficher les lettres principales
     letters.forEach(letter => {
         const letterDiv = document.createElement('div');
         letterDiv.className = 'letter';
@@ -107,6 +90,7 @@ function initializeGame() {
         otherLettersEl.appendChild(letterDiv);
     });
 
+    // Afficher la lettre bonus
     const bonusLetterDiv = document.createElement('div');
     bonusLetterDiv.className = 'letter bonus';
     bonusLetterDiv.textContent = bonusLetter.toUpperCase();
@@ -142,50 +126,44 @@ function isValidWord(word) {
     return true;
 }
 
-
-
 // Démarrer le timer
 function startTimer() {
     timer = 90;
-    timerDisplay.textContent = `Time left: ${timer}s`;
+    updateTimer();
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        if (timer > 0) {
-            timer--;
-            timerDisplay.textContent = `Time left: ${timer}s`;
-        } else {
-            endGame();
-        }
+        timer--;
+        updateTimer();
+        if (timer <= 0) endGame(false);
     }, 1000);
 }
 
 // Mise à jour de la fonction endGame pour gérer les scores
 function endGame(success) {
     clearInterval(timerInterval);
-    wordList.innerHTML = '';
+    otherLettersEl.innerHTML = '';
     const message = success 
         ? `Congratulations! You finished with a score of ${score}!` 
         : `Game Over! Final score: ${score}`;
-    messageElement.innerText = message;
-    document.getElementById('start-button').style.display = 'inline-block';
-    document.getElementById('start-button').innerText = 'Play Again';
+    messageEl.innerText = message;
+    document.getElementById('start-game').style.display = 'inline-block';
+    document.getElementById('start-game').innerText = 'Play Again';
     
     // Sauvegarder le score
     saveScoreToFirebase(score);
 }
-
 
 function resetGame() {
     score = 0;
     health = 10;
     gameActive = false;
     usedWords.clear();
-    scoreDisplay.textContent = `Score: ${score}`;
+    updateScore();
     messageEl.textContent = "";
     submitWordButton.disabled = true;
     currentWordEl.disabled = true;
     currentWordEl.value = "";
-    timerDisplay.textContent = `Time left: 90s`;
+    foundWordsList.innerHTML = "";
     updateHealth();
 }
 
@@ -198,8 +176,6 @@ function startGame() {
     startTimer();
     messageEl.textContent = "Game started! Good luck!";
 }
-
-
 
 // Soumettre un mot
 async function submitWord() {
@@ -239,14 +215,13 @@ async function submitWord() {
 }
 
 function updateScore() {
-    scoreDisplay.textContent = `Score: ${score}`;
+    scoreDisplay.innerHTML = `<span>Score: ${score}</span>`;
 }
 
 function updateHealth() {
     healthBarEl.style.width = `${health * 10}%`;
     if (health <= 0) {
-        endGame();
-        messageEl.textContent = 'Game over! Try again.';
+        endGame(false);
     }
 }
 
@@ -301,28 +276,38 @@ function loadTopScores() {
             console.error("Error loading top scores:", error);
             scoresList.innerHTML = '<li>Error loading scores</li>';
         });
-    }
-   
-async function loadTopScores() {
-    const db = firebase.firestore();
-    const scoresRef = db.collection("echoes_of_lexicon_scores").orderBy("score", "desc").limit(10);
-    const snapshot = await scoresRef.get();
-    const topScoresList = document.getElementById("top-scores-list");
-    topScoresList.innerHTML = "";
+}
 
-    snapshot.forEach(doc => {
-        const scoreData = doc.data();
-        const scoreItem = document.createElement("li");
-        scoreItem.textContent = `${scoreData.name}: ${scoreData.score}`;
-        topScoresList.appendChild(scoreItem);
+// Fonction pour mettre à jour le timer
+function updateTimer() {
+    timerDisplay.innerHTML = `<span>Time: ${timer}s</span>`;
+}
+
+// Fonction pour ajouter un mot trouvé
+function addFoundWord(word) {
+    const wordElement = document.createElement('div');
+    wordElement.className = 'found-word';
+    wordElement.textContent = word;
+    foundWordsList.appendChild(wordElement);
+}
+
+// Style pour les top scores
+function updateTopScores(scores) {
+    const topScoresList = document.getElementById('top-scores-list');
+    topScoresList.innerHTML = '';
+    scores.forEach(score => {
+        const scoreElement = document.createElement('div');
+        scoreElement.className = 'bg-black/40 p-4 rounded border border-quest-blue/30 text-quest-blue';
+        scoreElement.textContent = `${score.name}: ${score.score}`;
+        topScoresList.appendChild(scoreElement);
     });
 }
 
-function saveScoreToFirebase(playerName, score) {
-    const db = firebase.firestore();
-    return db.collection("echoes_of_lexicon_scores").add({
-        name: playerName,
-        score: score,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-}
+// Initialisation
+resetGame();
+
+// À la fin du fichier, après resetGame()
+document.addEventListener('DOMContentLoaded', () => {
+    initializeGame();
+    loadTopScores();
+});

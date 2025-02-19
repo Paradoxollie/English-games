@@ -2,78 +2,97 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Matrix</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Memory Matrix - English Quest</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="memory-matrix.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1>Memory Matrix Game</h1>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
     <nav>
-        <a href="index.html">Home</a>
-        <a href="all-games.html" class="active">Games</a>
-        <a href="courses.html">Courses</a>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="contact.html">Contact</a>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
     </nav>
-    <div class="game-intro">
-        <h2>Bienvenue dans Memory Matrix ! 🧠</h2>
-        <p><strong>🎯 Objectif :</strong> Associe chaque mot avec sa définition correcte pour obtenir des points. Plus tu progresses, plus les associations se compliquent !</p>
-    
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Clique sur "Start Game" pour commencer.</p>
-        <p>2️⃣ Sélectionne un mot, puis trouve la définition correspondante en bas de l'écran.</p>
-        <p>3️⃣ Si l'association est correcte, tu gagnes 10 points. Sinon, tu perds 5 points.</p>
-        <p>4️⃣ Une fois tous les mots associés, un nouveau round démarre.</p>
-        
-        <p><strong>⏳ Timer :</strong> Tu disposes de 60 secondes pour chaque round. Fais vite pour marquer le maximum de points !</p>
-    
-        <p><strong>💡 Conseil :</strong> Concentre-toi et essaie de mémoriser les définitions. Bonne chance !</p>
-    </div>
-    
-    <div id="game-container">
-        <div id="game-info">
-            <div id="timer">Time Left: <span id="time-left">60</span> seconds</div>
-            <div id="score-display">Score: <span id="score">0</span></div>
+
+    <main class="pt-32 pb-24">
+        <div class="container mx-auto px-4">
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Bienvenue dans Memory Matrix ! 🧠</h2>
+                <p class="text-white"><strong class="text-quest-gold">🎯 Objectif :</strong> Associe chaque mot avec sa définition correcte pour obtenir des points. Plus tu progresses, plus les associations se compliquent !</p>
+                
+                <p class="text-quest-gold mt-4 mb-2"><strong>🕹️ Instructions :</strong></p>
+                <ul class="text-white space-y-2">
+                    <li>1️⃣ Clique sur "Start Game" pour commencer.</li>
+                    <li>2️⃣ Sélectionne un mot, puis trouve la définition correspondante en bas de l'écran.</li>
+                    <li>3️⃣ Si l'association est correcte, tu gagnes 10 points. Sinon, tu perds 5 points.</li>
+                    <li>4️⃣ Une fois tous les mots associés, un nouveau round démarre.</li>
+                </ul>
+                
+                <p class="text-white mt-4"><strong class="text-quest-gold">⏳ Timer :</strong> Tu disposes de 60 secondes pour chaque round. Fais vite pour marquer le maximum de points !</p>
+                <p class="text-white mt-2"><strong class="text-quest-gold">💡 Conseil :</strong> Concentre-toi et essaie de mémoriser les définitions. Bonne chance !</p>
+            </div>
+
+            <div id="game-container" class="bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <div id="game-info">
+                    <div id="timer">Time Left: <span id="time-left">60</span> seconds</div>
+                    <div id="score-display">Score: <span id="score">0</span></div>
+                </div>
+
+                <div id="game-controls">
+                    <button id="start-button" class="quest-button">Start Game</button>
+                </div>
+
+                <div id="game-area">
+                    <div id="word-container" class="grid"></div>
+                    <hr class="divider">
+                    <div id="definition-container" class="grid"></div>
+                </div>
+
+                <div id="message"></div>
+            </div>
+
+            <div id="top-scores" class="mt-8 bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <h3 class="text-quest-gold text-xl mb-4">Top 5 Scores:</h3>
+                <ul id="top-scores-list"></ul>
+            </div>
         </div>
-        <div id="game-controls">
-            <button id="start-button">Start Game</button>
+    </main>
+
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
         </div>
-
-        <!-- Ajout de la séparation visuelle -->
-        <div id="game-area">
-            <div id="word-container" class="grid"></div>
-            <hr class="divider"> <!-- Ligne de séparation -->
-            <div id="definition-container" class="grid"></div>
-        </div>
-
-        <div id="message"></div>
-    </div>
-
-    <div id="top-scores">
-        <h3>Top 5 Scores:</h3>
-        <ul id="top-scores-list"></ul>
-    </div>
-
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-        <div id="visit-stats"></div>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        <script src="memory-matrix.js"></script>
-        <script src="firebase-init.js"></script>
-        <script src="visit-counter.js"></script>
     </footer>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="memory-matrix.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

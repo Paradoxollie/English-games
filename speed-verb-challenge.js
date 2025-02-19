@@ -1,24 +1,15 @@
-// Configuration Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-    authDomain: "english-games-41017.firebaseapp.com",
-    projectId: "english-games-41017",
-    storageBucket: "english-games-41017.appspot.com",
-    messagingSenderId: "452279652544",
-    appId: "1:452279652544:web:916f93e0ab29183e739d25",
-    measurementId: "G-RMCQTMKDVP"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
+// Variables globales
 let score = 0;
 let timeLeft = 90;
 let timerInterval;
 let currentVerb = "";
 let skippedVerbs = [];
+let lastScrollPosition = 0;
+const header = document.querySelector('header');
+const nav = document.querySelector('nav');
+const logo = document.querySelector('.logo-container');
 
+// Liste des verbes
 const verbs = {
     "become": ["became", "become", "devenir"],
     "begin": ["began", "begun", "commencer"],
@@ -177,9 +168,8 @@ const verbs = {
     "feed": ["fed", "fed", "nourrir"],
     "fight": ["fought", "fought", "se battre"],
     "find": ["found", "found", "trouver"],
-    "flee": ["fled", "fled", "fuir"],
     "fling": ["flung", "flung", "jeter"],
-    "fly": ["flew", "flown", "voler"],
+    "fling": ["flung", "flung", "jeter"],
     "forbid": ["forbade", "forbidden", "interdire"],
     "forgive": ["forgave", "forgiven", "pardonner"],
     "forsake": ["forsook", "forsaken", "abandonner"],
@@ -291,17 +281,18 @@ const verbs = {
 };
 
 function startGame() {
-    console.log("Starting game");
+    console.log("Démarrage du jeu");
     score = 0;
     timeLeft = 90;
     skippedVerbs = [];
+    
     document.getElementById("score-value").textContent = "0";
     document.getElementById("time-left").textContent = "90";
-    document.querySelectorAll(".verb-input").forEach(input => input.disabled = false);
+    
     document.getElementById("start-button").disabled = true;
     document.getElementById("check-button").disabled = false;
     document.getElementById("skip-button").disabled = false;
-    document.getElementById("skipped-verbs").style.display = "none";
+    
     timerInterval = setInterval(updateTimer, 1000);
     displayVerb();
 }
@@ -467,7 +458,7 @@ function saveScore(score) {
     }
     
     console.log("Attempting to save score to database");
-    db.collection("speed_verb_scores").add({
+    window.db.collection("speed_verb_scores").add({
         name: playerName,
         score: score,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -482,7 +473,7 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
-    db.collection("speed_verb_scores")
+    window.db.collection("speed_verb_scores")
         .orderBy("score", "desc") // Trie les scores par ordre décroissant
         .limit(5) // Limite à 5 meilleurs scores
         .get()
@@ -501,38 +492,31 @@ function loadTopScores() {
         });
 }
 
+// Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', (event) => {
-    loadTopScores();
-});
-
-// Appeler cette fonction au chargement de la page
-document.addEventListener('DOMContentLoaded', (event) => {
-    loadTopScores();
-    // ... autres initialisations ...
-});
-  
-  document.addEventListener('DOMContentLoaded', (event) => {
-    console.log("DOM fully loaded");
-    loadTopScores();
     const startButton = document.getElementById("start-button");
     const checkButton = document.getElementById("check-button");
     const skipButton = document.getElementById("skip-button");
+
+    if (startButton) startButton.addEventListener("click", startGame);
+    if (checkButton) checkButton.addEventListener("click", checkVerb);
+    if (skipButton) skipButton.addEventListener("click", skipVerb);
+
+    loadTopScores();
+});
+
+window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
     
-    if (startButton) {
-        startButton.addEventListener("click", startGame);
-    } else {
-        console.error("Start button not found in the DOM");
+    if (currentScroll > 100) { // Si on n'est pas en haut de la page
+        header.classList.add('nav-hidden');
+        nav.classList.add('nav-hidden');
+        logo.classList.add('nav-hidden');
+    } else { // Si on est en haut de la page
+        header.classList.remove('nav-hidden');
+        nav.classList.remove('nav-hidden');
+        logo.classList.remove('nav-hidden');
     }
     
-    if (checkButton) {
-        checkButton.addEventListener("click", checkVerb);
-    } else {
-        console.error("Check button not found in the DOM");
-    }
-    
-    if (skipButton) {  // Ajoute cette vérification et l'événement pour le bouton "Skip"
-        skipButton.addEventListener("click", skipVerb);
-    } else {
-        console.error("Skip button not found in the DOM");
-    }
+    lastScrollPosition = currentScroll;
 });

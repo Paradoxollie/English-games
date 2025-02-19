@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --quest-blue: #71a9c9;
+        --quest-gold: #c9aa71;
+        --quest-green: #71c99a;
+        --quest-red: #c97171;
+        --quest-purple: #9a71c9;
+    }
+}
+
+@layer components {
+    .quest-button {
+        @apply bg-quest-gold/20 text-quest-gold border border-quest-gold 
+               px-4 py-2 rounded-lg cursor-pointer transition-all
+               hover:bg-quest-gold/30 hover:-translate-y-0.5;
+    }
+
+    .quest-input {
+        @apply bg-black/60 border border-quest-gold text-white 
+               px-4 py-2 rounded-lg outline-none transition-all
+               focus:border-quest-gold focus:ring-2 focus:ring-quest-gold/20;
+    }
+
+    .quest-select {
+        @apply bg-black/60 border border-quest-gold text-white 
+               px-4 py-2 rounded-lg outline-none transition-all
+               focus:border-quest-gold focus:ring-2 focus:ring-quest-gold/20;
+    }
+
+    .quest-card {
+        @apply bg-black/60 rounded-xl p-6 border border-quest-gold/30
+               hover:border-quest-gold/60 transition-all;
+    }
+
+    .quest-title {
+        @apply text-2xl font-medieval text-quest-gold mb-4;
+    }
+}
+
+@layer utilities {
+    .text-shadow-gold {
+        text-shadow: 0 0 10px rgba(201, 170, 113, 0.3);
+    }
+} 

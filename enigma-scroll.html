@@ -12,7 +12,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enigma Scroll</title>
+    <title>Enigma Scroll - English Quest</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="enigma_scroll/style.css">
     <!-- Firebase App (obligatoire) -->
@@ -32,97 +32,126 @@
         .word-row {
             margin: 5px 0;
         }
-        .correct { background-color: #6aaa64; }
-        .present { background-color: #c9b458; }
-        .incorrect { background-color: #787c7e; }
+        /* Styles pour les indices de couleur */
+        .correct { 
+            background-color: #6aaa64 !important; 
+            color: white !important;
+            border-color: #6aaa64 !important;
+        }
+        .present { 
+            background-color: #c9b458 !important; 
+            color: white !important;
+            border-color: #c9b458 !important;
+        }
+        .incorrect { 
+            background-color: #000000 !important; 
+            color: white !important;
+            border-color: #000000 !important;
+        }
+        
+
     </style>
 </head>
-
-            <header>
-                <h1>Enigma Scroll</h1>
-            </header>
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="all-games.html" class="active">Games</a>
-                <a href="courses.html">Courses</a>
-                <a href="leaderboard.html">Leaderboard</a>
-                <a href="contact.html">Contact</a>
-            </nav>
-            <main>
-
-
-                <div class="game-intro">
-                    <h2>Bienvenue dans Enigma Scroll ! 🧩</h2>
-                    <p><strong>🎯 Objectif :</strong> Devine le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, tu gagnes des points et accèdes à un nouveau mot !</p>
-                
-                    <p><strong>🕹️ Instructions :</strong></p>
-                    <p>1️⃣ Appuie sur les lettres pour former un mot.</p>
-                    <p>2️⃣ La première lettre est déjà révélée. Trouve les autres lettres.</p>
-                    <p>3️⃣ Clique sur "Enter" pour valider ton mot.</p>
-                    <p>4️⃣ Si le mot est correct, tu gagnes des points et une définition apparaît.</p>
-                    <p>5️⃣ Si le mot est incorrect, essaie encore. Attention, tu as un nombre limité d'essais !</p>
-                
-                    <p><strong>💡 Conseil :</strong> Utilise les indices de couleur sur le clavier pour t'aider : vert pour correct, jaune pour bonne lettre mais mal pacée, gris pour incorrect. Bonne chance !</p>
-                </div>
-                
-                <div id="game-container">
-                    <div id="word-grid"></div>
-                    <div id="keyboard">
-                        <div class="enigma-keyboard">
-                            <button>A</button>
-                            <button>Z</button>
-                            <button>E</button>
-                            <button>R</button>
-                            <button>T</button>
-                            <button>Y</button>
-                            <button>U</button>
-                            <button>I</button>
-                            <button>O</button>
-                            <button>P</button>
-                        </div>
-                        <div class="enigma-keyboard">
-                            <button>Q</button>
-                            <button>S</button>
-                            <button>D</button>
-                            <button>F</button>
-                            <button>G</button>
-                            <button>H</button>
-                            <button>J</button>
-                            <button>K</button>
-                            <button>L</button>
-                            <button>M</button>
-                        </div>
-                        <div class="enigma-keyboard">
-                            <button>W</button>
-                            <button>X</button>
-                            <button>C</button>
-                            <button>V</button>
-                            <button>B</button>
-                            <button>N</button>
-                            <button class="special">←</button>
-                            <button class="special">Enter</button>
-                        </div>
-                            <div id="message"></div>
-                            <div id="score">0</div>
-                        </div>
-                    </div>
-                <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-                <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-                <script src="enigma-scroll.js"></script>
-
-                <!-- Top Scores Section -->
-                <div id="top-scores">
-                    <h3>Top Scores</h3>
-                    <ul id="top-scores-list"></ul>
-                </div>
-            </main>
-
-            <footer>
-                <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-            </footer>
-        </div>
+<body>
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
     </div>
 
-    <script src="enigma-scroll.js"></script>
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <div id="enigma-scroll-container">
+            <div class="game-intro">
+                <h2>Bienvenue dans Enigma Scroll ! 🧩</h2>
+                <p><strong>🎯 Objectif :</strong> Devine le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, tu gagnes des points et accèdes à un nouveau mot !</p>
+            
+                <p><strong>🕹️ Instructions :</strong></p>
+                <p>1️⃣ Appuie sur les lettres pour former un mot.</p>
+                <p>2️⃣ La première lettre est déjà révélée. Trouve les autres lettres.</p>
+                <p>3️⃣ Clique sur "Enter" pour valider ton mot.</p>
+                <p>4️⃣ Si le mot est correct, tu gagnes des points et une définition apparaît.</p>
+                <p>5️⃣ Si le mot est incorrect, essaie encore. Attention, tu as un nombre limité d'essais !</p>
+            
+                <p><strong>💡 Conseil :</strong> Utilise les indices de couleur sur le clavier pour t'aider : vert pour correct, jaune pour bonne lettre mais mal pacée, gris pour incorrect. Bonne chance !</p>
+            </div>
+            
+            <div id="game-container">
+                <div id="word-grid"></div>
+                <div id="keyboard">
+                    <div class="enigma-keyboard">
+                        <button>A</button>
+                        <button>Z</button>
+                        <button>E</button>
+                        <button>R</button>
+                        <button>T</button>
+                        <button>Y</button>
+                        <button>U</button>
+                        <button>I</button>
+                        <button>O</button>
+                        <button>P</button>
+                    </div>
+                    <div class="enigma-keyboard">
+                        <button>Q</button>
+                        <button>S</button>
+                        <button>D</button>
+                        <button>F</button>
+                        <button>G</button>
+                        <button>H</button>
+                        <button>J</button>
+                        <button>K</button>
+                        <button>L</button>
+                        <button>M</button>
+                    </div>
+                    <div class="enigma-keyboard">
+                        <button>W</button>
+                        <button>X</button>
+                        <button>C</button>
+                        <button>V</button>
+                        <button>B</button>
+                        <button>N</button>
+                        <button class="special">←</button>
+                        <button class="special">Enter</button>
+                    </div>
+                        <div id="message"></div>
+                        <div id="score">0</div>
+                    </div>
+                </div>
+            <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+            <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+            <script src="enigma-scroll.js"></script>
+
+            <!-- Top Scores Section -->
+            <div id="top-scores">
+                <h3>Top Scores</h3>
+                <ul id="top-scores-list"></ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer avec la bonne structure -->
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval">
+                        <!-- Le compteur sera inséré ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

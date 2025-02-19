@@ -1,0 +1,17 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+@layer components {
+    .logo-container {
+        @apply absolute top-[-10px] left-1/2 transform -translate-x-1/2 z-50;
+    }
+
+    nav {
+        @apply absolute top-[45px] left-0 right-0 z-40;
+    }
+}
+
+

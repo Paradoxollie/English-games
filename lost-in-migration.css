@@ -1,0 +1,164 @@
+/* Styles spécifiques pour Lost in Migration */
+.quest-select {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--quest-gold);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-right: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.quest-select:focus {
+    border-color: var(--quest-gold);
+    box-shadow: 0 0 0 2px rgba(201, 170, 113, 0.2);
+}
+
+.quest-select option {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+}
+
+/* Ajustement de la boîte de jeu */
+#word-box {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--quest-gold);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+#word-list {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Style pour les mots dans le jeu */
+.word {
+    position: absolute;
+    background: rgba(201, 170, 113, 0.9);
+    color: black;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    will-change: transform, left, top;
+    z-index: 1;
+}
+
+.word:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+/* L'intrus ne change de couleur que lorsqu'il est trouvé */
+.word.intruder {
+    background: rgba(201, 170, 113, 0.9); /* Même couleur que les autres mots */
+}
+
+.word.intruder.found {
+    background: rgba(255, 215, 0, 0.9); /* Change de couleur uniquement quand trouvé */
+}
+
+/* Animation pour les mots */
+@keyframes fadeInMove {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.word {
+    animation: fadeInMove 0.5s ease-out;
+}
+
+/* Styles pour les scores */
+#top-scores-list li {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(201, 170, 113, 0.3);
+    padding: 8px 16px;
+    margin: 5px 0;
+    border-radius: 6px;
+    color: var(--quest-gold);
+    text-align: center;
+}
+
+/* Messages et explications */
+#message, #explanation {
+    min-height: 24px;
+    transition: all 0.3s ease;
+}
+
+#message.success {
+    color: #4CAF50;
+}
+
+#message.error {
+    color: #f44336;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .game-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quest-select {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    #word-box {
+        height: 300px;
+    }
+
+    .word {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+/* Ajouter ces styles à votre fichier CSS existant */
+.game-stats {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--quest-gold);
+    margin-bottom: 1rem;
+}
+
+.game-stats > div {
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1.1rem;
+}
+
+.quest-button {
+    background: rgba(201, 170, 113, 0.2);
+    color: var(--quest-gold);
+    border: 1px solid var(--quest-gold);
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quest-button:hover {
+    background: rgba(201, 170, 113, 0.3);
+    transform: translateY(-1px);
+} 

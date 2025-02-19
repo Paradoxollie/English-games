@@ -96,3 +96,81 @@
     border-radius: 8px;
     box-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
 }
+
+/* Conteneur principal du jeu */
+#game-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Zone de jeu */
+.game-area {
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(201, 170, 113, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Contrôles du jeu */
+.game-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+/* Style des inputs et select */
+.game-input {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(201, 170, 113, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    min-width: 200px;
+}
+
+.game-input:focus {
+    border-color: rgba(201, 170, 113, 0.8);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(201, 170, 113, 0.2);
+}
+
+/* Score et Timer */
+#score-display, #timer {
+    font-size: 1.5rem;
+    color: var(--quest-gold);
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Messages */
+#message {
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Liste des meilleurs scores */
+#top-scores {
+    margin-top: 20px;
+}
+
+#top-scores-list {
+    list-style: none;
+    padding: 0;
+}
+
+#top-scores-list li {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(201, 170, 113, 0.3);
+    padding: 8px 16px;
+    margin: 5px 0;
+    border-radius: 6px;
+    color: var(--quest-gold);
+}

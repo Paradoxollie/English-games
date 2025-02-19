@@ -13,177 +13,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cours sur le Conditionnel en Anglais</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Styles supplémentaires pour améliorer la lisibilité */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('images/background.webp'); /* Assure-toi que cette image est présente */
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: #ffffff;
-        }
-        .course-section {
-            max-width: 800px;
-            margin: 50px auto; /* Centre la boîte horizontalement */
-            padding: 30px;
-            background-color: rgba(0, 0, 0, 0.8); /* Fond noir semi-transparent */
-            color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-            transition: transform 0.3s;
-            text-align: left; /* Aligne le texte à gauche pour une meilleure lisibilité */
-        }
-        .course-section h2, .course-section h3 {
-            font-size: 1.8em;
-            color: #4CAF50; /* Couleur verte pour les titres */
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .course-section p, .course-section li {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin: 15px 0;
-        }
-        .course-section ul {
-            margin-left: 20px;
-            list-style: disc;
-        }
-        .course-box {
-            background-color: rgba(255, 255, 255, 0.1); /* Boîte interne pour le contenu */
-            padding: 20px;
-            border: 1px solid #4CAF50;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .course-section img {
-            width: 150px;
-            height: auto;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 10px;
-        }
-        .content-block {
-            margin-bottom: 30px;
-        }
-        .code-example {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            margin: 10px 0;
-            color: #4CAF50;
-        }
-        .note {
-            background-color: #ffcc00;
-            color: #000;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-    </style>
+    
+    <!-- Styles -->
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1>Cours d'Anglais - Le Conditionnel</h1>
-        <nav>
-            <a href="index.html">Accueil</a>
-            <a href="all-games.html">Jeux</a>
-            <a href="courses.html" class="active">Cours</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed courses-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
-    <main>
-        <section class="course-intro course-section">
-            <img src="images/conditionnel-course.webp" alt="Icône du cours sur le conditionnel" class="course-image">
-            <h2>Maîtriser le conditionnel en anglais</h2>
-            <p>Bienvenue dans ce guide complet sur le conditionnel en anglais. Ce cours va vous aider à comprendre et maîtriser toutes les différentes formes conditionnelles, des situations de base aux scénarios hypothétiques avancés. Convient à tous les niveaux, du A1 au C2.</p>
-        </section>
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Accueil</a>
+            <a href="all-games.html" class="nav-link">Jeux</a>
+            <a href="courses.html" class="nav-link active">Cours</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+    </nav>
 
-        <section class="course-content course-section">
-            <h2>1. Introduction au Conditionnel</h2>
-            <div class="course-box">
-                <p>Le conditionnel en anglais est utilisé pour exprimer des situations hypothétiques, des conséquences de certaines actions, ou des conditions spécifiques. Il est composé d'une <em>if clause</em> (la condition) et d'une <em>main clause</em> (le résultat). Il existe cinq types de conditionnels :</p>
-                <ul>
-                    <li><strong>Zero Conditional</strong> : Utilisé pour des vérités générales ou des faits scientifiques.</li>
-                    <li><strong>First Conditional</strong> : Pour des actions probables ou des résultats futurs basés sur une condition réelle.</li>
-                    <li><strong>Second Conditional</strong> : Pour des situations imaginaires ou peu probables dans le présent ou le futur.</li>
-                    <li><strong>Third Conditional</strong> : Pour parler de situations hypothétiques dans le passé.</li>
-                    <li><strong>Mixed Conditional</strong> : Combinaison des conditions avec un temps différent pour exprimer une conséquence.</li>
-                </ul>
-            </div>
+    <main class="min-h-screen pt-32">
+        <!-- Garder exactement le même contenu mais dans des quest-panel -->
+        <div class="quest-panel max-w-2xl mx-auto mb-16">
+            <h1 class="glow-text">LE CONDITIONNEL</h1>
+            <p>Maîtrisez les différentes formes du conditionnel en anglais</p>
+        </div>
 
-            <h2>2. Formes et Structures du Conditionnel</h2>
-            <div class="course-box">
-                <div class="content-block">
-                    <h3>Zero Conditional</h3>
-                    <p><strong>Structure :</strong> <span class="code-example">If + Present Simple, Present Simple</span></p>
-                    <p><strong>Exemple :</strong> If you heat water to 100 degrees, it boils.</p>
-                    <p>Utilisé pour exprimer des vérités générales ou des faits scientifiques. "If" peut être remplacé par "when" ou "whenever" pour parler d'actions régulières.</p>
-                </div>
-                <div class="content-block">
-                    <h3>First Conditional</h3>
-                    <p><strong>Structure :</strong> <span class="code-example">If + Present Simple, will + base verb</span></p>
-                    <p><strong>Exemple :</strong> If it rains tomorrow, I will stay home.</p>
-                    <p>Parle d'actions probables ou de résultats futurs basés sur une condition réelle.</p>
-                    <div class="note">Attention : On ne doit pas utiliser "will" dans la clause conditionnelle (if clause).</div>
-                </div>
-                <div class="content-block">
-                    <h3>Second Conditional</h3>
-                    <p><strong>Structure :</strong> <span class="code-example">If + Past Simple, would + base verb</span></p>
-                    <p><strong>Exemple :</strong> If I had a lot of money, I would travel around the world.</p>
-                    <p>Utilisé pour des situations imaginaires ou peu probables dans le présent ou le futur.</p>
-                    <div class="note">Remarque : Le verbe "to be" dans la clause conditionnelle est souvent "were" à la place de "was" (If I were you...)</div>
-                </div>
-                <div class="content-block">
-                    <h3>Third Conditional</h3>
-                    <p><strong>Structure :</strong> <span class="code-example">If + Past Perfect, would have + past participle</span></p>
-                    <p><strong>Exemple :</strong> If I had known you were here, I would have come earlier.</p>
-                    <p>Permet de discuter de situations hypothétiques dans le passé qui n'ont pas eu lieu.</p>
-                </div>
-                <div class="content-block">
-                    <h3>Mixed Conditional</h3>
-                    <p><strong>Structure :</strong> <span class="code-example">If + Past Perfect, would + base verb</span></p>
-                    <p><strong>Exemple :</strong> If I had studied harder, I would be more successful now.</p>
-                    <p>Combinaison de différents temps pour parler d'une condition qui se réfère au passé et de son résultat dans le présent.</p>
-                </div>
-            </div>
+        <div class="quest-panel max-w-4xl mx-auto mb-16">
+            <section class="course-intro course-section">
+                <img src="images/conditionnel-course.webp" alt="Icône du cours sur le conditionnel" class="course-image">
+                <h2>Maîtriser le conditionnel en anglais</h2>
+                <p>Bienvenue dans ce guide complet sur le conditionnel en anglais. Ce cours va vous aider à comprendre et maîtriser toutes les différentes formes conditionnelles, des situations de base aux scénarios hypothétiques avancés. Convient à tous les niveaux, du A1 au C2.</p>
+            </section>
 
-            <h2>3. Utilisation et Nuances</h2>
-            <div class="course-box">
-                <p>Chaque type de conditionnel a une utilisation spécifique :</p>
-                <ul>
-                    <li><strong>Zero Conditional</strong> : Pour des vérités générales, des faits scientifiques, ou donner des instructions/conseils.</li>
-                    <li><strong>First Conditional</strong> : Pour des conséquences probables d'événements futurs.</li>
-                    <li><strong>Second Conditional</strong> : Pour parler d'hypothèses, de rêves ou de situations irréelles.</li>
-                    <li><strong>Third Conditional</strong> : Pour exprimer des regrets ou imaginer un résultat différent dans le passé.</li>
-                    <li><strong>Mixed Conditional</strong> : Pour combiner différentes perspectives temporelles.</li>
-                </ul>
-            </div>
+            <section class="course-content course-section">
+                <h2>1. Introduction au Conditionnel</h2>
+                <div class="course-box">
+                    <p>Le conditionnel en anglais est utilisé pour exprimer des situations hypothétiques, des conséquences de certaines actions, ou des conditions spécifiques. Il est composé d'une <em>if clause</em> (la condition) et d'une <em>main clause</em> (le résultat). Il existe cinq types de conditionnels :</p>
+                    <ul>
+                        <li><strong>Zero Conditional</strong> : Utilisé pour des vérités générales ou des faits scientifiques.</li>
+                        <li><strong>First Conditional</strong> : Pour des actions probables ou des résultats futurs basés sur une condition réelle.</li>
+                        <li><strong>Second Conditional</strong> : Pour des situations imaginaires ou peu probables dans le présent ou le futur.</li>
+                        <li><strong>Third Conditional</strong> : Pour parler de situations hypothétiques dans le passé.</li>
+                        <li><strong>Mixed Conditional</strong> : Combinaison des conditions avec un temps différent pour exprimer une conséquence.</li>
+                    </ul>
+                </div>
 
-            </div>
-        </section>
+                <h2>2. Formes et Structures du Conditionnel</h2>
+                <div class="course-box">
+                    <div class="content-block">
+                        <h3>Zero Conditional</h3>
+                        <p><strong>Structure :</strong> <span class="code-example">If + Present Simple, Present Simple</span></p>
+                        <p><strong>Exemple :</strong> If you heat water to 100 degrees, it boils.</p>
+                        <p>Utilisé pour exprimer des vérités générales ou des faits scientifiques. "If" peut être remplacé par "when" ou "whenever" pour parler d'actions régulières.</p>
+                    </div>
+                    <div class="content-block">
+                        <h3>First Conditional</h3>
+                        <p><strong>Structure :</strong> <span class="code-example">If + Present Simple, will + base verb</span></p>
+                        <p><strong>Exemple :</strong> If it rains tomorrow, I will stay home.</p>
+                        <p>Parle d'actions probables ou de résultats futurs basés sur une condition réelle.</p>
+                        <div class="note">Attention : On ne doit pas utiliser "will" dans la clause conditionnelle (if clause).</div>
+                    </div>
+                    <div class="content-block">
+                        <h3>Second Conditional</h3>
+                        <p><strong>Structure :</strong> <span class="code-example">If + Past Simple, would + base verb</span></p>
+                        <p><strong>Exemple :</strong> If I had a lot of money, I would travel around the world.</p>
+                        <p>Utilisé pour des situations imaginaires ou peu probables dans le présent ou le futur.</p>
+                        <div class="note">Remarque : Le verbe "to be" dans la clause conditionnelle est souvent "were" à la place de "was" (If I were you...)</div>
+                    </div>
+                    <div class="content-block">
+                        <h3>Third Conditional</h3>
+                        <p><strong>Structure :</strong> <span class="code-example">If + Past Perfect, would have + past participle</span></p>
+                        <p><strong>Exemple :</strong> If I had known you were here, I would have come earlier.</p>
+                        <p>Permet de discuter de situations hypothétiques dans le passé qui n'ont pas eu lieu.</p>
+                    </div>
+                    <div class="content-block">
+                        <h3>Mixed Conditional</h3>
+                        <p><strong>Structure :</strong> <span class="code-example">If + Past Perfect, would + base verb</span></p>
+                        <p><strong>Exemple :</strong> If I had studied harder, I would be more successful now.</p>
+                        <p>Combinaison de différents temps pour parler d'une condition qui se réfère au passé et de son résultat dans le présent.</p>
+                    </div>
+                </div>
+
+                <h2>3. Utilisation et Nuances</h2>
+                <div class="course-box">
+                    <p>Chaque type de conditionnel a une utilisation spécifique :</p>
+                    <ul>
+                        <li><strong>Zero Conditional</strong> : Pour des vérités générales, des faits scientifiques, ou donner des instructions/conseils.</li>
+                        <li><strong>First Conditional</strong> : Pour des conséquences probables d'événements futurs.</li>
+                        <li><strong>Second Conditional</strong> : Pour parler d'hypothèses, de rêves ou de situations irréelles.</li>
+                        <li><strong>Third Conditional</strong> : Pour exprimer des regrets ou imaginer un résultat différent dans le passé.</li>
+                        <li><strong>Mixed Conditional</strong> : Pour combiner différentes perspectives temporelles.</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-        <div id="visit-stats"></div>
-
-        <!-- Scripts Firebase -->
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        
-        <!-- Votre script d'initialisation Firebase -->
-        <script src="firebase-init.js"></script>
-        
-        <!-- Le script du compteur de visites -->
-        <script src="visit-counter.js"></script>
-
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

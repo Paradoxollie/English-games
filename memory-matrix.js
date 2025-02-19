@@ -17,392 +17,283 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const vocabularyBank = [
-    { word: "accurate", definition: "Free from errors or mistakes; exact and correct in every detail." },
-    { word: "adequate", definition: "Sufficient for a specific requirement; acceptable in quantity or quality." },
-    { word: "allocate", definition: "To distribute resources or duties for a particular purpose." },
-    { word: "anticipate", definition: "To expect or predict something in advance, often with preparation." },
-    { word: "assess", definition: "To evaluate or estimate the nature, ability, or quality of something." },
-    { word: "benefit", definition: "An advantage or profit gained from something." },
-    { word: "coherent", definition: "Logical and consistent; forming a unified whole that makes sense." },
-    { word: "comprehensive", definition: "Complete and thorough; covering all or nearly all aspects of something." },
-    { word: "contribute", definition: "To give something (such as money or time) in order to achieve a common goal." },
-    { word: "convince", definition: "To persuade someone to do or believe something by presenting strong arguments." },
-    { word: "criticize", definition: "To point out the faults or problems of someone or something in a disapproving way." },
-    { word: "diverse", definition: "Showing a great deal of variety; very different or distinct." },
-    { word: "emphasize", definition: "To give special importance or prominence to something in speaking or writing." },
-    { word: "enhance", definition: "To improve the quality, value, or extent of something." },
-    { word: "establish", definition: "To set up or create something on a firm or permanent basis." },
-    { word: "evident", definition: "Clearly seen or understood; obvious and easy to notice." },
-    { word: "fluctuate", definition: "To rise and fall irregularly in number or amount." },
-    { word: "generate", definition: "To produce or create something, especially energy or ideas." },
-    { word: "hypothesis", definition: "A proposed explanation based on limited evidence, used as a starting point for further investigation." },
-    { word: "implement", definition: "To put into effect or carry out a plan, decision, or idea." },
-    { word: "indicate", definition: "To point out or show something, typically as a sign or signal." },
-    { word: "interpret", definition: "To explain the meaning of information, words, or actions." },
-    { word: "investigate", definition: "To carry out research or study into a subject to discover facts or information." },
-    { word: "justify", definition: "To show or prove to be right or reasonable." },
-    { word: "maintain", definition: "To keep something in good condition by checking or repairing it regularly." },
-    { word: "neglect", definition: "To fail to care for or give proper attention to something or someone." },
-    { word: "obtain", definition: "To get or acquire something, usually through effort or skill." },
-    { word: "perceive", definition: "To become aware or conscious of something through the senses." },
-    { word: "potential", definition: "Having the capacity to develop into something in the future; latent ability." },
-    { word: "propose", definition: "To put forward an idea, plan, or suggestion for consideration or discussion." },
-    { word: "recommend", definition: "To suggest that something is good or suitable for a particular purpose." },
-    { word: "relevant", definition: "Closely connected or appropriate to what is being considered or discussed." },
-    { word: "reside", definition: "To live in a particular place, typically for a prolonged period." },
-    { word: "restrict", definition: "To limit the amount or range of something." },
-    { word: "secure", definition: "To make safe or protect from danger or harm." },
-    { word: "significant", definition: "Important, noteworthy, or worthy of attention." },
-    { word: "specific", definition: "Clearly defined or identified; distinct from others." },
-    { word: "structure", definition: "The arrangement of and relations between the parts of something complex." },
-    { word: "sufficient", definition: "Enough to meet the needs of a situation or proposed goal." },
-    { word: "sustain", definition: "To support or maintain something over a period of time." },
-    { word: "transition", definition: "The process or period of changing from one state or condition to another." },
-    { word: "ultimate", definition: "The final or most important aim or result of a process." },
-    { word: "vary", definition: "To change or alter in form, appearance, or nature." },
-    { word: "widespread", definition: "Found or distributed over a large area or number of people." },
-    { word: "persevere", definition: "To continue in a course of action despite difficulty or delay in achieving success." },
-    { word: "assumption", definition: "A thing that is accepted as true or as certain to happen, without proof." },
-    { word: "compensate", definition: "To give something in recognition of loss, suffering, or injury incurred." },
-    { word: "controversial", definition: "Giving rise to public disagreement; likely to provoke an argument." },
-    { word: "accompany", definition: "To go somewhere with someone as a companion or escort." },
-    { word: "facilitate", definition: "To make an action or process easier or help it move forward." },
-    { word: "acquire", definition: "To obtain something through effort or experience." },
-    { word: "adjust", definition: "To change something slightly to make it more suitable or accurate." },
-    { word: "advocate", definition: "To publicly support or recommend a particular cause or policy." },
-    { word: "allocate", definition: "To distribute resources or duties for a particular purpose." },
-    { word: "anticipate", definition: "To expect or predict something and prepare for it." },
-    { word: "aspire", definition: "To have a strong desire to achieve something or to become someone." },
-    { word: "assume", definition: "To accept something to be true without proof." },
-    { word: "attain", definition: "To succeed in achieving something, especially after much effort." },
-    { word: "collaborate", definition: "To work jointly with others, especially in an intellectual endeavor." },
-    { word: "compile", definition: "To collect information from different sources and arrange it in a book or report." },
-    { word: "concede", definition: "To admit that something is true or valid after first resisting it." },
-    { word: "conform", definition: "To comply with rules, standards, or laws." },
-    { word: "constrain", definition: "To restrict or limit someone or something." },
-    { word: "contradict", definition: "To state the opposite of a statement made by someone else." },
-    { word: "convey", definition: "To communicate or express something, with or without words." },
-    { word: "deduce", definition: "To draw a conclusion based on information and reasoning." },
-    { word: "depict", definition: "To show or represent by drawing, painting, or describing in words." },
-    { word: "derive", definition: "To obtain something from a specified source." },
-    { word: "devote", definition: "To give time, effort, or resources to a particular task or purpose." },
-    { word: "differentiate", definition: "To recognize or identify differences between two or more things." },
-    { word: "diminish", definition: "To make something become less in size, importance, or value." },
-    { word: "displace", definition: "To force someone or something to move from its usual place or position." },
-    { word: "distribute", definition: "To give or deliver something to people." },
-    { word: "emerge", definition: "To move out of or away from something and become visible or apparent." },
-    { word: "enforce", definition: "To ensure compliance with a law, rule, or obligation." },
-    { word: "enhance", definition: "To intensify, increase, or improve the quality or value of something." },
-    { word: "ensure", definition: "To make certain that something happens or is the case." },
-    { word: "exploit", definition: "To use something or someone in a way that helps you, often unfairly." },
-    { word: "expose", definition: "To reveal something hidden or make it known." },
-    { word: "facilitate", definition: "To make an action or process easier or help bring about a result." },
-    { word: "foster", definition: "To encourage the development or growth of ideas or feelings." },
-    { word: "illustrate", definition: "To explain or make something clear by using examples, pictures, or diagrams." },
-    { word: "imitate", definition: "To copy someone’s actions, behavior, or appearance." },
-    { word: "impose", definition: "To force something unwelcome or unfamiliar to be accepted or put in place." },
-    { word: "integrate", definition: "To combine one thing with another to make a whole." },
-    { word: "intervene", definition: "To come between disputing parties to prevent or alter a result." },
-    { word: "isolate", definition: "To set something or someone apart from others." },
-    { word: "manipulate", definition: "To control or influence someone or something in a clever or skillful way." },
-    { word: "mediate", definition: "To try to end a dispute between two or more people or groups." },
-    { word: "modify", definition: "To change something slightly, usually to improve it or make it more acceptable." },
-    { word: "monitor", definition: "To observe and check the progress or quality of something over a period of time." },
-    { word: "negate", definition: "To nullify or make ineffective." },
-    { word: "obstruct", definition: "To block or get in the way of something." },
-    { word: "overcome", definition: "To successfully deal with or gain control of a problem or difficulty." },
-    { word: "perceive", definition: "To become aware or conscious of something through the senses." },
-    { word: "persuade", definition: "To cause someone to do or believe something through reasoning or argument." },
-    { word: "prioritize", definition: "To designate or treat something as more important than other things." },
-    { word: "reinforce", definition: "To strengthen or support, especially with additional materials or help." },
-    { word: "safeguard", definition: "To protect something or someone from harm or damage." },
-    { word: "simplify", definition: "To make something less complicated or easier to understand." },
-    { word: "speculate", definition: "To form a theory or conjecture about a subject without firm evidence." },
-    { word: "suppress", definition: "To put an end to something by force or prevent it from being expressed." },
-    { word: "accelerate", definition: "To increase speed or cause something to happen faster than expected." },
-    { word: "accommodate", definition: "To provide lodging or sufficient space for someone or something." },
-    { word: "accomplish", definition: "To achieve or complete a task successfully." },
-    { word: "accumulate", definition: "To gather or collect something over time, often in large amounts." },
-    { word: "acknowledge", definition: "To accept or recognize the truth or existence of something." },
-    { word: "adapt", definition: "To change something to make it suitable for a new purpose or situation." },
-    { word: "administer", definition: "To manage or oversee the execution of something, such as a business or organization." },
-    { word: "advocate", definition: "To support or argue in favor of a particular cause or policy." },
-    { word: "alleviate", definition: "To make a problem or pain less severe or more bearable." },
-    { word: "analyze", definition: "To examine something in detail to understand it better or to draw conclusions." },
-    { word: "anticipate", definition: "To expect or look forward to something happening." },
-    { word: "apologize", definition: "To express regret or sorrow for a mistake or wrongdoing." },
-    { word: "appreciate", definition: "To recognize the value, significance, or importance of something or someone." },
-    { word: "approach", definition: "To come near or nearer to something in distance or time." },
-    { word: "approve", definition: "To officially accept or agree to something." },
-    { word: "articulate", definition: "To express an idea or feeling clearly and effectively." },
-    { word: "ascertain", definition: "To find out or discover something with certainty through investigation." },
-    { word: "assert", definition: "To state a fact or belief confidently and forcefully." },
-    { word: "assign", definition: "To allocate a task or responsibility to someone." },
-    { word: "assure", definition: "To tell someone something confidently to dispel doubts or fears." },
-    { word: "augment", definition: "To make something greater in size, quantity, or value." },
-    { word: "authorize", definition: "To give official permission or approval for something." },
-    { word: "boost", definition: "To increase or improve something in a positive way." },
-    { word: "clarify", definition: "To make something easier to understand by giving more details or simpler explanations." },
-    { word: "collaborate", definition: "To work together with one or more people to achieve a common goal." },
-    { word: "comply", definition: "To act in accordance with rules, standards, or demands." },
-    { word: "conserve", definition: "To protect or preserve something, especially the environment or cultural heritage." },
-    { word: "consolidate", definition: "To combine several things into a more effective or coherent whole." },
-    { word: "contemplate", definition: "To think deeply about something for a long time." },
-    { word: "contradict", definition: "To state the opposite of what someone else has said or believed." },
-    { word: "convert", definition: "To change the form, character, or function of something." },
-    { word: "decrease", definition: "To make something become smaller or less in size, amount, or number." },
-    { word: "dedicate", definition: "To devote time, effort, or resources to a particular task or purpose." },
-    { word: "demonstrate", definition: "To show or prove something clearly through examples or evidence." },
-    { word: "depreciate", definition: "To reduce in value over a period of time." },
-    { word: "detect", definition: "To discover or identify the presence or existence of something." },
-    { word: "dictate", definition: "To lay down rules or give orders with authority." },
-    { word: "disclose", definition: "To reveal or make known information that was previously secret or unknown." },
-    { word: "divert", definition: "To cause something to change direction or be used for a different purpose." },
-    { word: "elaborate", definition: "To explain something in more detail or expand on an idea." },
-    { word: "eliminate", definition: "To remove or get rid of something completely." },
-    { word: "endorse", definition: "To publicly support or approve of something or someone." },
-    { word: "eradicate", definition: "To completely destroy or remove something, especially something negative." },
-    { word: "evaluate", definition: "To form an opinion of the amount, value, or quality of something after careful consideration." },
-    { word: "exaggerate", definition: "To describe something as being larger, better, or worse than it really is." },
-    { word: "expand", definition: "To increase in size, number, or importance." },
-    { word: "extract", definition: "To remove or take out something, especially by effort or force." },
-    { word: "facilitate", definition: "To make an action or process easier or help it progress." },
-    { word: "fascinate", definition: "To attract and hold someone's attention intensely." },
-    { word: "formulate", definition: "To create or prepare something systematically or according to a plan." },
-    { word: "generate", definition: "To cause something to exist or come into being." },
-    { word: "hesitate", definition: "To pause or hold back in uncertainty or unwillingness." },
-    { word: "implement", definition: "To put a decision, plan, or agreement into effect." },
-    { word: "implicate", definition: "To show someone or something to be involved in a crime or undesirable situation." },
-    { word: "induce", definition: "To bring about or give rise to something, often intentionally." },
-    { word: "inhibit", definition: "To prevent or slow down an action, process, or behavior." },
-    { word: "initiate", definition: "To begin or start something, especially an important process or activity." },
-    { word: "inquire", definition: "To ask for information from someone or investigate something." },
-    { word: "insight", definition: "The ability to understand deeply and accurately the true nature of something." },
-    { word: "integrate", definition: "To combine one thing with another so that they become a whole." },
-    { word: "intensify", definition: "To increase in degree, strength, or severity." },
-    { word: "interfere", definition: "To get involved in a situation where one is not wanted or needed." },
-    { word: "interpret", definition: "To explain or understand the meaning of something in a particular way." },
-    { word: "intervene", definition: "To become involved in a situation in order to change or prevent an outcome." },
-    { word: "intimidate", definition: "To frighten or overawe someone, especially to make them do something." },
-    { word: "invest", definition: "To put money, time, or energy into something with the hope of future benefit." },
-    { word: "justify", definition: "To show or prove to be right, reasonable, or valid." },
-    { word: "liberate", definition: "To set someone or something free from a situation or restriction." },
-    { word: "maintain", definition: "To keep something in good condition or to continue at the same level." },
-    { word: "mediate", definition: "To try to end a disagreement between people or groups by talking to them." },
-    { word: "minimize", definition: "To reduce something, especially something undesirable, to the smallest possible amount or degree." },
-    { word: "mitigate", definition: "To make something less severe, serious, or painful." },
-    { word: "motivate", definition: "To provide someone with a reason or incentive to do something." },
-    { word: "negotiate", definition: "To try to reach an agreement through discussion and compromise." },
-    { word: "oblige", definition: "To require someone to do something by law, necessity, or moral obligation." },
-    { word: "omit", definition: "To leave out or exclude something, either intentionally or unintentionally." },
-    { word: "oppose", definition: "To disapprove of or resist something actively." },
-    { word: "overcome", definition: "To succeed in dealing with a problem or difficulty." },
-    { word: "perceive", definition: "To become aware of or understand something through the senses or the mind." },
-    { word: "persist", definition: "To continue in a course of action despite difficulty or opposition." },
-    { word: "portray", definition: "To depict or describe someone or something in a particular way." },
-    { word: "presume", definition: "To suppose something is the case based on probability or assumption." },
-    { word: "proclaim", definition: "To announce something publicly or officially." },
-    { word: "prohibit", definition: "To formally forbid something by law, rule, or authority." },
-    { word: "provoke", definition: "To stimulate or incite someone to feel or do something, often through strong emotions." },
-    { word: "reassure", definition: "To say or do something to remove doubts or fears from someone." },
-    { word: "refine", definition: "To improve something by making small changes or removing impurities." },
-    { word: "reinforce", definition: "To strengthen or support something, especially with additional resources or support." },
-    { word: "reiterate", definition: "To say or do something again to emphasize a point." },
-    { word: "resolve", definition: "To find a solution to a problem or conflict." },
-    { word: "restrict", definition: "To limit or control the size, amount, or range of something." },
-    { word: "retain", definition: "To keep possession of something or continue to have something." },
-    { word: "reveal", definition: "To make something known that was previously secret or hidden." },
-    { word: "simplify", definition: "To make something easier to understand or less complicated." },
-    { word: "specify", definition: "To state something in an explicit and detailed manner." },
-    { word: "stimulate", definition: "To encourage or arouse interest, enthusiasm, or activity in someone or something." },
-    { word: "substitute", definition: "To replace one thing with another, usually something of a similar kind." },
-    { word: "succeed", definition: "To achieve a desired goal or outcome, especially after effort." },
-    { word: "suppress", definition: "To prevent something from being expressed or known." },
-    { word: "sustain", definition: "To keep something going over a period of time or maintain at a certain level." },
-    { word: "terminate", definition: "To bring something to an end or to end something formally." },
-    { word: "undertake", definition: "To commit oneself to begin and complete a task or responsibility." },
-    { word: "utilize", definition: "To make practical and effective use of something." },
-    { word: "verify", definition: "To make sure or demonstrate that something is true, accurate, or justified." },
+    { word: "achieve", definition: "Réussir quelque chose après des efforts." },
+    { word: "advice", definition: "Une recommandation pour aider quelqu’un." },
+    { word: "allow", definition: "Donner la permission de faire quelque chose." },
+    { word: "answer", definition: "Répondre à une question ou une demande." },
+    { word: "apply", definition: "Faire une demande officielle (emploi, école, etc.)." },
+    { word: "arrange", definition: "Organiser ou préparer quelque chose." },
+    { word: "ask", definition: "Poser une question ou demander quelque chose." },
+    { word: "avoid", definition: "Éviter une situation ou une action." },
+    { word: "believe", definition: "Penser que quelque chose est vrai." },
+    { word: "borrow", definition: "Prendre temporairement quelque chose à quelqu’un." },
+    { word: "build", definition: "Construire ou créer quelque chose." },
+    { word: "change", definition: "Modifier ou rendre différent." },
+    { word: "choose", definition: "Sélectionner parmi plusieurs options." },
+    { word: "communicate", definition: "Partager des informations avec quelqu’un." },
+    { word: "compare", definition: "Observer les différences et les similarités." },
+    { word: "complain", definition: "Exprimer son mécontentement." },
+    { word: "concentrate", definition: "Faire attention et se focaliser sur quelque chose." },
+    { word: "confirm", definition: "Vérifier et approuver quelque chose." },
+    { word: "consider", definition: "Penser à une possibilité avant de décider." },
+    { word: "continue", definition: "Ne pas arrêter une action." },
+    { word: "correct", definition: "Rendre juste ou corriger une erreur." },
+    { word: "decide", definition: "Faire un choix après réflexion." },
+    { word: "describe", definition: "Expliquer comment est quelque chose." },
+    { word: "discuss", definition: "Parler avec quelqu’un d’un sujet." },
+    { word: "discover", definition: "Trouver quelque chose de nouveau." },
+    { word: "encourage", definition: "Motiver ou soutenir quelqu’un." },
+    { word: "explain", definition: "Rendre quelque chose clair et compréhensible." },
+    { word: "express", definition: "Montrer ses pensées ou ses émotions." },
+    { word: "fail", definition: "Ne pas réussir quelque chose." },
+    { word: "follow", definition: "Aller derrière ou respecter une règle." },
+    { word: "forget", definition: "Ne plus se rappeler de quelque chose." },
+    { word: "guess", definition: "Donner une réponse sans être sûr." },
+    { word: "help", definition: "Assister ou apporter son soutien." },
+    { word: "improve", definition: "Rendre quelque chose meilleur." },
+    { word: "inform", definition: "Donner des informations à quelqu’un." },
+    { word: "introduce", definition: "Présenter une personne ou une idée." },
+    { word: "learn", definition: "Acquérir de nouvelles connaissances." },
+    { word: "listen", definition: "Faire attention aux sons et aux paroles." },
+    { word: "mention", definition: "Parler brièvement de quelque chose." },
+    { word: "notice", definition: "Remarquer quelque chose." },
+    { word: "offer", definition: "Proposer ou donner quelque chose." },
+    { word: "organize", definition: "Mettre en ordre ou préparer." },
+    { word: "participate", definition: "Prendre part à une activité." },
+    { word: "persuade", definition: "Convaincre quelqu’un de faire ou croire quelque chose." },
+    { word: "plan", definition: "Préparer à l’avance." },
+    { word: "practise", definition: "S’entraîner pour s’améliorer." },
+    { word: "prefer", definition: "Aimer quelque chose plus qu’une autre chose." },
+    { word: "prepare", definition: "Se mettre en condition pour quelque chose." },
+    { word: "prevent", definition: "Empêcher quelque chose d’arriver." },
+    { word: "promise", definition: "Dire que l’on fera quelque chose avec certitude." },
+    { word: "pronounce", definition: "Dire un mot correctement." },
+    { word: "protect", definition: "Garder en sécurité contre un danger." },
+    { word: "realize", definition: "Comprendre soudainement quelque chose." },
+    { word: "recognize", definition: "Se rappeler de quelqu’un ou quelque chose." },
+    { word: "reduce", definition: "Diminuer en quantité ou en intensité." },
+    { word: "refuse", definition: "Dire non à quelque chose." },
+    { word: "remember", definition: "Se souvenir de quelque chose." },
+    { word: "repeat", definition: "Dire ou faire encore une fois." },
+    { word: "replace", definition: "Mettre une chose à la place d’une autre." },
+    { word: "reply", definition: "Répondre à une question ou un message." },
+    { word: "request", definition: "Demander poliment quelque chose." },
+    { word: "respect", definition: "Montrer de l’estime envers quelqu’un." },
+    { word: "respond", definition: "Réagir à une question ou un événement." },
+    { word: "review", definition: "Revoir pour s’améliorer ou se rappeler." },
+    { word: "say", definition: "Exprimer quelque chose oralement." },
+    { word: "search", definition: "Chercher quelque chose." },
+    { word: "select", definition: "Choisir une option." },
+    { word: "send", definition: "Faire parvenir un message ou un objet." },
+    { word: "share", definition: "Donner une partie de quelque chose aux autres." },
+    { word: "show", definition: "Faire voir quelque chose." },
+    { word: "speak", definition: "Utiliser des mots pour communiquer." },
+    { word: "spell", definition: "Épeler un mot correctement." },
+    { word: "study", definition: "Apprendre en travaillant sur un sujet." },
+    { word: "suggest", definition: "Donner une idée ou un conseil." },
+    { word: "support", definition: "Aider ou défendre une cause." },
+    { word: "talk", definition: "Communiquer avec quelqu’un en parlant." },
+    { word: "teach", definition: "Apprendre quelque chose à quelqu’un." },
+    { word: "tell", definition: "Dire quelque chose à quelqu’un." },
+    { word: "test", definition: "Vérifier les connaissances de quelqu’un." },
+    { word: "thank", definition: "Exprimer sa gratitude." },
+    { word: "translate", definition: "Changer des mots d’une langue à une autre." },
+    { word: "try", definition: "Faire un effort pour réussir quelque chose." },
+    { word: "understand", definition: "Saisir la signification de quelque chose." },
+    { word: "use", definition: "Employer quelque chose pour un but précis." },
+    { word: "watch", definition: "Regarder attentivement quelque chose." },
+    { word: "write", definition: "Produire du texte avec des mots." },
+    { word: "accept", definition: "Dire oui à une proposition ou une situation." },
+    { word: "adapt", definition: "Changer pour mieux s’ajuster à une situation." },
+    { word: "add", definition: "Mettre quelque chose en plus." },
+    { word: "admit", definition: "Reconnaître que quelque chose est vrai." },
+    { word: "agree", definition: "Être d’accord avec quelqu’un ou quelque chose." },
+    { word: "analyse", definition: "Examiner quelque chose en détail." },
+    { word: "announce", definition: "Faire connaître une information publiquement." },
+    { word: "arrive", definition: "Atteindre un lieu." },
+    { word: "assist", definition: "Aider quelqu’un dans une tâche." },
+    { word: "assume", definition: "Penser que quelque chose est vrai sans preuve." },
+    { word: "attend", definition: "Être présent à un événement." },
+    { word: "attract", definition: "Attirer l’attention ou l’intérêt de quelqu’un." },
+    { word: "behave", definition: "Agir d’une certaine manière." },
+    { word: "belong", definition: "Faire partie d’un groupe ou d’un endroit." },
+    { word: "breathe", definition: "Prendre et expulser de l’air par les poumons." },
+    { word: "celebrate", definition: "Fêter un événement spécial." },
+    { word: "change", definition: "Modifier ou devenir différent." },
+    { word: "choose", definition: "Sélectionner parmi plusieurs options." },
+    { word: "collect", definition: "Rassembler plusieurs objets ou informations." },
+    { word: "compete", definition: "Jouer contre quelqu’un pour gagner." },
+    { word: "compliment", definition: "Dire quelque chose de positif sur quelqu’un." },
+    { word: "conclude", definition: "Terminer ou arriver à une décision." },
+    { word: "confirm", definition: "Vérifier que quelque chose est correct." },
+    { word: "connect", definition: "Joindre deux choses ensemble." },
+    { word: "contain", definition: "Avoir quelque chose à l’intérieur." },
+    { word: "cooperate", definition: "Travailler ensemble pour un objectif commun." },
+    { word: "deliver", definition: "Apporter quelque chose à un endroit." },
+    { word: "depend", definition: "Être influencé par quelque chose d’autre." },
+    { word: "describe", definition: "Donner des détails sur quelque chose." },
+    { word: "design", definition: "Créer un plan ou une structure." },
+    { word: "develop", definition: "Faire grandir ou améliorer quelque chose." },
+    { word: "discover", definition: "Trouver quelque chose de nouveau." },
+    { word: "divide", definition: "Séparer en plusieurs parties." },
+    { word: "earn", definition: "Recevoir de l’argent en travaillant." },
+    { word: "educate", definition: "Donner des connaissances à quelqu’un." },
+    { word: "enjoy", definition: "Prendre du plaisir à faire quelque chose." },
+    { word: "enter", definition: "Aller dans un endroit." },
+    { word: "establish", definition: "Créer ou fonder quelque chose." },
+    { word: "estimate", definition: "Faire une approximation d’une quantité." },
+    { word: "examine", definition: "Observer attentivement pour comprendre." },
+    { word: "explore", definition: "Voyager ou chercher de nouvelles choses." },
+    { word: "fail", definition: "Ne pas réussir quelque chose." },
+    { word: "feed", definition: "Donner de la nourriture à quelqu’un ou un animal." },
+    { word: "focus", definition: "Faire attention à quelque chose en particulier." },
+    { word: "forgive", definition: "Ne plus être fâché contre quelqu’un." },
+    { word: "handle", definition: "Gérer une situation ou un problème." },
+    { word: "increase", definition: "Faire grandir ou devenir plus important." },
+    { word: "introduce", definition: "Présenter quelqu’un ou quelque chose." },
+    { word: "invite", definition: "Demander à quelqu’un de venir." }
 
 ];
 
-// Configuration du jeu
+// Variables globales
+let score = 0;
+let timeLeft = 60;
+let timerInterval;
 let selectedWord = null;
 let selectedDefinition = null;
-let score = 0;
-let timerInterval;
-let timeLeft = 60;
-let currentMatrix = [];
 let gameOver = false;
 let roundsPlayed = 0;
-let maxRounds = 5;
-let penalty = 5;
+const maxRounds = 5;
+let currentWords = [];
+let currentDefinitions = [];
 
-// Démarrage du jeu
+// Fonction pour démarrer le jeu
 function startGame() {
+    // Réinitialisation
     score = 0;
-    roundsPlayed = 0;
-    gameOver = false;
     timeLeft = 60;
-    document.getElementById("start-button").style.display = "none";
-    // Démarrer le timer une seule fois au début du jeu
-    startTimer();
+    gameOver = false;
+    roundsPlayed = 0;
+    document.getElementById('score').innerText = score;
+    document.getElementById('start-button').style.display = 'none';
+    
+    // Démarrer le premier round
     startNewRound();
+    startTimer();
 }
 
-// Démarrage d'un nouveau round
+// Fonction pour démarrer un nouveau round
 function startNewRound() {
-    if (roundsPlayed >= maxRounds || timeLeft <= 0) {
-        endGame();
-        return;
-    }
+    clearSelections();
+    const wordContainer = document.getElementById('word-container');
+    const definitionContainer = document.getElementById('definition-container');
+    wordContainer.innerHTML = '';
+    definitionContainer.innerHTML = '';
 
-    selectedWord = null;
-    selectedDefinition = null;
-    document.getElementById("score").innerText = score;
-    document.getElementById("message").innerText = "";
+    // Sélectionner 4 mots aléatoires
+    const selectedPairs = selectRandomPairs(4);
+    currentWords = selectedPairs.map(pair => pair.word);
+    currentDefinitions = selectedPairs.map(pair => pair.definition);
 
-    generateMatrix();
-    displayWordsAndDefinitions();
-    roundsPlayed++;
-}
+    // Mélanger les définitions
+    const shuffledDefinitions = [...currentDefinitions].sort(() => Math.random() - 0.5);
 
-// Génération de la matrice de mots et définitions
-function generateMatrix() {
-    const selectedWords = [...vocabularyBank]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 8);
-
-    currentMatrix = selectedWords.map(word => ({
-        word: word.word,
-        correctDefinition: word.definition
-    }));
-
-    // Mélanger les définitions pour l'affichage
-    const shuffledDefinitions = [...currentMatrix]
-        .map(item => item.correctDefinition)
-        .sort(() => 0.5 - Math.random());
-
-    currentMatrix.forEach((item, index) => {
-        item.displayedDefinition = shuffledDefinitions[index];
-    });
-}
-
-// Affichage des mots et définitions
-function displayWordsAndDefinitions() {
-    const wordContainer = document.getElementById("word-container");
-    const definitionContainer = document.getElementById("definition-container");
-    wordContainer.innerHTML = "";
-    definitionContainer.innerHTML = "";
-
-    // Afficher les mots
-    currentMatrix.forEach((item, index) => {
-        const wordElement = document.createElement("div");
-        wordElement.className = "word-item";
-        wordElement.textContent = item.word;
-        wordElement.dataset.index = index;
-        wordElement.onclick = () => selectWord(item.word, wordElement);
+    // Créer et afficher les éléments
+    currentWords.forEach(word => {
+        const wordElement = document.createElement('div');
+        wordElement.className = 'word-item';
+        wordElement.textContent = word;
+        wordElement.onclick = () => selectWord(wordElement, word);
         wordContainer.appendChild(wordElement);
     });
 
-    // Afficher les définitions mélangées
-    currentMatrix.forEach((item, index) => {
-        const definitionElement = document.createElement("div");
-        definitionElement.className = "definition-item";
-        definitionElement.textContent = item.displayedDefinition;
-        definitionElement.dataset.index = index;
-        definitionElement.onclick = () => selectDefinition(item.displayedDefinition, definitionElement);
+    shuffledDefinitions.forEach(definition => {
+        const definitionElement = document.createElement('div');
+        definitionElement.className = 'definition-item';
+        definitionElement.textContent = definition;
+        definitionElement.onclick = () => selectDefinition(definitionElement, definition);
         definitionContainer.appendChild(definitionElement);
     });
 }
 
-// Sélection d'un mot
-function selectWord(word, element) {
-    // Réinitialiser les couleurs de tous les mots
-    document.querySelectorAll('.word-item').forEach(el => {
-        el.style.backgroundColor = "#333";
-    });
-    
-    element.style.backgroundColor = "#4CAF50";
+// Fonction pour sélectionner des paires aléatoires
+function selectRandomPairs(count) {
+    const shuffled = [...vocabularyBank].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+}
+
+// Gestion des sélections
+function selectWord(element, word) {
+    if (gameOver) return;
+    clearWordSelections();
     selectedWord = word;
+    element.classList.add('selected');
     checkMatch();
 }
 
-// Sélection d'une définition
-function selectDefinition(definition, element) {
-    // Réinitialiser les couleurs de toutes les définitions
-    document.querySelectorAll('.definition-item').forEach(el => {
-        el.style.backgroundColor = "#333";
-    });
-    
-    element.style.backgroundColor = "#4CAF50";
+function selectDefinition(element, definition) {
+    if (gameOver) return;
+    clearDefinitionSelections();
     selectedDefinition = definition;
+    element.classList.add('selected');
     checkMatch();
 }
 
-// Vérification de l'association
+// Vérification des correspondances
 function checkMatch() {
-    if (selectedWord && selectedDefinition) {
-        const wordObject = currentMatrix.find(item => item.word === selectedWord);
-        
-        if (wordObject && wordObject.correctDefinition === selectedDefinition) {
-            // Bonne association
-            score += 10;
-            document.getElementById("score").innerText = score;
-            
-            // Masquer les éléments associés
+    if (!selectedWord || !selectedDefinition) return;
+
+    const wordIndex = currentWords.indexOf(selectedWord);
+    const correctDefinition = currentDefinitions[wordIndex];
+
             const wordElements = document.querySelectorAll('.word-item');
             const definitionElements = document.querySelectorAll('.definition-item');
             
-            wordElements.forEach(el => {
-                if (el.textContent === selectedWord) {
-                    el.style.visibility = 'hidden';
-                }
-            });
-            
-            definitionElements.forEach(el => {
-                if (el.textContent === selectedDefinition) {
-                    el.style.visibility = 'hidden';
-                }
-            });
-            
-            document.getElementById("message").innerText = "Correct! +10 points";
-            document.getElementById("message").style.color = "#4CAF50";
-            
-            // Vérifier si tous les mots sont associés
-            const remainingWords = document.querySelectorAll('.word-item:not([style*="visibility: hidden"])');
-            if (remainingWords.length === 0 && timeLeft > 0) {
-                setTimeout(() => {
+    if (selectedDefinition === correctDefinition) {
+        // Correspondance correcte
+        score += 10;
+        wordElements[wordIndex].classList.add('correct');
+        definitionElements[Array.from(definitionElements).findIndex(el => el.textContent === selectedDefinition)].classList.add('correct');
+        
+        if (document.querySelectorAll('.correct').length === currentWords.length * 2) {
+            roundsPlayed++;
                     if (roundsPlayed < maxRounds) {
-                        startNewRound();
+                setTimeout(startNewRound, 1000);
                     } else {
                         endGame();
                     }
-                }, 1000);
             }
         } else {
-            // Mauvaise association
-            score -= penalty;
-            if (score < 0) score = 0;
-            document.getElementById("score").innerText = score;
-            document.getElementById("message").innerText = "Incorrect! -5 points";
-            document.getElementById("message").style.color = "#ff4444";
-        }
-        
-        // Réinitialiser les sélections
-        setTimeout(() => {
-            if (!gameOver) {
+        // Correspondance incorrecte
+        score = Math.max(0, score - 5);
+    }
+
+    document.getElementById('score').innerText = score;
+    clearSelections();
+}
+
+// Fonctions utilitaires
+function clearSelections() {
                 selectedWord = null;
                 selectedDefinition = null;
-                document.querySelectorAll('.word-item, .definition-item').forEach(el => {
-                    if (el.style.visibility !== 'hidden') {
-                        el.style.backgroundColor = "#333";
-                    }
-                });
-                document.getElementById("message").innerText = "";
-            }
-        }, 1000);
-    }
+    clearWordSelections();
+    clearDefinitionSelections();
+}
+
+function clearWordSelections() {
+    document.querySelectorAll('.word-item').forEach(el => {
+        if (!el.classList.contains('correct')) {
+            el.classList.remove('selected');
+        }
+    });
+}
+
+function clearDefinitionSelections() {
+    document.querySelectorAll('.definition-item').forEach(el => {
+        if (!el.classList.contains('correct')) {
+            el.classList.remove('selected');
+        }
+    });
 }
 
 // Gestion du timer
@@ -410,9 +301,8 @@ function startTimer() {
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         timeLeft--;
-        document.getElementById("time-left").innerText = timeLeft;
+        document.getElementById('time-left').innerText = timeLeft;
         if (timeLeft <= 0) {
-            clearInterval(timerInterval);
             endGame();
         }
     }, 1000);
@@ -422,33 +312,29 @@ function startTimer() {
 function endGame() {
     gameOver = true;
     clearInterval(timerInterval);
+    document.getElementById('start-button').style.display = 'block';
     
-    let message = "Game Over! ";
-    if (timeLeft <= 0) {
-        message += "Time's up! ";
-    } else if (roundsPlayed >= maxRounds) {
-        message += "All rounds completed! ";
-    }
-    message += `Final score: ${score}`;
-    
-    document.getElementById("message").innerText = message;
-    document.getElementById("start-button").style.display = "block";
-    
-    // Demander le nom du joueur et sauvegarder le score
-    const playerName = prompt("Enter your name to save your score:");
+    const playerName = prompt("Enter your name for the leaderboard:");
     if (playerName) {
         saveScore(playerName, score);
     }
 }
 
-// Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById("game-controls");
-    startButton.textContent = "Start Game";
-    startButton.id = "start-button";
-    startButton.onclick = startGame;
-});
-// Charger les meilleurs scores depuis Firebase
+// Gestion des scores
+function saveScore(playerName, score) {
+    db.collection("memory_matrix_scores").add({
+        name: playerName,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        loadTopScores();
+    })
+    .catch((error) => {
+        console.error("Error saving score:", error);
+    });
+}
+
 function loadTopScores() {
     db.collection("memory_matrix_scores")
         .orderBy("score", "desc")
@@ -464,11 +350,12 @@ function loadTopScores() {
             });
         })
         .catch((error) => {
-            console.error("Error loading top scores: ", error);
+            console.error("Error loading scores:", error);
         });
 }
 
+// Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     loadTopScores();
-    document.getElementById("start-button").addEventListener("click", startGame);
+    document.getElementById('start-button').addEventListener('click', startGame);
 });

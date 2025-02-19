@@ -56,9 +56,6 @@ async function startNewWord() {
     updateMessage('Devinez le mot ! La première lettre est révélée.');
 }
 
-
-
-
 function prepareNextGuess(lockedLetters) {
     // On garde les lettres correctes des essais précédents
     gameState.currentGuess = lockedLetters.join('');
@@ -99,7 +96,6 @@ async function handleGameOver() {
     addPlayAgainButton();
 }
 
-
 function prepareNextGuess() {
     const lastGuess = gameState.guesses[gameState.guesses.length - 1].guess;
 
@@ -112,8 +108,6 @@ function prepareNextGuess() {
     gameState.currentGuess = lockedLetters.join('');
     renderGrid();  // Rafraîchir la grille pour que seules les lettres correctes s'affichent
 }
-
-
 
 function renderGrid() {
     const grid = document.getElementById("word-grid");
@@ -157,8 +151,6 @@ function createCell(row, col) {
     return cell;
 }
 
-
-
 function setCellStyle(cell, letter, col) {
     if (letter === gameState.currentWord[col]) {
         cell.classList.add('correct'); // Lettre correctement placée
@@ -189,8 +181,6 @@ function handleKeyInput(key) {
     renderGrid();  // Mets à jour l'affichage de la grille
 }
 
-
-
 function handleDelete() {
     if (gameState.gameStatus !== 'playing') return;
     
@@ -215,7 +205,6 @@ function findNextEmptyIndex() {
     }
     return -1;
 }
-
 
 function findLastModifiableIndex() {
     const guessArray = gameState.currentGuess.split('');
@@ -292,9 +281,6 @@ function addPlayAgainButton() {
     document.getElementById("message").appendChild(button);
 }
 
-
-
-
 // Fonction pour initialiser le clavier virtuel
 function initializeVirtualKeyboard() {
     const keyboard = document.getElementById('keyboard');
@@ -326,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeVirtualKeyboard(); // Active le clavier virtuel ici
 });
 
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', initGame);
 
@@ -341,7 +326,6 @@ document.addEventListener('keydown', (event) => {
         handleKeyInput(key);
     }
 });
-
 
 async function isValidWord(word) {
     try {
@@ -358,23 +342,36 @@ async function isValidWord(word) {
         return false;  // Si l'API échoue, on considère que le mot n'existe pas
     }
 }
-function updateKeyboardColors(guess) {
-    guess.split('').forEach((letter, index) => {
-        const buttons = document.querySelectorAll('#keyboard button');
-        buttons.forEach((button) => {
-            if (button.textContent === letter) {
-                button.classList.remove('correct', 'present', 'incorrect'); // Enlève les classes pour éviter les conflits
 
-                if (letter === gameState.currentWord[index]) {
-                    button.classList.add('correct'); // Lettre correctement placée
+function updateKeyboardColors(guess) {
+    const keyboard = document.getElementById('keyboard');
+    const buttons = keyboard.getElementsByTagName('button');
+    
+    // Pour chaque lettre de la tentative
+    for (let i = 0; i < guess.length; i++) {
+        const letter = guess[i].toUpperCase();
+        const correctLetter = gameState.currentWord[i];
+        
+        // Trouver le bouton correspondant
+        for (let button of buttons) {
+            if (button.textContent === letter) {
+                if (letter === correctLetter) {
+                    // Lettre correcte à la bonne position
+                    button.classList.add('correct');
                 } else if (gameState.currentWord.includes(letter)) {
-                    button.classList.add('present'); // Lettre présente mais mal placée
+                    // Lettre présente mais mauvaise position
+                    if (!button.classList.contains('correct')) {
+                        button.classList.add('present');
+                    }
                 } else {
-                    button.classList.add('incorrect'); // Lettre absente
+                    // Lettre incorrecte
+                    if (!button.classList.contains('correct') && !button.classList.contains('present')) {
+                        button.classList.add('incorrect');
+                    }
                 }
             }
-        });
-    });
+        }
+    }
 }
 
 function submitGuess(guess) {
@@ -403,7 +400,7 @@ function submitGuess(guess) {
     
     renderGrid();
 
-    updateKeyboardColors(guess); 
+    updateKeyboardColors(guess);
 }
 
 async function handleGuess() {
@@ -426,12 +423,15 @@ async function handleGuess() {
     // Si le mot est valide, soumets la réponse
     submitGuess(cleanGuess);
 }
+
 function resetKeyboardColors() {
-    const buttons = document.querySelectorAll('#keyboard button');
-    buttons.forEach(button => {
+    const keyboard = document.getElementById('keyboard');
+    const buttons = keyboard.getElementsByTagName('button');
+    for (let button of buttons) {
         button.classList.remove('correct', 'present', 'incorrect');
-    });
+    }
 }
+
 async function getWordTranslation(word) {
     try {
         const response = await fetch(`https://api.mymemory.translated.net/get?q=${word}&langpair=en|fr`);

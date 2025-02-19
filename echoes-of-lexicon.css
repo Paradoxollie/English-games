@@ -1,15 +1,181 @@
-/* Container principal du jeu */
+/* Styles spécifiques pour Echoes of Lexicon */
 #game-container.echoes-of-lexicon {
-    background-color: rgba(0, 0, 0, 0.85);
-    padding: 20px;
-    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid var(--quest-blue);
+    border-radius: 12px;
+    padding: 2rem;
     max-width: 800px;
-    margin: 20px auto;
+    margin: 2rem auto;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+}
+
+/* Grille de lettres en forme de fleur */
+#letters-container.flower-shape {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+}
+
+/* Zone de jeu */
+#letters-area {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
+    margin: 1rem 0;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 12px;
+    border: 2px solid var(--quest-blue);
+}
+
+#other-letters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    justify-items: center;
+    width: 100%;
+    max-width: 300px;
+}
+
+.letter {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.2), rgba(0, 0, 0, 0.9));
+    border: 2px solid var(--quest-blue);
+    border-radius: 8px;
+    color: var(--quest-blue);
+    font-size: 1.5rem;
+    font-family: var(--font-medieval);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.letter:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(113, 169, 201, 0.3);
+}
+
+.letter.bonus {
+    background: linear-gradient(145deg, rgba(201, 170, 113, 0.4), rgba(0, 0, 0, 0.9));
+    border-color: var(--quest-gold);
+    color: var(--quest-gold);
+    grid-column: 2;
+}
+
+/* Style des lettres */
+.letter-tile {
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.2), rgba(0, 0, 0, 0.9));
+    border: 2px solid var(--quest-blue);
+    color: var(--quest-blue);
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-family: var(--font-medieval);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.letter-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(113, 169, 201, 0.3);
+}
+
+.letter-tile.selected {
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.4), rgba(0, 0, 0, 0.95));
+    transform: scale(1.05);
+}
+
+/* Zone de mot formé */
+.word-display {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--quest-blue);
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 1.8rem;
+    color: var(--quest-blue);
+    text-align: center;
+    min-height: 4rem;
+    margin: 1rem 0;
+}
+
+/* Contrôles du jeu */
+#game-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.quest-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.3), rgba(0, 0, 0, 0.9));
+    border: 2px solid var(--quest-blue);
+    color: var(--quest-blue);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quest-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.5), rgba(0, 0, 0, 0.95));
+    box-shadow: 0 0 15px rgba(113, 169, 201, 0.3);
+}
+
+.quest-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Score et Timer */
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 1rem 0;
+    font-family: var(--font-medieval);
+    color: var(--quest-blue);
+    font-size: 1.2rem;
+}
+
+/* Liste des mots trouvés */
+.found-words {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--quest-blue);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.found-words h3 {
+    color: var(--quest-blue);
+    font-family: var(--font-medieval);
+    margin-bottom: 0.5rem;
+}
+
+.words-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.found-word {
+    background: rgba(113, 169, 201, 0.1);
+    border: 1px solid var(--quest-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    color: var(--quest-blue);
 }
 
 /* Barre de vie */
@@ -49,17 +215,6 @@
 }
 
 /* Style pour le conteneur des lettres en deux colonnes */
-#letters-container.flower-shape {
-    display: grid !important;
-    grid-template-columns: repeat(2, auto) !important;
-    gap: 15px !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin: 20px auto !important;
-    width: auto !important;
-}
-
-/* Container pour chaque colonne */
 .column {
     display: flex !important;
     flex-direction: column !important;
@@ -67,67 +222,18 @@
     align-items: center !important;
 }
 
-/* Style pour toutes les lettres */
-.letter {
-    background-color: #4CAF50;
-    color: white;
-    font-size: 2em;
-    padding: 15px;
-    width: 60px !important;
-    height: 60px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    clip-path: polygon(50% 0%, 95% 20%, 80% 80%, 20% 80%, 5% 20%);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s, background-color 0.3s;
-}
-
-/* Style spécial pour la lettre bonus */
-.letter.bonus {
-    grid-column: 1 / -1 !important;
-    background-color: #FFD700 !important;
-    color: #000 !important;
-    font-weight: bold !important;
-    border: 2px solid #ffeb3b !important;
-    animation: pulse 1s infinite;
-    margin: 10px auto !important;
-    justify-self: center !important;
-}
-
-/* Animation pour la lettre bonus */
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-}
-
-/* Effet hover sur les lettres */
-.letter:hover {
-    transform: scale(1.1);
-    background-color: #ffeb3b;
-}
-
-/* Contrôles du jeu */
-#game-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
-
 /* Style pour l'input */
 #current-word {
-    padding: 10px;
-    font-size: 1.2em;
-    border: 2px solid #c9aa71;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    width: 100%;
+    max-width: 300px;
+    padding: 1rem;
+    font-size: 1.5rem;
     text-align: center;
-    width: 200px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--quest-blue);
+    border-radius: 8px;
+    color: var(--quest-blue);
+    margin: 1rem 0;
 }
 
 /* Style pour les boutons */
@@ -176,6 +282,25 @@
     text-align: center;
 }
 
+/* Style des top scores */
+#top-scores-list div {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(113, 169, 201, 0.3);
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 6px;
+    color: var(--quest-blue);
+    font-family: var(--font-medieval);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#top-scores-list div:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(113, 169, 201, 0.2);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     #game-container.echoes-of-lexicon {
@@ -184,9 +309,9 @@
     }
 
     .letter {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1.8em;
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.2rem;
     }
 
     #game-controls {
@@ -202,5 +327,10 @@
     #submit-word, #reset-game, #start-game {
         width: 90%;
         margin: 5px 0;
+    }
+
+    #other-letters {
+        max-width: 250px;
+        gap: 0.5rem;
     }
 }

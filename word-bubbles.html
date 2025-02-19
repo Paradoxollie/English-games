@@ -1,96 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Bubbles</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Supprimé les imports Firebase du head car ils sont dans le body -->
+    <title>Word Bubbles - English Quest</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="word-bubbles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="page-with-sidebar">
-    <header>
-        <h1 class="site-title">Word Bubbles</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="all-games.html" class="active">Games</a>
-            <a href="courses.html">Courses</a>
-            <a href="leaderboard.html">Leaderboard</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
-    <div class="game-intro">
-        <h2>Bienvenue dans Word Bubbles ! 🌊</h2>
-        <p><strong>🎯 Objectif :</strong> Saisis rapidement les mots en mode entrainement ou trouve des mots qui commencent par la lettre proposée en mode normal pour marquer des points. Attention, elles descendent vite !</p>
-    
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Sélectionne le mode de jeu (Normal ou Training), puis appuie sur "Start Game" pour commencer.</p>
-        <p>2️⃣ Lis la lettre ou le mot dans les bulles qui tombent.</p>
-        <p>3️⃣ Tape un mot qui commence par la lettre de la bulle ou le mot affiché dans la case, puis appuie sur "Submit".</p>
-        <p>4️⃣ Si ta réponse est correcte, tu gagnes des points. Sinon, essaie encore !</p>
-    
-        <p><strong>⏳ Timer :</strong> Plus le jeu avance, plus les bulles accélèrent. Reste concentré !</p>
-    
-        <p><strong>💡 Conseil :</strong> Évite les mots déjà utilisés. Bonne chance !</p>
-    </div>
-    
-    <div id="game-container" class="word-bubbles">
-        <!-- Sélection du mode de jeu -->
-        <div id="mode-selection">
-            <label for="game-mode">Choose Game Mode:</label>
-            <select id="game-mode">
-                <option value="normal">Normal</option>
-                <option value="training">Training</option>
-            </select>
-        </div>
-
-        <!-- Zone de jeu -->
-        <div id="word-box"></div>
-        
-        <!-- Contrôles du jeu -->
-        <div id="game-controls">
-            <input type="text" id="current-word" placeholder="Enter word...">
-            <button id="submit-word">Submit</button>
-            <button id="start-reset">Start Game</button>
-        </div>
-        
-        <!-- Affichage du score et messages -->
-        <div id="score-display">Score: 0</div>
-        <div id="message"></div>
-        
-        <!-- Top Scores -->
-        <div id="top-scores">
-            <ul id="top-scores-list"></ul>
-        </div>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
     </div>
 
-    <footer>
-        <p>© 2024 English Quest by Pierre Marienne. All rights reserved.</p>
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <main class="pt-32">
+        <div class="container mx-auto px-4">
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Bienvenue dans Word Bubbles ! 🌊</h2>
+                <p><strong>🎯 Objectif :</strong> Saisis rapidement les mots en mode entrainement ou trouve des mots qui commencent par la lettre proposée en mode normal pour marquer des points.</p>
+                
+                <p class="mt-4"><strong>🕹️ Instructions :</strong></p>
+                <ul class="list-disc list-inside space-y-2 ml-4">
+                    <li>Sélectionne le mode de jeu (Normal ou Training), puis appuie sur "Start Game".</li>
+                    <li>Lis la lettre ou le mot dans les bulles qui tombent.</li>
+                    <li>Tape un mot qui commence par la lettre de la bulle ou le mot affiché.</li>
+                    <li>Si ta réponse est correcte, tu gagnes des points. Sinon, essaie encore !</li>
+                </ul>
+                
+                <p class="mt-4"><strong>⏳ Timer :</strong> Plus le jeu avance, plus les bulles accélèrent. Reste concentré !</p>
+                <p><strong>💡 Conseil :</strong> Évite les mots déjà utilisés.</p>
+            </div>
+
+            <div id="game-container" class="word-bubbles bg-black/80 rounded-xl p-6 border border-quest-gold/30">
+                <div id="mode-selection" class="mb-4">
+                    <label for="game-mode" class="text-quest-gold">Choose Game Mode:</label>
+                    <select id="game-mode" class="bg-black/60 text-white border border-quest-gold/30 rounded px-4 py-2">
+                        <option value="normal">Normal</option>
+                        <option value="training">Training</option>
+                    </select>
+                </div>
+
+                <div id="word-box" class="border-2 border-quest-gold/30 rounded-xl"></div>
+                
+                <div id="game-controls" class="mt-4 flex gap-4 justify-center">
+                    <input type="text" id="current-word" placeholder="Enter word..." 
+                           class="bg-black/60 text-white border border-quest-gold/30 rounded px-4 py-2">
+                    <button id="submit-word" class="quest-button">Submit</button>
+                    <button id="start-reset" class="quest-button">Start Game</button>
+                </div>
+                
+                <div id="score-display" class="text-quest-gold text-xl mt-4">Score: 0</div>
+                <div id="message" class="text-white mt-2"></div>
+                
+                <div id="top-scores" class="mt-8">
+                    <h3 class="text-quest-gold text-xl mb-4">Top Scores</h3>
+                    <ul id="top-scores-list" class="space-y-2"></ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Firebase version 8 (qui correspond à votre code JS) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-            authDomain: "english-games-41017.firebaseapp.com",
-            projectId: "english-games-41017",
-            storageBucket: "english-games-41017.appspot.com",
-            messagingSenderId: "452279652544",
-            appId: "1:452279652544:web:916f93e0ab29183e739d25",
-            measurementId: "G-RMCQTMKDVP"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
     <script src="word-bubbles.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

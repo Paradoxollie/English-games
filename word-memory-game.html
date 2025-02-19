@@ -2,82 +2,102 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Memory Game - English Games</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Word Memory Game - English Quest</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="word-memory-game.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1>Memory game</h1>
-    </header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="all-games.html" class="active">Games</a>
-        <a href="courses.html">Courses</a>
-        <a href="leaderboard.html">Leaderboard</a>
-        <a href="contact.html">Contact</a>
-    </nav>
-    <div class="game-intro">
-        <h2>Bienvenue dans la Tour des Mots Perdus ! 🏰</h2>
-        <p><strong>🎯 Objectif :</strong> Mémorise les mots affichés, puis reproduis-les pour marquer des points. Les niveaux deviennent de plus en plus difficiles !</p>
-    
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Appuie sur "Start Game" pour commencer.</p>
-        <p>2️⃣ Regarde les mots affichés et mémorise-les avant qu'ils ne disparaissent.</p>
-        <p>3️⃣ Lorsque les mots disparaissent, tape-les dans les cases, puis appuie sur "Check Words" pour vérifier tes réponses.</p>
-    
-        <p><strong>⏳ Timer :</strong> Chaque niveau a un temps limité pour mémoriser et taper les mots. Garde un œil sur le chrono !</p>
-    
-        <p><strong>💡 Conseil :</strong> Concentre-toi bien pour mémoriser un maximum de mots avant qu’ils ne disparaissent. Bonne chance !</p>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
     </div>
-    
-    <main>
-        <div id="game-container">
-            <h2>Word Memory Game</h2>
-            <div id="level-display">Level: <span id="level">1</span></div>
-            <div id="timer">Time: <span id="time-left">30</span> seconds</div>
-            <div id="score-display">Score: <span id="score">0</span></div>
-            
-            <div id="word-list" class="word-list"></div>
-            
-            <div id="input-container" style="display: none;">
-                <div id="input-boxes"></div>
-                <button id="check-button">Check Words</button>
-            </div>
-            
-            <button id="start-button">Start Game</button>
-            
-            <div id="message"></div>
+
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
         </div>
-        
-        <div id="top-scores">
-            <h3>Top 5 Scores:</h3>
-            <ul id="top-scores-list"></ul>
+    </nav>
+
+    <main class="pt-32">
+        <div class="container mx-auto px-4">
+            <!-- Introduction du jeu -->
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Bienvenue dans la Tour des Mots Perdus ! 🏰</h2>
+                <p><strong>🎯 Objectif :</strong> Mémorise les mots affichés, puis reproduis-les pour marquer des points.</p>
+                
+                <p class="mt-4"><strong>🕹️ Instructions :</strong></p>
+                <ul class="list-disc list-inside ml-4 space-y-2">
+                    <li>Appuie sur "Start Game" pour commencer</li>
+                    <li>Regarde les mots affichés et mémorise-les</li>
+                    <li>Tape les mots dans les cases quand ils disparaissent</li>
+                    <li>Appuie sur "Check Words" pour vérifier tes réponses</li>
+                </ul>
+                
+                <p class="mt-4"><strong>⏳ Timer :</strong> Chaque niveau a un temps limité. Garde un œil sur le chrono !</p>
+            </div>
+
+            <!-- Zone de jeu -->
+            <div class="game-container bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <div class="game-info flex justify-between mb-4">
+                    <div id="level-display" class="text-quest-gold">Level: <span id="level">1</span></div>
+                    <div id="timer" class="text-quest-gold">Time: <span id="time-left">30</span> seconds</div>
+                    <div id="score-display" class="text-quest-gold">Score: <span id="score">0</span></div>
+                </div>
+                
+                <div id="word-list" class="word-list bg-black/40 p-4 rounded-lg mb-4"></div>
+                
+                <div id="input-container" class="space-y-4" style="display: none;">
+                    <div id="input-boxes" class="grid gap-2"></div>
+                    <button id="check-button" class="quest-button w-full">Check Words</button>
+                </div>
+                
+                <div class="button-container">
+                    <button id="start-button" class="quest-button w-full">Start Game</button>
+                    <button id="reset-button" class="quest-button w-full">Reset Game</button>
+                </div>
+                
+                <div id="message" class="text-center mt-4 text-white"></div>
+            </div>
+
+            <!-- Top Scores -->
+            <div id="top-scores" class="mt-8 bg-black/60 rounded-xl p-6 border border-quest-gold/30">
+                <h3 class="text-quest-gold text-xl mb-4">Top 5 Scores</h3>
+                <ul id="top-scores-list" class="space-y-2"></ul>
+            </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Games by Pierre Marienne</p>
-        <div id="visit-stats"></div>
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Firebase SDK -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    
-    <!-- Your custom JavaScript file -->
-    <script src="word-memory-game.js"></script>
-
     <script src="firebase-init.js"></script>
+    <script src="word-memory-game.js"></script>
     <script src="visit-counter.js"></script>
-
 </body>
 </html>

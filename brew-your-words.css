@@ -1,0 +1,193 @@
+
+
+
+/* Styles des clients */
+.client {
+    background: linear-gradient(145deg, rgba(113, 169, 201, 0.2), rgba(0, 0, 0, 0.9));
+    border: 2px solid var(--quest-blue);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    animation: slideIn 0.5s ease-out;
+}
+
+.client.leaving {
+    animation: slideOut 0.5s ease-in forwards;
+}
+
+.client-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--quest-blue);
+    object-fit: cover;
+}
+
+.client-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.client-phrase {
+    color: var(--quest-blue);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.translation-options {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.translation-option {
+    background: rgba(113, 169, 201, 0.1);
+    border: 1px solid var(--quest-blue);
+    color: var(--quest-blue);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.translation-option:hover {
+    background: rgba(113, 169, 201, 0.2);
+    transform: translateY(-2px);
+}
+
+.client-timer {
+    background: rgba(113, 169, 201, 0.2);
+    color: var(--quest-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: var(--font-medieval);
+    text-align: center;
+    border: 1px solid var(--quest-blue);
+}
+
+/* Animations du jeu */
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Messages de feedback du jeu */
+.feedback-message {
+    position: absolute;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    animation: fadeOut 1s ease-out forwards;
+    font-family: var(--font-medieval);
+}
+
+.feedback-success {
+    background: rgba(113, 201, 154, 0.3);
+    border: 1px solid var(--quest-green);
+    color: var(--quest-green);
+}
+
+.feedback-error {
+    background: rgba(201, 113, 113, 0.3);
+    border: 1px solid var(--quest-red);
+    color: var(--quest-red);
+}
+
+/* Modal de fin de jeu */
+.game-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+}
+
+.game-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: rgba(0, 0, 0, 0.95);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 2px solid var(--quest-blue);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h2 {
+    color: var(--quest-blue);
+    font-family: var(--font-medieval);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive design du jeu */
+@media (max-width: 768px) {
+    .client {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .client-avatar {
+        width: 60px;
+        height: 60px;
+    }
+} 
+/* Logo */
+.logo-container {
+    position: fixed;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 51;
+    text-align: center;
+}
+
+.logo-container img {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+    margin-bottom: -15px;
+}
+
+.logo-container:hover img {
+    filter: drop-shadow(0 6px 12px rgba(201, 170, 113, 0.4));
+    transform: scale(1.02);
+}
+
+header, nav, .logo-container {
+    position: relative;
+    transition: transform 0.3s ease-in-out;
+    z-index: 50;
+}

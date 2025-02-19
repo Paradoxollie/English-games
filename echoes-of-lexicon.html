@@ -1,86 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echoes of Lexicon</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="echoes-of-lexicon.css">
+    <title>Echoes of Lexicon - English Quest</title>
+    
+    <!-- Styles -->
+    <link href="style.css" rel="stylesheet">
+    <link href="echoes-of-lexicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="page-with-sidebar">
-    <header>
-        <h1 class="site-title">Echoes of Lexicon</h1>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="all-games.html" class="active">Games</a>
-            <a href="courses.html">Courses</a>
-            <a href="leaderboard.html">Leaderboard</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
-    
-    <div class="game-intro">
-        <h2>Bienvenue dans Echoes of Lexicon 🌌</h2>
-        <p><strong>🎯 Objectif :</strong> Trouve le plus de mots valides possible en utilisant les lettres affichées.</p>
-        
-        <p><strong>🕹️ Instructions :</strong></p>
-        <p>1️⃣ Clique sur "Start" pour commencer. Un ensemble de lettres va apparaître, avec une lettre spéciale en bonus.</p>
-        <p>2️⃣ Tape un mot dans le champ de saisie en utilisant les lettres affichées, puis clique sur "Submit" pour vérifier ton mot.</p>
-        <p>3️⃣ Chaque mot valide te rapporte des points. Si tu utilises la lettre bonus, tu gagnes encore plus de points !</p>
-        <p>4️⃣ Attention aux mots invalides ou aux répétitions : ils réduiront ton score et ta santé.</p>
-    
-        <p><strong>⏳ Temps :</strong> Tu as 90 secondes. Garde un œil sur le chrono pour maximiser ton score !</p>
-    
-        <p><strong>💡 Astuces :</strong> Utilise des mots plus longs et inclus la lettre bonus pour gagner plus de points. Challenge-toi en trouvant des mots uniques sans répétitions.</p>
+
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
     </div>
-    
-    <div id="game-container" class="echoes-of-lexicon">
-        <div id="health-container">
-            <div id="health-bar"></div>
+
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="all-games.html" class="nav-link active">Games</a>
+            <a href="courses.html" class="nav-link">Courses</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
         </div>
-    
-        <div id="timer-display">Time left: 90s</div>
-    
-        <div id="score-display">Score: 0</div>
-    
-        <!-- Simplification de la structure des lettres -->
-        <div id="letters-container" class="flower-shape">
-            <div id="other-letters"></div>
+    </nav>
+
+    <main class="pt-32">
+        <div class="container mx-auto px-4">
+            <!-- Introduction du jeu -->
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Echoes of Lexicon</h2>
+                <p class="text-white mb-4"><strong>🎯 Objectif :</strong> Formez des mots en utilisant les lettres disponibles !</p>
+                
+                <div class="text-white space-y-2">
+                    <p><strong>🕹️ Instructions :</strong></p>
+                    <p>1️⃣ Cliquez sur les lettres pour former des mots.</p>
+                    <p>2️⃣ Utilisez la lettre bonus (dorée) pour gagner plus de points.</p>
+                    <p>3️⃣ Validez votre mot avec le bouton "Submit".</p>
+                    <p>4️⃣ Trouvez autant de mots que possible avant la fin du temps !</p>
+                </div>
+            </div>
+
+            <!-- Zone de jeu principale -->
+            <div id="game-container" class="echoes-of-lexicon">
+                <!-- Barre de vie -->
+                <div id="health-container">
+                    <div id="health-bar"></div>
+                </div>
+
+                <!-- Timer et Score -->
+                <div id="timer-display">Time left: 90s</div>
+                <div id="score-display">Score: 0</div>
+
+                <!-- Zone de jeu -->
+                <div id="letters-area">
+                    <div id="central-letter"></div>
+                    <div id="other-letters"></div>
+                </div>
+
+                <!-- Contrôles -->
+                <div id="game-controls">
+                    <!-- Les contrôles seront ajoutés par JavaScript -->
+                </div>
+
+                <div id="message"></div>
+
+                <!-- Mots trouvés -->
+                <div id="found-words">
+                    <h3>Found Words</h3>
+                    <div id="found-words-list"></div>
+                </div>
+            </div>
+
+            <!-- Top Scores -->
+            <div id="top-scores">
+                <h3>Top Scores</h3>
+                <ul id="top-scores-list"></ul>
+            </div>
         </div>
-    
-        <div id="game-controls">
-            <input type="text" id="current-word" placeholder="Type your word here...">
-            <button id="submit-word">Submit</button>
-            <button id="start-game">Start</button>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative bottom-0 w-full">
+        <div class="container mx-auto px-4 py-3">
+            <div class="text-center">
+                <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+            </div>
         </div>
-    
-        <div id="message"></div>
-    
-        <div id="top-scores">
-            <h3>Top Scores</h3>
-            <ul id="top-scores-list"></ul>
-        </div>
-    </div>
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
     </footer>
 
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-init.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-            authDomain: "english-games-41017.firebaseapp.com",
-            projectId: "english-games-41017",
-            storageBucket: "english-games-41017.appspot.com",
-            messagingSenderId: "452279652544",
-            appId: "1:452279652544:web:916f93e0ab29183e739d25",
-            measurementId: "G-RMCQTMKDVP"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
     <script src="echoes-of-lexicon.js"></script>
-    
+    <script src="visit-counter.js"></script>
 </body>
 </html>

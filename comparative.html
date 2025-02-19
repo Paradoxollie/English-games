@@ -2,201 +2,144 @@
 <html lang="fr">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cours sur le Comparatif en Anglais</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: #ffffff;
-        }
-        .course-section {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
-            transition: transform 0.3s;
-            text-align: left;
-        }
-        .course-section h2, .course-section h3 {
-            font-size: 1.8em;
-            color: #4CAF50;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .course-section p, .course-section li {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin: 15px 0;
-        }
-        .course-section ul {
-            margin-left: 20px;
-            list-style: disc;
-        }
-        .course-box {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border: 1px solid #4CAF50;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .course-section img {
-            width: 150px;
-            height: auto;
-            display: block;
-            margin: 0 auto 20px auto;
-            border-radius: 10px;
-        }
-        .content-block {
-            margin-bottom: 30px;
-        }
-        .code-example {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            margin: 10px 0;
-            color: #4CAF50;
-        }
-        .note {
-            background-color: #ffcc00;
-            color: #000;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-    </style>
+    
+    <!-- Styles -->
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header>
-        <h1>Cours d'Anglais - Le Comparatif</h1>
-        <nav>
-            <a href="index.html">Accueil</a>
-            <a href="all-games.html">Jeux</a>
-            <a href="courses.html" class="active">Cours</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed courses-theme">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
-    <main>
-        <section class="course-intro course-section">
-            <img src="images/comparative.webp.webp" alt="comparative course" class="game-image">
-            <h2>Dompter le Comparatif !</h2>
-            <p>Bienvenue, aventurier ! Vous avez été convoqué par le <strong>Conseil des Sages de Grammairium</strong>. 🌟</p>
-            <p>Votre mission est d'affronter les défis du <strong>Comparatif</strong> dans la mystérieuse <strong>Tour de la Comparaison</strong>. Chaque étage vous rapprochera de la maîtrise totale de cette technique ! ⚔️</p>
-            <p>En route vers la victoire, vous devrez :
-                <ul>
-                    <li>Affronter le <strong>Gardien de la Supériorité</strong> 🛡️.</li>
-                    <li>Déjouer les pièges du <strong>Maître de l'Infériorité</strong> 🔥.</li>
-                    <li>Obtenir le titre de <strong>Champion de l'Égalité</strong> 🏅.</li>
-                </ul>
-            </p>
-            <p>Pouvez-vous atteindre le sommet et obtenir le <strong>Sceau de la Comparaison</strong> ? À vous de jouer, héros ! 🎯</p>
-        </section>
-        
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link">Accueil</a>
+            <a href="all-games.html" class="nav-link">Jeux</a>
+            <a href="courses.html" class="nav-link active">Cours</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+    </nav>
 
-        <section class="course-content course-section">
-            <h2>1. Qu'est-ce que le Comparatif ?</h2>
-            <div class="course-box">
-                <p>Le <strong>comparatif</strong> est utilisé pour comparer deux éléments afin de montrer qu'une personne ou un objet possède une qualité à un degré plus élevé, plus faible ou égal par rapport à un autre.</p>
-                <p><strong>Exemple :</strong> She is taller than her brother.</p>
-                <p>Dans cet exemple, <em>taller</em> est la forme comparative de <em>tall</em>, utilisée pour montrer qu’elle est plus grande que son frère.</p>
-            </div>
+    <main class="min-h-screen pt-32">
+        <!-- Hero Section -->
+        <div class="quest-panel max-w-2xl mx-auto mb-16">
+            <h1 class="glow-text">DOMPTER LE COMPARATIF</h1>
+            <p>Relevez le défi de la Tour de la Comparaison !</p>
+        </div>
 
-            <h2>2. Formation du Comparatif</h2>
-            <div class="course-box">
-                <div class="content-block">
-                    <h3>A. Comparatif de Supériorité</h3>
-                    <p>Pour montrer qu’un élément possède une qualité à un degré plus élevé que l’autre :</p>
+        <!-- Course Content -->
+        <div class="quest-panel max-w-4xl mx-auto mb-16">
+            <section class="course-intro course-section">
+                <img src="images/comparative.webp" alt="comparative course" class="course-image">
+                <h2>Dompter le Comparatif !</h2>
+                <p>Bienvenue, aventurier ! Vous avez été convoqué par le <strong>Conseil des Sages de Grammairium</strong>. 🌟</p>
+                <p>Votre mission est d'affronter les défis du <strong>Comparatif</strong> dans la mystérieuse <strong>Tour de la Comparaison</strong>. Chaque étage vous rapprochera de la maîtrise totale de cette technique ! ⚔️</p>
+                <p>En route vers la victoire, vous devrez :
                     <ul>
-                        <li><strong>Adjectifs courts (une syllabe) :</strong> on ajoute <strong>-er</strong> à la fin de l’adjectif. <br>
-                        <span class="code-example">Exemple : small → smaller.</span></li>
-                        <li><strong>Adjectifs longs (deux syllabes ou plus) :</strong> on utilise <strong>more</strong> avant l’adjectif. <br>
-                        <span class="code-example">Exemple : beautiful → more beautiful.</span></li>
-                        <li><strong>Adjectifs à deux syllabes terminés par -y :</strong> on remplace le -y par <strong>-ier</strong>. <br>
-                        <span class="code-example">Exemple : happy → happier.</span></li>
-                        <li><strong>Adjectifs irréguliers :</strong> certains adjectifs ont des formes irrégulières : <br>
-                        <span class="code-example">good → better, bad → worse, far → further.</span></li>
+                        <li>Affronter le <strong>Gardien de la Supériorité</strong> 🛡️</li>
+                        <li>Déjouer les pièges du <strong>Maître de l'Infériorité</strong> 🔥</li>
+                        <li>Obtenir le titre de <strong>Champion de l'Égalité</strong> 🏅</li>
                     </ul>
+                </p>
+                <p>Pouvez-vous atteindre le sommet et obtenir le <strong>Sceau de la Comparaison</strong> ? À vous de jouer, héros ! 🎯</p>
+            </section>
+
+            <section class="course-content course-section">
+                <h2>1. Qu'est-ce que le Comparatif ?</h2>
+                <div class="course-box">
+                    <p>Le <strong>comparatif</strong> est utilisé pour comparer deux éléments afin de montrer qu'une personne ou un objet possède une qualité à un degré plus élevé, plus faible ou égal par rapport à un autre.</p>
+                    <p><strong>Exemple :</strong> She is taller than her brother.</p>
+                    <p>Dans cet exemple, <em>taller</em> est la forme comparative de <em>tall</em>, utilisée pour montrer qu'elle est plus grande que son frère.</p>
                 </div>
 
-                <div class="content-block">
-                    <h3>B. Comparatif d'Égalité</h3>
-                    <p>Pour exprimer qu'un élément possède une qualité égale à un autre, on utilise la structure : <strong>as + adjectif + as</strong>.</p>
-                    <p><strong>Exemple :</strong> This car is as fast as that car.</p>
+                <h2>2. Formation du Comparatif</h2>
+                <div class="course-box">
+                    <div class="content-block">
+                        <h3>A. Comparatif de Supériorité</h3>
+                        <p>Pour montrer qu'un élément possède une qualité à un degré plus élevé que l'autre :</p>
+                        <ul>
+                            <li><strong>Adjectifs courts (une syllabe) :</strong> on ajoute <strong>-er</strong> à la fin de l'adjectif. <br>
+                            <span class="code-example">Exemple : small → smaller.</span></li>
+                            <li><strong>Adjectifs longs (deux syllabes ou plus) :</strong> on utilise <strong>more</strong> avant l'adjectif. <br>
+                            <span class="code-example">Exemple : beautiful → more beautiful.</span></li>
+                            <li><strong>Adjectifs à deux syllabes terminés par -y :</strong> on remplace le -y par <strong>-ier</strong>. <br>
+                            <span class="code-example">Exemple : happy → happier.</span></li>
+                            <li><strong>Adjectifs irréguliers :</strong> certains adjectifs ont des formes irrégulières : <br>
+                            <span class="code-example">good → better, bad → worse, far → further.</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>B. Comparatif d'Égalité</h3>
+                        <p>Pour exprimer qu'un élément possède une qualité égale à un autre, on utilise la structure : <strong>as + adjectif + as</strong>.</p>
+                        <p><strong>Exemple :</strong> This car is as fast as that car.</p>
+                    </div>
+
+                    <div class="content-block">
+                        <h3>C. Comparatif d'Infériorité</h3>
+                        <p>Pour exprimer qu'un élément possède une qualité à un degré moins élevé qu'un autre, on utilise la structure : <strong>less + adjectif + than</strong>.</p>
+                        <p><strong>Exemple :</strong> His explanation was less clear than yours.</p>
+                    </div>
                 </div>
 
-                <div class="content-block">
-                    <h3>C. Comparatif d'Infériorité</h3>
-                    <p>Pour exprimer qu'un élément possède une qualité à un degré moins élevé qu’un autre, on utilise la structure : <strong>less + adjectif + than</strong>.</p>
-                    <p><strong>Exemple :</strong> His explanation was less clear than yours.</p>
+                <h2>3. Comparatifs Irréguliers</h2>
+                <div class="course-box">
+                    <p>Certains adjectifs ont des formes comparatives irrégulières :</p>
+                    <ul>
+                        <li><strong>good → better</strong> than</li>
+                        <li><strong>bad → worse</strong> than</li>
+                        <li><strong>far → further/farther</strong> than</li>
+                        <li><strong>little → less</strong> than</li>
+                        <li><strong>much/many → more</strong> than</li>
+                    </ul>
+                    <div class="note">Ces formes doivent être mémorisées car elles ne suivent pas les règles habituelles.</div>
                 </div>
-            </div>
 
-            <h2>3. Les Exceptions et les Irrégularités</h2>
-            <div class="course-box">
-                <p>Certains adjectifs ont des formes irrégulières au comparatif et ne suivent pas les règles classiques :</p>
-                <ul>
-                    <li><strong>good</strong> → better</li>
-                    <li><strong>bad</strong> → worse</li>
-                    <li><strong>far</strong> → farther / further</li>
-                </ul>
-                <p>Il est important de mémoriser ces exceptions car elles ne suivent pas les règles habituelles.</p>
-            </div>
+                <h2>4. Structures Comparatives Spéciales</h2>
+                <div class="course-box">
+                    <div class="content-block">
+                        <h3>Comparaisons d'égalité</h3>
+                        <p>Structure : <span class="code-example">as + adjectif + as</span></p>
+                        <p><strong>Exemple :</strong> This book is as interesting as that one.</p>
+                    </div>
 
-            <h2>4. Comparatifs avec des Adverbes</h2>
-            <div class="course-box">
-                <p>Les adverbes suivent également des règles similaires pour former le comparatif :</p>
-                <ul>
-                    <li><strong>Adverbes courts (une syllabe) :</strong> on ajoute <strong>-er</strong> à l’adverbe.</li>
-                    <li><strong>Adverbes longs (deux syllabes ou plus) :</strong> on utilise <strong>more</strong> avant l’adverbe.</li>
-                </ul>
-                <p><strong>Exemple :</strong> He drives more carefully than his brother.</p>
-            </div>
-
-            <h2>5. Utilisation des Comparatifs avec "than"</h2>
-            <div class="course-box">
-                <p>Le comparatif de supériorité et d'infériorité est souvent suivi de <strong>"than"</strong> pour indiquer la comparaison :</p>
-                <p><span class="code-example">It is easier to solve this problem than I thought.</span></p>
-                <p>Si la deuxième partie de la comparaison est évidente ou sous-entendue, <strong>"than"</strong> peut être omis.</p>
-                <p><span class="code-example">This book is more interesting.</span></p>
-            </div>
-        </section>
+                    <div class="content-block">
+                        <h3>Comparaisons d'inégalité</h3>
+                        <p>Structure : <span class="code-example">not as/so + adjectif + as</span></p>
+                        <p><strong>Exemple :</strong> This book is not as interesting as that one.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-        <div id="visit-stats"></div>
-
-        <!-- Scripts Firebase -->
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        
-        <!-- Votre script d'initialisation Firebase -->
-        <script src="firebase-init.js"></script>
-        
-        <!-- Le script du compteur de visites -->
-        <script src="visit-counter.js"></script>
-
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                </div>
+            </div>
+        </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
 </body>
 </html>

@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="English Quest, une aventure MMORPG immersive pour apprendre l'anglais en s'amusant à travers de jeux.">
+    <title>English Quest - Learn English through Adventure</title>
+    
+    <!-- Styles -->
+    <link href="/dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -9,497 +19,170 @@
         gtag('js', new Date());
         gtag('config', 'G-RMCQTMKDVP');
     </script>
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="English Quest, une aventure MMORPG immersive pour apprendre l'anglais en s'amusant à travers de jeux. Progressez en langue tout en explorant un univers fun et captivant.">
-    <title>English Quest - Learn English through Adventure</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        body {
-            background-image: url('images/background.webp');
-            background-size: cover;
-            background-attachment: fixed;
-            color: #f0e6d2;
-            margin: 0;
-            padding: 0;
-        }
-        /* Style pour le fond derrière les titres Explore Games et Discover Courses */
-        #explore-games .section-title, #discover-courses .section-title {
-            background-color: rgba(0, 0, 0, 0.7); /* Fond noir transparent */
-            padding: 10px 20px; /* Espacement autour du texte */
-            border-radius: 10px; /* Coins arrondis pour un effet agréable */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Ombre pour donner du relief */
-            display: inline-block; /* Garde le fond derrière uniquement le texte */
-        }
-
-        #explore-games .section-title, #discover-courses .section-title {
-    color: #ffffff; /* Couleur blanche pour le texte */
-    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4); /* Ombre légère pour l'effet 3D */
-    font-weight: bold; /* Pour un peu plus d'épaisseur */
-    font-size: 2.5em; /* Taille ajustée, peut être modifiée */
-}
-    
-/* Animations générales */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideInLeft {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-@keyframes scaleUp {
-    from { transform: scale(0.8); }
-    to { transform: scale(1); }
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.animated-section {
-    opacity: 0;
-    animation: fadeIn 1s ease-out forwards;
-}
-
-.fade-in {
-    animation: fadeIn 1.5s ease-out forwards;
-}
-
-.slide-in-left {
-    animation: slideInLeft 1s ease-out forwards;
-}
-
-.slide-in-right {
-    animation: slideInRight 1s ease-out forwards;
-}
-
-.scale-up {
-    animation: scaleUp 1.5s ease-out forwards;
-}
-
-.bounce {
-    animation: bounce 2s infinite;
-}
-
-.hero {
-    background: url('images/hero-bg.jpg') center center/cover no-repeat;
-    height: auto; /* Hauteur plus petite pour les grands écrans */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #fff;
-    margin-bottom: 40px;
-    margin-top: 40px;
-}
-
-/* Media Query pour les petits écrans (téléphones et tablettes) */
-@media (max-width: 768px) {
-    .hero {
-        height: auto; /* Ajustement de la hauteur pour qu'elle soit flexible sur téléphone */
-        padding: 40px 20px; /* Ajout de padding pour aérer le contenu */
-        margin-bottom: 40px; /* Espace supplémentaire sous la section pour téléphone */
-    }
-}
-.hero-overlay {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 40px;
-    border-radius: 15px;
-    max-width: 800px;
-}
-#explore-games,
-#discover-courses {
-    margin-bottom: 60px; /* Ajout de marge après les sections des carrousels */
-}
-
-.hero-title {
-    font-size: 4.5em;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8);
-    margin-bottom: 20px;
-    animation: fadeIn 1.5s ease-out forwards;
-}
-
-.hero-description {
-    font-size: 1.8em;
-    margin-bottom: 30px;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
-    animation: fadeIn 1.8s ease-out forwards;
-}
-
-/* Bouton Call to Action avec hover animé */
-.cta-button-start {
-    background-color: #ffcc00;
-    color: #000;
-    padding: 15px 20px;
-    font-size: 1.5em;
-    border-radius: 50px;
-    text-decoration: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-    transition: all 0.3s ease;
-    animation: bounce 2s infinite !important;
-    transform: translateY(-50%);
-}
-
-.cta-button-start:hover {
-    background-color: #ffd700;
-    transform: scale(1.05);
-}
-
-/* Centrage et style distinct pour les titres */
-.section-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.section-title {
-    font-size: 4em; /* Taille augmentée pour un impact visuel */
-    font-weight: bold;
-    color: #ffffff;
-    text-shadow: 3px 3px 15px rgba(0, 0, 0, 0.8); /* Ombre pour donner de la profondeur */
-    text-align: center;
-    letter-spacing: 2px; /* Espacement des lettres pour un effet haut de gamme */
-    background: linear-gradient(90deg, rgb(0, 0, 0) 0%, rgb(110, 110, 110) 100%);
-    color: transparent;
-    animation: fadeIn 1.5s ease-out forwards;
-}
-
-/* Animation subtile pour les titres */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Container du carrousel avec une largeur réduite */
-.carousel-container {
-    max-width: 800px; /* Réduit la largeur pour un affichage plus étroit */
-    margin: 0 auto; /* Centre le carrousel */
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden; /* Cache les éléments qui dépassent */
-}
-
-/* Flèches du carrousel ajustées pour être toujours visibles */
-.carousel-arrow {
-    background-color: #003972;
-    border-radius: 50%;
-    color: white;
-    font-size: 2em;
-    padding: 10px;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    transition: background-color 0.3s ease;
-}
-
-.carousel-arrow.prev {
-    left: 0; /* Flèche de gauche */
-}
-
-.carousel-arrow.next {
-    right: 0; /* Flèche de droite */
-}
-
-/* Ajustement des flèches pour qu'elles soient toujours visibles sur mobile */
-@media (max-width: 768px) {
-    .carousel-arrow {
-        font-size: 1.5em;
-        padding: 8px;
-    }
-}
-
-/* Style des items du carousel */
-.carousel-content {
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-}
-
-.carousel-item {
-    min-width: 100%; /* Chaque item prend 100% de la largeur pour s'afficher seul */
-    transition: transform 0.5s ease;
-    display: none; /* Par défaut, cacher tous les items */
-}
-
-.carousel-item.active {
-    display: block;
-}
-
-/* Ajustement pour les cartes dans le carrousel */
-.game-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #212121;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.game-image {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.game-info {
-    text-align: center;
-}
-
-.carousel-cta-button {
-    background-color: #ff2d1e;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
-
-.carousel-cta-button:hover {
-    background-color: #1E90FF;
-}
-
-
-
-    </style>
 </head>
-<body>
-    <header>
-            <h1 class="site-title" style="margin: -10; padding: -10;">
-                <img src="images/logo.gif" alt="English Quest Logo" style="width: 75%; height: auto; max-width: 600px;">
-            </h1>
-        <nav>
-            <a href="index.html" class="active">Home</a>
-            <a href="all-games.html">Games</a>
-            <a href="courses.html">Courses</a>
-            <a href="leaderboard.html">Leaderboard</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed home">
+    <!-- Logo et Navigation -->
+    <div class="logo-container">
+        <img src="images/logo.gif" alt="English Quest Logo">
+    </div>
 
- <!-- Section Hero améliorée avec animations -->
-<section class="hero">
-    <div class="hero-overlay">
-        <h2 class="hero-title">English Quest</h2>
-        <p class="hero-description">Embark on an epic journey to master the English language!</p>
-        <a href="#explore-games" class="cta-button-start">Start Your Adventure</a>
-    </div>
-</section>
+    <nav>
+        <div class="flex gap-8">
+            <a href="index.html" class="nav-link home active">Home</a>
+            <a href="all-games.html" class="nav-link games">Games</a>
+            <a href="courses.html" class="nav-link courses">Courses</a>
+            <a href="leaderboard.html" class="nav-link leaderboard">Leaderboard</a>
+            <a href="contact.html" class="nav-link contact">Contact</a>
+        </div>
+    </nav>
 
-<!-- Master English Through Play Section avec effets modernisés et centrage -->
-<section id="explore-games" class="animated-section">
-    <div class="section-wrapper">
-        <h2 class="section-title">Master English Through Play</h2>
-    </div>
-    <div class="carousel-container">
-        <button class="carousel-arrow prev bounce">&#10094;</button>
-        <div id="games-carousel" class="carousel-content"></div>
-        <button class="carousel-arrow next bounce">&#10095;</button>
-        <div class="carousel-nav" id="games-nav"></div>
-    </div>
-</section>
+    <main class="min-h-screen pt-32">
+        <!-- Hero Section -->
+        <div class="quest-panel">
+            <h1>ENGLISH QUEST</h1>
+            <p>Master English through epic adventures!</p>
+        </div>
 
-<!-- Unlock Your English Mastery Section avec ajustement du style et centrage -->
-<section id="discover-courses" class="animated-section">
-    <div class="section-wrapper">
-        <h2 class="section-title">Unlock Your English Mastery</h2>
-    </div>
-    <div class="carousel-container">
-        <button class="carousel-arrow prev bounce">&#10094;</button>
-        <div id="courses-carousel" class="carousel-content"></div>
-        <button class="carousel-arrow next bounce">&#10095;</button>
-        <div class="carousel-nav" id="courses-nav"></div>
-    </div>
-</section>
+        <!-- Games Carousel Section -->
+        <div class="carousel-section games-section">
+            <h2>Featured Games</h2>
+            <div class="carousel-container">
+                <button class="carousel-nav prev">❮</button>
+                <div class="carousel-content" id="gamesCarousel">
+                    <!-- Copier les cartes de jeux depuis all-games.html -->
+                </div>
+                <button class="carousel-nav next">❯</button>
+            </div>
+        </div>
 
+        <!-- Courses Carousel Section -->
+        <div class="carousel-section courses-section">
+            <h2>Featured Courses</h2>
+            <div class="carousel-container">
+                <button class="carousel-nav prev">❮</button>
+                <div class="carousel-content" id="coursesCarousel">
+                    <!-- Copier les cartes de cours depuis courses.html -->
+                </div>
+                <button class="carousel-nav next">❯</button>
+            </div>
+        </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 English Quest by Pierre Marienne. All rights reserved.</p>
-        <div id="visit-stats"></div>
-
-        <!-- Scripts Firebase -->
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        
-        <!-- Votre script d'initialisation Firebase -->
-        <script src="firebase-init.js"></script>
-        
-        <!-- Le script du compteur de visites -->
-        <script src="visit-counter.js"></script>
-
-    </footer>
-</body>
-</html>
-
-    <script>
-        class Carousel {
-            constructor(containerId, navId) {
-                this.container = document.getElementById(containerId);
-                this.nav = document.getElementById(navId);
-                this.currentIndex = 0;
-                this.items = [];
-                this.interval = null;
-                this.arrows = this.container.parentElement.querySelectorAll('.carousel-arrow');
-                this.setupArrows();
-            }
-
-            setupArrows() {
-                this.arrows.forEach(arrow => {
-                    arrow.addEventListener('click', () => {
-                        if (arrow.classList.contains('prev')) {
-                            this.showPrevious();
-                        } else {
-                            this.showNext();
-                        }
-                    });
-                });
-            }
-
-            init(items) {
-                if (!items || items.length === 0) {
-                    console.log('No items to initialize carousel');
-                    return;
-                }
-                this.items = items;
-                this.render();
-                this.createNav();
-                this.showSlide(0);
-                this.startAutoRotation();
-            }
-
-            render() {
-                this.container.innerHTML = this.items.map((item, index) => `
-                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                        <div class="game-card">
-                            <img src="${item.image}" alt="${item.title}" class="game-image">
-                            <div class="game-info">
-                                <h3>${item.title}</h3>
-                                <p>${item.description}</p>
-                                <a href="${item.link}" class="carousel-cta-button">Start Adventure</a>
-                            </div>
-                        </div>
+    <footer class="fixed bottom-0 w-full">
+        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
+            <div class="container mx-auto px-4 py-3">
+                <div class="text-center">
+                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
+                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval">
+                        <!-- Le compteur sera inséré ici -->
                     </div>
-                `).join('');
-            }
+                </div>
+            </div>
+        </div>
+    </footer>
 
-            createNav() {
-                this.nav.innerHTML = this.items.map((_, index) => `
-                    <div class="nav-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>
-                `).join('');
-
-                this.nav.addEventListener('click', (e) => {
-                    const dot = e.target.closest('.nav-dot');
-                    if (dot) {
-                        const index = parseInt(dot.dataset.index);
-                        this.showSlide(index);
-                        this.resetAutoRotation();
-                    }
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="visit-counter.js"></script>
+    <script>
+    // Fonction pour charger et afficher les jeux
+    function loadGames() {
+        fetch('all-games.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                // Sélectionne les cartes depuis la grille de jeux
+                const gameCards = Array.from(doc.querySelectorAll('.games-carousel .game-card'));
+                
+                const gamesContainer = document.getElementById('gamesCarousel');
+                gamesContainer.innerHTML = '';
+                
+                gameCards.forEach(card => {
+                    const cardClone = card.cloneNode(true);
+                    // Supprime les classes Tailwind qui pourraient interférer
+                    cardClone.className = 'carousel-item';
+                    gamesContainer.appendChild(cardClone);
                 });
-            }
 
-            showSlide(index) {
-                const items = this.container.querySelectorAll('.carousel-item');
-                if (!items.length) return;
+                // Initialise le carousel des jeux
+                initializeCarousel('gamesCarousel');
+            });
+    }
+
+    // Fonction pour charger et afficher les cours
+    function loadCourses() {
+        fetch('courses.html')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                // Sélectionne les cartes depuis la grille de cours
+                const courseCards = Array.from(doc.querySelectorAll('.courses-grid .game-card'));
                 
-                const dots = this.nav.querySelectorAll('.nav-dot');
+                const coursesContainer = document.getElementById('coursesCarousel');
+                coursesContainer.innerHTML = '';
                 
-                items.forEach(item => item.classList.remove('active'));
-                dots.forEach(dot => dot.classList.remove('active'));
-                
-                items[index].classList.add('active');
-                dots[index].classList.add('active');
-                this.currentIndex = index;
-            }
+                courseCards.forEach(card => {
+                    const cardClone = card.cloneNode(true);
+                    // Supprime les classes Tailwind qui pourraient interférer
+                    cardClone.className = 'carousel-item';
+                    coursesContainer.appendChild(cardClone);
+                });
 
-            showNext() {
-                const nextIndex = (this.currentIndex + 1) % this.items.length;
-                this.showSlide(nextIndex);
-                this.resetAutoRotation();
-            }
+                // Initialise le carousel des cours
+                initializeCarousel('coursesCarousel');
+            });
+    }
 
-            showPrevious() {
-                const prevIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
-                this.showSlide(prevIndex);
-                this.resetAutoRotation();
-            }
-
-            startAutoRotation() {
-                if (this.items && this.items.length > 0) {
-                    this.interval = setInterval(() => this.showNext(), 5000);
-                }
-            }
-
-            resetAutoRotation() {
-                clearInterval(this.interval);
-                this.startAutoRotation();
-            }
+    // Fonction pour initialiser un carousel
+    function initializeCarousel(carouselId) {
+        const carousel = document.getElementById(carouselId);
+        const container = carousel.parentElement;
+        const prevBtn = container.querySelector('.carousel-nav.prev');
+        const nextBtn = container.querySelector('.carousel-nav.next');
+        let currentPosition = 0;
+        
+        function updateCarousel() {
+            carousel.style.transform = `translateX(${currentPosition}px)`;
         }
 
-        function extractCardInfo(html) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+        function moveNext() {
+            const carouselWidth = carousel.scrollWidth;
+            const containerWidth = container.offsetWidth;
+            const maxPosition = -(carouselWidth - containerWidth);
             
-            const gameGrid = doc.querySelector('.game-grid');
-            if (!gameGrid) return [];
-
-            const cards = gameGrid.querySelectorAll('.game-card');
-            return Array.from(cards).map(card => ({
-                title: card.querySelector('h3').textContent.trim(),
-                description: card.querySelector('p').textContent.trim(),
-                image: card.querySelector('img').getAttribute('src'),
-                link: card.querySelector('a').getAttribute('href')
-            }));
+            currentPosition -= 300; // Largeur d'une carte + gap
+            if (currentPosition < maxPosition) {
+                currentPosition = 0; // Retour au début
+            }
+            updateCarousel();
         }
 
-        function loadContent(url, carousel) {
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    const items = extractCardInfo(html);
-                    if (items.length > 0) {
-                        carousel.init(items);
-                    }
-                })
-                .catch(error => console.error('Error loading content:', error));
+        function movePrev() {
+            currentPosition += 300; // Largeur d'une carte + gap
+            if (currentPosition > 0) {
+                const carouselWidth = carousel.scrollWidth;
+                const containerWidth = container.offsetWidth;
+                currentPosition = -(carouselWidth - containerWidth);
+            }
+            updateCarousel();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const gamesCarousel = new Carousel('games-carousel', 'games-nav');
-            const coursesCarousel = new Carousel('courses-carousel', 'courses-nav');
+        prevBtn.addEventListener('click', movePrev);
+        nextBtn.addEventListener('click', moveNext);
 
-            // Load games and courses
-            loadContent('/all-games.html', gamesCarousel);
-loadContent('/courses.html', coursesCarousel);
+        // Défilement automatique
+        setInterval(moveNext, 5000);
+    }
 
-
-        });
-
+    // Charger le contenu au démarrage
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGames();
+        loadCourses();
+    });
     </script>
 </body>
 </html>
