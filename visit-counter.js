@@ -1,53 +1,59 @@
-import { initFirebase } from './firebase-init.js';
+import { db } from './firebase-init.js';
 
-export function initVisitCounter() {
-    const database = firebase.database();
-    const statsRef = database.ref('stats');
+function initVisitCounter() {
     const visitorCountElement = document.getElementById('visitor-count');
-    const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
-
-    // Gestion des erreurs
     if (!visitorCountElement) return;
 
-    // Afficher un message de chargement plus informatif
-    visitorCountElement.textContent = "Counting...";
+    const today = new Date().toISOString().split('T')[0];
+    const statsRef = db.ref('visitors');
 
-    // Mise à jour des compteurs
-    statsRef.transaction((currentStats) => {
-        const newStats = currentStats || { total: 0, daily: {} };
-        newStats.total = (newStats.total || 0) + 1;
-        newStats.daily = newStats.daily || {};
-        newStats.daily[today] = (newStats.daily[today] || 0) + 1;
-        return newStats;
-    }).then(() => {
-        // Transaction réussie
-        console.log("Visit counted successfully");
-    }).catch(error => {
-        console.error("Error counting visit:", error);
-        visitorCountElement.textContent = "Visit counting unavailable";
+    // Générer un ID unique pour le visiteur
+    let visitorId = localStorage.getItem('visitorId');
+    if (!visitorId) {
+        visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('visitorId', visitorId);
+    }
+
+    // Mettre à jour les statistiques
+    statsRef.transaction((stats) => {
+        if (!stats) stats = { total: 0, daily: {}, unique: {} };
+        
+        stats.total = (stats.total || 0) + 1;
+        
+        if (!stats.daily[today]) stats.daily[today] = 0;
+        stats.daily[today]++;
+        
+        if (!stats.unique[visitorId]) {
+            stats.unique[visitorId] = true;
+            stats.uniqueCount = (stats.uniqueCount || 0) + 1;
+        }
+
+        return stats;
     });
 
-    // Affichage des compteurs
+    // Afficher les compteurs
     statsRef.on('value', (snapshot) => {
         const stats = snapshot.val();
         if (stats) {
             visitorCountElement.innerHTML = `
                 <div class="counter-container">
                     <div class="counter-item">
-                        <span class="counter-label">Total Visitors:</span>
+                        <span class="counter-label">Total Visits</span>
                         <span class="counter-value">${stats.total.toLocaleString()}</span>
                     </div>
                     <div class="counter-item">
-                        <span class="counter-label">Today's Visitors:</span>
+                        <span class="counter-label">Today</span>
                         <span class="counter-value">${(stats.daily[today] || 0).toLocaleString()}</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-label">Unique</span>
+                        <span class="counter-value">${stats.uniqueCount.toLocaleString()}</span>
                     </div>
                 </div>
             `;
-        } else {
-            visitorCountElement.textContent = "No visits yet";
         }
-    }, (error) => {
-        console.error("Error fetching visitor count:", error);
-        visitorCountElement.textContent = "Counter unavailable";
     });
 }
+
+// Initialiser quand le DOM est chargé
+document.addEventListener('DOMContentLoaded', initVisitCounter);

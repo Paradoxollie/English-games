@@ -388,41 +388,30 @@ main {
 }
 
 /* Styles du compteur de visiteurs */
+.counter-wrapper {
+    @apply inline-block min-w-[300px];
+}
+
+.counter-loading {
+    @apply p-4 text-center animate-pulse;
+}
+
 .counter-container {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #c9aa71;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
+    @apply flex justify-center items-stretch gap-4 p-4 
+           bg-black/60 rounded-lg border border-quest-gold/30;
 }
 
 .counter-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #c9aa71;
+    @apply flex flex-col items-center px-6 py-3
+           border-r last:border-r-0 border-quest-gold/30;
 }
 
 .counter-label {
-    color: #c9aa71;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    @apply text-quest-gold/70 text-sm font-medieval mb-2;
 }
 
 .counter-value {
-    color: #ffd700;
-    font-weight: bold;
-}
-
-.counter-separator {
-    color: #c9aa71;
-    margin: 0 0.5rem;
+    @apply text-quest-gold text-xl font-bold font-quest;
 }
 
 /* Styles du carousel comme dans all-games */

@@ -4,15 +4,19 @@ import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
 const firebaseConfig = {
-    // Vos configurations Firebase ici
-    apiKey: "votre-api-key",
-    authDomain: "votre-auth-domain",
-    databaseURL: "votre-database-url", // Important pour le compteur
-    projectId: "votre-project-id",
-    storageBucket: "votre-storage-bucket",
-    messagingSenderId: "votre-messaging-sender-id",
-    appId: "votre-app-id"
+    apiKey: "AIzaSyDKZKqUxGqg1E3RsxVdYYEp4wxgPxVZQFk",
+    authDomain: "english-quest-f7d0f.firebaseapp.com",
+    databaseURL: "https://english-quest-f7d0f-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "english-quest-f7d0f",
+    storageBucket: "english-quest-f7d0f.appspot.com",
+    messagingSenderId: "1015257134589",
+    appId: "1:1015257134589:web:2d9ba1d1e6b05f0ad914a5"
 };
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+export const db = firebase.database();
 
 export function initFirebase() {
     return {

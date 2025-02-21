@@ -62,4 +62,231 @@
            text-quest-gold font-medieval text-lg border border-quest-gold/50 
            hover:border-quest-gold rounded-lg transition-all duration-300
            transform hover:-translate-y-1;
+}
+
+/* Styles des boutons */
+.quest-button {
+    @apply block w-full py-3 text-center font-medieval text-lg 
+           border rounded-lg transition-all duration-300 
+           hover:-translate-y-1 shadow-lg hover:shadow-xl;
+}
+
+/* Bouton pour les jeux */
+.quest-button-game {
+    @apply bg-gradient-to-r from-quest-gold/30 via-quest-gold/20 to-quest-gold/30 
+           text-quest-gold border-quest-gold/50
+           hover:bg-gradient-to-r hover:from-quest-gold/40 hover:via-quest-gold/30 hover:to-quest-gold/40
+           hover:border-quest-gold hover:shadow-quest-gold/20;
+}
+
+/* Bouton pour les cours */
+.quest-button-course {
+    @apply bg-gradient-to-r from-blue-600/30 via-blue-500/20 to-blue-600/30 
+           text-blue-300 border-blue-500/50
+           hover:bg-gradient-to-r hover:from-blue-600/40 hover:via-blue-500/30 hover:to-blue-600/40
+           hover:border-blue-400 hover:shadow-blue-500/20;
+}
+
+/* Styles des badges */
+.badge {
+    @apply absolute left-1/2 -translate-x-1/2 bottom-4 
+           px-6 py-2 rounded-full text-sm font-bold text-center 
+           min-w-[120px] shadow-lg backdrop-blur-sm
+           border-2 transform transition-all duration-300;
+}
+
+/* Style de base pour les badges et tags (style bouton) */
+.badge-base {
+    @apply inline-flex items-center justify-center
+           px-4 py-1.5 rounded-lg text-sm font-bold
+           border-2 bg-opacity-90
+           shadow-sm;
+}
+
+/* Style commun pour les badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    border-width: 2px;
+    margin: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+}
+
+/* Badges de difficulté selon les standards MMORPG */
+.badge-legendary {
+    background-color: #FF8000; /* Orange vif */
+    border-color: #FFA500; /* Orange plus clair */
+    color: white;
+    text-shadow: 0 0 5px rgba(255, 128, 0, 0.5);
+}
+
+.badge-epic {
+    background-color: #A335EE; /* Violet */
+    border-color: #B54BFF; /* Violet plus clair */
+    color: white;
+    text-shadow: 0 0 5px rgba(163, 53, 238, 0.5);
+}
+
+.badge-rare {
+    background-color: #0070DD; /* Bleu */
+    border-color: #1E90FF; /* Bleu plus clair */
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 112, 221, 0.5);
+}
+
+.badge-common {
+    background-color: #9D9D9D; /* Gris */
+    border-color: #C0C0C0; /* Gris plus clair */
+    color: white;
+    text-shadow: 0 0 5px rgba(157, 157, 157, 0.5);
+}
+
+/* Badges de niveau pour les cours */
+.badge-advanced {
+    background-color: #8B0000; /* rouge foncé */
+    border-color: #DC143C;
+    color: white;
+}
+
+.badge-intermediate {
+    background-color: #DAA520; /* doré */
+    border-color: #FFD700;
+    color: black;
+}
+
+.badge-basic {
+    background-color: #228B22; /* vert forêt */
+    border-color: #32CD32;
+    color: white;
+}
+
+/* Style de base pour les tags (style bouton) */
+.tag-base {
+    @apply inline-flex items-center justify-center
+           px-3 py-1 rounded-lg text-sm
+           border-2 bg-opacity-90
+           shadow-sm mx-1;
+}
+
+/* Tags pour les catégories de jeux */
+.tag-verbs {
+    background-color: #C41E3A; /* Rouge cramoisi */
+    border-color: #DC143C;
+    color: white;
+}
+
+.tag-time-trial {
+    background-color: #DAA520; /* Or */
+    border-color: #FFD700;
+    color: white;
+}
+
+.tag-grammar {
+    background-color: #228B22; /* Vert forêt */
+    border-color: #32CD32;
+    color: white;
+}
+
+.tag-vocabulary {
+    background-color: #8B008B; /* magenta foncé */
+    border-color: #FF00FF;
+    color: white;
+}
+
+.tag-listening {
+    background-color: #00688B; /* bleu profond */
+    border-color: #00BFFF;
+    color: white;
+}
+
+.tag-pronunciation {
+    background-color: #8B0A50; /* rose foncé */
+    border-color: #FF1493;
+    color: white;
+}
+
+.tag-memory {
+    background-color: #4A708B; /* bleu acier */
+    border-color: #87CEEB;
+    color: white;
+}
+
+/* Tags pour les catégories de cours */
+.tag-time {
+    background-color: #CD6600; /* orange foncé */
+    border-color: #FFA500;
+    color: white;
+}
+
+.tag-duration {
+    background-color: #8B6508; /* brun doré */
+    border-color: #FFD700;
+    color: white;
+}
+
+.tag-prepositions {
+    background-color: #008B8B; /* cyan foncé */
+    border-color: #00CED1;
+    color: white;
+}
+
+.tag-comparison {
+    background-color: #473C8B; /* bleu ardoise */
+    border-color: #6A5ACD;
+    color: white;
+}
+
+.tag-conditional {
+    background-color: #551A8B; /* violet foncé */
+    border-color: #9370DB;
+    color: white;
+}
+
+.tag-advanced {
+    background-color: #8B1A1A; /* rouge brique */
+    border-color: #CD5C5C;
+    color: white;
+}
+
+/* Styles spécifiques pour les tags de jeux */
+.tag-puzzle {
+    background-color: #8B3626; /* rouge toscan */
+    border-color: #CD5B45;
+    color: white;
+}
+
+.tag-categories {
+    background-color: #668B8B; /* bleu pétrole */
+    border-color: #96CDCD;
+    color: white;
+}
+
+.tag-translation {
+    background-color: #8B7355; /* brun */
+    border-color: #CDC0B0;
+    color: white;
+}
+
+.tag-word-formation {
+    background-color: #8B4789; /* orchidée foncé */
+    border-color: #DA70D6;
+    color: white;
+}
+
+/* Tags de catégories pour les cours */
+.course-tag {
+    @apply px-4 py-2 rounded-full text-sm 
+           border-2 shadow-sm transition-all duration-300 
+           hover:scale-105 hover:shadow-md;
+}
+
+/* Tags de catégories spécifiques pour les cours */
+.tag-grammar-course {
+    @apply tag-base bg-blue-700 hover:bg-blue-600
+           text-white border-blue-400;
 } 
