@@ -15,7 +15,6 @@ class VisitorCounter {
     }
 
     async initialize() {
-        console.log('Initializing visitor counter...');
         try {
             await this.updateVisitStats();
             await this.displayStats();
@@ -26,12 +25,10 @@ class VisitorCounter {
     }
 
     async updateVisitStats() {
-        console.log('Updating visit stats...');
         const visitsRef = this.db.collection('visits').doc('stats');
         const visitsDoc = await visitsRef.get();
 
         if (!visitsDoc.exists) {
-            console.log('Creating new stats document...');
             await visitsRef.set({
                 totalVisits: 1,
                 uniqueVisitors: [this.visitorId],
@@ -39,7 +36,6 @@ class VisitorCounter {
                 lastUpdated: new Date()
             });
         } else {
-            console.log('Updating existing stats...');
             const data = visitsDoc.data();
             const todayVisits = (data.dailyVisits?.[this.today] || 0) + 1;
             
@@ -53,32 +49,27 @@ class VisitorCounter {
     }
 
     async displayStats() {
-        console.log('Displaying stats...');
         const element = document.getElementById('visitor-count');
-        if (!element) {
-            console.log('Counter element not found');
-            return;
-        }
+        if (!element) return;
 
         try {
             const visitsRef = this.db.collection('visits').doc('stats');
             const visitsDoc = await visitsRef.get();
             const data = visitsDoc.data();
-            console.log('Stats data:', data);
 
             element.innerHTML = `
                 <div class="counter-container">
                     <div class="counter-item">
-                        <span class="counter-label">Total Visits</span>
-                        <span class="counter-value">${data.totalVisits.toLocaleString()}</span>
+                        <span class="counter-label text-quest-gold">Total Visits</span>
+                        <span class="counter-value text-white">${data.totalVisits.toLocaleString()}</span>
                     </div>
                     <div class="counter-item">
-                        <span class="counter-label">Today's Visits</span>
-                        <span class="counter-value">${(data.dailyVisits[this.today] || 0).toLocaleString()}</span>
+                        <span class="counter-label text-quest-gold">Today's Visits</span>
+                        <span class="counter-value text-white">${(data.dailyVisits[this.today] || 0).toLocaleString()}</span>
                     </div>
                     <div class="counter-item">
-                        <span class="counter-label">Unique Visitors</span>
-                        <span class="counter-value">${data.uniqueVisitors.length.toLocaleString()}</span>
+                        <span class="counter-label text-quest-gold">Unique Visitors</span>
+                        <span class="counter-value text-white">${data.uniqueVisitors.length.toLocaleString()}</span>
                     </div>
                 </div>
             `;

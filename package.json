@@ -1,46 +1,25 @@
 {
-  "name": "grammar-games",
+  "name": "english-quest",
   "version": "1.0.0",
-  "main": "brew-your-words.js",
+  "description": "English learning platform with interactive games",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src/**/*.js",
-    "test": "jest"
+    "optimize-images": "node scripts/optimize-images.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Paradoxollie/English-games.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Paradoxollie/English-games/issues"
-  },
-  "homepage": "https://github.com/Paradoxollie/English-games#readme",
   "dependencies": {
-    "browserslist": "^4.24.4",
-    "caniuse-lite": "^1.0.30001700",
-    "electron-to-chromium": "^1.5.101",
-    "escalade": "^3.2.0",
-    "fraction.js": "^4.3.7",
-    "nanoid": "^3.3.8",
-    "node-releases": "^2.0.19",
-    "normalize-range": "^0.1.2",
-    "picocolors": "^1.1.1",
-    "postcss-value-parser": "^4.2.0",
-    "source-map-js": "^1.2.1",
-    "update-browserslist-db": "^1.1.2"
+    "@sentry/browser": "^7.0.0",
+    "dotenv": "^16.4.1",
+    "firebase": "^10.8.0",
+    "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
-    "vite": "^4.x.x",
-    "eslint": "^8.x.x",
-    "jest": "^29.x.x",
-    "tailwindcss": "^3.x.x",
-    "postcss": "^8.x.x",
-    "autoprefixer": "^10.x.x"
-  },
-  "description": ""
+    "@vitejs/plugin-legacy": "^5.3.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "sharp": "^0.32.6",
+    "vite": "^5.0.12"
+  }
 }

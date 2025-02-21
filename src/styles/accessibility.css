@@ -1,0 +1,42 @@
+/* Styles pour la navigation au clavier */
+.keyboard-nav :focus {
+    outline: 3px solid var(--quest-gold) !important;
+    outline-offset: 2px !important;
+}
+
+/* Styles pour le contraste et la lisibilité */
+.text-gray-300 {
+    color: #D1D5DB; /* Améliorer le contraste */
+}
+
+/* Skip link pour l'accessibilité */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--quest-gold);
+    color: black;
+    padding: 8px;
+    z-index: 100;
+    transition: top 0.3s;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Styles pour les états de focus */
+.nav-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--quest-gold);
+}
+
+/* Améliorer la lisibilité du texte */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+} 

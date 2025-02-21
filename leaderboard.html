@@ -36,238 +36,269 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+    <!-- Scripts de l'application -->
+    <script src="./src/config/firebase-config.js"></script>
+    <script src="./src/js/performance.js"></script>
+    <script src="./src/js/accessibility.js"></script>
+    <script src="./src/js/cache-manager.js"></script>
+    <script src="./src/js/monitoring.js"></script>
+
+    <!-- Preload des ressources critiques -->
+    <link rel="preload" href="./src/js/performance.js" as="script">
+    <link rel="preload" href="./src/js/accessibility.js" as="script">
+
+    <style>
+        /* Styles pour le compteur de visites */
+        .counter-container {
+            @apply space-y-2;
+        }
+        .counter-item {
+            @apply flex justify-between items-center bg-black/50 p-2 rounded;
+        }
+        .counter-label {
+            @apply mr-4 font-medieval;
+        }
+        .counter-value {
+            @apply font-bold;
+        }
+    </style>
 </head>
 <body class="bg-quest-pattern" data-page="leaderboard" style="background-image: url('./images/background.webp');">
     <!-- Header -->
-    <header class="site-header">
+    <header class="site-header" role="banner" aria-label="Site header">
         <div class="logo-container">
-            <img src="./images/logo.gif" alt="English Quest Logo" class="w-64 h-auto">
+            <img src="./images/logo.gif" alt="English Quest Logo" class="w-48 md:w-64 h-auto" width="600" height="400" loading="eager" decoding="async">
         </div>
 
         <nav class="main-nav">
-            <div class="container mx-auto px-4 py-3 flex items-center justify-center space-x-8">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="./all-games.html" class="nav-link">Games</a>
-                <a href="./courses.html" class="nav-link">Courses</a>
-                <a href="./leaderboard.html" class="nav-link active text-quest-red font-bold hover:text-quest-red relative glow-red">Leaderboard</a>
-                <a href="./contact.html" class="nav-link">Contact</a>
+            <div class="w-full overflow-x-auto">
+                <div class="container mx-auto flex items-center justify-start md:justify-center min-w-max px-4 py-3">
+                    <a href="index.html" class="nav-link text-sm md:text-base px-4">Home</a>
+                    <a href="./all-games.html" class="nav-link text-sm md:text-base px-4">Games</a>
+                    <a href="./courses.html" class="nav-link text-sm md:text-base px-4">Courses</a>
+                    <a href="./leaderboard.html" class="nav-link active text-quest-red font-bold hover:text-quest-red relative glow-red text-sm md:text-base px-4">Leaderboard</a>
+                    <a href="./contact.html" class="nav-link text-sm md:text-base px-4">Contact</a>
+                </div>
             </div>
         </nav>
     </header>
 
-    <main class="min-h-screen pt-32 pb-32">
+    <main id="main-content" class="min-h-screen pt-32 pb-32" role="main">
         <!-- Hero Section -->
-        <div class="quest-panel max-w-2xl mx-auto mb-16 text-center">
-            <h1 class="text-5xl font-bold mb-6 glow-text">
+        <div class="quest-panel max-w-2xl mx-auto mb-8 md:mb-16 text-center px-4" role="banner">
+            <h1 id="page-title" class="text-3xl md:text-5xl font-bold mb-4 md:mb-6 glow-text">
                 <span class="text-white">HALL OF</span>
                 <span class="text-quest-red">CHAMPIONS</span>
             </h1>
-            <p class="text-xl text-gray-300 font-medieval italic">
+            <p class="text-lg md:text-xl text-gray-300 font-medieval italic">
                 "Where Legends Rise and Heroes are Eternal"
             </p>
         </div>
 
         <!-- Leaderboard Section -->
-        <div class="quest-panel max-w-7xl mx-auto mb-16">
-            <!-- Speed Verb Challenge -->
-            <div class="game-section w-full">
-                <div class="text-center">
+        <div class="quest-panel max-w-7xl mx-auto mb-8 md:mb-16 px-4">
+            <div id="leaderboards" role="region" aria-labelledby="page-title">
+                <!-- Speed Verb Challenge -->
+                <div class="game-section w-full overflow-x-auto">
+                    <div class="text-center mb-4">
+                        <h2 class="game-title text-xl md:text-2xl px-2">
+                            <span class="game-icon">⚔️</span>
+                            Speed Verb Challenge
+                            <span class="game-icon">⚔️</span>
+                        </h2>
+                    </div>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[300px] text-sm md:text-base">
+                            <thead>
+                                <tr>
+                                    <th class="px-2 py-2">Rank</th>
+                                    <th class="px-2 py-2">Champion</th>
+                                    <th class="px-2 py-2">Score</th>
+                                    <th class="px-2 py-2">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="speed-verb-leaderboard">
+                                <!-- Rempli dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Word Memory Game -->
+                <div class="game-section w-full overflow-x-auto">
                     <h2 class="game-title">
-                        <span class="game-icon">⚔️</span>
-                        Speed Verb Challenge
-                        <span class="game-icon">⚔️</span>
+                        <span class="game-icon">🎯</span>
+                        Word Memory Game
+                        <span class="game-icon">🎯</span>
                     </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memory-game-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Champion</th>
-                                <th>Score</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="speed-verb-leaderboard">
-                            <!-- Rempli dynamiquement -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            <!-- Word Memory Game -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🎯</span>
-                    Word Memory Game
-                    <span class="game-icon">🎯</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="memory-game-leaderboard"></tbody>
-                    </table>
+                <!-- Memory Matrix -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">🧩</span>
+                        Memory Matrix
+                        <span class="game-icon">🧩</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrix-game-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Memory Matrix -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🧩</span>
-                    Memory Matrix
-                    <span class="game-icon">🧩</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matrix-game-leaderboard"></tbody>
-                    </table>
+                <!-- Lost in Migration -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">🦅</span>
+                        Lost in Migration
+                        <span class="game-icon">🦅</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="migration-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Lost in Migration -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🦅</span>
-                    Lost in Migration
-                    <span class="game-icon">🦅</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="migration-leaderboard"></tbody>
-                    </table>
+                <!-- Brew Your Words -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">🧪</span>
+                        Brew Your Words
+                        <span class="game-icon">🧪</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="brew-words-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Brew Your Words -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🧪</span>
-                    Brew Your Words
-                    <span class="game-icon">🧪</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="brew-words-leaderboard"></tbody>
-                    </table>
+                <!-- Whisper Trials -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">🎭</span>
+                        Whisper Trials
+                        <span class="game-icon">🎭</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="whisper-trials-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Whisper Trials -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🎭</span>
-                    Whisper Trials
-                    <span class="game-icon">🎭</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="whisper-trials-leaderboard"></tbody>
-                    </table>
+                <!-- Word Bubbles -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">🫧</span>
+                        Word Bubbles
+                        <span class="game-icon">🫧</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="word-bubbles-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Word Bubbles -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">🫧</span>
-                    Word Bubbles
-                    <span class="game-icon">🫧</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="word-bubbles-leaderboard"></tbody>
-                    </table>
+                <!-- Echoes of Lexicon -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">📚</span>
+                        Echoes of Lexicon
+                        <span class="game-icon">📚</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="echoes-lexicon-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Echoes of Lexicon -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">📚</span>
-                    Echoes of Lexicon
-                    <span class="game-icon">📚</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="echoes-lexicon-leaderboard"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Enigma Scroll -->
-            <div class="game-section w-full">
-                <h2 class="game-title">
-                    <span class="game-icon">📜</span>
-                    Enigma Scroll
-                    <span class="game-icon">📜</span>
-                </h2>
-                <div class="w-full">
-                    <table class="podium-table w-full">
-                        <thead>
-                            <tr>
-                                <th>RANK</th>
-                                <th>CHAMPION</th>
-                                <th>SCORE</th>
-                                <th>DATE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="enigma-scroll-leaderboard"></tbody>
-                    </table>
+                <!-- Enigma Scroll -->
+                <div class="game-section w-full overflow-x-auto">
+                    <h2 class="game-title">
+                        <span class="game-icon">📜</span>
+                        Enigma Scroll
+                        <span class="game-icon">📜</span>
+                    </h2>
+                    <div class="w-full">
+                        <table class="podium-table w-full min-w-[500px]">
+                            <thead>
+                                <tr>
+                                    <th>RANK</th>
+                                    <th>CHAMPION</th>
+                                    <th>SCORE</th>
+                                    <th>DATE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enigma-scroll-leaderboard"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -297,9 +328,7 @@
                     <ul class="space-y-2">
                         <div class="visitor-counter text-left mb-4">
                             <div id="visitor-count" class="counter-wrapper">
-                                <div class="counter-loading">
-                                    <span class="text-quest-gold">Loading visitor stats...</span>
-                                </div>
+                                <!-- Le contenu sera injecté par visit-counter.js -->
                             </div>
                         </div>
                     </ul>
@@ -314,68 +343,69 @@
 
     <!-- Scripts -->
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-            authDomain: "english-games-41017.firebaseapp.com",
-            projectId: "english-games-41017",
-            storageBucket: "english-games-41017.appspot.com",
-            messagingSenderId: "452279652544",
-            appId: "1:452279652544:web:916f93e0ab29183e739d25",
-            measurementId: "G-RMCQTMKDVP"
-        };
+        document.addEventListener('DOMContentLoaded', async (event) => {
+            try {
+                // Initialiser les services
+                const monitoring = new MonitoringService();
+                const cacheManager = new CacheManager();
+                const performanceOptimizer = new PerformanceOptimizer();
+                const accessibilityManager = new AccessibilityManager();
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const analytics = firebase.analytics();
+                // Setup cache
+                cacheManager.setupImageCache();
 
-        // Fonction pour charger les scores d'un jeu spécifique
-        function loadGameScores(collectionName, tableId) {
-            console.log(`Loading scores for ${collectionName}`);
-            db.collection(collectionName)
-                .orderBy("score", "desc")
-                .limit(3)
-                .get()
-                .then((querySnapshot) => {
-                    const tableBody = document.getElementById(tableId);
-                    tableBody.innerHTML = "";
-                    let rank = 1;
-                    querySnapshot.forEach((doc) => {
-                        const row = document.createElement('tr');
-                        row.className = `rank-${rank}`;
+                // Fonction optimisée pour charger les scores
+                async function loadGameScores(collectionName, tableId) {
+                    try {
+                        // Essayer d'abord le cache
+                        let scores = await cacheManager.getCachedScores(collectionName);
                         
-                        const date = doc.data().timestamp ? 
-                            new Date(doc.data().timestamp.seconds * 1000).toLocaleDateString() : 
-                            'N/A';
-                        
-                        row.innerHTML = `
-                            <td class="rank">${rank}</td>
-                            <td>${doc.data().name || 'Anonymous'}</td>
-                            <td class="score">${doc.data().score}</td>
-                            <td>${date}</td>
-                        `;
-                        tableBody.appendChild(row);
-                        rank++;
-                    });
-                })
-                .catch((error) => {
-                    console.error(`Error loading ${collectionName} scores:`, error);
-                });
-        }
+                        if (!scores) {
+                            // Si pas en cache, charger depuis Firestore
+                            const snapshot = await db.collection(collectionName)
+                                .orderBy("score", "desc")
+                                .limit(3)
+                                .get();
+                            
+                            scores = snapshot.docs.map(doc => ({
+                                id: doc.id,
+                                ...doc.data()
+                            }));
+                            
+                            // Mettre en cache
+                            await cacheManager.setCachedScores(collectionName, scores);
+                        }
 
-        // Chargement des scores au chargement de la page
-        document.addEventListener('DOMContentLoaded', (event) => {
-            console.log("DOM fully loaded, loading scores...");
-            loadGameScores("speed_verb_scores", "speed-verb-leaderboard");
-            loadGameScores("word_memory_game_scores", "memory-game-leaderboard");
-            loadGameScores("memory_matrix_scores", "matrix-game-leaderboard");
-            loadGameScores("lost_in_migration_scores", "migration-leaderboard");
-            loadGameScores("brewYourWordsScores", "brew-words-leaderboard");
-            loadGameScores("enigma_scroll_scores", "enigma-scroll-leaderboard");
-            loadGameScores("whisper_trials_scores", "whisper-trials-leaderboard");
-            loadGameScores("word_bubbles_scores", "word-bubbles-leaderboard");
-            loadGameScores("echoes_lexicon_scores", "echoes-lexicon-leaderboard");
+                        updateLeaderboardTable(scores, tableId);
+                        
+                        // Tracker la performance
+                        monitoring.trackPerformance({
+                            name: `scores_loaded_${collectionName}`,
+                            value: Date.now()
+                        });
+                    } catch (error) {
+                        monitoring.trackError(error, {
+                            context: 'loadGameScores',
+                            collectionName,
+                            tableId
+                        });
+                    }
+                }
+
+                // Charger les scores
+                loadGameScores("speed_verb_scores", "speed-verb-leaderboard");
+                loadGameScores("word_memory_game_scores", "memory-game-leaderboard");
+                loadGameScores("memory_matrix_scores", "matrix-game-leaderboard");
+                loadGameScores("lost_in_migration_scores", "migration-leaderboard");
+                loadGameScores("brewYourWordsScores", "brew-words-leaderboard");
+                loadGameScores("enigma_scroll_scores", "enigma-scroll-leaderboard");
+                loadGameScores("whisper_trials_scores", "whisper-trials-leaderboard");
+                loadGameScores("word_bubbles_scores", "word-bubbles-leaderboard");
+                loadGameScores("echoes_lexicon_scores", "echoes-lexicon-leaderboard");
+            } catch (error) {
+                console.error('Error initializing:', error);
+                monitoring.trackError(error, { context: 'initialization' });
+            }
         });
     </script>
     <script src="./visit-counter.js"></script>

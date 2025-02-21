@@ -1,6 +1,10 @@
 /* Base styles */
+.main-nav {
+    @apply bg-black/95 border-t border-b border-quest-gold;
+}
+
 .nav-link {
-    @apply relative text-gray-300 transition-colors duration-300;
+    @apply relative text-gray-300 transition-colors duration-300 whitespace-nowrap;
 }
 
 /* Active states */
@@ -98,5 +102,66 @@
         text-shadow: 
             0 0 10px rgba(255, 68, 68, 0.8),
             0 0 20px rgba(255, 68, 68, 0.5);
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .main-nav {
+        @apply sticky top-0 z-50;
+    }
+
+    .main-nav > div {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+
+    .main-nav > div::-webkit-scrollbar {
+        display: none; /* Chrome, Safari and Opera */
+    }
+
+    .nav-link {
+        @apply text-sm py-2;
+        min-width: max-content;
+    }
+
+    /* Indicateur de défilement */
+    .main-nav::after {
+        content: '';
+        @apply absolute right-0 top-0 h-full w-4 bg-gradient-to-l from-black/95 to-transparent pointer-events-none;
+    }
+
+    .main-nav::before {
+        content: '';
+        @apply absolute left-0 top-0 h-full w-4 bg-gradient-to-r from-black/95 to-transparent pointer-events-none;
+    }
+
+    .glow-gold, .glow-red {
+        text-shadow: 
+            0 0 5px rgba(201, 170, 113, 0.8),
+            0 0 10px rgba(201, 170, 113, 0.5);
+    }
+
+    /* Ajustement du footer */
+    .quest-footer {
+        @apply px-4;
+    }
+}
+
+/* Styles pour les tableaux sur mobile */
+.podium-table {
+    @apply border-collapse;
+}
+
+.podium-table th,
+.podium-table td {
+    @apply px-2 py-2 text-left;
+}
+
+@media (max-width: 480px) {
+    .podium-table th,
+    .podium-table td {
+        @apply text-sm px-1 py-1;
     }
 } 

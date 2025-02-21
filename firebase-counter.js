@@ -1,77 +1,45 @@
-class VisitorCounter {
-    constructor() {
-        this.db = firebase.database();
-        this.statsRef = this.db.ref('visitorStats');
-        this.today = new Date().toISOString().split('T')[0];
+import { db } from './firebase-config.js';
+
+export class VisitorCounter {
+    constructor(elementId) {
+        this.elementId = elementId;
+        this.counterElement = document.getElementById(elementId);
     }
 
-    async countVisit() {
-        const clientId = this.getClientId();
-        const updates = {};
-
-        // Mise à jour du total des visiteurs uniques
-        const totalRef = await this.statsRef.child('totalUnique').once('value');
-        const totalVisitors = totalRef.val() || {};
-        if (!totalVisitors[clientId]) {
-            totalVisitors[clientId] = true;
-            updates['totalUnique'] = totalVisitors;
-        }
-
-        // Mise à jour des visiteurs uniques du jour
-        const dailyRef = await this.statsRef.child(`daily/${this.today}`).once('value');
-        const dailyVisitors = dailyRef.val() || {};
-        if (!dailyVisitors[clientId]) {
-            dailyVisitors[clientId] = true;
-            updates[`daily/${this.today}`] = dailyVisitors;
-        }
-
-        if (Object.keys(updates).length > 0) {
-            await this.statsRef.update(updates);
-        }
-
-        this.updateDisplay();
-    }
-
-    async updateDisplay() {
-        const visitorCountElement = document.getElementById('visitor-count');
-        if (!visitorCountElement) return;
-
+    async updateCounter() {
         try {
-            const snapshot = await this.statsRef.once('value');
-            const stats = snapshot.val();
+            const counterRef = db.collection('counters').doc('visitors');
             
-            if (stats) {
-                const totalCount = stats.totalUnique ? Object.keys(stats.totalUnique).length : 0;
-                const todayCount = stats.daily && stats.daily[this.today] 
-                    ? Object.keys(stats.daily[this.today]).length 
-                    : 0;
-
-                visitorCountElement.innerHTML = `
-                    <div class="counter-item">
-                        <span class="counter-value">${totalCount.toLocaleString()}</span> total
-                        <span class="counter-separator">|</span>
-                        <span class="counter-value">${todayCount.toLocaleString()}</span> today
-                    </div>
-                `;
-            }
+            await db.runTransaction(async (transaction) => {
+                const doc = await transaction.get(counterRef);
+                const newCount = (doc.data()?.count || 0) + 1;
+                transaction.set(counterRef, { count: newCount });
+                this.displayCount(newCount);
+            });
         } catch (error) {
-            console.error('Error updating display:', error);
-            visitorCountElement.textContent = 'Counter unavailable';
+            console.error('Error updating counter:', error);
+            this.displayError();
         }
     }
 
-    getClientId() {
-        let clientId = localStorage.getItem('visitorId');
-        if (!clientId) {
-            clientId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('visitorId', clientId);
+    displayCount(count) {
+        if (this.counterElement) {
+            this.counterElement.innerHTML = `
+                <div class="flex items-center justify-center space-x-2">
+                    <span class="text-quest-gold">👥 Visitors:</span>
+                    <span class="font-bold text-white">${count.toLocaleString()}</span>
+                </div>
+            `;
         }
-        return clientId;
     }
-}
 
-// Initialisation
-export function initVisitorCounter() {
-    const counter = new VisitorCounter();
-    counter.countVisit();
+    displayError() {
+        if (this.counterElement) {
+            this.counterElement.innerHTML = `
+                <div class="text-red-500">
+                    Unable to load visitor count
+                </div>
+            `;
+        }
+    }
 } 

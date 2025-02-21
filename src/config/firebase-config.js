@@ -1,7 +1,9 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAnalytics } from 'firebase/analytics';
+/**
+ * @file firebase-config.js
+ * @description Configuration centralisée de Firebase
+ */
 
+// Configuration Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
     authDomain: "english-games-41017.firebaseapp.com",
@@ -12,9 +14,37 @@ const firebaseConfig = {
     measurementId: "G-RMCQTMKDVP"
 };
 
-// Initialisation unique
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const analytics = firebase.analytics();
 
-export { app, db, analytics }; 
+// Export pour utilisation dans d'autres fichiers
+window.db = db;
+window.analytics = analytics;
+
+// Documentation des exports
+/**
+ * @exports db - Instance Firestore
+ * @exports analytics - Instance Analytics
+ */
+
+// Créer des règles Firestore
+const firestoreRules = `
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Règles pour les scores
+    match /speed_verb_scores/{document} {
+      allow read;  // Tout le monde peut lire
+      allow write: if request.resource.data.score is number 
+                   && request.resource.data.name is string;
+    }
+    // Règles pour les visites
+    match /visits/{document} {
+      allow read;
+      allow write: if request.resource.data.lastUpdated is timestamp;
+    }
+  }
+}
+`; 
