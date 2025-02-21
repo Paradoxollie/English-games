@@ -3,7 +3,6 @@ import { initFirebase } from './firebase-init.js';
 import { initThemeManager } from './src/utils/themeManager.js';
 import { initVisitCounter } from './visit-counter.js';
 import { games, courses } from './src/data/games.js';
-import { createGameCard } from './src/components/GameCard.js';
 
 // Liste de mots inappropriés à filtrer
 const inappropriateWords = ['badword1', 'badword2', 'badword3']; // Ajoutez vos mots inappropriés ici
@@ -121,25 +120,74 @@ function endGame(score) {
     alert("Game Over! Your score: " + score);
 }
 
-function loadContent() {
+// Fonction pour créer une carte de jeu
+function createGameCard(game) {
+    return `
+        <div class="quest-card">
+            <div class="quest-card-banner h-32">
+                <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover">
+                <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
+            </div>
+            <div class="quest-card-content p-4">
+                <h3 class="text-xl font-bold text-quest-gold mb-2">${game.title}</h3>
+                <p class="text-sm text-gray-300 mb-3">${game.description}</p>
+                <div class="quest-tags flex flex-wrap gap-2 mb-3">
+                    ${game.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <a href="${game.url}" class="quest-button flex items-center justify-center">
+                    <span class="quest-button-icon mr-2">${game.icon}</span>
+                    <span>Play Now</span>
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+// Fonction pour créer une carte de cours
+function createCourseCard(course) {
+    return `
+        <div class="training-card">
+            <div class="training-card-banner h-32">
+                <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover">
+                <div class="training-level ${course.level}">${course.level}</div>
+            </div>
+            <div class="training-card-content p-4">
+                <h3 class="text-xl font-bold text-quest-gold mb-2">${course.title}</h3>
+                <p class="text-sm text-gray-300 mb-3">${course.description}</p>
+                <div class="training-tags flex flex-wrap gap-2 mb-3">
+                    ${course.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <a href="${course.url}" class="training-button flex items-center justify-center">
+                    <span class="training-button-icon mr-2">${course.icon}</span>
+                    <span>Start Training</span>
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+// Fonction pour initialiser le contenu
+function initializeContent() {
     const gamesContainer = document.querySelector('.quest-grid');
     const coursesContainer = document.querySelector('.training-grid');
 
     if (gamesContainer) {
-        gamesContainer.innerHTML = games.map(game => createGameCard(game)).join('');
+        const gamesHTML = games.map(game => createGameCard(game)).join('');
+        gamesContainer.innerHTML = gamesHTML;
     }
 
     if (coursesContainer) {
-        coursesContainer.innerHTML = courses.map(course => createGameCard(course)).join('');
+        const coursesHTML = courses.map(course => createCourseCard(course)).join('');
+        coursesContainer.innerHTML = coursesHTML;
     }
 }
 
-// Initialisation
+// Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing content...');
     initMobileMenu();
     initFirebase();
     initThemeManager();
     initVisitCounter();
-    console.log('DOM loaded, initializing carousels...');
-    loadContent();
+    initializeContent();
 });

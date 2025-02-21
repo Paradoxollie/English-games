@@ -2,17 +2,17 @@ export const games = [
     {
         title: "Speed Verb Challenge",
         description: "Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!",
-        image: "images/speed-challenge.webp",
-        url: "speed-verb-challenge.html",
+        image: "./images/speed-challenge.webp",
+        url: "./speed-verb-challenge.html",
         difficulty: "legendary",
         tags: ["Verbs", "Time Trial", "Grammar"],
         icon: "⚔️"
     },
     {
         title: "Enigma Scroll",
-        description: "Uncover the mysteries of the enchanted scroll! Test your English skills by solving magical word puzzles!",
-        image: "images/enigma-scroll.webp",
-        url: "enigma-scroll.html",
+        description: "Uncover the mysteries of the enchanted scroll!",
+        image: "./images/enigma-scroll.webp",
+        url: "./enigma-scroll.html",
         difficulty: "epic",
         tags: ["Puzzles", "Vocabulary", "Adventure"],
         icon: "📜"
@@ -86,11 +86,46 @@ export const courses = [
     {
         title: "Present Perfect",
         description: "Master the present perfect tense and its usage in English",
-        image: "images/present-perfect.webp",
-        url: "present-perfect.html",
+        image: "./images/present-perfect.webp",
+        url: "./present-perfect.html",
         level: "intermediate",
         tags: ["Grammar", "Tenses", "Intermediate"],
         icon: "📚"
     },
-    // ... autres cours
+    {
+        title: "Past Simple vs Present Perfect",
+        description: "Learn when to use each tense and their differences",
+        image: "./images/past-simple.webp",
+        url: "./past-simple.html",
+        level: "advanced",
+        tags: ["Grammar", "Tenses", "Advanced"],
+        icon: "📚"
+    },
+    {
+        title: "For & Since",
+        description: "Master the use of 'for' and 'since' in perfect tenses",
+        image: "./images/for-since.webp",
+        url: "./for-since.html",
+        level: "intermediate",
+        tags: ["Grammar", "Prepositions", "Time Expressions"],
+        icon: "⏳"
+    },
+    {
+        title: "Comparative & Superlative",
+        description: "Learn to compare and express superiority in English",
+        image: "./images/comparative.webp",
+        url: "./comparative.html",
+        level: "basic",
+        tags: ["Grammar", "Adjectives", "Comparison"],
+        icon: "📊"
+    },
+    {
+        title: "Modal Verbs",
+        description: "Master English modal verbs and their various uses",
+        image: "./images/modaux.webp",
+        url: "./modaux.html",
+        level: "intermediate",
+        tags: ["Grammar", "Verbs", "Modals"],
+        icon: "🎯"
+    }
 ]; 

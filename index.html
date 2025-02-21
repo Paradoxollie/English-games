@@ -127,32 +127,68 @@
 
     <!-- Scripts -->
     <script type="module">
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { games, courses } from './src/data/games.js';
+        
+        // Fonction pour créer une carte de jeu
+        function createGameCard(game) {
+            return `
+                <div class="quest-card">
+                    <div class="quest-card-banner h-32">
+                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover">
+                        <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
+                    </div>
+                    <div class="quest-card-content p-4">
+                        <h3 class="text-xl font-bold text-quest-gold mb-2">${game.title}</h3>
+                        <p class="text-sm text-gray-300 mb-3">${game.description}</p>
+                        <div class="quest-tags flex flex-wrap gap-2 mb-3">
+                            ${game.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <a href="${game.url}" class="quest-button flex items-center justify-center">
+                            <span class="quest-button-icon mr-2">${game.icon}</span>
+                            <span>Play Now</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
 
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBPyX-6M6YHV9kQl7tRiKzJkQk2SN0rCNE",
-            authDomain: "grammar-games-a2f17.firebaseapp.com",
-            databaseURL: "https://grammar-games-a2f17-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "grammar-games-a2f17",
-            storageBucket: "grammar-games-a2f17.appspot.com",
-            messagingSenderId: "1051613705589",
-            appId: "1:1051613705589:web:ba625db50d9c7f0a4cae8c"
-        };
+        // Fonction pour créer une carte de cours
+        function createCourseCard(course) {
+            return `
+                <div class="training-card">
+                    <div class="training-card-banner h-32">
+                        <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover">
+                        <div class="training-level ${course.level}">${course.level}</div>
+                    </div>
+                    <div class="training-card-content p-4">
+                        <h3 class="text-xl font-bold text-quest-gold mb-2">${course.title}</h3>
+                        <p class="text-sm text-gray-300 mb-3">${course.description}</p>
+                        <div class="training-tags flex flex-wrap gap-2 mb-3">
+                            ${course.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <a href="${course.url}" class="training-button flex items-center justify-center">
+                            <span class="training-button-icon mr-2">${course.icon}</span>
+                            <span>Start Training</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const analytics = getAnalytics(app);
+        // Initialisation du contenu
+        document.addEventListener('DOMContentLoaded', () => {
+            const gamesContainer = document.querySelector('.quest-grid');
+            const coursesContainer = document.querySelector('.training-grid');
 
-        window.firebaseInstance = { app, database, analytics };
+            if (gamesContainer) {
+                gamesContainer.innerHTML = games.map(game => createGameCard(game)).join('');
+            }
+
+            if (coursesContainer) {
+                coursesContainer.innerHTML = courses.map(course => createCourseCard(course)).join('');
+            }
+        });
     </script>
-    <script src="./src/data/games.js" type="module"></script>
-    <script src="./src/components/GameCard.js" type="module"></script>
-    <script src="./script.js" type="module"></script>
     <script src="./visit-counter.js" type="module"></script>
 </body>
 </html>
