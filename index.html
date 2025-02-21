@@ -138,7 +138,7 @@
             {
                 title: "Speed Verb Challenge",
                 description: "Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!",
-                image: "./images/speed-verb.webp",
+                image: "./images/speed-challenge.webp",
                 url: "./speed-verb-challenge.html",
                 difficulty: "legendary",
                 tags: ["Verbs", "Time Trial", "Grammar"],
@@ -192,7 +192,7 @@
             {
                 title: "Lost in Migration",
                 description: "Catch the intruder! Test your English skills by identifying the odd word out!",
-                image: "./images/lost-migration.webp",
+                image: "./images/lost-in-migration.webp",
                 url: "./lost-migration.html",
                 difficulty: "epic",
                 tags: ["Vocabulary", "Logic", "Categories"],
@@ -201,7 +201,7 @@
             {
                 title: "Brew Your Words",
                 description: "Serve customers in this challenging word game! Get the right translations under pressure!",
-                image: "./images/brew-words.webp",
+                image: "./images/brew-your-words.webp",
                 url: "./brew-words.html",
                 difficulty: "legendary",
                 tags: ["Translation", "Time Management", "Vocabulary"],
@@ -269,18 +269,30 @@
 
         // Fonction pour créer une carte
         function createCard(item, isGame = true) {
+            // Couleurs pour les difficultés des jeux
             const difficultyColors = {
-                legendary: 'bg-purple-600/80 text-white',
-                epic: 'bg-blue-600/80 text-white',
-                rare: 'bg-green-600/80 text-white',
-                common: 'bg-gray-600/80 text-white'
+                legendary: 'bg-gradient-to-r from-purple-900 to-purple-600 text-white border border-purple-400',
+                epic: 'bg-gradient-to-r from-blue-900 to-blue-600 text-white border border-blue-400',
+                rare: 'bg-gradient-to-r from-green-900 to-green-600 text-white border border-green-400',
+                common: 'bg-gradient-to-r from-gray-800 to-gray-600 text-white border border-gray-400'
             };
 
+            // Couleurs pour les niveaux des cours
             const levelColors = {
-                advanced: 'bg-red-600/80 text-white',
-                intermediate: 'bg-yellow-600/80 text-black',
-                basic: 'bg-green-600/80 text-white'
+                advanced: 'bg-gradient-to-r from-red-900 to-red-600 text-white border border-red-400',
+                intermediate: 'bg-gradient-to-r from-yellow-700 to-yellow-500 text-white border border-yellow-400',
+                basic: 'bg-gradient-to-r from-green-900 to-green-600 text-white border border-green-400'
             };
+
+            // Styles des tags selon le type (jeu ou cours)
+            const tagStyle = isGame ? 
+                'bg-gradient-to-r from-quest-gold/30 to-quest-gold/10 text-quest-gold border border-quest-gold/50 hover:from-quest-gold/40 hover:to-quest-gold/20' :
+                'bg-gradient-to-r from-blue-900/30 to-blue-800/10 text-blue-300 border border-blue-500/50 hover:from-blue-900/40 hover:to-blue-800/20';
+
+            // Style du bouton selon le type
+            const buttonStyle = isGame ?
+                'bg-gradient-to-r from-quest-gold/20 to-quest-gold/10 hover:from-quest-gold/30 hover:to-quest-gold/20 text-quest-gold border-quest-gold/50 hover:border-quest-gold' :
+                'bg-gradient-to-r from-blue-900/20 to-blue-800/10 hover:from-blue-900/30 hover:to-blue-800/20 text-blue-300 border-blue-500/50 hover:border-blue-400';
 
             return `
                 <div class="game-card bg-black/80 border-2 border-quest-gold/80 rounded-lg overflow-hidden w-[450px] 
@@ -289,26 +301,26 @@
                         <img src="${item.image}" alt="${item.title}" 
                              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
                         <div class="absolute bottom-3 right-3 px-4 py-1.5 rounded-full text-sm font-bold
-                                   ${isGame ? difficultyColors[item.difficulty] : levelColors[item.level]}">
+                                   ${isGame ? difficultyColors[item.difficulty] : levelColors[item.level]}
+                                   flex items-center justify-center min-w-[100px]">
                             ${isGame ? item.difficulty.toUpperCase() : item.level.toUpperCase()}
                         </div>
                     </div>
                     <div class="p-6 bg-gradient-to-b from-black/90 to-black/70">
                         <h3 class="text-2xl font-medieval text-quest-gold mb-3 glow-text-sm">${item.title}</h3>
                         <p class="text-gray-300 mb-4 min-h-[48px]">${item.description}</p>
-                        <div class="flex flex-wrap gap-2 mb-5">
+                        <div class="flex flex-wrap gap-2 mb-8">
                             ${item.tags.map(tag => `
-                                <span class="px-3 py-1 bg-quest-gold/10 text-quest-gold/90 rounded-full text-sm
-                                           border border-quest-gold/30 hover:border-quest-gold/60 transition-colors">
+                                <span class="px-3 py-1.5 rounded-full text-sm ${tagStyle}
+                                           transition-all duration-300 hover:scale-105">
                                     ${tag}
                                 </span>
                             `).join('')}
                         </div>
                         <a href="${item.url}" 
-                           class="block w-full py-3 text-center bg-quest-gold/10 hover:bg-quest-gold/20 
-                                  text-quest-gold font-medieval text-lg border border-quest-gold/50 
-                                  hover:border-quest-gold rounded-lg transition-all duration-300
-                                  transform hover:-translate-y-1">
+                           class="block w-full py-3 text-center ${buttonStyle}
+                                  font-medieval text-lg border rounded-lg transition-all duration-300
+                                  transform hover:-translate-y-1 hover:shadow-lg">
                             <span class="mr-2 text-xl">${item.icon}</span>
                             <span>${isGame ? 'Play Now' : 'Start Training'}</span>
                         </a>
