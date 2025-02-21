@@ -124,8 +124,8 @@ function endGame(score) {
 function createGameCard(game) {
     return `
         <div class="quest-card">
-            <div class="quest-card-banner h-32">
-                <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover">
+            <div class="quest-card-banner">
+                <img src="${game.image}" alt="${game.title}" class="game-image">
                 <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
             </div>
             <div class="quest-card-content p-4">
@@ -147,8 +147,8 @@ function createGameCard(game) {
 function createCourseCard(course) {
     return `
         <div class="training-card">
-            <div class="training-card-banner h-32">
-                <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover">
+            <div class="training-card-banner">
+                <img src="${course.image}" alt="${course.title}" class="course-image">
                 <div class="training-level ${course.level}">${course.level}</div>
             </div>
             <div class="training-card-content p-4">
@@ -215,31 +215,40 @@ function initializeCarousels() {
     }
 }
 
-// Mise à jour des styles pour une transition fluide
+// Styles pour les cartes
 const styles = `
-    .quest-grid, .training-grid {
-        transition: opacity 0.5s ease-in-out;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    
     .quest-card, .training-card {
+        width: 300px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid #c9aa71;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .game-image, .course-image {
         width: 100%;
-        max-width: 350px;
-    }
-
-    .quest-card-banner h-32, .training-card-banner h-32 {
-        height: 150px !important;
-    }
-
-    .quest-card img, .training-card img {
-        height: 150px;
+        height: 120px;
         object-fit: cover;
+    }
+
+    .quest-card-banner, .training-card-banner {
+        position: relative;
+        height: 120px;
+    }
+
+    .quest-difficulty, .training-level {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        background: rgba(0, 0, 0, 0.7);
     }
 `;
 
-// Ajouter les styles au document
+// Ajouter les styles
 const styleSheet = document.createElement("style");
 styleSheet.textContent = styles;
 document.head.appendChild(styleSheet);
