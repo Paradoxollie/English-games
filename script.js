@@ -175,18 +175,13 @@ function shuffleArray(array) {
 }
 
 function updateCarousel(container, items, currentIndex) {
-    const visibleItems = items.slice(currentIndex, currentIndex + 3);
-    // Si on n'a pas assez d'items, on prend au début
-    if (visibleItems.length < 3) {
-        visibleItems.push(...items.slice(0, 3 - visibleItems.length));
-    }
+    const currentItem = items[currentIndex];
     
     container.style.opacity = '0';
     setTimeout(() => {
-        container.innerHTML = visibleItems.map(item => {
-            const isGame = 'difficulty' in item;
-            return isGame ? createGameCard(item) : createCourseCard(item);
-        }).join('');
+        container.innerHTML = currentItem.difficulty ? 
+            createGameCard(currentItem) : 
+            createCourseCard(currentItem);
         container.style.opacity = '1';
     }, 500);
 }
@@ -206,17 +201,17 @@ function initializeCarousels() {
     if (gamesContainer) {
         updateCarousel(gamesContainer, shuffledGames, gameIndex);
         setInterval(() => {
-            gameIndex = (gameIndex + 3) % shuffledGames.length;
+            gameIndex = (gameIndex + 1) % shuffledGames.length;
             updateCarousel(gamesContainer, shuffledGames, gameIndex);
-        }, 3000);
+        }, 5000); // Changé à 5 secondes
     }
 
     if (coursesContainer) {
         updateCarousel(coursesContainer, shuffledCourses, courseIndex);
         setInterval(() => {
-            courseIndex = (courseIndex + 3) % shuffledCourses.length;
+            courseIndex = (courseIndex + 1) % shuffledCourses.length;
             updateCarousel(coursesContainer, shuffledCourses, courseIndex);
-        }, 3000);
+        }, 5000);
     }
 }
 
@@ -224,15 +219,14 @@ function initializeCarousels() {
 const styles = `
     .quest-grid, .training-grid {
         transition: opacity 0.5s ease-in-out;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
-    @media (max-width: 768px) {
-        .quest-grid, .training-grid {
-            grid-template-columns: repeat(1, 1fr);
-        }
+    .quest-card, .training-card {
+        width: 100%;
+        max-width: 400px;
     }
 `;
 
