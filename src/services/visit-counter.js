@@ -1,10 +1,11 @@
-import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from '../config/firebase-config';
+import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
+import { trackEvent } from './analytics';
 
 class VisitorCounter {
     constructor() {
         this.visitorId = this.getOrCreateVisitorId();
         this.today = new Date().toISOString().split('T')[0];
-        this.db = window.db;
     }
 
     getOrCreateVisitorId() {
@@ -20,6 +21,7 @@ class VisitorCounter {
         try {
             await this.updateVisitStats();
             await this.displayStats();
+            trackEvent('page_visit', { page: window.location.pathname });
         } catch (error) {
             console.error('Error initializing visitor counter:', error);
             this.handleError(error);
@@ -27,7 +29,7 @@ class VisitorCounter {
     }
 
     async updateVisitStats() {
-        const visitsRef = doc(this.db, 'visits', 'stats');
+        const visitsRef = doc(db, 'visits', 'stats');
         const visitsDoc = await getDoc(visitsRef);
 
         if (!visitsDoc.exists()) {
@@ -38,13 +40,10 @@ class VisitorCounter {
                 lastUpdated: new Date()
             });
         } else {
-            const data = visitsDoc.data();
-            const todayVisits = (data.dailyVisits?.[this.today] || 0) + 1;
-            
             await updateDoc(visitsRef, {
                 totalVisits: increment(1),
                 uniqueVisitors: arrayUnion(this.visitorId),
-                [`dailyVisits.${this.today}`]: todayVisits,
+                [`dailyVisits.${this.today}`]: increment(1),
                 lastUpdated: new Date()
             });
         }
@@ -55,7 +54,7 @@ class VisitorCounter {
         if (!element) return;
 
         try {
-            const visitsRef = doc(this.db, 'visits', 'stats');
+            const visitsRef = doc(db, 'visits', 'stats');
             const visitsDoc = await getDoc(visitsRef);
             const data = visitsDoc.data();
 
@@ -66,11 +65,11 @@ class VisitorCounter {
                         <span class="counter-value">${data.totalVisits.toLocaleString()}</span>
                     </div>
                     <div class="counter-item">
-                        <span class="counter-label">Today's Visits</span>
+                        <span class="counter-label">Today</span>
                         <span class="counter-value">${(data.dailyVisits[this.today] || 0).toLocaleString()}</span>
                     </div>
                     <div class="counter-item">
-                        <span class="counter-label">Unique Visitors</span>
+                        <span class="counter-label">Unique</span>
                         <span class="counter-value">${data.uniqueVisitors.length.toLocaleString()}</span>
                     </div>
                 </div>
@@ -88,6 +87,4 @@ class VisitorCounter {
     }
 }
 
-// Initialiser le compteur
-const counter = new VisitorCounter();
-counter.initialize();
+export const visitorCounter = new VisitorCounter(); 

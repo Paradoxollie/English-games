@@ -1,20 +1,30 @@
 :root {
-    /* Palette principale */
-    --primary-dark: #1a1c23;     /* Fond sombre principal */
-    --primary-gold: #ffd700;     /* Or pour les éléments importants */
-    --primary-silver: #c0c0c0;   /* Argent pour les éléments secondaires */
+    /* Couleurs principales */
+    --quest-gold: #c9aa71;
+    --quest-red: #ff4444;
+    --quest-blue: #3b82f6;
+
+    /* Gradients */
+    --gold-gradient: linear-gradient(to bottom, #ffd700, #c9aa71);
+    --red-gradient: linear-gradient(to bottom, #ff4444, #8B0000);
     
-    /* Accents pour différentes sections */
-    --accent-magic: #9b59b6;     /* Pour les sections de grammaire */
-    --accent-warrior: #e74c3c;   /* Pour les sections de vocabulaire */
-    --accent-rogue: #27ae60;     /* Pour les sections de prononciation */
-    --accent-mage: #3498db;      /* Pour les sections de compréhension */
+    /* Couleurs des rangs */
+    --rank-1-color: #ffd700;
+    --rank-2-color: #C0C0C0;
+    --rank-3-color: #CD7F32;
+
+    /* Couleurs de difficulté */
+    --legendary-color: #ff4444;
+    --epic-color: #a855f7;
+    --rare-color: #3b82f6;
     
-    /* Dégradés */
-    --gradient-gold: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
-    --gradient-dark: linear-gradient(180deg, rgba(26, 28, 35, 0.95) 0%, rgba(26, 28, 35, 0.85) 100%);
-    
-    /* Overlays et transparences */
-    --overlay-dark: rgba(26, 28, 35, 0.9);
-    --overlay-light: rgba(255, 255, 255, 0.1);
+    /* Couleurs de fond */
+    --bg-dark: rgba(0, 0, 0, 0.9);
+    --bg-transparent: rgba(0, 0, 0, 0.7);
+}
+
+/* Supprimer ou commenter toutes les règles qui pourraient affecter les rangs */
+.rank-1, .rank-2, .rank-3 {
+    background: none !important;
+    border: none !important;
 } 

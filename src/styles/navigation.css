@@ -1,0 +1,18 @@
+.nav-link {
+    @apply text-gray-300 transition-colors duration-300;
+}
+
+/* Style spécifique pour chaque page */
+body[data-page="home"] .nav-link:hover { @apply text-quest-gold; }
+body[data-page="games"] .nav-link:hover { @apply text-quest-blue; }
+body[data-page="leaderboard"] .nav-link:hover { @apply text-quest-red; }
+
+/* Style actif pour la page courante */
+.nav-link.active {
+    @apply font-bold;
+}
+
+body[data-page="leaderboard"] .nav-link.active {
+    @apply text-quest-red;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+} 

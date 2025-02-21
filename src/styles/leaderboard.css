@@ -1,0 +1,150 @@
+/* Structure principale */
+.leaderboard-container {
+    @apply max-w-7xl mx-auto;
+}
+
+/* Titre principal */
+.hall-of-champions {
+    @apply text-[12rem] font-medieval text-center tracking-widest leading-none;
+    background: var(--red-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 
+        0 0 40px rgba(255, 68, 68, 0.4),
+        0 0 80px rgba(255, 68, 68, 0.2);
+}
+
+/* Sections de jeu */
+.game-section {
+    @apply mb-16 w-full text-center;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.8),
+        rgba(0, 0, 0, 0.6)
+    );
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 2px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+}
+
+/* Titre des jeux */
+.game-title {
+    @apply inline-flex items-center gap-4 mb-8 px-8 py-4 rounded-xl;
+    width: fit-content !important;
+    margin: 0 auto !important;
+    background: linear-gradient(
+        45deg,
+        rgba(201, 170, 113, 0.15),
+        rgba(255, 68, 68, 0.15),
+        rgba(201, 170, 113, 0.15)
+    ) !important;
+    border: 1px solid rgba(201, 170, 113, 0.3) !important;
+    box-shadow: 
+        0 4px 15px rgba(201, 170, 113, 0.1),
+        inset 0 1px rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(5px);
+}
+
+.game-title span {
+    @apply text-3xl font-medieval text-quest-red;
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+}
+
+/* Tableaux des scores */
+.podium-table {
+    @apply w-full border-collapse;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* En-tête du tableau */
+.podium-table thead tr {
+    background: rgba(45, 45, 45, 0.8) !important;
+    backdrop-filter: blur(5px);
+}
+
+.podium-table th {
+    @apply py-4 px-6 text-lg font-medieval text-quest-red;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Lignes du tableau */
+.podium-table tbody tr {
+    background: none !important;
+    transition: background-color 0.2s ease;
+}
+
+.podium-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.podium-table td {
+    @apply py-4 px-6 text-gray-200;
+    background: none !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Numéros de rang */
+.rank-1 td:first-child {
+    @apply text-2xl font-medieval text-center;
+    color: #ffd700 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+}
+
+.rank-2 td:first-child {
+    @apply text-xl font-medieval text-center;
+    color: #c0c0c0 !important;
+    text-shadow: 0 0 10px rgba(192, 192, 192, 0.3) !important;
+}
+
+.rank-3 td:first-child {
+    @apply text-xl font-medieval text-center;
+    color: #cd7f32 !important;
+    text-shadow: 0 0 10px rgba(205, 127, 50, 0.3) !important;
+}
+
+/* Alignements des colonnes */
+.podium-table td.champion {
+    @apply text-left;
+}
+
+.podium-table td.score {
+    @apply text-right;
+}
+
+.podium-table td.date {
+    @apply text-right text-gray-400;
+}
+
+/* Animation au survol */
+.podium-table tr {
+    @apply transition-colors duration-200;
+}
+
+.podium-table tr:hover {
+    @apply bg-white/5;
+}
+
+/* ... autres styles ... */
+
+.game-icon {
+    @apply text-2xl;
+}
+
+.glow-text {
+    text-shadow: 
+        0 0 30px rgba(255, 68, 68, 0.4),
+        0 0 60px rgba(255, 68, 68, 0.2);
+}
+
+.text-quest-red {
+    background: var(--red-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+} 

@@ -21,10 +21,7 @@ body {
 
 /* Header et Navigation */
 .site-header {
-    position: relative;
-    width: 100%;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
+    @apply fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black via-black/95 to-transparent;
 }
 
 .logo-container {
@@ -53,18 +50,13 @@ body {
 }
 
 .nav-link {
-    color: #c9aa71;
-    text-decoration: none;
-    font-size: 1.1rem;
-    padding: 0.5rem 1.5rem;
-    transition: all 0.3s ease;
-    position: relative;
-    letter-spacing: 1px;
+    @apply text-gray-300 transition-colors duration-300;
 }
 
-.nav-link:hover {
-    color: #ffd700;
-}
+/* Page spécifique */
+.nav-link.home-active:hover { @apply text-quest-gold; }
+.nav-link.games-active:hover { @apply text-quest-blue; }
+.nav-link.leaderboard-active:hover { @apply text-quest-red; }
 
 .nav-link::after {
     content: '';
@@ -129,7 +121,7 @@ main {
 
 /* Footer */
 .quest-footer {
-    background: rgba(0, 0, 0, 0.9);
+    @apply bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30;
     padding: 3rem 0 1rem;
     position: relative;
     border-top: 1px solid rgba(201, 170, 113, 0.3);
@@ -220,16 +212,7 @@ main {
 
 /* Panels communs */
 .quest-panel {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto 2rem auto;
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid #c9aa71;
-    border-radius: 12px;
-    padding: 2.5rem;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    backdrop-filter: blur(10px);
-    text-align: center;
+    @apply bg-black/80 backdrop-blur-sm border border-quest-gold/30 rounded-xl p-8;
 }
 
 /* Boutons communs */
@@ -527,16 +510,6 @@ main {
     background: #c9aa71;
 }
 
-/* Ajustements pour le conteneur du carousel */
-.quest-panel {
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid #c9aa71;
-    border-radius: 12px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    backdrop-filter: blur(5px);
-}
-
 /* Styles des cartes */
 .quest-card, .training-card {
     @apply bg-black/60 rounded-lg overflow-hidden border-2 border-quest-gold/30 
@@ -580,4 +553,6 @@ main {
 .quest-card:hover .quest-card-banner img,
 .training-card:hover .training-card-banner img {
     @apply transform scale-105 transition-transform duration-300;
-} 
+}
+
+/* Supprimer ou commenter toutes les règles qui pourraient affecter les tableaux */ 

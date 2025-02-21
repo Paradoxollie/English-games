@@ -1,75 +1,113 @@
-import { db } from '../config/firebase-config.js';
+import { db } from '../config/firebase';
+import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
 
-export class VisitorCounter {
+class VisitorCounter {
     constructor() {
-        this.statsRef = db.ref('stats'); // Gardons l'ancienne référence
+        this.visitorId = this.getOrCreateVisitorId();
         this.today = new Date().toISOString().split('T')[0];
     }
 
-    async countVisit() {
-        const clientId = this.getClientId();
-        
+    getOrCreateVisitorId() {
+        let id = localStorage.getItem('visitorId');
+        if (!id) {
+            id = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            localStorage.setItem('visitorId', id);
+        }
+        return id;
+    }
+
+    async initialize() {
         try {
-            await this.statsRef.transaction((stats) => {
-                if (!stats) stats = { total: 0, daily: {}, unique: {} };
-                
-                // Incrémente le total
-                stats.total = (stats.total || 0) + 1;
-                
-                // Compte journalier
-                if (!stats.daily[this.today]) stats.daily[this.today] = 0;
-                stats.daily[this.today]++;
-                
-                // Visiteurs uniques
-                if (!stats.unique[clientId]) {
-                    stats.unique[clientId] = true;
-                    stats.uniqueCount = (stats.uniqueCount || 0) + 1;
-                }
-                
-                return stats;
-            });
+            await this.updateVisitStats();
+            await this.displayStats();
         } catch (error) {
-            console.error('Error updating visitor count:', error);
+            console.error('Error initializing visitor counter:', error);
+            this.handleError(error);
         }
     }
 
-    getClientId() {
-        let clientId = localStorage.getItem('visitorId');
-        if (!clientId) {
-            clientId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('visitorId', clientId);
+    async updateVisitStats() {
+        const todayRef = doc(db, 'visits', this.today);
+        const statsRef = doc(db, 'visits', 'stats');
+
+        const todayDoc = await getDoc(todayRef);
+        
+        if (!todayDoc.exists()) {
+            await setDoc(todayRef, {
+                count: 1,
+                visitors: [this.visitorId],
+                firstVisit: this.today,
+                lastVisit: this.today
+            });
+        } else {
+            const data = todayDoc.data();
+            if (!data.visitors.includes(this.visitorId)) {
+                await updateDoc(todayRef, {
+                    count: increment(1),
+                    visitors: arrayUnion(this.visitorId),
+                    lastVisit: this.today
+                });
+            }
         }
-        return clientId;
+
+        // Mettre à jour les stats globales
+        const statsDoc = await getDoc(statsRef);
+        if (statsDoc.exists()) {
+            const stats = statsDoc.data();
+            if (!stats.allVisitors || !stats.allVisitors.includes(this.visitorId)) {
+                await updateDoc(statsRef, {
+                    totalVisits: increment(1),
+                    allVisitors: arrayUnion(this.visitorId)
+                });
+            }
+        } else {
+            await setDoc(statsRef, {
+                totalVisits: 1,
+                allVisitors: [this.visitorId]
+            });
+        }
     }
 
-    async displayCount(element) {
+    async displayStats() {
+        const element = document.getElementById('visit-stats');
         if (!element) return;
 
         try {
-            const snapshot = await this.statsRef.once('value');
-            const stats = snapshot.val();
+            const todayDoc = await getDoc(doc(db, 'visits', this.today));
+            const statsDoc = await getDoc(doc(db, 'visits', 'stats'));
             
-            if (stats) {
-                element.innerHTML = `
-                    <div class="counter-container">
-                        <div class="counter-item">
-                            <span class="counter-label">Total Visits</span>
-                            <span class="counter-value">${stats.total.toLocaleString()}</span>
-                        </div>
-                        <div class="counter-item">
-                            <span class="counter-label">Today</span>
-                            <span class="counter-value">${(stats.daily[this.today] || 0).toLocaleString()}</span>
-                        </div>
-                        <div class="counter-item">
-                            <span class="counter-label">Unique</span>
-                            <span class="counter-value">${(stats.uniqueCount || 0).toLocaleString()}</span>
-                        </div>
+            const todayData = todayDoc.exists() ? todayDoc.data() : { count: 0, visitors: [] };
+            const statsData = statsDoc.exists() ? statsDoc.data() : { totalVisits: 0, allVisitors: [] };
+
+            element.innerHTML = `
+                <div class="counter-container">
+                    <div class="counter-item">
+                        <span class="counter-label">Total Visits</span>
+                        <span class="counter-value">${statsData.totalVisits.toLocaleString()}</span>
                     </div>
-                `;
-            }
+                    <div class="counter-item">
+                        <span class="counter-label">Today</span>
+                        <span class="counter-value">${todayData.count.toLocaleString()}</span>
+                    </div>
+                    <div class="counter-item">
+                        <span class="counter-label">Unique</span>
+                        <span class="counter-value">${statsData.allVisitors.length.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
         } catch (error) {
-            console.error('Error fetching visitor count:', error);
-            element.innerHTML = '<p class="text-red-500">Error loading visitor stats</p>';
+            console.error('Error displaying stats:', error);
+            element.innerHTML = '<p class="text-red-500">Error loading stats</p>';
         }
     }
-} 
+
+    handleError(error) {
+        console.error('Visitor counter error:', error);
+        const element = document.getElementById('visit-stats');
+        if (element) {
+            element.innerHTML = '<p class="text-red-500">Error loading stats</p>';
+        }
+    }
+}
+
+export const visitorCounter = new VisitorCounter(); 

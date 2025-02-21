@@ -1,0 +1,25 @@
+.visitor-stats {
+    @apply flex flex-col gap-4;
+}
+
+.counter-container {
+    @apply flex flex-col gap-2 bg-black/40 rounded-lg p-4 border border-quest-gold/20;
+}
+
+.counter-item {
+    @apply flex justify-between items-center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(201, 170, 113, 0.1);
+}
+
+.counter-item:last-child {
+    border-bottom: none;
+}
+
+.counter-label {
+    @apply text-sm text-quest-gold/70 font-medieval;
+}
+
+.counter-value {
+    @apply text-lg text-quest-gold font-bold font-medieval;
+} 
