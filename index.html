@@ -77,6 +77,30 @@
             border: 2px solid;
             margin: 0.25rem;
         }
+
+        /* Effets de lueur améliorés */
+        .glow-text-lg {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                         0 0 20px rgba(255, 215, 0, 0.3),
+                         0 0 30px rgba(255, 215, 0, 0.2);
+        }
+        
+        .glow-text-blue-lg {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5),
+                         0 0 20px rgba(59, 130, 246, 0.3),
+                         0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Style pour les titres */
+        .section-title {
+            @apply relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            @apply absolute left-1/2 -bottom-4 w-32 h-1 transform -translate-x-1/2;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+        }
     </style>
 </head>
 <body class="bg-quest-pattern" data-page="index" style="background-image: url('./images/background.webp');">
@@ -131,16 +155,18 @@
         <!-- Games Section -->
         <section class="quest-panel max-w-7xl mx-auto mb-16 px-4" aria-labelledby="games-title">
             <div class="section-header mb-8 text-center">
-                <h2 id="games-title" class="section-title text-4xl font-medieval mb-3">
-                    <span class="text-quest-gold glow-text">Available Quests</span>
-                    <span class="block text-2xl text-gray-400 mt-1">Quêtes Disponibles</span>
+                <h2 id="games-title" class="section-title text-5xl font-medieval mb-4">
+                    <span class="text-quest-gold glow-text-lg block mb-2">Available Quests</span>
+                    <span class="block text-3xl text-quest-gold/70 font-cinzel">Quêtes Disponibles</span>
                 </h2>
-                <p class="text-quest-gold/70 text-lg italic">Choose your challenge and prove your worth in the realm of English</p>
+                <p class="text-quest-gold/70 text-xl italic mt-4">Choose your challenge and prove your worth in the realm of English</p>
                                 </div>
             <div id="game-carousel" class="relative" data-lazy="loadGameCarousel" role="region" aria-label="Games carousel">
+
                 <div id="game-display" class="flex justify-center items-center min-h-[500px]">
                     <!-- Un seul jeu sera affiché ici -->
-                            </div>
+                        </div>
+
                 <div class="flex justify-center mt-4 gap-4">
                             </div>
                         </div>
@@ -149,16 +175,18 @@
         <!-- Courses Section -->
         <section class="quest-panel max-w-7xl mx-auto mb-16 px-4" aria-labelledby="courses-title">
             <div class="section-header mb-8 text-center">
-                <h2 id="courses-title" class="section-title text-4xl font-medieval mb-3">
-                    <span class="text-blue-400 glow-text-blue">Training Grounds</span>
-                    <span class="block text-2xl text-gray-400 mt-1">Terrains d'Entraînement</span>
+                <h2 id="courses-title" class="section-title text-5xl font-medieval mb-4">
+                    <span class="text-blue-500 glow-text-blue-lg block mb-2">Training Grounds</span>
+                    <span class="block text-3xl text-blue-400/70 font-cinzel">Terrains d'Entraînement</span>
                 </h2>
-                <p class="text-blue-400/70 text-lg italic">Master the ancient arts of English grammar</p>
+                <p class="text-blue-400/70 text-xl italic mt-4">Master the ancient arts of English grammar</p>
                                 </div>
             <div id="course-carousel" class="relative" data-lazy="loadCourseCarousel" role="region" aria-label="Courses carousel">
+
                 <div id="course-display" class="flex justify-center items-center min-h-[500px]">
                     <!-- Un seul cours sera affiché ici -->
-                            </div>
+                        </div>
+
                 <div class="flex justify-center mt-4 gap-4">
                 </div>
             </div>
@@ -227,14 +255,85 @@
                         tags: ["Verbs", "Time Trial", "Grammar"],
                         icon: "⚔️"
                     },
-                    // ... autres jeux
+                    {
+                        title: "Word Memory Game",
+                        description: "Challenge your memory and vocabulary! Match pairs of words and their meanings.",
+                        image: "./images/word-memory-game.webp",
+                        url: "./word-memory-game.html",
+                        difficulty: "intermediate",
+                        tags: ["Vocabulary", "Memory", "Fun"],
+                        icon: "🎯"
+                    },
+                    {
+                        title: "Memory Matrix",
+                        description: "Train your spatial memory with this grid-based challenge. Remember the patterns!",
+                        image: "./images/matrix-game.webp",
+                        url: "./memory-matrix.html",
+                        difficulty: "hard",
+                        tags: ["Memory", "Pattern", "Focus"],
+                        icon: "🧩"
+                    },
+                    {
+                        title: "Lost in Migration",
+                        description: "Guide the birds in the right direction while learning English directions and commands!",
+                        image: "./images/lost-in-migration.webp",
+                        url: "./lost-in-migration.html",
+                        difficulty: "easy",
+                        tags: ["Directions", "Focus", "Fun"],
+                        icon: "🦅"
+                    },
+                    {
+                        title: "Brew Your Words",
+                        description: "Mix and match ingredients to create magical potions while learning new vocabulary!",
+                        image: "./images/brew-your-words.webp",
+                        url: "./brew-your-words.html",
+                        difficulty: "intermediate",
+                        tags: ["Vocabulary", "Creative", "Magic"],
+                        icon: "🧪"
+                    },
+                    {
+                        title: "Enigma Scroll",
+                        description: "Decipher ancient scrolls and solve grammatical puzzles in this mysterious adventure!",
+                        image: "./images/enigma-scroll.webp",
+                        url: "./enigma-scroll.html",
+                        difficulty: "hard",
+                        tags: ["Grammar", "Puzzle", "Adventure"],
+                        icon: "📜"
+                    },
+                    {
+                        title: "Whisper Trials",
+                        description: "Test your listening skills in this atmospheric sound-based challenge!",
+                        image: "./images/whisper-trials.webp",
+                        url: "./whisper-trials.html",
+                        difficulty: "legendary",
+                        tags: ["Listening", "Focus", "Immersive"],
+                        icon: "👂"
+                    },
+                    {
+                        title: "Word Bubbles",
+                        description: "Pop word bubbles and build your vocabulary in this fast-paced arcade game!",
+                        image: "./images/word-bubbles.webp",
+                        url: "./word-bubbles.html",
+                        difficulty: "easy",
+                        tags: ["Vocabulary", "Arcade", "Quick"],
+                        icon: "🫧"
+                    },
+                    {
+                        title: "Echoes of Lexicon",
+                        description: "Journey through a mystical world where words have power. Build your vocabulary!",
+                        image: "./images/echoes-lexicon.webp",
+                        url: "./echoes-lexicon.html",
+                        difficulty: "hard",
+                        tags: ["Vocabulary", "Adventure", "Story"],
+                        icon: "📚"
+                    }
                 ];
 
                 const courses = [
                     {
                         title: "The Conditional",
                         description: "Master the different forms and usage of the conditional with this comprehensive guide.",
-                        image: "./images/conditional-course.webp",
+                        image: "./images/conditionnel-course.webp",
                         url: "./conditional-course.html",
                         level: "advanced",
                         tags: ["Grammar", "Advanced", "Conditional"],
@@ -243,14 +342,58 @@
                     {
                         title: "The Superlative",
                         description: "Learn the art of comparison and reach the pinnacle of excellence with superlatives.",
-                        image: "./images/superlative-course.webp",
+                        image: "./images/superlative.webp",
                         url: "./superlative.html",
                         level: "intermediate",
                         tags: ["Grammar", "Comparison", "Superlative"],
                         icon: "📊"
+                    },
+                    {
+                        title: "Comparative",
+                        description: "Face off against fierce grammar guardians and claim your place as the true Grammar Champion.",
+                        image: "./images/comparative.webp",
+                        url: "./comparative.html",
+                        level: "intermediate",
+                        tags: ["Grammar", "Comparison", "Comparative"],
+                        icon: "⚖️"
+                    },
+                    {
+                        title: "Since and For",
+                        description: "Prove your worth as the ultimate Time Master in the realm of English.",
+                        image: "./images/for-since.webp",
+                        url: "./for-and-since.html",
+                        level: "intermediate",
+                        tags: ["Time", "Duration", "Prepositions"],
+                        icon: "⏳"
+                    },
+                    {
+                        title: "Modals Mastery",
+                        description: "Devenez le Maître des Arcanes Modaux et manipulez la puissance des verbes anglais.",
+                        image: "./images/modaux.webp",
+                        url: "./modaux.html",
+                        level: "advanced",
+                        tags: ["Modals", "Verbs", "Advanced"],
+                        icon: "🔮"
                     }
-                    // ... autres cours
                 ];
+
+                // Ajoutons ces variables au début du script
+                let usedGameIndexes = [];
+                let usedCourseIndexes = [];
+
+                function getNextUniqueIndex(array, usedIndexes) {
+                    if (usedIndexes.length >= array.length) {
+                        // Si tous les éléments ont été utilisés, on réinitialise
+                        usedIndexes.length = 0;
+                    }
+                    
+                    let availableIndexes = Array.from(array.keys())
+                        .filter(i => !usedIndexes.includes(i));
+                    
+                    let randomIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+                    usedIndexes.push(randomIndex);
+                    return randomIndex;
+                }
 
                 function createCard(item, isGame = true) {
                     return `
@@ -288,10 +431,11 @@
                         const courseDisplay = document.getElementById('course-display');
 
                         if (gameDisplay) {
-                            const randomGame = games[Math.floor(Math.random() * games.length)];
+                            const gameIndex = getNextUniqueIndex(games, usedGameIndexes);
+                            const game = games[gameIndex];
                             gameDisplay.style.opacity = '0';
                             setTimeout(() => {
-                                gameDisplay.innerHTML = createCard(randomGame, true);
+                                gameDisplay.innerHTML = createCard(game, true);
                                 gameDisplay.style.opacity = '1';
                                 monitoring.trackPerformance({
                                     name: 'game_card_update',
@@ -301,10 +445,11 @@
                         }
 
                         if (courseDisplay) {
-                            const randomCourse = courses[Math.floor(Math.random() * courses.length)];
+                            const courseIndex = getNextUniqueIndex(courses, usedCourseIndexes);
+                            const course = courses[courseIndex];
                             courseDisplay.style.opacity = '0';
                             setTimeout(() => {
-                                courseDisplay.innerHTML = createCard(randomCourse, false);
+                                courseDisplay.innerHTML = createCard(course, false);
                                 courseDisplay.style.opacity = '1';
                                 monitoring.trackPerformance({
                                     name: 'course_card_update',
