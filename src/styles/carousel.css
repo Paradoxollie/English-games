@@ -1,0 +1,65 @@
+.carousel-nav {
+    @apply px-4 py-2 bg-quest-gold/20 text-quest-gold border-2 border-quest-gold/50
+           hover:bg-quest-gold/30 hover:border-quest-gold rounded-full transition-all
+           focus:outline-none focus:ring-2 focus:ring-quest-gold/50;
+}
+
+.game-card, .course-card {
+    @apply bg-black/80 border-2 border-quest-gold/80 rounded-lg overflow-hidden w-[450px]
+           transform transition-all duration-300 hover:border-quest-gold 
+           hover:shadow-lg hover:shadow-quest-gold/20;
+}
+
+.card-banner {
+    @apply relative h-52 overflow-hidden;
+}
+
+.card-banner img {
+    @apply w-full h-full object-cover transition-transform duration-300;
+}
+
+.game-card:hover .card-banner img,
+.course-card:hover .card-banner img {
+    @apply scale-105;
+}
+
+.difficulty-badge {
+    @apply absolute bottom-3 right-3 px-4 py-1.5 rounded-full text-sm font-bold;
+}
+
+.difficulty-legendary { @apply bg-purple-600/80 text-white; }
+.difficulty-epic { @apply bg-blue-600/80 text-white; }
+.difficulty-rare { @apply bg-green-600/80 text-white; }
+.difficulty-common { @apply bg-gray-600/80 text-white; }
+
+.level-advanced { @apply bg-red-600/80 text-white; }
+.level-intermediate { @apply bg-yellow-600/80 text-black; }
+.level-basic { @apply bg-green-600/80 text-white; }
+
+.card-content {
+    @apply p-6 bg-gradient-to-b from-black/90 to-black/70;
+}
+
+.card-title {
+    @apply text-2xl font-medieval text-quest-gold mb-3 glow-text-sm;
+}
+
+.card-description {
+    @apply text-gray-300 mb-4 min-h-[48px];
+}
+
+.card-tags {
+    @apply flex flex-wrap gap-2 mb-5;
+}
+
+.tag {
+    @apply px-3 py-1 bg-quest-gold/10 text-quest-gold/90 rounded-full text-sm
+           border border-quest-gold/30 hover:border-quest-gold/60 transition-colors;
+}
+
+.card-button {
+    @apply block w-full py-3 text-center bg-quest-gold/10 hover:bg-quest-gold/20 
+           text-quest-gold font-medieval text-lg border border-quest-gold/50 
+           hover:border-quest-gold rounded-lg transition-all duration-300
+           transform hover:-translate-y-1;
+} 

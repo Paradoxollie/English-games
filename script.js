@@ -2,7 +2,8 @@ import { initMobileMenu } from './src/utils/mobileMenu.js';
 import { initFirebase } from './firebase-init.js';
 import { initThemeManager } from './src/utils/themeManager.js';
 import { initVisitCounter } from './visit-counter.js';
-import { games, courses } from './src/data/games.js';
+import { games, courses } from './src/data/content.js';
+import { Carousel } from './src/js/carousel.js';
 
 // Liste de mots inappropriés à filtrer
 const inappropriateWords = ['badword1', 'badword2', 'badword3']; // Ajoutez vos mots inappropriés ici
@@ -249,4 +250,7 @@ function initializeDisplays() {
 }
 
 // Initialiser quand le DOM est chargé
-document.addEventListener('DOMContentLoaded', initializeDisplays);
+document.addEventListener('DOMContentLoaded', () => {
+    new Carousel('game-carousel', games, true);
+    new Carousel('course-carousel', courses, false);
+});
