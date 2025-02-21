@@ -166,28 +166,80 @@ function createCourseCard(course) {
     `;
 }
 
-// Fonction pour initialiser le contenu
-function initializeContent() {
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function updateCarousel(container, items, currentIndex) {
+    const visibleItems = items.slice(currentIndex, currentIndex + 3);
+    // Si on n'a pas assez d'items, on prend au début
+    if (visibleItems.length < 3) {
+        visibleItems.push(...items.slice(0, 3 - visibleItems.length));
+    }
+    
+    container.style.opacity = '0';
+    setTimeout(() => {
+        container.innerHTML = visibleItems.map(item => {
+            const isGame = 'difficulty' in item;
+            return isGame ? createGameCard(item) : createCourseCard(item);
+        }).join('');
+        container.style.opacity = '1';
+    }, 500);
+}
+
+function initializeCarousels() {
     const gamesContainer = document.querySelector('.quest-grid');
     const coursesContainer = document.querySelector('.training-grid');
+    
+    // Mélanger les tableaux
+    const shuffledGames = shuffleArray([...games]);
+    const shuffledCourses = shuffleArray([...courses]);
+    
+    let gameIndex = 0;
+    let courseIndex = 0;
 
+    // Initialiser les carousels
     if (gamesContainer) {
-        const gamesHTML = games.map(game => createGameCard(game)).join('');
-        gamesContainer.innerHTML = gamesHTML;
+        updateCarousel(gamesContainer, shuffledGames, gameIndex);
+        setInterval(() => {
+            gameIndex = (gameIndex + 3) % shuffledGames.length;
+            updateCarousel(gamesContainer, shuffledGames, gameIndex);
+        }, 3000);
     }
 
     if (coursesContainer) {
-        const coursesHTML = courses.map(course => createCourseCard(course)).join('');
-        coursesContainer.innerHTML = coursesHTML;
+        updateCarousel(coursesContainer, shuffledCourses, courseIndex);
+        setInterval(() => {
+            courseIndex = (courseIndex + 3) % shuffledCourses.length;
+            updateCarousel(coursesContainer, shuffledCourses, courseIndex);
+        }, 3000);
     }
 }
 
-// Attendre que le DOM soit chargé
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing content...');
-    initMobileMenu();
-    initFirebase();
-    initThemeManager();
-    initVisitCounter();
-    initializeContent();
-});
+// Mise à jour des styles pour une transition fluide
+const styles = `
+    .quest-grid, .training-grid {
+        transition: opacity 0.5s ease-in-out;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .quest-grid, .training-grid {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+`;
+
+// Ajouter les styles au document
+const styleSheet = document.createElement("style");
+styleSheet.textContent = styles;
+document.head.appendChild(styleSheet);
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', initializeCarousels);
