@@ -125,57 +125,163 @@
 
     <!-- Scripts -->
     <script>
-        // Données des jeux
+        // Données des jeux (tous les 9 jeux)
         const games = [
             {
                 title: "Speed Verb Challenge",
                 description: "Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!",
-                image: "./images/speed-challenge.webp",
+                image: "./images/games/speed-challenge.webp",
                 url: "./speed-verb-challenge.html",
                 difficulty: "legendary",
                 tags: ["Verbs", "Time Trial", "Grammar"],
                 icon: "⚔️"
             },
-            // ... autres jeux ...
+            {
+                title: "Enigma Scroll",
+                description: "Uncover the mysteries of the enchanted scroll! Test your English skills by solving magical word puzzles!",
+                image: "./images/games/enigma-scroll.webp",
+                url: "./enigma-scroll.html",
+                difficulty: "epic",
+                tags: ["Puzzles", "Vocabulary", "Adventure"],
+                icon: "📜"
+            },
+            {
+                title: "Word Bubbles",
+                description: "Challenge your typing and vocabulary skills! Type the correct words as they fall before time runs out.",
+                image: "./images/games/word-bubbles.webp",
+                url: "./word-bubbles.html",
+                difficulty: "rare",
+                tags: ["Typing", "Speed", "Vocabulary"],
+                icon: "🫧"
+            },
+            {
+                title: "Whisper Trials",
+                description: "Recognize the enchanted words whispered in diverse accents and level up your skills.",
+                image: "./images/games/whisper-trials.webp",
+                url: "./whisper-trials.html",
+                difficulty: "epic",
+                tags: ["Listening", "Pronunciation", "Accents"],
+                icon: "👂"
+            },
+            {
+                title: "Fill in the Gaps",
+                description: "Obtain great power by matching words and definitions",
+                image: "./images/games/matrix-game.webp",
+                url: "./memory-matrix.html",
+                difficulty: "rare",
+                tags: ["Matching", "Definitions", "Vocabulary"],
+                icon: "🎯"
+            },
+            {
+                title: "Word Memory Game",
+                description: "Test your memory skills by remembering and recalling English words!",
+                image: "./images/games/word-memory.webp",
+                url: "./word-memory.html",
+                difficulty: "common",
+                tags: ["Memory", "Vocabulary", "Recall"],
+                icon: "🧠"
+            },
+            {
+                title: "Lost in Migration",
+                description: "Catch the intruder! Test your English skills by identifying the odd word out!",
+                image: "./images/games/lost-migration.webp",
+                url: "./lost-migration.html",
+                difficulty: "epic",
+                tags: ["Vocabulary", "Logic", "Categories"],
+                icon: "🦅"
+            },
+            {
+                title: "Brew Your Words",
+                description: "Serve customers in this challenging word game! Get the right translations under pressure!",
+                image: "./images/games/brew-words.webp",
+                url: "./brew-words.html",
+                difficulty: "legendary",
+                tags: ["Translation", "Time Management", "Vocabulary"],
+                icon: "☕"
+            },
+            {
+                title: "Echoes of Lexicon",
+                description: "Explore les mystères d'un parchemin ancien ! Trouve des mots en utilisant les lettres affichées!",
+                image: "./images/games/lexicon.webp",
+                url: "./lexicon.html",
+                difficulty: "legendary",
+                tags: ["Word Formation", "Vocabulary", "Puzzle"],
+                icon: "📖"
+            }
         ];
 
-        // Données des cours
+        // Données des cours (tous les 5 cours)
         const courses = [
             {
                 title: "Present Perfect",
                 description: "Master the present perfect tense and its usage in English",
-                image: "./images/present-perfect.webp",
-                url: "./present-perfect.html",
+                image: "./images/courses/present-perfect.webp",
+                url: "./courses/present-perfect.html",
                 level: "intermediate",
                 tags: ["Grammar", "Tenses", "Intermediate"],
                 icon: "📚"
             },
-            // ... autres cours ...
+            {
+                title: "Past Simple vs Present Perfect",
+                description: "Learn when to use each tense and their differences",
+                image: "./images/courses/past-simple.webp",
+                url: "./courses/past-simple.html",
+                level: "advanced",
+                tags: ["Grammar", "Tenses", "Advanced"],
+                icon: "📚"
+            },
+            {
+                title: "For & Since",
+                description: "Master the use of 'for' and 'since' in perfect tenses",
+                image: "./images/courses/for-since.webp",
+                url: "./courses/for-since.html",
+                level: "intermediate",
+                tags: ["Grammar", "Prepositions", "Time Expressions"],
+                icon: "⏳"
+            },
+            {
+                title: "Comparative & Superlative",
+                description: "Learn to compare and express superiority in English",
+                image: "./images/courses/comparative.webp",
+                url: "./courses/comparative.html",
+                level: "basic",
+                tags: ["Grammar", "Adjectives", "Comparison"],
+                icon: "📊"
+            },
+            {
+                title: "Modal Verbs",
+                description: "Master English modal verbs and their various uses",
+                image: "./images/courses/modal-verbs.webp",
+                url: "./courses/modal-verbs.html",
+                level: "intermediate",
+                tags: ["Grammar", "Verbs", "Modals"],
+                icon: "🎯"
+            }
         ];
 
         // Fonction pour créer une carte
         function createCard(item, isGame = true) {
             return `
-                <div class="game-card bg-black/70 border-2 border-quest-gold rounded-lg overflow-hidden w-64">
-                    <div class="relative h-24">
+                <div class="game-card bg-black/70 border-2 border-quest-gold rounded-lg overflow-hidden w-96">
+                    <div class="relative h-48">
                         <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
-                        <div class="absolute bottom-2 right-2 px-2 py-1 text-xs bg-black/70 text-quest-gold rounded">
+                        <div class="absolute bottom-2 right-2 px-3 py-1 text-sm bg-black/70 text-quest-gold rounded">
                             ${isGame ? item.difficulty : item.level}
                         </div>
                     </div>
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold text-quest-gold mb-2">${item.title}</h3>
-                        <p class="text-sm text-gray-300 mb-2">${item.description}</p>
-                        <div class="flex flex-wrap gap-1 mb-3">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-quest-gold mb-3">${item.title}</h3>
+                        <p class="text-sm text-gray-300 mb-4">${item.description}</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
                             ${item.tags.map(tag => `
-                                <span class="text-xs px-2 py-1 bg-quest-gold/20 text-quest-gold rounded-full">
+                                <span class="text-xs px-3 py-1 bg-quest-gold/20 text-quest-gold rounded-full">
                                     ${tag}
                                 </span>
                             `).join('')}
                         </div>
                         <a href="${item.url}" 
-                           class="block w-full py-2 text-center bg-quest-gold/20 hover:bg-quest-gold/30 
-                                  text-quest-gold border border-quest-gold/50 rounded transition-all">
+                           class="block w-full py-3 text-center bg-quest-gold/20 hover:bg-quest-gold/30 
+                                  text-quest-gold border border-quest-gold/50 rounded transition-all text-lg">
                             ${item.icon} ${isGame ? 'Play Now' : 'Start Training'}
                         </a>
                     </div>
