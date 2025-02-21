@@ -354,36 +354,58 @@
                 // Setup cache
                 cacheManager.setupImageCache();
 
+                // Fonction pour mettre à jour le tableau
+                function updateLeaderboardTable(scores, tableId) {
+                    const tableBody = document.getElementById(tableId);
+                    if (!tableBody) return;
+                    
+                    tableBody.innerHTML = "";
+                    let rank = 1;
+                    
+                    scores.forEach((doc) => {
+                        const row = document.createElement('tr');
+                        row.className = `rank-${rank}`;
+                        
+                        const date = doc.timestamp ? 
+                            new Date(doc.timestamp.seconds * 1000).toLocaleDateString() : 
+                            'N/A';
+                        
+                        row.innerHTML = `
+                            <td class="rank">${rank}</td>
+                            <td>${doc.name || 'Anonymous'}</td>
+                            <td class="score">${doc.score}</td>
+                            <td>${date}</td>
+                        `;
+                        tableBody.appendChild(row);
+                        rank++;
+                    });
+                }
+
                 // Fonction optimisée pour charger les scores
                 async function loadGameScores(collectionName, tableId) {
                     try {
-                        // Essayer d'abord le cache
-                        let scores = await cacheManager.getCachedScores(collectionName);
+                        console.log(`Loading scores for ${collectionName}`);
+                        const snapshot = await db.collection(collectionName)
+                            .orderBy("score", "desc")
+                            .limit(3)
+                            .get();
                         
-                        if (!scores) {
-                            // Si pas en cache, charger depuis Firestore
-                            const snapshot = await db.collection(collectionName)
-                                .orderBy("score", "desc")
-                                .limit(3)
-                                .get();
-                            
-                            scores = snapshot.docs.map(doc => ({
-                                id: doc.id,
-                                ...doc.data()
-                            }));
-                            
-                            // Mettre en cache
-                            await cacheManager.setCachedScores(collectionName, scores);
-                        }
-
+                        const scores = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }));
+                        
                         updateLeaderboardTable(scores, tableId);
                         
-                        // Tracker la performance
+                        // Mettre en cache pour plus tard
+                        await cacheManager.setCachedScores(collectionName, scores);
+                        
                         monitoring.trackPerformance({
                             name: `scores_loaded_${collectionName}`,
                             value: Date.now()
                         });
                     } catch (error) {
+                        console.error(`Error loading ${collectionName} scores:`, error);
                         monitoring.trackError(error, {
                             context: 'loadGameScores',
                             collectionName,

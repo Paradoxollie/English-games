@@ -203,7 +203,6 @@
     </footer>
 
     <script>
-        // Initialisation des optimisations
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 // Initialiser les services
@@ -217,27 +216,59 @@
 
                 // Code des carousels
                 const games = [
-                    // ... données des jeux ...
+                    {
+                        title: "Speed Verb Challenge",
+                        description: "Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!",
+                        image: "./images/speed-challenge.webp",
+                        url: "./speed-verb-challenge.html",
+                        difficulty: "legendary",
+                        tags: ["Verbs", "Time Trial", "Grammar"],
+                        icon: "⚔️"
+                    },
+                    // ... autres jeux
                 ];
 
                 const courses = [
-                    // ... données des cours ...
+                    {
+                        title: "The Conditional",
+                        description: "Master the different forms and usage of the conditional with this comprehensive guide.",
+                        image: "./images/conditionnel-course.webp",
+                        url: "./conditional-course.html",
+                        level: "advanced",
+                        tags: ["Grammar", "Advanced", "Conditional"],
+                        icon: "🎯"
+                    },
+                    // ... autres cours
                 ];
 
                 function createCard(item, isGame = true) {
-                    try {
-                        // ... code de création de carte ...
-                        monitoring.trackUserAction('card_created', {
-                            type: isGame ? 'game' : 'course',
-                            title: item.title
-                        });
-                    } catch (error) {
-                        monitoring.trackError(error, {
-                            context: 'createCard',
-                            item,
-                            isGame
-                        });
-                    }
+                    return `
+                        <div class="game-card bg-black/90 border-2 ${isGame ? 'border-quest-gold/80' : 'border-blue-500/80'} rounded-lg overflow-hidden w-[450px]">
+                            <div class="relative h-52">
+                                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6 bg-gradient-to-b from-black/95 to-black/90">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-2xl font-medieval ${isGame ? 'text-quest-gold' : 'text-blue-400'}">${item.title}</h3>
+                                    <div class="badge badge-${isGame ? item.difficulty : item.level}">
+                                        ${isGame ? item.difficulty.toUpperCase() : item.level.toUpperCase()}
+                                    </div>
+                                </div>
+                                <p class="text-gray-300 mb-4">${item.description}</p>
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    ${item.tags.map(tag => `
+                                        <span class="tag tag-${tag.toLowerCase().replace(/\s+/g, '-')}">
+                                            ${tag}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <a href="${item.url}" class="quest-button ${isGame ? 'quest-button-game' : 'quest-button-course'}">
+                                    <span class="mr-2 text-xl">${item.icon}</span>
+                                    <span>${isGame ? 'Play Now' : 'Start Training'}</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 function updateDisplays() {
