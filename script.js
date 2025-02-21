@@ -1,3 +1,8 @@
+import { initMobileMenu } from './src/utils/mobileMenu.js';
+import { initFirebase } from './firebase-init.js';
+import { initThemeManager } from './src/utils/themeManager.js';
+import { initVisitCounter } from './visit-counter.js';
+
 // Liste de mots inappropriés à filtrer
 const inappropriateWords = ['badword1', 'badword2', 'badword3']; // Ajoutez vos mots inappropriés ici
 
@@ -113,3 +118,92 @@ function endGame(score) {
 
     alert("Game Over! Your score: " + score);
 }
+
+// Structure des données des jeux
+const featuredGames = [
+    {
+        title: "Brew Your Words",
+        description: "Mix and match words to create perfect sentences",
+        image: "./images/brew-your-words.webp",
+        url: "./brew-your-words.html"
+    },
+    {
+        title: "Memory Matrix",
+        description: "Test your memory with English vocabulary",
+        image: "/images/matrix-game.webp",
+        url: "/memory-matrix.html"
+    },
+    {
+        title: "Word Bubbles",
+        description: "Pop word bubbles and improve your vocabulary",
+        image: "/images/word-bubbles.webp",
+        url: "/word-bubbles.html"
+    }
+];
+
+const latestCourses = [
+    {
+        title: "Grammar Basics",
+        description: "Master the fundamentals of English grammar",
+        image: "./images/grammar-basics.webp",
+        url: "./courses/grammar-basics.html"
+    },
+    // ... autres cours
+];
+
+function loadCarouselContent() {
+    // Charger les jeux
+    const gamesContent = document.querySelector('.featured-games .carousel-content');
+    if (gamesContent) {
+        gamesContent.innerHTML = featuredGames.map(game => `
+            <div class="carousel-card">
+                <img src="${game.image}" alt="${game.title}">
+                <div class="card-content">
+                    <h3>${game.title}</h3>
+                    <p>${game.description}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Charger les cours
+    const coursesContent = document.querySelector('.latest-courses .carousel-content');
+    if (coursesContent) {
+        coursesContent.innerHTML = latestCourses.map(course => `
+            <div class="carousel-card">
+                <img src="${course.image}" alt="${course.title}">
+                <div class="card-content">
+                    <h3>${course.title}</h3>
+                    <p>${course.description}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Fonction pour gérer les carousels
+function initCarousels() {
+    document.querySelectorAll('.carousel-container').forEach(carousel => {
+        const content = carousel.querySelector('.carousel-content');
+        const prevBtn = carousel.querySelector('.carousel-arrow.prev');
+        const nextBtn = carousel.querySelector('.carousel-arrow.next');
+
+        prevBtn.addEventListener('click', () => {
+            content.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            content.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+    });
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    initMobileMenu();
+    initFirebase();
+    initThemeManager();
+    initVisitCounter();
+    loadCarouselContent();
+    initCarousels();
+});

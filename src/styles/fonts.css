@@ -1,0 +1,13 @@
+/* Importation des polices */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
+/* Application globale de la police */
+* {
+    font-family: 'Cinzel', serif;
+}
+
+/* Styles spécifiques pour les titres */
+h1, h2, h3, .nav-link {
+    font-family: 'Cinzel Decorative', serif;
+} 

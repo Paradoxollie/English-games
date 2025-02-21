@@ -1,8 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import './styles/fonts.css';
+@import './styles/layout.css';
+@import './styles/transitions.css';
 
 @layer base {
+    body {
+        @apply bg-quest-pattern bg-cover bg-fixed text-white font-quest;
+    }
+
     :root {
         --quest-blue: #71a9c9;
         --quest-gold: #c9aa71;
@@ -38,6 +46,21 @@
 
     .quest-title {
         @apply text-2xl font-medieval text-quest-gold mb-4;
+    }
+
+    .nav-link {
+        @apply text-white hover:text-quest-gold transition-colors duration-200
+               font-medieval text-lg relative;
+    }
+
+    .footer-link {
+        @apply text-gray-600 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors duration-200 block;
+    }
+
+    .game-card {
+        @apply bg-quest-dark border-2 border-quest-gold rounded-xl overflow-hidden
+               transition-all duration-300 hover:-translate-y-1
+               hover:border-quest-accent hover:shadow-lg;
     }
 }
 

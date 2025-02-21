@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./**/*.html",
-    "./**/*.js"
+    "./*.{html,js}",
+    "./src/**/*.{html,js,css}"
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -37,6 +38,10 @@ module.exports = {
           '0%, 100%': { boxShadow: '0 0 0 0 rgba(201, 170, 113, 0.4)' },
           '50%': { boxShadow: '0 0 0 15px rgba(201, 170, 113, 0)' },
         },
+      },
+      container: {
+        center: true,
+        padding: '1rem',
       },
     },
   },

@@ -1,16 +1,24 @@
-// Configuration Firebase unique
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-    authDomain: "english-games-41017.firebaseapp.com",
-    projectId: "english-games-41017",
-    storageBucket: "english-games-41017.appspot.com",
-    messagingSenderId: "452279652544",
-    appId: "1:452279652544:web:916f93e0ab29183e739d25",
-    measurementId: "G-RMCQTMKDVP"
+    // Vos configurations Firebase ici
+    apiKey: "votre-api-key",
+    authDomain: "votre-auth-domain",
+    databaseURL: "votre-database-url", // Important pour le compteur
+    projectId: "votre-project-id",
+    storageBucket: "votre-storage-bucket",
+    messagingSenderId: "votre-messaging-sender-id",
+    appId: "votre-app-id"
 };
 
-// Initialize Firebase une seule fois
-firebase.initializeApp(firebaseConfig);
-
-// Créer une instance Firestore accessible globalement
-window.db = firebase.firestore();
+export function initFirebase() {
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+    
+    return { app, analytics, database };
+}

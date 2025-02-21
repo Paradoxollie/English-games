@@ -1,0 +1,30 @@
+/* Transitions et animations */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+}
+
+/* Animations pour les cartes de jeu */
+.game-card-enter {
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.game-card-enter-active {
+    transform: translateY(0);
+    opacity: 1;
+    transition: all 300ms ease-out;
+} 
