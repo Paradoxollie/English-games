@@ -1,12 +1,13 @@
-import { db } from './firebase-init.js';
+// Référence à la base de données
+const db = firebase.database();
+const statsRef = db.ref('visit-stats');
 
 function initVisitCounter() {
     const visitorCountElement = document.getElementById('visitor-count');
     if (!visitorCountElement) return;
 
     const today = new Date().toISOString().split('T')[0];
-    const statsRef = db.ref('visitors');
-
+    
     // Générer un ID unique pour le visiteur
     let visitorId = localStorage.getItem('visitorId');
     if (!visitorId) {
@@ -14,46 +15,58 @@ function initVisitCounter() {
         localStorage.setItem('visitorId', visitorId);
     }
 
-    // Mettre à jour les statistiques
-    statsRef.transaction((stats) => {
-        if (!stats) stats = { total: 0, daily: {}, unique: {} };
-        
-        stats.total = (stats.total || 0) + 1;
-        
-        if (!stats.daily[today]) stats.daily[today] = 0;
-        stats.daily[today]++;
-        
-        if (!stats.unique[visitorId]) {
-            stats.unique[visitorId] = true;
-            stats.uniqueCount = (stats.uniqueCount || 0) + 1;
-        }
+    // Vérifier les données existantes avant la mise à jour
+    statsRef.once('value', (snapshot) => {
+        const existingStats = snapshot.val() || {};
+        console.log("Anciennes statistiques:", existingStats); // Pour déboguer
 
-        return stats;
-    });
+        // Mettre à jour les statistiques en préservant les anciennes données
+        statsRef.transaction((stats) => {
+            stats = stats || existingStats || { total: 0, daily: {}, unique: {}, uniqueCount: 0 };
+            
+            // Incrémenter le total
+            stats.total = (stats.total || 0) + 1;
+            
+            // Mettre à jour les visites journalières
+            if (!stats.daily) stats.daily = {};
+            if (!stats.daily[today]) stats.daily[today] = 0;
+            stats.daily[today]++;
+            
+            // Mettre à jour les visiteurs uniques
+            if (!stats.unique) stats.unique = {};
+            if (!stats.unique[visitorId]) {
+                stats.unique[visitorId] = true;
+                stats.uniqueCount = (stats.uniqueCount || 0) + 1;
+            }
 
-    // Afficher les compteurs
-    statsRef.on('value', (snapshot) => {
-        const stats = snapshot.val();
-        if (stats) {
-            visitorCountElement.innerHTML = `
-                <div class="counter-container">
-                    <div class="counter-item">
-                        <span class="counter-label">Total Visits</span>
-                        <span class="counter-value">${stats.total.toLocaleString()}</span>
+            return stats;
+        });
+
+        // Afficher les compteurs
+        statsRef.on('value', (snapshot) => {
+            const stats = snapshot.val();
+            if (stats) {
+                console.log("Statistiques actuelles:", stats); // Pour déboguer
+                visitorCountElement.innerHTML = `
+                    <div class="counter-container">
+                        <div class="counter-item">
+                            <span class="counter-label">Total Visits</span>
+                            <span class="counter-value">${stats.total.toLocaleString()}</span>
+                        </div>
+                        <div class="counter-item">
+                            <span class="counter-label">Today</span>
+                            <span class="counter-value">${(stats.daily[today] || 0).toLocaleString()}</span>
+                        </div>
+                        <div class="counter-item">
+                            <span class="counter-label">Unique</span>
+                            <span class="counter-value">${(stats.uniqueCount || 0).toLocaleString()}</span>
+                        </div>
                     </div>
-                    <div class="counter-item">
-                        <span class="counter-label">Today</span>
-                        <span class="counter-value">${(stats.daily[today] || 0).toLocaleString()}</span>
-                    </div>
-                    <div class="counter-item">
-                        <span class="counter-label">Unique</span>
-                        <span class="counter-value">${stats.uniqueCount.toLocaleString()}</span>
-                    </div>
-                </div>
-            `;
-        }
+                `;
+            }
+        });
     });
 }
 
-// Initialiser quand le DOM est chargé
+// Initialiser le compteur
 document.addEventListener('DOMContentLoaded', initVisitCounter);
