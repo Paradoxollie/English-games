@@ -15,13 +15,34 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const analytics = firebase.analytics();
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const analytics = firebase.analytics();
 
-// Export pour utilisation dans d'autres fichiers
-window.db = db;
-window.analytics = analytics;
+    // Rendre disponible globalement
+    window.db = db;
+    window.analytics = analytics;
+
+    // Configuration de Firestore
+    db.settings({
+        cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+    });
+
+    db.enablePersistence()
+        .catch((err) => {
+            if (err.code == 'failed-precondition') {
+                console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+            } else if (err.code == 'unimplemented') {
+                console.warn('The current browser does not support persistence.');
+            }
+        });
+
+} catch (error) {
+    console.error('Error initializing Firebase:', error);
+}
 
 // Documentation des exports
 /**

@@ -1,8 +1,12 @@
 class VisitorCounter {
     constructor() {
+        if (!window.db) {
+            console.error('Firebase not initialized');
+            return;
+        }
         this.visitorId = this.getOrCreateVisitorId();
         this.today = new Date().toISOString().split('T')[0];
-        this.db = firebase.firestore();
+        this.db = window.db;
     }
 
     getOrCreateVisitorId() {
@@ -25,34 +29,40 @@ class VisitorCounter {
     }
 
     async updateVisitStats() {
-        const visitsRef = this.db.collection('visits').doc('stats');
-        const visitsDoc = await visitsRef.get();
+        try {
+            if (!this.db) return;
+            const visitsRef = this.db.collection('visits').doc('stats');
+            const visitsDoc = await visitsRef.get();
 
-        if (!visitsDoc.exists) {
-            await visitsRef.set({
-                totalVisits: 1,
-                uniqueVisitors: [this.visitorId],
-                dailyVisits: { [this.today]: 1 },
-                lastUpdated: new Date()
-            });
-        } else {
-            const data = visitsDoc.data();
-            const todayVisits = (data.dailyVisits?.[this.today] || 0) + 1;
-            
-            await visitsRef.update({
-                totalVisits: firebase.firestore.FieldValue.increment(1),
-                uniqueVisitors: firebase.firestore.FieldValue.arrayUnion(this.visitorId),
-                [`dailyVisits.${this.today}`]: todayVisits,
-                lastUpdated: new Date()
-            });
+            if (!visitsDoc.exists) {
+                await visitsRef.set({
+                    totalVisits: 1,
+                    uniqueVisitors: [this.visitorId],
+                    dailyVisits: { [this.today]: 1 },
+                    lastUpdated: new Date()
+                });
+            } else {
+                const data = visitsDoc.data();
+                const todayVisits = (data.dailyVisits?.[this.today] || 0) + 1;
+                
+                await visitsRef.update({
+                    totalVisits: firebase.firestore.FieldValue.increment(1),
+                    uniqueVisitors: firebase.firestore.FieldValue.arrayUnion(this.visitorId),
+                    [`dailyVisits.${this.today}`]: todayVisits,
+                    lastUpdated: new Date()
+                });
+            }
+        } catch (error) {
+            console.error('Error updating visit stats:', error);
         }
     }
 
     async displayStats() {
-        const element = document.getElementById('visitor-count');
-        if (!element) return;
-
         try {
+            if (!this.db) return;
+            const element = document.getElementById('visitor-count');
+            if (!element) return;
+
             const visitsRef = this.db.collection('visits').doc('stats');
             const visitsDoc = await visitsRef.get();
             const data = visitsDoc.data();
@@ -89,6 +99,8 @@ class VisitorCounter {
 
 // Initialiser le compteur quand le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-    const counter = new VisitorCounter();
-    counter.initialize();
+    setTimeout(() => {
+        const counter = new VisitorCounter();
+        counter.initialize();
+    }, 1000); // Attendre que Firebase soit complètement initialisé
 });

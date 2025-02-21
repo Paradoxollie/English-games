@@ -390,10 +390,16 @@
                             .limit(3)
                             .get();
                         
-                        const scores = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
+                        const scores = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            if (data) {
+                                scores.push({
+                                    id: doc.id,
+                                    ...data
+                                });
+                            }
+                        });
                         
                         updateLeaderboardTable(scores, tableId);
                         
