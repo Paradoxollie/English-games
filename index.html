@@ -18,6 +18,11 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js"></script>
 </head>
 <body class="bg-quest-pattern" style="background-image: url('./images/background.webp');">
     <!-- Header -->
@@ -49,37 +54,37 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <section class="hero-section mb-16 text-center">
-            <h1 class="quest-title text-5xl mb-6">
-                Learn English Through <span class="text-quest-gold">Interactive Games</span>
+    <main class="min-h-screen pt-32">
+        <!-- Hero Section -->
+        <div class="quest-panel max-w-2xl mx-auto mb-16">
+            <h1 class="text-5xl font-bold mb-6 glow-text">
+                <span class="text-white">ENGLISH</span>
+                <span class="text-quest-gold">QUEST</span>
             </h1>
-            <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-                Improve your English skills with our collection of engaging games and interactive courses.
-            </p>
-        </section>
+            <p class="text-xl text-gray-300">Choose your path to mastery!</p>
+        </div>
 
-        <!-- Premier Carousel - Featured Games -->
-        <section class="featured-games mb-16">
-            <h2 class="quest-title text-center mb-8">Featured Games</h2>
-            <div class="carousel-container relative">
-                <button class="carousel-arrow prev">❮</button>
-                <div class="carousel-content">
-                    <!-- Les cartes de jeux seront injectées ici par JavaScript -->
-                </div>
-                <button class="carousel-arrow next">❯</button>
+        <!-- Games Section -->
+        <section class="quest-panel max-w-7xl mx-auto mb-16">
+            <div class="section-header mb-8">
+                <h2 class="section-title">Available Quests</h2>
+                <p class="text-quest-gold/70">Select your challenge and prove your worth</p>
+            </div>
+            
+            <div class="quest-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Le JavaScript injectera automatiquement les cartes ici -->
             </div>
         </section>
 
-        <!-- Second Carousel - Latest Courses -->
-        <section class="latest-courses mb-16">
-            <h2 class="quest-title text-center mb-8">Latest Courses</h2>
-            <div class="carousel-container relative">
-                <button class="carousel-arrow prev">❮</button>
-                <div class="carousel-content">
-                    <!-- Les cartes de cours seront injectées ici par JavaScript -->
-                </div>
-                <button class="carousel-arrow next">❯</button>
+        <!-- Courses Section -->
+        <section class="quest-panel max-w-7xl mx-auto mb-16">
+            <div class="section-header mb-8">
+                <h2 class="section-title">Training Grounds</h2>
+                <p class="text-quest-gold/70">Master the fundamentals of the English arts</p>
+            </div>
+            
+            <div class="training-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Le JavaScript injectera automatiquement les cartes ici -->
             </div>
         </section>
     </main>
@@ -112,7 +117,7 @@
                 </div>
             </div>
             <div class="visitor-counter text-center mb-4">
-                <p class="text-quest-gold">Total Visitors: <span id="visitor-count" class="font-bold">Loading...</span></p>
+                <p class="text-quest-gold">Visitors: <span id="visitor-count" class="font-bold">Loading...</span></p>
             </div>
             <div class="mt-8 pt-8 border-t border-quest-gold/30 text-center">
                 <p class="text-gray-400">&copy; 2024 English Quest. All rights reserved.</p>
@@ -121,7 +126,33 @@
     </footer>
 
     <!-- Scripts -->
-    <script type="module" src="./firebase-init.js"></script>
-    <script type="module" src="./script.js"></script>
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPyX-6M6YHV9kQl7tRiKzJkQk2SN0rCNE",
+            authDomain: "grammar-games-a2f17.firebaseapp.com",
+            databaseURL: "https://grammar-games-a2f17-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "grammar-games-a2f17",
+            storageBucket: "grammar-games-a2f17.appspot.com",
+            messagingSenderId: "1051613705589",
+            appId: "1:1051613705589:web:ba625db50d9c7f0a4cae8c"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const analytics = getAnalytics(app);
+
+        window.firebaseInstance = { app, database, analytics };
+    </script>
+    <script src="./src/data/games.js" type="module"></script>
+    <script src="./src/components/GameCard.js" type="module"></script>
+    <script src="./script.js" type="module"></script>
+    <script src="./visit-counter.js" type="module"></script>
 </body>
 </html>

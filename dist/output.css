@@ -1432,12 +1432,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 120px;
+  height: 150px;
   padding: 1rem 0;
 }
 
 .logo-container img {
-  height: 100px;
+  height: 130px;
   width: auto;
   transition: transform 0.3s ease;
 }
