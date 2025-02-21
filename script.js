@@ -120,105 +120,10 @@ function endGame(score) {
     alert("Game Over! Your score: " + score);
 }
 
-// Fonction pour créer une carte de jeu
-function createGameCard(game) {
-    return `
-        <div class="quest-card">
-            <div class="quest-card-banner">
-                <img src="${game.image}" alt="${game.title}" class="game-image">
-                <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
-            </div>
-            <div class="quest-card-content p-4">
-                <h3 class="text-lg font-bold text-quest-gold mb-2">${game.title}</h3>
-                <p class="text-sm text-gray-300 mb-2">${game.description}</p>
-                <div class="quest-tags flex flex-wrap gap-1 mb-2">
-                    ${game.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-                <a href="${game.url}" class="quest-button flex items-center justify-center">
-                    <span class="quest-button-icon mr-2">${game.icon}</span>
-                    <span>Play Now</span>
-                </a>
-            </div>
-        </div>
-    `;
-}
-
-// Fonction pour créer une carte de cours
-function createCourseCard(course) {
-    return `
-        <div class="training-card">
-            <div class="training-card-banner">
-                <img src="${course.image}" alt="${course.title}" class="course-image">
-                <div class="training-level ${course.level}">${course.level}</div>
-            </div>
-            <div class="training-card-content p-4">
-                <h3 class="text-xl font-bold text-quest-gold mb-2">${course.title}</h3>
-                <p class="text-sm text-gray-300 mb-3">${course.description}</p>
-                <div class="training-tags flex flex-wrap gap-2 mb-3">
-                    ${course.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-                <a href="${course.url}" class="training-button flex items-center justify-center">
-                    <span class="training-button-icon mr-2">${course.icon}</span>
-                    <span>Start Training</span>
-                </a>
-            </div>
-        </div>
-    `;
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-function updateCarousel(container, items, currentIndex) {
-    const currentItem = items[currentIndex];
-    
-    container.style.opacity = '0';
-    setTimeout(() => {
-        container.innerHTML = currentItem.difficulty ? 
-            createGameCard(currentItem) : 
-            createCourseCard(currentItem);
-        container.style.opacity = '1';
-    }, 500);
-}
-
-function initializeCarousels() {
-    const gamesContainer = document.querySelector('.quest-grid');
-    const coursesContainer = document.querySelector('.training-grid');
-    
-    // Mélanger les tableaux
-    const shuffledGames = shuffleArray([...games]);
-    const shuffledCourses = shuffleArray([...courses]);
-    
-    let gameIndex = 0;
-    let courseIndex = 0;
-
-    // Initialiser les carousels
-    if (gamesContainer) {
-        updateCarousel(gamesContainer, shuffledGames, gameIndex);
-        setInterval(() => {
-            gameIndex = (gameIndex + 1) % shuffledGames.length;
-            updateCarousel(gamesContainer, shuffledGames, gameIndex);
-        }, 3000); // Changé à 3 secondes
-    }
-
-    if (coursesContainer) {
-        updateCarousel(coursesContainer, shuffledCourses, courseIndex);
-        setInterval(() => {
-            courseIndex = (courseIndex + 1) % shuffledCourses.length;
-            updateCarousel(coursesContainer, shuffledCourses, courseIndex);
-        }, 3000); // Changé à 3 secondes
-    }
-}
-
-// Styles pour les cartes
+// Styles globaux
 const styles = `
-    .quest-card, .training-card {
-        width: 300px;
+    .game-card, .course-card {
+        width: 280px;
         background: rgba(0, 0, 0, 0.7);
         border: 2px solid #c9aa71;
         border-radius: 8px;
@@ -226,123 +131,122 @@ const styles = `
         transition: all 0.3s ease;
     }
 
-    .game-image, .course-image {
+    .card-banner {
+        position: relative;
+        height: 100px;
+    }
+
+    .card-image {
         width: 100%;
-        height: 120px;
+        height: 100px;
         object-fit: cover;
     }
 
-    .quest-card-banner, .training-card-banner {
-        position: relative;
-        height: 120px;
+    .card-difficulty, .card-level {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #c9aa71;
     }
 
-    .quest-difficulty, .training-level {
-        position: absolute;
-        bottom: 8px;
-        right: 8px;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        background: rgba(0, 0, 0, 0.7);
+    .tag {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        background: rgba(201, 170, 113, 0.2);
+        border: 1px solid #c9aa71;
+        border-radius: 9999px;
+        color: #c9aa71;
+    }
+
+    #game-display, #course-display {
+        transition: opacity 0.3s ease;
     }
 `;
 
-// Ajouter les styles
-const styleSheet = document.createElement("style");
-styleSheet.textContent = styles;
-document.head.appendChild(styleSheet);
-
-// Initialisation
-document.addEventListener('DOMContentLoaded', initializeCarousels);
-
-function initializeGameDisplay() {
-    const gameDisplay = document.getElementById('single-game-display');
-    if (!gameDisplay) return;
-
-    let availableGames = [...games];
-    let displayedGames = [];
-
-    function getRandomGame() {
-        if (availableGames.length === 0) {
-            // Tous les jeux ont été affichés, on recommence
-            availableGames = [...displayedGames];
-            displayedGames = [];
-        }
-
-        const randomIndex = Math.floor(Math.random() * availableGames.length);
-        const selectedGame = availableGames.splice(randomIndex, 1)[0];
-        displayedGames.push(selectedGame);
-        return selectedGame;
-    }
-
-    function updateDisplay() {
-        gameDisplay.style.opacity = '0';
-        setTimeout(() => {
-            const game = getRandomGame();
-            gameDisplay.innerHTML = createGameCard(game);
-            gameDisplay.style.opacity = '1';
-        }, 300);
-    }
-
-    // Styles pour les cartes
-    const styles = `
-        .quest-card {
-            width: 280px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #c9aa71;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .game-image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-        }
-
-        .quest-card-banner {
-            position: relative;
-            height: 100px;
-        }
-
-        .quest-difficulty {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #c9aa71;
-        }
-
-        #single-game-display {
-            transition: opacity 0.3s ease;
-        }
-
-        .tag {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            background: rgba(201, 170, 113, 0.2);
-            border: 1px solid #c9aa71;
-            border-radius: 9999px;
-            color: #c9aa71;
-        }
+function createCard(item, isGame = true) {
+    return `
+        <div class="${isGame ? 'game-card' : 'course-card'}">
+            <div class="card-banner">
+                <img src="${item.image}" alt="${item.title}" class="card-image">
+                <div class="card-${isGame ? 'difficulty' : 'level'} ${isGame ? item.difficulty : item.level}">
+                    ${isGame ? item.difficulty : item.level}
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-bold text-quest-gold mb-2">${item.title}</h3>
+                <p class="text-sm text-gray-300 mb-2">${item.description}</p>
+                <div class="flex flex-wrap gap-1 mb-2">
+                    ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <a href="${item.url}" class="quest-button flex items-center justify-center">
+                    <span class="mr-2">${item.icon}</span>
+                    <span>${isGame ? 'Play Now' : 'Start Training'}</span>
+                </a>
+            </div>
+        </div>
     `;
+}
 
+function initializeDisplays() {
     // Ajouter les styles
     const styleSheet = document.createElement("style");
     styleSheet.textContent = styles;
     document.head.appendChild(styleSheet);
 
-    // Première affichage
-    updateDisplay();
+    // Initialiser l'affichage des jeux
+    const gameDisplay = document.getElementById('game-display');
+    let availableGames = [...games];
+    let displayedGames = [];
+
+    function updateGameDisplay() {
+        if (availableGames.length === 0) {
+            availableGames = [...displayedGames];
+            displayedGames = [];
+        }
+        const randomIndex = Math.floor(Math.random() * availableGames.length);
+        const game = availableGames.splice(randomIndex, 1)[0];
+        displayedGames.push(game);
+
+        gameDisplay.style.opacity = '0';
+        setTimeout(() => {
+            gameDisplay.innerHTML = createCard(game, true);
+            gameDisplay.style.opacity = '1';
+        }, 300);
+    }
+
+    // Initialiser l'affichage des cours
+    const courseDisplay = document.getElementById('course-display');
+    let availableCourses = [...courses];
+    let displayedCourses = [];
+
+    function updateCourseDisplay() {
+        if (availableCourses.length === 0) {
+            availableCourses = [...displayedCourses];
+            displayedCourses = [];
+        }
+        const randomIndex = Math.floor(Math.random() * availableCourses.length);
+        const course = availableCourses.splice(randomIndex, 1)[0];
+        displayedCourses.push(course);
+
+        courseDisplay.style.opacity = '0';
+        setTimeout(() => {
+            courseDisplay.innerHTML = createCard(course, false);
+            courseDisplay.style.opacity = '1';
+        }, 300);
+    }
+
+    // Premier affichage
+    if (gameDisplay) updateGameDisplay();
+    if (courseDisplay) updateCourseDisplay();
 
     // Mettre à jour toutes les 5 secondes
-    setInterval(updateDisplay, 5000);
+    setInterval(updateGameDisplay, 5000);
+    setInterval(updateCourseDisplay, 5000);
 }
 
 // Initialiser quand le DOM est chargé
-document.addEventListener('DOMContentLoaded', initializeGameDisplay);
+document.addEventListener('DOMContentLoaded', initializeDisplays);
