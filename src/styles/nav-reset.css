@@ -1,0 +1,117 @@
+/* Reset complet pour la navigation */
+.nav-link {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    display: block;
+    position: relative;
+    color: rgb(209 213 219);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    transform: none !important;
+    font-weight: inherit;
+    letter-spacing: normal;
+}
+
+/* Active states pour les différentes pages */
+[data-page="index"] .nav-link[href="index.html"].active,
+[data-page="leaderboard"] .nav-link[href="./leaderboard.html"].active {
+    color: var(--active-color);
+    text-shadow: 
+        0 0 10px var(--glow-color-80),
+        0 0 20px var(--glow-color-50),
+        0 0 30px var(--glow-color-30);
+    font-weight: bold;
+}
+
+/* Variables pour les couleurs */
+[data-page="index"] {
+    --active-color: #ffd700;  /* Or */
+    --glow-color-80: rgba(255, 215, 0, 0.8);
+    --glow-color-50: rgba(255, 215, 0, 0.5);
+    --glow-color-30: rgba(255, 215, 0, 0.3);
+    --hover-color: white;
+}
+
+[data-page="leaderboard"] {
+    --active-color: #ff4444;  /* Rouge */
+    --glow-color-80: rgba(255, 68, 68, 0.8);
+    --glow-color-50: rgba(255, 68, 68, 0.5);
+    --glow-color-30: rgba(255, 68, 68, 0.3);
+    --hover-color: white;
+}
+
+[data-page="games"] {
+    --active-color: #3b82f6;  /* Bleu */
+    --glow-color-80: rgba(59, 130, 246, 0.8);
+    --glow-color-50: rgba(59, 130, 246, 0.5);
+    --glow-color-30: rgba(59, 130, 246, 0.3);
+    --hover-color: white;
+}
+
+[data-page="courses"] {
+    --active-color: #22c55e;  /* Vert */
+    --glow-color-80: rgba(34, 197, 94, 0.8);
+    --glow-color-50: rgba(34, 197, 94, 0.5);
+    --glow-color-30: rgba(34, 197, 94, 0.3);
+}
+
+[data-page="contact"] {
+    --active-color: #a855f7;  /* Violet */
+    --glow-color-80: rgba(168, 85, 247, 0.8);
+    --glow-color-50: rgba(168, 85, 247, 0.5);
+    --glow-color-30: rgba(168, 85, 247, 0.3);
+}
+
+/* Animations identiques pour toutes les pages */
+.glow-gold, .glow-red, .glow-blue, .glow-green, .glow-purple {
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0% {
+        text-shadow: 
+            0 0 10px var(--glow-color-80),
+            0 0 20px var(--glow-color-50);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px var(--glow-color-80),
+            0 0 25px var(--glow-color-50),
+            0 0 35px var(--glow-color-30);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px var(--glow-color-80),
+            0 0 20px var(--glow-color-50);
+    }
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--hover-color);
+    text-decoration: none;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-link:hover::after {
+    opacity: 1;
+}
+
+[data-page="games"] .nav-link[href="./all-games.html"].active {
+    color: var(--active-color);
+    text-shadow: 
+        0 0 10px var(--glow-color-80),
+        0 0 20px var(--glow-color-50),
+        0 0 30px var(--glow-color-30);
+} 

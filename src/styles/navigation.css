@@ -4,12 +4,17 @@
 }
 
 .nav-link {
-    @apply relative text-gray-300 transition-colors duration-300 whitespace-nowrap;
+    @apply relative text-gray-300 px-4 py-2;
+    @apply block;
+    @apply transition-[color] duration-300;
+    @apply no-underline;
+    font-weight: inherit;
+    transform: none !important;
 }
 
 /* Active states */
 .nav-link.active {
-    @apply font-bold;
+    @apply text-quest-gold font-bold;
 }
 
 /* Page index/home */
@@ -40,13 +45,16 @@
 /* Underline animation */
 .nav-link::after {
     content: '';
-    @apply absolute bottom-[-2px] left-1/2 w-0 h-0.5 transition-all duration-300;
-    transform: translateX(-50%);
-    background-color: currentColor;
+    @apply absolute left-0 bottom-0 w-full h-0.5 bg-current opacity-0;
+    @apply transition-opacity duration-300;
 }
 
 .nav-link:hover::after {
-    @apply w-full;
+    @apply opacity-100;
+}
+
+.nav-link.active::after {
+    @apply opacity-100 bg-quest-gold;
 }
 
 /* Style pour le lien Home actif */

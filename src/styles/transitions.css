@@ -27,4 +27,14 @@
     transform: translateY(0);
     opacity: 1;
     transition: all 300ms ease-out;
+}
+
+.nav-link {
+    transition: 
+        color 0.3s ease,
+        text-shadow 0.3s ease;
+}
+
+.nav-link::after {
+    transition: opacity 0.3s ease;
 } 

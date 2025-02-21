@@ -28,6 +28,7 @@
     <link href="./src/styles/navigation.css" rel="stylesheet">
     <link href="./src/styles/leaderboard.css" rel="stylesheet">
     <link href="./src/styles/visitor-counter.css" rel="stylesheet">
+    <link href="./src/styles/nav-reset.css" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
@@ -71,14 +72,14 @@
             <img src="./images/logo.gif" alt="English Quest Logo" class="w-48 md:w-64 h-auto" width="600" height="400" loading="eager" decoding="async">
         </div>
 
-        <nav class="main-nav">
+        <nav class="main-nav overflow-x-auto" role="navigation" aria-label="Main navigation">
             <div class="w-full overflow-x-auto">
-                <div class="container mx-auto flex items-center justify-start md:justify-center min-w-max px-4 py-3">
-                    <a href="index.html" class="nav-link text-sm md:text-base px-2 md:px-4">Home</a>
-                    <a href="./all-games.html" class="nav-link text-sm md:text-base px-2 md:px-4">Games</a>
-                    <a href="./courses.html" class="nav-link text-sm md:text-base px-2 md:px-4">Courses</a>
-                    <a href="./leaderboard.html" class="nav-link active text-quest-red font-bold hover:text-quest-red relative glow-red text-sm md:text-base px-2 md:px-4">Leaderboard</a>
-                    <a href="./contact.html" class="nav-link text-sm md:text-base px-2 md:px-4">Contact</a>
+                <div class="container mx-auto grid grid-flow-col auto-cols-max gap-8 justify-center px-4 py-3">
+                    <a href="index.html" class="nav-link text-sm md:text-base hover:text-white">Home</a>
+                    <a href="./all-games.html" class="nav-link text-sm md:text-base hover:text-white">Games</a>
+                    <a href="./courses.html" class="nav-link text-sm md:text-base hover:text-white">Courses</a>
+                    <a href="./leaderboard.html" class="nav-link active text-quest-red font-bold hover:text-quest-red relative glow-red text-sm md:text-base" aria-current="page">Leaderboard</a>
+                    <a href="./contact.html" class="nav-link text-sm md:text-base hover:text-white">Contact</a>
                 </div>
             </div>
         </nav>
@@ -325,13 +326,13 @@
                     </div>
                 <div>
                     <h3 class="text-quest-gold text-lg font-medieval mb-4">Stats</h3>
-                    <ul class="space-y-2">
-                        <div class="visitor-counter text-left mb-4">
-                            <div id="visitor-count" class="counter-wrapper">
-                                <!-- Le contenu sera injecté par visit-counter.js -->
+                    <div class="visitor-counter text-left mb-4">
+                        <div id="visitor-count" class="counter-wrapper">
+                            <div class="counter-loading">
+                                <span class="text-quest-gold">Loading visitor stats...</span>
                             </div>
                         </div>
-                    </ul>
+                    </div>
                 </div>
             </div>
            
@@ -431,8 +432,10 @@
                 loadGameScores("word_bubbles_scores", "word-bubbles-leaderboard");
                 loadGameScores("echoes_lexicon_scores", "echoes-lexicon-leaderboard");
             } catch (error) {
-                console.error('Error initializing:', error);
-                monitoring.trackError(error, { context: 'initialization' });
+                console.error("Error loading leaderboard:", error);
+                monitoring.trackError(error, {
+                    context: 'loadLeaderboard'
+                });
             }
         });
     </script>

@@ -5,9 +5,9 @@
 }
 
 .game-card, .course-card {
-    @apply bg-black/80 border-2 border-quest-gold/80 rounded-lg overflow-hidden w-[450px]
-           transform transition-all duration-300 hover:border-quest-gold 
-           hover:shadow-lg hover:shadow-quest-gold/20;
+    @apply bg-black/80 border-2 border-[#3b82f6]/80 rounded-lg overflow-hidden w-[450px]
+           transform transition-all duration-300 hover:border-[#3b82f6] 
+           hover:shadow-lg hover:shadow-[#3b82f6]/20;
 }
 
 .card-banner {
@@ -57,13 +57,6 @@
            border border-quest-gold/30 hover:border-quest-gold/60 transition-colors;
 }
 
-.card-button {
-    @apply block w-full py-3 text-center bg-quest-gold/10 hover:bg-quest-gold/20 
-           text-quest-gold font-medieval text-lg border border-quest-gold/50 
-           hover:border-quest-gold rounded-lg transition-all duration-300
-           transform hover:-translate-y-1;
-}
-
 /* Styles des boutons */
 .quest-button {
     @apply block w-full py-3 text-center font-medieval text-lg 
@@ -73,10 +66,10 @@
 
 /* Bouton pour les jeux */
 .quest-button-game {
-    @apply bg-gradient-to-r from-quest-gold/30 via-quest-gold/20 to-quest-gold/30 
-           text-quest-gold border-quest-gold/50
-           hover:bg-gradient-to-r hover:from-quest-gold/40 hover:via-quest-gold/30 hover:to-quest-gold/40
-           hover:border-quest-gold hover:shadow-quest-gold/20;
+    @apply bg-gradient-to-r from-[#3b82f6]/30 via-[#3b82f6]/20 to-[#3b82f6]/30 
+           text-[#3b82f6] border-[#3b82f6]/50
+           hover:bg-gradient-to-r hover:from-[#3b82f6]/40 hover:via-[#3b82f6]/30 hover:to-[#3b82f6]/40
+           hover:border-[#3b82f6] hover:shadow-[#3b82f6]/20;
 }
 
 /* Bouton pour les cours */
@@ -93,6 +86,7 @@
            px-6 py-2 rounded-full text-sm font-bold text-center 
            min-w-[120px] shadow-lg backdrop-blur-sm
            border-2 transform transition-all duration-300;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
 }
 
 /* Style de base pour les badges et tags (style bouton) */
@@ -325,4 +319,32 @@
 
 .quest-button:hover {
     animation: button-pulse-blue 2s infinite;
+}
+
+/* Structure de carte uniforme */
+.game-card {
+    @apply bg-black/80 border-2 border-[#3b82f6]/80 rounded-lg overflow-hidden;
+    width: 450px;
+    height: 600px; /* Hauteur fixe pour toutes les cartes */
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card .card-content {
+    @apply p-6 bg-gradient-to-b from-black/95 to-black/90;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Bouton Play Now uniforme */
+.quest-button {
+    @apply mt-auto; /* Place le bouton en bas */
+    @apply block w-full py-4 text-center font-medieval text-lg;
+    @apply bg-gradient-to-r from-[#3b82f6]/30 via-[#3b82f6]/20 to-[#3b82f6]/30;
+    @apply text-[#3b82f6] border-2 border-[#3b82f6]/50 rounded-lg;
+    @apply transition-all duration-300;
+    @apply hover:from-[#3b82f6]/40 hover:via-[#3b82f6]/30 hover:to-[#3b82f6]/40;
+    @apply hover:border-[#3b82f6] hover:shadow-[#3b82f6]/20;
+    @apply hover:-translate-y-1;
 } 

@@ -45,6 +45,9 @@ module.exports = {
         center: true,
         padding: '1rem',
       },
+      transitionProperty: {
+        'color': 'color',
+      },
     },
   },
   plugins: [],

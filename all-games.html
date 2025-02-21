@@ -1,199 +1,362 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="English Quest Games - Master English through epic gaming challenges">
-    <title>English Quest - Games</title>
+    <meta name="description" content="English Quest - Discover all our interactive English learning games">
+    <title>English Quest - All Games</title>
+    
+    <!-- Polices -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
     
     <!-- Styles -->
-    <link href="style.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <link href="./dist/output.css" rel="stylesheet">
+    <link href="./src/styles/layout.css" rel="stylesheet">
+    <link href="./src/styles/fonts.css" rel="stylesheet">
+    <link href="./src/styles/transitions.css" rel="stylesheet">
+    <link href="./src/styles/colors.css" rel="stylesheet">
+    <link href="./src/styles/navigation.css" rel="stylesheet">
+    <link href="./src/styles/games-carousel.css" rel="stylesheet">
+    <link href="./src/styles/accessibility.css" rel="stylesheet">
+    <link href="./src/styles/nav-reset.css" rel="stylesheet">
+    <link href="./src/styles/visitor-counter.css" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+    <!-- Scripts de l'application -->
+    <script src="./src/config/firebase-config.js"></script>
+    <script src="./src/js/performance.js"></script>
+    <script src="./src/js/accessibility.js"></script>
+    <script src="./src/js/cache-manager.js"></script>
+    <script src="./src/js/monitoring.js"></script>
+    <script src="./src/js/carousel.js"></script>
+
+    <!-- Preload des ressources critiques -->
+    <link rel="preload" href="./src/js/performance.js" as="script">
+    <link rel="preload" href="./src/js/accessibility.js" as="script">
 </head>
-<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
-    <!-- Logo et Navigation -->
-    <div class="logo-container">
-        <img src="images/logo.gif" alt="English Quest Logo">
-    </div>
-
-    <nav>
-        <div class="flex gap-8">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="all-games.html" class="nav-link active">Games</a>
-            <a href="courses.html" class="nav-link">Courses</a>
-            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-            <a href="contact.html" class="nav-link">Contact</a>
+<body class="bg-quest-pattern" data-page="games" style="background-image: url('./images/background.webp');">
+    <header class="site-header" role="banner" aria-label="Site header">
+        <div class="logo-container">
+            <img src="./images/logo.gif"
+                 alt="English Quest Logo"
+                 class="w-48 md:w-64 h-auto"
+                 width="600"
+                 height="400"
+                 loading="eager"
+                 decoding="async">
         </div>
-    </nav>
 
-    <main class="min-h-screen pt-32">
+        <nav class="main-nav overflow-x-auto" role="navigation" aria-label="Main navigation">
+            <div class="w-full overflow-x-auto">
+                <div class="container mx-auto grid grid-flow-col auto-cols-max gap-8 justify-center px-4 py-3">
+                    <a href="index.html" class="nav-link text-sm md:text-base hover:text-white">Home</a>
+                    <a href="./all-games.html" class="nav-link active font-bold hover:text-[#3b82f6] relative glow-blue text-sm md:text-base" aria-current="page">Games</a>
+                    <a href="./courses.html" class="nav-link text-sm md:text-base hover:text-white">Courses</a>
+                    <a href="./leaderboard.html" class="nav-link text-sm md:text-base hover:text-white">Leaderboard</a>
+                    <a href="./contact.html" class="nav-link text-sm md:text-base hover:text-white">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="min-h-screen pt-32 pb-32" role="main">
         <!-- Hero Section -->
-        <<div class="quest-panel max-w-2xl mx-auto mb-16">
-            <h1 class="glow-text">ENGLISH QUEST GAMES</h1>
-            <p>Choose your challenge and embark on an epic journey!</p>
+        <div class="quest-panel max-w-2xl mx-auto mb-8 md:mb-16 text-center px-4" role="banner">
+            <h1 id="page-title" class="text-3xl md:text-5xl font-bold mb-4 md:mb-6">
+                <span class="text-white glow-text">ENGLISH QUEST</span>
+                <span class="text-[#3b82f6] glow-blue">GAMES</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 font-medieval italic">
+                "Choose your challenge and embark on an epic journey!"
+            </p>
         </div>
 
         <!-- Games Grid Section -->
-        <div class="quest-panel max-w-7xl mx-auto mb-16">
-            <h2 class="section-title">Available Quests</h2>
-            <div class="games-carousel-container">
-                <button class="carousel-nav prev">❮</button>
+        <div class="quest-panel max-w-7xl mx-auto mb-16 px-4">
+            <div class="section-header mb-8 text-center">
+                <h2 id="games-title" class="section-title text-5xl font-medieval mb-4">
+                    <span class="text-[#3b82f6] glow-blue-lg block mb-2">Available Quests</span>
+                    <span class="block text-3xl text-[#3b82f6]/70 font-cinzel">Quêtes Disponibles</span>
+                </h2>
+                <p class="text-[#3b82f6]/70 text-xl italic mt-4">Master your English skills through epic challenges</p>
+            </div>
+            <div class="games-carousel-container relative overflow-hidden px-12">
+                <button class="carousel-nav prev absolute left-0 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-[#3b82f6]/20 border-2 border-[#3b82f6]/50 text-[#3b82f6] rounded-full flex items-center justify-center hover:bg-[#3b82f6]/30 hover:border-[#3b82f6] transition-all">❮</button>
                 <div class="games-carousel" id="gamesCarousel">
                     <!-- Speed Verb Challenge -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="game-image">
-                        <div class="game-info">
-                            <h3>Speed Verb Challenge</h3>
-                            <p>Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Verbs</span>
-                                <span class="feature-tag">Time Challenge</span>
-                                <span class="feature-tag">Grammar</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/speed-challenge.webp" alt="Speed Verb Challenge" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Speed Verb Challenge</h3>
+                                <div class="badge badge-legendary">LEGENDARY</div>
                             </div>
-                            <a href="speed-verb-challenge.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/30">Verbs</span>
+                                <span class="tag">Time Trial</span>
+                                <span class="tag">Grammar</span>
+                            </div>
+                            <a href="speed-verb-challenge.html" class="quest-button">
+                                <span class="mr-2 text-xl">⚔️</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Enigma Scroll -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/enigma-scroll.webp" alt="Enigma Scroll" class="game-image">
-                        <div class="game-info">
-                            <h3>Enigma Scroll</h3>
-                            <p>Uncover the mysteries of the enchanted scroll! Test your English skills by solving magical word puzzles in this epic fantasy adventure!</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Puzzles</span>
-                                <span class="feature-tag">Vocabulary</span>
-                                <span class="feature-tag">Adventure</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/enigma-scroll.webp" alt="Enigma Scroll" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Enigma Scroll</h3>
+                                <div class="badge badge-epic">
+                                    EPIC
+                                </div>
                             </div>
-                            <a href="enigma-scroll.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Uncover the mysteries of the enchanted scroll! Test your English skills by solving magical word puzzles in this epic fantasy adventure!</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/30">Puzzles</span>
+                            </div>
+                            <a href="enigma-scroll.html" class="quest-button">
+                                <span class="mr-2 text-xl">📜</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Word Bubbles -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/word-bubbles.webp" alt="Word Bubbles" class="game-image">
-                        <div class="game-info">
-                            <h3>Word Bubbles</h3>
-                            <p>Challenge your typing and vocabulary skills! Type the correct words as they fall before time runs out.</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Typing</span>
-                                <span class="feature-tag">Speed</span>
-                                <span class="feature-tag">Vocabulary</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/word-bubbles.webp" alt="Word Bubbles" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Word Bubbles</h3>
+                                <div class="badge badge-rare">
+                                    RARE
+                                </div>
                             </div>
-                            <a href="word-bubbles.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Challenge your typing and vocabulary skills! Type the correct words as they fall before time runs out.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/30">Typing</span>
+                                <span class="tag bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/30">Speed</span>
+                                <span class="tag bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/30">Vocabulary</span>
+                            </div>
+                            <a href="word-bubbles.html" class="quest-button">
+                                <span class="mr-2 text-xl">🫧</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Whisper Trials -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/whisper-trials.webp" alt="Whisper Trials" class="game-image">
-                        <div class="game-info">
-                            <h3>Whisper Trials</h3>
-                            <p>Recognize the enchanted words whispered in diverse accents and level up your skills.</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Listening</span>
-                                <span class="feature-tag">Pronunciation</span>
-                                <span class="feature-tag">Accents</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/whisper-trials.webp" alt="Whisper Trials" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Whisper Trials</h3>
+                                <div class="badge badge-legendary">LEGENDARY</div>
                             </div>
-                            <a href="whisper-trials.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Recognize the enchanted words whispered in diverse accents and level up your skills.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Listening</span>
+                                <span class="tag">Pronunciation</span>
+                                <span class="tag">Accents</span>
+                            </div>
+                            <a href="whisper-trials.html" class="quest-button">
+                                <span class="mr-2 text-xl">👂</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Matrix -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/matrix-game.webp" alt="Matrix" class="game-image">
-                        <div class="game-info">
-                            <h3>Fill in the Gaps</h3>
-                            <p>Obtain great power by matching words and definitions</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Matching</span>
-                                <span class="feature-tag">Definitions</span>
-                                <span class="feature-tag">Vocabulary</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/matrix-game.webp" alt="Matrix" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Fill in the Gaps</h3>
+                                <div class="badge badge-epic">EPIC</div>
                             </div>
-                            <a href="memory-matrix.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Obtain great power by matching words and definitions</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Matching</span>
+                                <span class="tag">Definitions</span>
+                                <span class="tag">Vocabulary</span>
+                            </div>
+                            <a href="memory-matrix.html" class="quest-button">
+                                <span class="mr-2 text-xl">🧩</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Word Memory Game -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/word-memory-game.webp" alt="Word Memory Game" class="game-image">
-                        <div class="game-info">
-                            <h3>Word Memory Game</h3>
-                            <p>Test your memory skills by remembering and recalling English words!</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Memory</span>
-                                <span class="feature-tag">Vocabulary</span>
-                                <span class="feature-tag">Recall</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/word-memory-game.webp" alt="Word Memory Game" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Word Memory Game</h3>
+                                <div class="badge badge-rare">RARE</div>
                             </div>
-                            <a href="word-memory-game.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Test your memory skills by remembering and recalling English words!</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Memory</span>
+                                <span class="tag">Vocabulary</span>
+                                <span class="tag">Recall</span>
+                            </div>
+                            <a href="word-memory-game.html" class="quest-button">
+                                <span class="mr-2 text-xl">🎯</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Lost in Migration -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/lost-in-migration.webp" alt="Lost in Migration" class="game-image">
-                        <div class="game-info">
-                            <h3>Lost in Migration</h3>
-                            <p>Catch the intruder! Test your English skills by identifying the odd word out in this fun and interactive game!</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Vocabulary</span>
-                                <span class="feature-tag">Logic</span>
-                                <span class="feature-tag">Categories</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/lost-in-migration.webp" alt="Lost in Migration" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Lost in Migration</h3>
+                                <div class="badge badge-common">COMMON</div>
                             </div>
-                            <a href="lost-in-migration.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Catch the intruder! Test your English skills by identifying the odd word out in this fun and interactive game!</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Vocabulary</span>
+                                <span class="tag">Logic</span>
+                                <span class="tag">Categories</span>
+                            </div>
+                            <a href="lost-in-migration.html" class="quest-button">
+                                <span class="mr-2 text-xl">🦅</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Brew Your Words -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/brew-your-words.webp" alt="Brew Your Words" class="game-image">
-                        <div class="game-info">
-                            <h3>Brew Your Words</h3>
-                            <p>Serve customers in this challenging word game! Get the right translations under pressure and become the ultimate language barista!</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Translation</span>
-                                <span class="feature-tag">Time Management</span>
-                                <span class="feature-tag">Vocabulary</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/brew-your-words.webp" alt="Brew Your Words" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Brew Your Words</h3>
+                                <div class="badge badge-rare">RARE</div>
                             </div>
-                            <a href="brew-your-words.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Serve customers in this challenging word game! Get the right translations under pressure and become the ultimate language barista!</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Translation</span>
+                                <span class="tag">Time Management</span>
+                                <span class="tag">Vocabulary</span>
+                            </div>
+                            <a href="brew-your-words.html" class="quest-button">
+                                <span class="mr-2 text-xl">🧪</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Echoes of Lexicon -->
-                    <div class="game-card transform hover:scale-105 transition-all duration-300">
-                        <img src="images/echoes-lexicon.webp" alt="Echoes of Lexicon" class="game-image">
-                        <div class="game-info">
-                            <h3>Echoes of Lexicon</h3>
-                            <p>Explore les mystères d'un parchemin ancien ! Trouve des mots en utilisant les lettres affichées pour révéler les secrets du Lexicon.</p>
-                            <div class="game-features mb-4">
-                                <span class="feature-tag">Word Formation</span>
-                                <span class="feature-tag">Vocabulary</span>
-                                <span class="feature-tag">Puzzle</span>
+                    <div class="game-card">
+                        <div class="relative h-52">
+                            <img src="images/echoes-lexicon.webp" alt="Echoes of Lexicon" class="w-full h-full object-cover">
+                        </div>
+                        <div class="card-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-2xl font-medieval text-[#3b82f6]">Echoes of Lexicon</h3>
+                                <div class="badge badge-epic">EPIC</div>
                             </div>
-                            <a href="echoes-of-lexicon.html" class="quest-button">Play Now</a>
+                            <p class="text-gray-300 mb-4">Explore les mystères d'un parchemin ancien ! Trouve des mots en utilisant les lettres affichées pour révéler les secrets du Lexicon.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="tag">Word Formation</span>
+                                <span class="tag">Vocabulary</span>
+                                <span class="tag">Puzzle</span>
+                            </div>
+                            <a href="echoes-of-lexicon.html" class="quest-button">
+                                <span class="mr-2 text-xl">📚</span>
+                                <span>Play Now</span>
+                            </a>
                         </div>
                     </div>
                 </div>
-                <button class="carousel-nav next">❯</button>
-                <div class="carousel-dots" id="carouselDots"></div>
+                <button class="carousel-nav next absolute right-0 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-[#3b82f6]/20 border-2 border-[#3b82f6]/50 text-[#3b82f6] rounded-full flex items-center justify-center hover:bg-[#3b82f6]/30 hover:border-[#3b82f6] transition-all">❯</button>
+                <div class="carousel-dots flex justify-center gap-2 mt-4" id="carouselDots">
+                    <button class="w-2 h-2 rounded-full bg-[#3b82f6]/30 hover:bg-[#3b82f6]/50 transition-all"></button>
+                    <button class="w-2 h-2 rounded-full bg-[#3b82f6]/30 hover:bg-[#3b82f6]/50 transition-all"></button>
+                    <button class="w-2 h-2 rounded-full bg-[#3b82f6]/30 hover:bg-[#3b82f6]/50 transition-all"></button>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full">
-        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
-            <div class="container mx-auto px-4 py-3">
-                <div class="text-center">
-                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
-                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+    <footer class="quest-footer">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-[#3b82f6] text-lg font-medieval mb-4">About Us</h3>
+                    <p class="text-gray-300">
+                        English Quest is dedicated to making language learning fun and effective through interactive games.
+                    </p>
                 </div>
+                <div>
+                    <h3 class="text-[#3b82f6] text-lg font-medieval mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="./index.html" class="footer-link">Home</a></li>
+                        <li><a href="./all-games.html" class="footer-link">All Games</a></li>
+                        <li><a href="./courses.html" class="footer-link">Courses</a></li>
+                        <li><a href="./contact.html" class="footer-link">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-[#3b82f6] text-lg font-medieval mb-4">Stats</h3>
+                    <div class="visitor-counter text-left mb-4">
+                        <div id="visitor-count" class="counter-wrapper">
+                            <div class="counter-loading">
+                                <span class="text-[#3b82f6]">Loading visitor stats...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-[#3b82f6]/30 text-center">
+                <p class="text-gray-400">&copy; 2024 - English Quest - Pierre Marienne - All rights reserved </p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="firebase-init.js"></script>
-    <script src="visit-counter.js"></script>
+    <script src="./visit-counter.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const carousel = document.getElementById('gamesCarousel');
