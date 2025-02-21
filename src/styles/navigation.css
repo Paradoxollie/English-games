@@ -1,18 +1,102 @@
+/* Base styles */
 .nav-link {
-    @apply text-gray-300 transition-colors duration-300;
+    @apply relative text-gray-300 transition-colors duration-300;
 }
 
-/* Style spécifique pour chaque page */
-body[data-page="home"] .nav-link:hover { @apply text-quest-gold; }
-body[data-page="games"] .nav-link:hover { @apply text-quest-blue; }
-body[data-page="leaderboard"] .nav-link:hover { @apply text-quest-red; }
-
-/* Style actif pour la page courante */
+/* Active states */
 .nav-link.active {
     @apply font-bold;
 }
 
-body[data-page="leaderboard"] .nav-link.active {
-    @apply text-quest-red;
-    text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+/* Page index/home */
+[data-page="index"] .nav-link[href="index.html"].active {
+    @apply text-quest-gold !important;
+    text-shadow: 0 0 10px rgba(201, 170, 113, 0.5);
+}
+
+/* Page leaderboard */
+[data-page="leaderboard"] .nav-link[href="./leaderboard.html"].active {
+    @apply text-quest-red !important;
+    text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+/* Hover effects */
+.nav-link:hover {
+    @apply text-white;
+}
+
+[data-page="index"] .nav-link[href="index.html"].active:hover {
+    @apply text-quest-gold !important;
+}
+
+[data-page="leaderboard"] .nav-link[href="./leaderboard.html"].active:hover {
+    @apply text-quest-red !important;
+}
+
+/* Underline animation */
+.nav-link::after {
+    content: '';
+    @apply absolute bottom-[-2px] left-1/2 w-0 h-0.5 transition-all duration-300;
+    transform: translateX(-50%);
+    background-color: currentColor;
+}
+
+.nav-link:hover::after {
+    @apply w-full;
+}
+
+/* Style pour le lien Home actif */
+.glow-gold {
+    text-shadow: 
+        0 0 10px rgba(201, 170, 113, 0.8),
+        0 0 20px rgba(201, 170, 113, 0.5),
+        0 0 30px rgba(201, 170, 113, 0.3);
+    animation: pulse-gold 2s infinite;
+}
+
+/* Style pour le lien Leaderboard actif */
+.glow-red {
+    text-shadow: 
+        0 0 10px rgba(255, 68, 68, 0.8),
+        0 0 20px rgba(255, 68, 68, 0.5),
+        0 0 30px rgba(255, 68, 68, 0.3);
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-gold {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(201, 170, 113, 0.8),
+            0 0 20px rgba(201, 170, 113, 0.5);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(201, 170, 113, 0.9),
+            0 0 25px rgba(201, 170, 113, 0.7),
+            0 0 35px rgba(201, 170, 113, 0.5);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px rgba(201, 170, 113, 0.8),
+            0 0 20px rgba(201, 170, 113, 0.5);
+    }
+}
+
+@keyframes pulse-red {
+    0% {
+        text-shadow: 
+            0 0 10px rgba(255, 68, 68, 0.8),
+            0 0 20px rgba(255, 68, 68, 0.5);
+    }
+    50% {
+        text-shadow: 
+            0 0 15px rgba(255, 68, 68, 0.9),
+            0 0 25px rgba(255, 68, 68, 0.7),
+            0 0 35px rgba(255, 68, 68, 0.5);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px rgba(255, 68, 68, 0.8),
+            0 0 20px rgba(255, 68, 68, 0.5);
+    }
 } 

@@ -12,6 +12,8 @@ module.exports = {
         'quest-green': '#4CAF50',
         'quest-dark': 'rgba(0, 0, 0, 0.8)',
         'quest-accent': '#ffd700',
+        'quest-red': '#ff4444',
+        'quest-blue': '#3b82f6',
       },
       fontFamily: {
         'medieval': ['MedievalSharp', 'cursive'],
@@ -46,5 +48,13 @@ module.exports = {
     },
   },
   plugins: [],
+  safelist: [
+    'text-quest-gold',
+    'text-quest-red',
+    'text-quest-blue',
+    'active',
+    'nav-link',
+    'font-bold'
+  ]
 }
 

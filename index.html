@@ -15,6 +15,7 @@
     <link href="./src/styles/fonts.css" rel="stylesheet">
     <link href="./src/styles/transitions.css" rel="stylesheet">
     <link href="./src/styles/colors.css" rel="stylesheet">
+    <link href="./src/styles/navigation.css" rel="stylesheet">
     <link href="./src/styles/carousel.css" rel="stylesheet">
     
     <!-- Favicon -->
@@ -30,11 +31,12 @@
     </script>
 
     <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js';
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
 
+    <script>
+        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
             authDomain: "english-games-41017.firebaseapp.com",
@@ -45,11 +47,10 @@
             measurementId: "G-RMCQTMKDVP"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const analytics = getAnalytics(app);
-
-        window.db = db;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const analytics = firebase.analytics();
     </script>
     <style>
         /* Styles spécifiques pour les badges et tags */
@@ -74,7 +75,7 @@
         }
     </style>
 </head>
-<body class="bg-quest-pattern" style="background-image: url('./images/background.webp');">
+<body class="bg-quest-pattern" data-page="index" style="background-image: url('./images/background.webp');">
     <!-- Header -->
     <header class="site-header">
     <div class="logo-container">
@@ -83,12 +84,12 @@
 
         <nav class="main-nav">
             <div class="container mx-auto px-4 py-3 flex items-center justify-center space-x-8">
-                <a href="./index.html" class="nav-link">Home</a>
+                <a href="index.html" class="nav-link active text-quest-gold font-bold hover:text-quest-gold relative glow-gold">Home</a>
                 <a href="./all-games.html" class="nav-link">Games</a>
                 <a href="./courses.html" class="nav-link">Courses</a>
                 <a href="./leaderboard.html" class="nav-link">Leaderboard</a>
                 <a href="./contact.html" class="nav-link">Contact</a>
-        </div>
+            </div>
             
             <!-- Mobile Menu Button -->
             <button id="mobile-menu-button" class="md:hidden" aria-label="Menu">
@@ -107,7 +108,7 @@
     <!-- Main Content -->
     <main class="min-h-screen pt-32">
         <!-- Hero Section -->
-        <div class="quest-panel max-w-2xl mx-auto mb-16">
+        <div class="quest-panel max-w-2xl mx-auto mb-16 text-center">
             <h1 class="text-5xl font-bold mb-6 glow-text">
                 <span class="text-white">ENGLISH</span>
                 <span class="text-quest-gold">QUEST</span>
@@ -174,7 +175,7 @@
                 <div>
                     <h3 class="text-quest-gold text-lg font-medieval mb-4">Stats</h3>
                     <ul class="space-y-2">
-                        <div class="visitor-counter text-center mb-4">
+                        <div class="visitor-counter text-left mb-4">
                             <div id="visitor-count" class="counter-wrapper">
                                 <div class="counter-loading">
                                     <span class="text-quest-gold">Loading visitor stats...</span>

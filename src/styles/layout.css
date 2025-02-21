@@ -21,42 +21,24 @@ body {
 
 /* Header et Navigation */
 .site-header {
-    @apply fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black via-black/95 to-transparent;
+    @apply relative w-full z-50 bg-gradient-to-b from-black via-black/95 to-transparent;
 }
 
 .logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 150px;
-    padding: 1rem 0;
+    @apply flex justify-center items-center h-[150px] py-4;
 }
 
 .logo-container img {
-    height: 130px;
-    width: auto;
-    transition: transform 0.3s ease;
+    @apply h-[130px] w-auto transition-transform duration-300;
 }
 
 .logo-container img:hover {
-    transform: scale(1.05);
+    @apply transform scale-105;
 }
 
 .main-nav {
-    background: rgba(0, 0, 0, 0.95);
-    border-top: 1px solid #c9aa71;
-    border-bottom: 1px solid #c9aa71;
-    padding: 0.75rem 0;
+    @apply relative bg-black/95 border-t border-b border-quest-gold py-3;
 }
-
-.nav-link {
-    @apply text-gray-300 transition-colors duration-300;
-}
-
-/* Page spécifique */
-.nav-link.home-active:hover { @apply text-quest-gold; }
-.nav-link.games-active:hover { @apply text-quest-blue; }
-.nav-link.leaderboard-active:hover { @apply text-quest-red; }
 
 .nav-link::after {
     content: '';
@@ -553,6 +535,4 @@ main {
 .quest-card:hover .quest-card-banner img,
 .training-card:hover .training-card-banner img {
     @apply transform scale-105 transition-transform duration-300;
-}
-
-/* Supprimer ou commenter toutes les règles qui pourraient affecter les tableaux */ 
+} 

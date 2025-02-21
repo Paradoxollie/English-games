@@ -31,6 +31,11 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
 </head>
 <body class="bg-quest-pattern" data-page="leaderboard" style="background-image: url('./images/background.webp');">
     <!-- Header -->
@@ -44,7 +49,7 @@
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="./all-games.html" class="nav-link">Games</a>
                 <a href="./courses.html" class="nav-link">Courses</a>
-                <a href="./leaderboard.html" class="nav-link active text-quest-red hover:text-quest-red/80">Leaderboard</a>
+                <a href="./leaderboard.html" class="nav-link active text-quest-red font-bold hover:text-quest-red relative glow-red">Leaderboard</a>
                 <a href="./contact.html" class="nav-link">Contact</a>
             </div>
         </nav>
@@ -52,9 +57,10 @@
 
     <main class="min-h-screen pt-32 pb-32">
         <!-- Hero Section -->
-        <div class="quest-panel max-w-2xl mx-auto mb-16">
+        <div class="quest-panel max-w-2xl mx-auto mb-16 text-center">
             <h1 class="text-5xl font-bold mb-6 glow-text">
-                <span class="text-quest-red text-8xl font-medieval tracking-widest">HALL OF CHAMPIONS</span>
+                <span class="text-white">HALL OF</span>
+                <span class="text-quest-red">CHAMPIONS</span>
             </h1>
             <p class="text-xl text-gray-300 font-medieval italic">
                 "Where Legends Rise and Heroes are Eternal"
@@ -289,7 +295,7 @@
                 <div>
                     <h3 class="text-quest-gold text-lg font-medieval mb-4">Stats</h3>
                     <ul class="space-y-2">
-                        <div class="visitor-counter text-center mb-4">
+                        <div class="visitor-counter text-left mb-4">
                             <div id="visitor-count" class="counter-wrapper">
                                 <div class="counter-loading">
                                     <span class="text-quest-gold">Loading visitor stats...</span>
@@ -307,8 +313,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script>
         // Configuration Firebase
         const firebaseConfig = {
@@ -324,6 +328,7 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const analytics = firebase.analytics();
 
         // Fonction pour charger les scores d'un jeu spécifique
         function loadGameScores(collectionName, tableId) {

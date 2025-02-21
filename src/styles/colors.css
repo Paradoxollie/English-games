@@ -27,4 +27,16 @@
 .rank-1, .rank-2, .rank-3 {
     background: none !important;
     border: none !important;
+}
+
+.text-quest-gold {
+    color: var(--quest-gold);
+}
+
+.text-quest-red {
+    color: var(--quest-red);
+}
+
+.text-quest-blue {
+    color: var(--quest-blue);
 } 

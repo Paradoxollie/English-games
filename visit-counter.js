@@ -1,10 +1,8 @@
-import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
 class VisitorCounter {
     constructor() {
         this.visitorId = this.getOrCreateVisitorId();
         this.today = new Date().toISOString().split('T')[0];
-        this.db = window.db;
+        this.db = firebase.firestore();
     }
 
     getOrCreateVisitorId() {
@@ -17,6 +15,7 @@ class VisitorCounter {
     }
 
     async initialize() {
+        console.log('Initializing visitor counter...');
         try {
             await this.updateVisitStats();
             await this.displayStats();
@@ -27,23 +26,26 @@ class VisitorCounter {
     }
 
     async updateVisitStats() {
-        const visitsRef = doc(this.db, 'visits', 'stats');
-        const visitsDoc = await getDoc(visitsRef);
+        console.log('Updating visit stats...');
+        const visitsRef = this.db.collection('visits').doc('stats');
+        const visitsDoc = await visitsRef.get();
 
-        if (!visitsDoc.exists()) {
-            await setDoc(visitsRef, {
+        if (!visitsDoc.exists) {
+            console.log('Creating new stats document...');
+            await visitsRef.set({
                 totalVisits: 1,
                 uniqueVisitors: [this.visitorId],
                 dailyVisits: { [this.today]: 1 },
                 lastUpdated: new Date()
             });
         } else {
+            console.log('Updating existing stats...');
             const data = visitsDoc.data();
             const todayVisits = (data.dailyVisits?.[this.today] || 0) + 1;
             
-            await updateDoc(visitsRef, {
-                totalVisits: increment(1),
-                uniqueVisitors: arrayUnion(this.visitorId),
+            await visitsRef.update({
+                totalVisits: firebase.firestore.FieldValue.increment(1),
+                uniqueVisitors: firebase.firestore.FieldValue.arrayUnion(this.visitorId),
                 [`dailyVisits.${this.today}`]: todayVisits,
                 lastUpdated: new Date()
             });
@@ -51,13 +53,18 @@ class VisitorCounter {
     }
 
     async displayStats() {
+        console.log('Displaying stats...');
         const element = document.getElementById('visitor-count');
-        if (!element) return;
+        if (!element) {
+            console.log('Counter element not found');
+            return;
+        }
 
         try {
-            const visitsRef = doc(this.db, 'visits', 'stats');
-            const visitsDoc = await getDoc(visitsRef);
+            const visitsRef = this.db.collection('visits').doc('stats');
+            const visitsDoc = await visitsRef.get();
             const data = visitsDoc.data();
+            console.log('Stats data:', data);
 
             element.innerHTML = `
                 <div class="counter-container">
@@ -76,6 +83,7 @@ class VisitorCounter {
                 </div>
             `;
         } catch (error) {
+            console.error('Error displaying stats:', error);
             this.handleError(error);
         }
     }
@@ -88,6 +96,8 @@ class VisitorCounter {
     }
 }
 
-// Initialiser le compteur
-const counter = new VisitorCounter();
-counter.initialize();
+// Initialiser le compteur quand le DOM est chargé
+document.addEventListener('DOMContentLoaded', () => {
+    const counter = new VisitorCounter();
+    counter.initialize();
+});
