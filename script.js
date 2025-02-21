@@ -203,7 +203,7 @@ function initializeCarousels() {
         setInterval(() => {
             gameIndex = (gameIndex + 1) % shuffledGames.length;
             updateCarousel(gamesContainer, shuffledGames, gameIndex);
-        }, 5000); // Changé à 5 secondes
+        }, 3000); // Changé à 3 secondes
     }
 
     if (coursesContainer) {
@@ -211,7 +211,7 @@ function initializeCarousels() {
         setInterval(() => {
             courseIndex = (courseIndex + 1) % shuffledCourses.length;
             updateCarousel(coursesContainer, shuffledCourses, courseIndex);
-        }, 5000);
+        }, 3000); // Changé à 3 secondes
     }
 }
 
@@ -226,7 +226,16 @@ const styles = `
     
     .quest-card, .training-card {
         width: 100%;
-        max-width: 400px;
+        max-width: 350px;
+    }
+
+    .quest-card-banner h-32, .training-card-banner h-32 {
+        height: 150px !important;
+    }
+
+    .quest-card img, .training-card img {
+        height: 150px;
+        object-fit: cover;
     }
 `;
 
