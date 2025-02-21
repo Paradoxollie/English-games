@@ -82,7 +82,7 @@
 <body class="bg-quest-pattern" data-page="index" style="background-image: url('./images/background.webp');">
     <!-- Header avec accessibilité améliorée -->
     <header class="site-header" role="banner" aria-label="Site header">
-        <div class="logo-container">
+    <div class="logo-container">
             <img src="./images/logo.gif"
                  alt="English Quest Logo"
                  class="w-48 md:w-64 h-auto"
@@ -100,9 +100,9 @@
                     <a href="./courses.html" class="nav-link text-sm md:text-base px-2 md:px-4">Courses</a>
                     <a href="./leaderboard.html" class="nav-link text-sm md:text-base px-2 md:px-4">Leaderboard</a>
                     <a href="./contact.html" class="nav-link text-sm md:text-base px-2 md:px-4">Contact</a>
-                </div>
-            </div>
-            
+                            </div>
+                        </div>
+
             <!-- Mobile Menu Button -->
             <button id="mobile-menu-button" class="md:hidden" aria-label="Menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden">
             <!-- Mobile menu content will be injected by JavaScript -->
-        </div>
+                                </div>
     </header>
 
     <!-- Main Content -->
@@ -126,7 +126,7 @@
                 <span class="text-quest-gold">QUEST</span>
             </h1>
             <p class="text-lg md:text-xl text-gray-300 px-2">Choose your path to mastery!</p>
-        </div>
+                        </div>
 
         <!-- Games Section -->
         <section class="quest-panel max-w-7xl mx-auto mb-16 px-4" aria-labelledby="games-title">
@@ -136,14 +136,14 @@
                     <span class="block text-2xl text-gray-400 mt-1">Quêtes Disponibles</span>
                 </h2>
                 <p class="text-quest-gold/70 text-lg italic">Choose your challenge and prove your worth in the realm of English</p>
-            </div>
+                                </div>
             <div id="game-carousel" class="relative" data-lazy="loadGameCarousel" role="region" aria-label="Games carousel">
                 <div id="game-display" class="flex justify-center items-center min-h-[500px]">
                     <!-- Un seul jeu sera affiché ici -->
-                </div>
+                            </div>
                 <div class="flex justify-center mt-4 gap-4">
-                </div>
-            </div>
+                            </div>
+                        </div>
         </section>
 
         <!-- Courses Section -->
@@ -154,11 +154,11 @@
                     <span class="block text-2xl text-gray-400 mt-1">Terrains d'Entraînement</span>
                 </h2>
                 <p class="text-blue-400/70 text-lg italic">Master the ancient arts of English grammar</p>
-            </div>
+                                </div>
             <div id="course-carousel" class="relative" data-lazy="loadCourseCarousel" role="region" aria-label="Courses carousel">
                 <div id="course-display" class="flex justify-center items-center min-h-[500px]">
                     <!-- Un seul cours sera affiché ici -->
-                </div>
+                            </div>
                 <div class="flex justify-center mt-4 gap-4">
                 </div>
             </div>
@@ -174,7 +174,7 @@
                     <p class="text-gray-300">
                         English Quest is dedicated to making language learning fun and effective through interactive games.
                     </p>
-                </div>
+                                </div>
                 <div>
                     <h3 class="text-quest-gold text-lg font-medieval mb-4">Quick Links</h3>
                     <ul class="space-y-2">
@@ -183,7 +183,7 @@
                         <li><a href="./leaderboard.html" class="footer-link">Leaderboard</a></li>
                         <li><a href="./contact.html" class="footer-link">Contact Us</a></li>
                     </ul>
-                </div>
+                            </div>
                 <div>
                     <h3 class="text-quest-gold text-lg font-medieval mb-4">Stats</h3>
                     <ul class="space-y-2">
@@ -195,8 +195,8 @@
                             </div>
                         </div>
                     </ul>
-                </div>
             </div>
+        </div>
 
             <div class="mt-8 pt-8 border-t border-quest-gold/30 text-center">
                 <p class="text-gray-400">&copy; 2024 - English Quest - Pierre Marienne - All rights reserved </p>
@@ -254,3 +254,82 @@
 
                 function createCard(item, isGame = true) {
                     return `
+                        <div class="game-card bg-black/90 border-2 ${isGame ? 'border-quest-gold/80' : 'border-blue-500/80'} rounded-lg overflow-hidden w-[450px]">
+                            <div class="relative h-52">
+                                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6 bg-gradient-to-b from-black/95 to-black/90">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-2xl font-medieval ${isGame ? 'text-quest-gold' : 'text-blue-400'}">${item.title}</h3>
+                                    <div class="badge badge-${isGame ? item.difficulty : item.level}">
+                                        ${isGame ? item.difficulty.toUpperCase() : item.level.toUpperCase()}
+                                    </div>
+                                </div>
+                                <p class="text-gray-300 mb-4">${item.description}</p>
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    ${item.tags.map(tag => `
+                                        <span class="tag tag-${tag.toLowerCase().replace(/\s+/g, '-')}">
+                                            ${tag}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <a href="${item.url}" class="quest-button ${isGame ? 'quest-button-game' : 'quest-button-course'}">
+                                    <span class="mr-2 text-xl">${item.icon}</span>
+                                    <span>${isGame ? 'Play Now' : 'Start Training'}</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                function updateDisplays() {
+                    try {
+                        const gameDisplay = document.getElementById('game-display');
+                        const courseDisplay = document.getElementById('course-display');
+
+                        if (gameDisplay) {
+                            const randomGame = games[Math.floor(Math.random() * games.length)];
+                            gameDisplay.style.opacity = '0';
+                            setTimeout(() => {
+                                gameDisplay.innerHTML = createCard(randomGame, true);
+                                gameDisplay.style.opacity = '1';
+                                monitoring.trackPerformance({
+                                    name: 'game_card_update',
+                                    value: Date.now()
+                                });
+                            }, 300);
+                        }
+
+                        if (courseDisplay) {
+                            const randomCourse = courses[Math.floor(Math.random() * courses.length)];
+                            courseDisplay.style.opacity = '0';
+                            setTimeout(() => {
+                                courseDisplay.innerHTML = createCard(randomCourse, false);
+                                courseDisplay.style.opacity = '1';
+                                monitoring.trackPerformance({
+                                    name: 'course_card_update',
+                                    value: Date.now()
+                                });
+                            }, 300);
+                        }
+                    } catch (error) {
+                        monitoring.trackError(error, {
+                            context: 'updateDisplays'
+                        });
+                    }
+                }
+
+                // Premier affichage
+                updateDisplays();
+
+                // Mise à jour toutes les 5 secondes
+                setInterval(updateDisplays, 5000);
+            } catch (error) {
+                monitoring.trackError(error, {
+                    context: 'DOMContentLoaded'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
