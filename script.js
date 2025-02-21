@@ -129,9 +129,9 @@ function createGameCard(game) {
                 <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
             </div>
             <div class="quest-card-content p-4">
-                <h3 class="text-xl font-bold text-quest-gold mb-2">${game.title}</h3>
-                <p class="text-sm text-gray-300 mb-3">${game.description}</p>
-                <div class="quest-tags flex flex-wrap gap-2 mb-3">
+                <h3 class="text-lg font-bold text-quest-gold mb-2">${game.title}</h3>
+                <p class="text-sm text-gray-300 mb-2">${game.description}</p>
+                <div class="quest-tags flex flex-wrap gap-1 mb-2">
                     ${game.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                 </div>
                 <a href="${game.url}" class="quest-button flex items-center justify-center">
@@ -255,3 +255,94 @@ document.head.appendChild(styleSheet);
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', initializeCarousels);
+
+function initializeGameDisplay() {
+    const gameDisplay = document.getElementById('single-game-display');
+    if (!gameDisplay) return;
+
+    let availableGames = [...games];
+    let displayedGames = [];
+
+    function getRandomGame() {
+        if (availableGames.length === 0) {
+            // Tous les jeux ont été affichés, on recommence
+            availableGames = [...displayedGames];
+            displayedGames = [];
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableGames.length);
+        const selectedGame = availableGames.splice(randomIndex, 1)[0];
+        displayedGames.push(selectedGame);
+        return selectedGame;
+    }
+
+    function updateDisplay() {
+        gameDisplay.style.opacity = '0';
+        setTimeout(() => {
+            const game = getRandomGame();
+            gameDisplay.innerHTML = createGameCard(game);
+            gameDisplay.style.opacity = '1';
+        }, 300);
+    }
+
+    // Styles pour les cartes
+    const styles = `
+        .quest-card {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #c9aa71;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .quest-card-banner {
+            position: relative;
+            height: 100px;
+        }
+
+        .quest-difficulty {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #c9aa71;
+        }
+
+        #single-game-display {
+            transition: opacity 0.3s ease;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            background: rgba(201, 170, 113, 0.2);
+            border: 1px solid #c9aa71;
+            border-radius: 9999px;
+            color: #c9aa71;
+        }
+    `;
+
+    // Ajouter les styles
+    const styleSheet = document.createElement("style");
+    styleSheet.textContent = styles;
+    document.head.appendChild(styleSheet);
+
+    // Première affichage
+    updateDisplay();
+
+    // Mettre à jour toutes les 5 secondes
+    setInterval(updateDisplay, 5000);
+}
+
+// Initialiser quand le DOM est chargé
+document.addEventListener('DOMContentLoaded', initializeGameDisplay);
