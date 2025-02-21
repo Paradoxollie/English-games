@@ -124,67 +124,105 @@
     </footer>
 
     <!-- Scripts -->
-    <script type="module">
-        import { games, courses } from './src/data/games.js';
-        
-        // Fonction pour créer une carte de jeu
-        function createGameCard(game) {
+    <script>
+        // Données des jeux
+        const games = [
+            {
+                title: "Speed Verb Challenge",
+                description: "Test your knowledge of irregular verbs! Type as many verbs as you can in 90 seconds!",
+                image: "./images/speed-challenge.webp",
+                url: "./speed-verb-challenge.html",
+                difficulty: "legendary",
+                tags: ["Verbs", "Time Trial", "Grammar"],
+                icon: "⚔️"
+            },
+            // ... autres jeux ...
+        ];
+
+        // Données des cours
+        const courses = [
+            {
+                title: "Present Perfect",
+                description: "Master the present perfect tense and its usage in English",
+                image: "./images/present-perfect.webp",
+                url: "./present-perfect.html",
+                level: "intermediate",
+                tags: ["Grammar", "Tenses", "Intermediate"],
+                icon: "📚"
+            },
+            // ... autres cours ...
+        ];
+
+        // Fonction pour créer une carte
+        function createCard(item, isGame = true) {
             return `
-                <div class="quest-card">
-                    <div class="quest-card-banner h-32">
-                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover">
-                        <div class="quest-difficulty ${game.difficulty}">${game.difficulty}</div>
-                    </div>
-                    <div class="quest-card-content p-4">
-                        <h3 class="text-xl font-bold text-quest-gold mb-2">${game.title}</h3>
-                        <p class="text-sm text-gray-300 mb-3">${game.description}</p>
-                        <div class="quest-tags flex flex-wrap gap-2 mb-3">
-                            ${game.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                <div class="game-card bg-black/70 border-2 border-quest-gold rounded-lg overflow-hidden w-64">
+                    <div class="relative h-24">
+                        <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+                        <div class="absolute bottom-2 right-2 px-2 py-1 text-xs bg-black/70 text-quest-gold rounded">
+                            ${isGame ? item.difficulty : item.level}
                         </div>
-                        <a href="${game.url}" class="quest-button flex items-center justify-center">
-                            <span class="quest-button-icon mr-2">${game.icon}</span>
-                            <span>Play Now</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-quest-gold mb-2">${item.title}</h3>
+                        <p class="text-sm text-gray-300 mb-2">${item.description}</p>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            ${item.tags.map(tag => `
+                                <span class="text-xs px-2 py-1 bg-quest-gold/20 text-quest-gold rounded-full">
+                                    ${tag}
+                                </span>
+                            `).join('')}
+                        </div>
+                        <a href="${item.url}" 
+                           class="block w-full py-2 text-center bg-quest-gold/20 hover:bg-quest-gold/30 
+                                  text-quest-gold border border-quest-gold/50 rounded transition-all">
+                            ${item.icon} ${isGame ? 'Play Now' : 'Start Training'}
                         </a>
                     </div>
                 </div>
             `;
         }
 
-        // Fonction pour créer une carte de cours
-        function createCourseCard(course) {
-            return `
-                <div class="training-card">
-                    <div class="training-card-banner h-32">
-                        <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover">
-                        <div class="training-level ${course.level}">${course.level}</div>
-                    </div>
-                    <div class="training-card-content p-4">
-                        <h3 class="text-xl font-bold text-quest-gold mb-2">${course.title}</h3>
-                        <p class="text-sm text-gray-300 mb-3">${course.description}</p>
-                        <div class="training-tags flex flex-wrap gap-2 mb-3">
-                            ${course.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                        </div>
-                        <a href="${course.url}" class="training-button flex items-center justify-center">
-                            <span class="training-button-icon mr-2">${course.icon}</span>
-                            <span>Start Training</span>
-                        </a>
-                    </div>
-                </div>
-            `;
+        // Fonction pour mettre à jour l'affichage
+        function updateDisplays() {
+            const gameDisplay = document.getElementById('game-display');
+            const courseDisplay = document.getElementById('course-display');
+
+            if (gameDisplay) {
+                const randomGame = games[Math.floor(Math.random() * games.length)];
+                gameDisplay.style.opacity = '0';
+                setTimeout(() => {
+                    gameDisplay.innerHTML = createCard(randomGame, true);
+                    gameDisplay.style.opacity = '1';
+                }, 300);
+            }
+
+            if (courseDisplay) {
+                const randomCourse = courses[Math.floor(Math.random() * courses.length)];
+                courseDisplay.style.opacity = '0';
+                setTimeout(() => {
+                    courseDisplay.innerHTML = createCard(randomCourse, false);
+                    courseDisplay.style.opacity = '1';
+                }, 300);
+            }
         }
 
-        // Initialisation du contenu
+        // Initialisation quand la page est chargée
         document.addEventListener('DOMContentLoaded', () => {
-            const gamesContainer = document.querySelector('.quest-grid');
-            const coursesContainer = document.querySelector('.training-grid');
+            // Ajouter les styles de transition
+            const style = document.createElement('style');
+            style.textContent = `
+                #game-display, #course-display {
+                    transition: opacity 0.3s ease;
+                }
+            `;
+            document.head.appendChild(style);
 
-            if (gamesContainer) {
-                gamesContainer.innerHTML = games.map(game => createGameCard(game)).join('');
-            }
+            // Premier affichage
+            updateDisplays();
 
-            if (coursesContainer) {
-                coursesContainer.innerHTML = courses.map(course => createCourseCard(course)).join('');
-            }
+            // Mise à jour toutes les 5 secondes
+            setInterval(updateDisplays, 5000);
         });
     </script>
     <script src="./visit-counter.js" type="module"></script>
