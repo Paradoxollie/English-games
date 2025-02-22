@@ -254,29 +254,51 @@
 /* Styles mobiles */
 @media (max-width: 768px) {
     .game-card {
-        width: 300px;
+        width: calc(100vw - 32px);
         height: auto;
+        min-height: 500px;
     }
 
     .games-carousel-container {
-        @apply px-4;
+        @apply px-2;
     }
 
     .carousel-nav {
-        @apply w-8 h-8;
+        @apply w-8 h-8 -mx-2;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .card-content {
+        @apply p-4;
+    }
+
+    .card-content h3 {
+        @apply text-xl;
+    }
+
+    .card-content p {
+        @apply text-sm;
+    }
+
+    .quest-button {
+        @apply py-3 text-base;
+        position: relative;
+        bottom: 0;
+        margin-top: 1rem;
     }
 }
 
 @media (max-width: 480px) {
     .game-card {
-        width: 280px;
+        width: calc(100vw - 16px);
+        min-height: 450px;
     }
 
-    .game-card .card-content h3 {
-        @apply text-lg;
+    .games-carousel-container {
+        @apply px-1;
     }
 
-    .game-card .card-content p {
-        @apply text-sm;
+    .carousel-nav {
+        @apply -mx-1;
     }
 }
