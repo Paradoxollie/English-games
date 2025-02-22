@@ -2,63 +2,90 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
 
-  gtag('config', 'G-RMCQTMKDVP');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="English Quest Contact - Get in touch with us">
     <title>English Quest - Contact</title>
     
     <!-- Styles -->
-    <link href="style.css" rel="stylesheet">
+    <link href="./dist/output.css" rel="stylesheet">
+    <link href="./src/styles/layout.css" rel="stylesheet">
+    <link href="./src/styles/fonts.css" rel="stylesheet">
+    <link href="./src/styles/transitions.css" rel="stylesheet">
+    <link href="./src/styles/colors.css" rel="stylesheet">
+    <link href="./src/styles/navigation.css" rel="stylesheet">
+    <link href="./src/styles/accessibility.css" rel="stylesheet">
+    <link href="./src/styles/nav-reset.css" rel="stylesheet">
+    <link href="./src/styles/visitor-counter.css" rel="stylesheet">
+    <link href="./src/styles/contact.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed contact-theme">
-    <!-- Logo et Navigation -->
-    <div class="logo-container">
-        <img src="images/logo.gif" alt="English Quest Logo">
-    </div>
-
-    <nav>
-        <div class="flex gap-8">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="all-games.html" class="nav-link">Games</a>
-            <a href="courses.html" class="nav-link">Courses</a>
-            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-            <a href="contact.html" class="nav-link active">Contact</a>
+<body class="bg-quest-pattern" data-page="contact" style="background-image: url('./images/background.webp');">
+    <header class="site-header" role="banner" aria-label="Site header">
+        <div class="logo-container">
+            <img src="./images/logo.gif"
+                 alt="English Quest Logo"
+                 class="w-48 md:w-64 h-auto"
+                 width="600"
+                 height="400"
+                 loading="eager"
+                 decoding="async">
         </div>
-    </nav>
+
+        <nav class="main-nav overflow-x-auto" role="navigation" aria-label="Main navigation">
+            <div class="w-full overflow-x-auto">
+                <div class="container mx-auto grid grid-flow-col auto-cols-max gap-8 justify-center px-4 py-3">
+                    <a href="index.html" class="nav-link text-sm md:text-base hover:text-white">Home</a>
+                    <a href="./all-games.html" class="nav-link text-sm md:text-base hover:text-white">Games</a>
+                    <a href="./courses.html" class="nav-link text-sm md:text-base hover:text-white">Courses</a>
+                    <a href="./leaderboard.html" class="nav-link text-sm md:text-base hover:text-white">Leaderboard</a>
+                    <a href="./contact.html" class="nav-link active text-[#a855f7] font-bold hover:text-[#a855f7] relative glow-purple text-sm md:text-base border-[#a855f7]" aria-current="page">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <main class="min-h-screen pt-32">
         <!-- Hero Section -->
-        <div class="quest-panel max-w-2xl mx-auto mb-16">
-            <h1 class="glow-text">CONTACT THE GUILD</h1>
-            <p>Have questions or suggestions? Send a message to our council of elders!</p>
+        <div class="quest-panel max-w-2xl mx-auto mb-16 text-center px-4" role="banner">
+            <h1 id="page-title" class="text-3xl md:text-5xl font-bold mb-4 md:mb-6">
+                <span class="text-white">ENGLISH QUEST</span>
+                <span class="text-[#a855f7] glow-purple-lg block mb-2">CONTACT</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 font-medieval italic">
+                "Get in touch with the Quest Masters!"
+            </p>
         </div>
 
         <!-- Contact Form Section -->
-        <div class="quest-panel max-w-3xl mx-auto mb-16">
-            <h2 class="section-title">Send a Message</h2>
-            <form id="contactForm">
-                <div class="form-group">
+        <div class="quest-panel max-w-3xl mx-auto mb-16 px-4">
+            <div class="section-header mb-8 text-center">
+                <h2 id="contact-title" class="section-title text-5xl font-medieval mb-4">
+                    <span class="text-[#a855f7] glow-purple-lg block mb-2">Send a Message</span>
+                </h2>
+            </div>
+            <form id="contactForm" class="flex flex-col items-center">
+                <div class="form-group mb-8">
                     <label for="name">Your Name</label>
-                    <input type="text" id="name" name="name" required>
+                    <input type="text" id="name" name="name" required class="w-full text-center">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-8">
                     <label for="email">Your Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required class="w-full text-center">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-8">
                     <label for="subject">Subject</label>
-                    <select id="subject" name="subject" required>
+                    <select id="subject" name="subject" required class="w-full text-center">
                         <option value="">Select a subject...</option>
                         <option value="bug">Report a Bug</option>
                         <option value="suggestion">Suggestion</option>
@@ -67,12 +94,12 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mb-12">
                     <label for="message">Your Message</label>
-                    <textarea id="message" name="message" rows="6" required></textarea>
+                    <textarea id="message" name="message" rows="6" required class="w-full text-center"></textarea>
                 </div>
 
-                <div class="text-center">
+                <div class="text-center mt-12">
                     <button type="submit" class="quest-button">
                         Send Message
                     </button>
@@ -81,18 +108,55 @@
         </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full">
-        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
-            <div class="container mx-auto px-4 py-3">
-                <div class="text-center">
-                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
-                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+    <!-- Footer -->
+    <footer class="quest-footer">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-[#a855f7] text-lg font-medieval mb-4">About Us</h3>
+                    <p class="text-gray-300">
+                        English Quest is dedicated to making language learning fun and effective through interactive games.
+                    </p>
                 </div>
+                <div>
+                    <h3 class="text-[#a855f7] text-lg font-medieval mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="./index.html" class="footer-link hover:text-[#a855f7]">Home</a></li>
+                        <li><a href="./all-games.html" class="footer-link hover:text-[#a855f7]">All Games</a></li>
+                        <li><a href="./courses.html" class="footer-link hover:text-[#a855f7]">Courses</a></li>
+                        <li><a href="./contact.html" class="footer-link hover:text-[#a855f7]">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-[#a855f7] text-lg font-medieval mb-4">Stats</h3>
+                    <div class="visitor-counter text-left mb-4">
+                        <div id="visitor-count" class="counter-wrapper">
+                            <div class="counter-loading">
+                                <span class="text-[#a855f7]">Loading visitor stats...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 text-center" style="border-top: 1px solid rgba(168, 85, 247, 0.3);">
+                <p class="text-gray-400">&copy; 2024 - English Quest - Pierre Marienne - All rights reserved </p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+    <!-- Scripts de l'application -->
+    <script src="./src/config/firebase-config.js"></script>
+    <script src="./src/js/performance.js"></script>
+    <script src="./src/js/accessibility.js"></script>
+    <script src="./src/js/cache-manager.js"></script>
+    <script src="./src/js/monitoring.js"></script>
     <script src="firebase-init.js"></script>
     <script src="visit-counter.js"></script>
 </body>

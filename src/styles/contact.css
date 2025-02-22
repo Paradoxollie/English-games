@@ -1,0 +1,106 @@
+/* Styles pour la page contact */
+[data-page="contact"] .nav-link.active {
+    color: #a855f7 !important;
+    text-shadow: 
+        0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 20px rgba(168, 85, 247, 0.5),
+        0 0 30px rgba(168, 85, 247, 0.3);
+}
+
+/* Style du titre */
+[data-page="contact"] .section-title {
+    @apply text-[#a855f7] text-center mb-8;
+    text-shadow: 
+        0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 20px rgba(168, 85, 247, 0.5),
+        0 0 30px rgba(168, 85, 247, 0.3);
+}
+
+[data-page="contact"] .section-title::after {
+    content: '';
+    @apply absolute left-1/2 -bottom-4 w-32 h-1 transform -translate-x-1/2;
+    background: linear-gradient(90deg, transparent, #a855f7, transparent);
+}
+
+/* Styles du formulaire */
+[data-page="contact"] .form-group {
+    @apply mb-8;
+}
+
+[data-page="contact"] .form-group label {
+    @apply block mb-2 text-[#a855f7];
+}
+
+[data-page="contact"] .form-group input,
+[data-page="contact"] .form-group select,
+[data-page="contact"] .form-group textarea {
+    @apply bg-black/60 border-2 border-[#a855f7]/30 rounded-lg p-3;
+    @apply hover:border-[#a855f7]/50 focus:border-[#a855f7] focus:outline-none;
+}
+
+/* Style du bouton */
+[data-page="contact"] .quest-button {
+    width: 100%;
+    margin-top: 3rem;
+    @apply py-4 text-center font-medieval text-lg rounded-xl;
+    background: linear-gradient(to bottom, #a855f7, #7e22ce);
+    color: white;
+    border: 2px solid #c084fc;
+    text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+    box-shadow: 
+        0 0 10px rgba(168, 85, 247, 0.3),
+        inset 0 0 15px rgba(192, 132, 252, 0.2);
+}
+
+[data-page="contact"] .quest-button:hover {
+    background: linear-gradient(to bottom, #c084fc, #9333ea);
+    border-color: #d8b4fe;
+    box-shadow: 
+        0 0 20px rgba(168, 85, 247, 0.5),
+        inset 0 0 20px rgba(192, 132, 252, 0.3);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Styles pour le compteur de visites */
+[data-page="contact"] .counter-container {
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+[data-page="contact"] .counter-item {
+    border-right-color: rgba(168, 85, 247, 0.3);
+}
+
+[data-page="contact"] .counter-label,
+[data-page="contact"] .counter-value,
+[data-page="contact"] .counter-loading span,
+[data-page="contact"] .visitor-counter span {
+    color: #a855f7 !important;
+}
+
+/* Styles mobiles */
+@media (max-width: 768px) {
+    [data-page="contact"] .quest-panel {
+        @apply px-4;
+    }
+
+    [data-page="contact"] .form-group {
+        @apply w-full;
+    }
+
+    [data-page="contact"] #page-title {
+        @apply text-3xl;
+    }
+
+    [data-page="contact"] .section-title {
+        @apply text-2xl;
+    }
+}
+
+@media (max-width: 480px) {
+    [data-page="contact"] .form-group input,
+    [data-page="contact"] .form-group select,
+    [data-page="contact"] .form-group textarea {
+        @apply text-sm;
+    }
+} 

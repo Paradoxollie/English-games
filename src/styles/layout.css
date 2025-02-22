@@ -103,15 +103,22 @@ main {
     @apply border-[#22c55e]/30;
 }
 
+/* Footer spécifique pour la page leaderboard */
+[data-page="leaderboard"] .quest-footer {
+    @apply border-t border-[#ff4444]/30;
+}
+
+[data-page="leaderboard"] .quest-footer .border-t {
+    @apply border-[#ff4444]/30;
+}
+
 .quest-footer h3 {
     font-family: 'Marcellus', serif;
     font-size: 1.25rem;
-    color: #ffd700;
 }
 
 .quest-footer .footer-link {
     font-family: 'Marcellus', serif;
-    color: #c9aa71;
 }
 
 /* Responsive Design */
@@ -203,12 +210,21 @@ main {
 
 /* Titres communs */
 .section-title {
-    font-family: 'MedievalSharp', serif;
-    color: #c9aa71;
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    text-shadow: 0 0 10px rgba(201, 170, 113, 0.3);
+    @apply relative;
+}
+
+.section-title::after {
+    content: '';
+    @apply absolute left-1/2 -bottom-4 w-32 h-1 transform -translate-x-1/2;
+}
+
+/* Styles spécifiques pour les titres selon la page */
+[data-page="contact"] .section-title {
+    @apply text-[#a855f7];
+}
+
+[data-page="contact"] .section-title::after {
+    background: linear-gradient(90deg, transparent, #a855f7, transparent);
 }
 
 /* Effets spéciaux communs */

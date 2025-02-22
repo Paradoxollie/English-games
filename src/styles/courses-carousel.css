@@ -250,3 +250,33 @@
     @apply absolute left-1/2 -bottom-4 w-32 h-1 transform -translate-x-1/2;
     background: linear-gradient(90deg, transparent, #22c55e, transparent);
 }
+
+/* Styles mobiles */
+@media (max-width: 768px) {
+    .game-card {
+        width: 300px;
+        height: auto;
+    }
+
+    .games-carousel-container {
+        @apply px-4;
+    }
+
+    .carousel-nav {
+        @apply w-8 h-8;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-card {
+        width: 280px;
+    }
+
+    .game-card .card-content h3 {
+        @apply text-lg;
+    }
+
+    .game-card .card-content p {
+        @apply text-sm;
+    }
+}

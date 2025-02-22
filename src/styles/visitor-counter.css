@@ -30,7 +30,7 @@
 
 /* Styles spécifiques pour la page courses */
 [data-page="courses"] .counter-container {
-    border: 2px solid rgba(34, 197, 94, 0.3);
+    border-color: rgba(34, 197, 94, 0.3);
 }
 
 [data-page="courses"] .counter-item {
@@ -56,4 +56,45 @@
 /* Ligne de séparation du copyright */
 [data-page="courses"] .quest-footer .mt-8 {
     @apply border-[#22c55e]/30;
+}
+
+/* Styles spécifiques pour la page leaderboard */
+[data-page="leaderboard"] .counter-container {
+    border-color: rgba(255, 68, 68, 0.3);
+}
+
+[data-page="leaderboard"] .counter-item {
+    border-right-color: rgba(255, 68, 68, 0.3);
+}
+
+[data-page="leaderboard"] .counter-label,
+[data-page="leaderboard"] .counter-value,
+[data-page="leaderboard"] .counter-loading span,
+[data-page="leaderboard"] .visitor-counter span {
+    color: #ff4444 !important;
+}
+
+/* Ligne de séparation du footer pour la page leaderboard */
+[data-page="leaderboard"] .quest-footer .border-t {
+    @apply border-[#ff4444]/30;
+}
+
+[data-page="leaderboard"] .quest-footer .mt-8 {
+    @apply border-[#ff4444]/30;
+}
+
+/* Styles spécifiques pour la page contact */
+[data-page="contact"] .counter-container {
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+[data-page="contact"] .counter-item {
+    border-right-color: rgba(168, 85, 247, 0.3);
+}
+
+[data-page="contact"] .counter-label,
+[data-page="contact"] .counter-value,
+[data-page="contact"] .counter-loading span,
+[data-page="contact"] .visitor-counter span {
+    color: #a855f7 !important;
 } 

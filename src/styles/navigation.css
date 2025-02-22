@@ -14,7 +14,7 @@
 
 /* Active states */
 .nav-link.active {
-    @apply text-quest-gold font-bold;
+    @apply text-quest-gold;
 }
 
 /* Page index/home */
