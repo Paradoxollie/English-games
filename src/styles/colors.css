@@ -3,10 +3,12 @@
     --quest-gold: #ffd700;
     --quest-red: #ff4444;
     --quest-blue: #3b82f6;
+    --quest-green: #22c55e;
 
     /* Gradients */
     --gold-gradient: linear-gradient(to bottom, #ffd700, #c9aa71);
     --red-gradient: linear-gradient(to bottom, #ff4444, #8B0000);
+    --green-gradient: linear-gradient(to bottom, #22c55e, #15803d);
     
     /* Couleurs des rangs */
     --rank-1-color: #ffd700;
@@ -21,6 +23,21 @@
     /* Couleurs de fond */
     --bg-dark: rgba(0, 0, 0, 0.9);
     --bg-transparent: rgba(0, 0, 0, 0.7);
+
+    /* Pour la page games, utilisons le bleu */
+    [data-page="games"] {
+        --quest-gold: #3b82f6;
+    }
+
+    /* Pour la page courses */
+    [data-page="courses"] {
+        --primary-color: #22c55e;
+        --primary-light: #4ade80;
+        --primary-dark: #15803d;
+        --primary-glow: rgba(34, 197, 94, 0.3);
+        --border-color: rgba(34, 197, 94, 0.3);
+        --hover-color: #4ade80;
+    }
 }
 
 /* Supprimer ou commenter toutes les règles qui pourraient affecter les rangs */
@@ -39,4 +56,30 @@
 
 .text-quest-blue {
     color: var(--quest-blue);
+}
+
+/* Classes spécifiques pour le compteur */
+[data-page="courses"] .counter-container {
+    border-color: var(--border-color) !important;
+}
+
+[data-page="courses"] .counter-label {
+    color: var(--text-color) !important;
+}
+
+[data-page="courses"] .counter-value {
+    color: var(--text-color) !important;
+}
+
+[data-page="courses"] .quest-footer {
+    border-color: var(--separator-color);
+}
+
+[data-page="courses"] .quest-footer .border-t {
+    border-color: var(--separator-color) !important;
+}
+
+/* Styles pour les titres de page */
+[data-page="courses"] #page-title span:last-child {
+    color: var(--title-color);
 } 

@@ -10,4 +10,17 @@
 /* Styles spécifiques pour les titres */
 h1, h2, h3, .nav-link {
     font-family: 'Cinzel Decorative', serif;
+}
+
+/* Styles de texte spécifiques pour les cours */
+[data-page="courses"] .card-content h3 {
+    @apply font-medieval;
+}
+
+[data-page="courses"] .quest-button {
+    @apply font-medieval;
+}
+
+[data-page="courses"] .badge {
+    @apply font-bold;
 } 

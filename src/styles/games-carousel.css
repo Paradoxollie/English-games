@@ -53,15 +53,19 @@
 }
 
 .tag {
-    @apply px-3 py-1 bg-quest-gold/10 text-quest-gold/90 rounded-full text-sm
-           border border-quest-gold/30 hover:border-quest-gold/60 transition-colors;
+    @apply px-3 py-1 bg-[#3b82f6]/10 text-[#3b82f6]/90 rounded-full text-sm
+           border border-[#3b82f6]/30 hover:border-[#3b82f6]/60 transition-colors;
 }
 
 /* Styles des boutons */
 .quest-button {
-    @apply block w-full py-3 text-center font-medieval text-lg 
-           border rounded-lg transition-all duration-300 
-           hover:-translate-y-1 shadow-lg hover:shadow-xl;
+    @apply block w-full py-4 text-center font-medieval text-lg;
+    @apply bg-gradient-to-r from-[#3b82f6]/30 via-[#3b82f6]/20 to-[#3b82f6]/30;
+    @apply text-[#3b82f6] border-2 border-[#3b82f6]/50 rounded-lg;
+    @apply transition-all duration-300;
+    @apply hover:from-[#3b82f6]/40 hover:via-[#3b82f6]/30 hover:to-[#3b82f6]/40;
+    @apply hover:border-[#3b82f6] hover:shadow-[#3b82f6]/20;
+    @apply hover:-translate-y-1;
 }
 
 /* Bouton pour les jeux */
@@ -285,66 +289,85 @@
            text-white border-blue-400;
 }
 
-.quest-button {
-    @apply relative overflow-hidden;
-}
-
-/* Effet de brillance sur hover */
-.quest-button::before {
-    content: '';
-    @apply absolute inset-0;
-    background: linear-gradient(
-        to right,
-        transparent,
-        rgba(59, 130, 246, 0.1),
-        transparent
-    );
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-}
-
-.quest-button:hover::before {
-    transform: translateX(100%);
-}
-
-/* Animation de pulsation */
-@keyframes button-pulse-blue {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-    }
-    50% {
-        box-shadow: 0 0 20px 0 rgba(59, 130, 246, 0.6);
-    }
-}
-
 .quest-button:hover {
-    animation: button-pulse-blue 2s infinite;
+    @apply transform -translate-y-1;
+    @apply shadow-lg shadow-[#3b82f6]/20;
+}
+
+/* Forcer les couleurs bleues pour les boutons dans le carousel */
+#gamesCarousel .quest-button {
+    background: linear-gradient(to bottom, #4d8bf4, #1e40af);
+    color: white;
+    border: 2px solid #60a5fa;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+    box-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.3),
+        inset 0 0 15px rgba(96, 165, 250, 0.2);
+}
+
+#gamesCarousel .quest-button:hover {
+    background: linear-gradient(to bottom, #60a5fa, #2563eb);
+    border-color: #93c5fd;
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.5),
+        inset 0 0 20px rgba(96, 165, 250, 0.3);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 /* Structure de carte uniforme */
 .game-card {
     @apply bg-black/80 border-2 border-[#3b82f6]/80 rounded-lg overflow-hidden;
     width: 450px;
-    height: 600px; /* Hauteur fixe pour toutes les cartes */
+    height: 650px;
     display: flex;
     flex-direction: column;
 }
 
 .game-card .card-content {
     @apply p-6 bg-gradient-to-b from-black/95 to-black/90;
-    flex: 1;
+    position: relative;
+    height: calc(650px - 208px); /* 650px - hauteur de l'image (208px = h-52) */
     display: flex;
     flex-direction: column;
 }
 
+/* Structure du contenu de la carte */
+.card-content > div:first-child {
+    @apply mb-4;
+}
+
+.card-content > p {
+    @apply text-gray-300 mb-6;
+}
+
+.card-content > .flex {
+    @apply mb-4;
+}
+
 /* Bouton Play Now uniforme */
 .quest-button {
-    @apply mt-auto; /* Place le bouton en bas */
-    @apply block w-full py-4 text-center font-medieval text-lg;
-    @apply bg-gradient-to-r from-[#3b82f6]/30 via-[#3b82f6]/20 to-[#3b82f6]/30;
-    @apply text-[#3b82f6] border-2 border-[#3b82f6]/50 rounded-lg;
-    @apply transition-all duration-300;
-    @apply hover:from-[#3b82f6]/40 hover:via-[#3b82f6]/30 hover:to-[#3b82f6]/40;
-    @apply hover:border-[#3b82f6] hover:shadow-[#3b82f6]/20;
-    @apply hover:-translate-y-1;
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    width: calc(100% - 48px);
+    @apply py-4 text-center font-medieval text-lg;
+    background: linear-gradient(to bottom, #4d8bf4, #1e40af);
+    color: white;
+    border: 2px solid #60a5fa;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+    box-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.3),
+        inset 0 0 15px rgba(96, 165, 250, 0.2);
+}
+
+/* Forcer la couleur bleue pour les cartes dans le carousel */
+#gamesCarousel .game-card {
+    border-color: #3b82f6 !important;
+}
+
+#gamesCarousel .game-card:hover {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2) !important;
 } 

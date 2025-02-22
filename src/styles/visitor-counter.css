@@ -3,13 +3,13 @@
 }
 
 .counter-container {
-    @apply flex flex-col gap-2 bg-black/40 rounded-lg p-4 border border-quest-gold/20;
+    @apply flex justify-center items-stretch gap-4 p-4 
+           bg-black/60 rounded-lg;
 }
 
 .counter-item {
-    @apply flex justify-between items-center;
-    padding: 0.5rem 1rem;
-    border-bottom: 1px solid rgba(201, 170, 113, 0.1);
+    @apply flex flex-col items-center px-6 py-3
+           border-r last:border-r-0;
 }
 
 .counter-item:last-child {
@@ -17,9 +17,43 @@
 }
 
 .counter-label {
-    @apply text-sm text-quest-gold/70 font-medieval;
+    @apply text-sm font-medieval mb-2 text-quest-gold;
 }
 
 .counter-value {
-    @apply text-lg text-quest-gold font-bold font-medieval;
+    @apply text-xl font-bold font-quest text-quest-gold;
+}
+
+.counter-loading span {
+    @apply text-quest-gold;
+}
+
+/* Styles spécifiques pour la page courses */
+[data-page="courses"] .counter-container {
+    border: 2px solid rgba(34, 197, 94, 0.3);
+}
+
+[data-page="courses"] .counter-item {
+    border-right-color: rgba(34, 197, 94, 0.3);
+}
+
+[data-page="courses"] .counter-label,
+[data-page="courses"] .counter-value,
+[data-page="courses"] .counter-loading span,
+[data-page="courses"] .visitor-counter span {
+    color: #22c55e !important;
+}
+
+/* Styles spécifiques pour le footer de la page courses */
+[data-page="courses"] .quest-footer {
+    @apply bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm;
+}
+
+[data-page="courses"] .quest-footer .border-t {
+    @apply border-[#22c55e]/30;
+}
+
+/* Ligne de séparation du copyright */
+[data-page="courses"] .quest-footer .mt-8 {
+    @apply border-[#22c55e]/30;
 } 

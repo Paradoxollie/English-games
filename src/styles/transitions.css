@@ -37,4 +37,17 @@
 
 .nav-link::after {
     transition: opacity 0.3s ease;
+}
+
+/* Transitions pour les cartes de cours */
+[data-page="courses"] .game-card {
+    transition: all 0.3s ease-in-out;
+}
+
+[data-page="courses"] .game-card img {
+    transition: transform 0.3s ease-in-out;
+}
+
+[data-page="courses"] .quest-button {
+    transition: all 0.3s ease;
 } 

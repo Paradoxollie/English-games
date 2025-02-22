@@ -1,0 +1,252 @@
+/* Container du carousel */
+.games-carousel-container {
+    @apply relative overflow-hidden px-12;
+}
+
+.games-carousel {
+    @apply flex gap-8;
+    transition: transform 1s ease-in-out;
+}
+
+/* Navigation */
+.carousel-nav {
+    @apply absolute top-1/2 transform -translate-y-1/2 w-10 h-10 
+           bg-[#22c55e]/20 border-2 border-[#22c55e]/50 text-[#22c55e] rounded-full 
+           flex items-center justify-center 
+           hover:bg-[#22c55e]/30 hover:border-[#22c55e] transition-all;
+}
+
+.carousel-nav.prev { @apply left-0; }
+.carousel-nav.next { @apply right-0; }
+
+/* Structure de carte */
+.game-card {
+    @apply bg-black/60 rounded-xl overflow-hidden;
+    width: 380px;
+    height: 650px;
+    flex: 0 0 auto;
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    border-color: #22c55e;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+    transform: translateY(-4px);
+}
+
+/* Image container */
+.game-card .relative {
+    @apply overflow-hidden;
+    height: 208px; /* h-52 */
+}
+
+.game-card img {
+    @apply w-full h-full object-cover transition-transform duration-300;
+}
+
+.game-card:hover img {
+    @apply scale-105;
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    border-width: 2px;
+    margin: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+}
+
+/* Badges de niveau pour les cours */
+.badge-advanced {
+    background-color: #8B0000; /* rouge foncé */
+    border-color: #DC143C;
+    color: white;
+    text-shadow: 0 0 5px rgba(220, 20, 60, 0.5);
+}
+
+.badge-intermediate {
+    background-color: #DAA520; /* doré */
+    border-color: #FFD700;
+    color: black;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.badge-basic {
+    background-color: #228B22; /* vert forêt */
+    border-color: #32CD32;
+    color: white;
+    text-shadow: 0 0 5px rgba(50, 205, 50, 0.5);
+}
+
+/* Contenu */
+.card-content {
+    @apply p-6 bg-gradient-to-b from-black/95 to-black/90;
+    flex: 1;
+    position: relative;
+    height: calc(650px - 208px); /* Hauteur totale - hauteur de l'image */
+}
+
+/* Titre et description */
+.card-content h3 {
+    @apply text-2xl font-medieval text-[#22c55e] mb-4;
+}
+
+.card-content p {
+    @apply text-gray-300 mb-4;
+}
+
+/* Tags */
+.flex-wrap {
+    @apply gap-2 mb-6;
+}
+
+.tag {
+    @apply inline-flex items-center justify-center
+           px-3 py-1 rounded-lg text-sm
+           border-2 bg-opacity-90
+           shadow-sm mx-1;
+}
+
+/* Tags spécifiques pour les cours */
+.tag-grammar {
+    background-color: #228B22; /* Vert forêt */
+    border-color: #32CD32;
+    color: white;
+}
+
+.tag-comparison {
+    background-color: #473C8B; /* bleu ardoise */
+    border-color: #6A5ACD;
+    color: white;
+}
+
+.tag-conditional {
+    background-color: #551A8B; /* violet foncé */
+    border-color: #9370DB;
+    color: white;
+}
+
+.tag-time {
+    background-color: #CD6600; /* orange foncé */
+    border-color: #FFA500;
+    color: white;
+}
+
+.tag-duration {
+    background-color: #8B6508; /* brun doré */
+    border-color: #FFD700;
+    color: white;
+}
+
+.tag-prepositions {
+    background-color: #008B8B; /* cyan foncé */
+    border-color: #00CED1;
+    color: white;
+}
+
+.tag-advanced {
+    background-color: #8B1A1A; /* rouge brique */
+    border-color: #CD5C5C;
+    color: white;
+}
+
+.tag-modals {
+    background-color: #4A708B; /* bleu acier */
+    border-color: #87CEEB;
+    color: white;
+}
+
+.tag-verbs {
+    background-color: #C41E3A; /* Rouge cramoisi */
+    border-color: #DC143C;
+    color: white;
+}
+
+/* Bouton */
+.quest-button {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    right: 24px;
+    width: calc(100% - 48px);
+    @apply py-4 text-center font-medieval text-lg rounded-xl;
+    background: linear-gradient(to bottom, #22c55e, #15803d);
+    color: white;
+    border: 2px solid #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+    box-shadow: 
+        0 0 10px rgba(34, 197, 94, 0.3),
+        inset 0 0 15px rgba(74, 222, 128, 0.2);
+    transition: all 0.3s ease;
+}
+
+.quest-button:hover {
+    background: linear-gradient(to bottom, #4ade80, #16a34a);
+    border-color: #86efac;
+    box-shadow: 
+        0 0 20px rgba(34, 197, 94, 0.5),
+        inset 0 0 20px rgba(74, 222, 128, 0.3);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Dots */
+.carousel-dots {
+    @apply flex justify-center gap-2 mt-4;
+}
+
+.carousel-dots button {
+    @apply w-2 h-2 rounded-full bg-[#22c55e]/30 hover:bg-[#22c55e]/50 transition-all;
+}
+
+/* Styles pour le titre */
+.glow-green-lg {
+    text-shadow: 
+        0 0 10px rgba(34, 197, 94, 0.8),
+        0 0 20px rgba(34, 197, 94, 0.5),
+        0 0 30px rgba(34, 197, 94, 0.3);
+    color: #22c55e !important;
+}
+
+.glow-green {
+    text-shadow: 
+        0 0 5px rgba(34, 197, 94, 0.6),
+        0 0 10px rgba(34, 197, 94, 0.4),
+        0 0 15px rgba(34, 197, 94, 0.2);
+    color: #22c55e !important;
+}
+
+/* Effets de lueur pour les titres */
+.glow-text-lg {
+    text-shadow: 
+        0 0 10px rgba(34, 197, 94, 0.5),
+        0 0 20px rgba(34, 197, 94, 0.3),
+        0 0 30px rgba(34, 197, 94, 0.2);
+}
+
+.glow-text-green-lg {
+    text-shadow: 
+        0 0 10px rgba(34, 197, 94, 0.5),
+        0 0 20px rgba(34, 197, 94, 0.3),
+        0 0 30px rgba(34, 197, 94, 0.2);
+}
+
+/* Styles pour le titre */
+.section-title {
+    @apply relative;
+}
+
+.section-title::after {
+    content: '';
+    @apply absolute left-1/2 -bottom-4 w-32 h-1 transform -translate-x-1/2;
+    background: linear-gradient(90deg, transparent, #22c55e, transparent);
+}

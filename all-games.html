@@ -50,6 +50,32 @@
     <!-- Preload des ressources critiques -->
     <link rel="preload" href="./src/js/performance.js" as="script">
     <link rel="preload" href="./src/js/accessibility.js" as="script">
+
+    <style>
+        /* Styles pour le menu mobile */
+        @media (max-width: 768px) {
+            .main-nav {
+                position: relative;
+            }
+            
+            #mobile-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                z-index: 50;
+            }
+            
+            #mobile-menu .nav-link {
+                padding: 0.75rem 1rem;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            }
+            
+            #mobile-menu .nav-link:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
 </head>
 <body class="bg-quest-pattern" data-page="games" style="background-image: url('./images/background.webp');">
     <header class="site-header" role="banner" aria-label="Site header">
@@ -73,8 +99,25 @@
                     <a href="./contact.html" class="nav-link text-sm md:text-base hover:text-white">Contact</a>
                 </div>
             </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden absolute right-4 top-1/2 transform -translate-y-1/2" aria-label="Menu">
+                <svg class="w-6 h-6 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
         </nav>
     </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-black/95 border-b border-[#3b82f6]/30">
+        <div class="px-4 py-3 space-y-3">
+            <a href="index.html" class="block nav-link hover:text-white">Home</a>
+            <a href="./all-games.html" class="block nav-link active text-[#3b82f6] font-bold">Games</a>
+            <a href="./courses.html" class="block nav-link hover:text-white">Courses</a>
+            <a href="./leaderboard.html" class="block nav-link hover:text-white">Leaderboard</a>
+            <a href="./contact.html" class="block nav-link hover:text-white">Contact</a>
+        </div>
+    </div>
 
     <main id="main-content" class="min-h-screen pt-32 pb-32" role="main">
         <!-- Hero Section -->
@@ -358,107 +401,118 @@
     <!-- Scripts -->
     <script src="./visit-counter.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const carousel = document.getElementById('gamesCarousel');
-        const cards = Array.from(carousel.children);
-        const cardsPerView = 3;
-
-        // Dupliquer les cartes pour créer l'effet infini
-        cards.forEach(card => {
-            const clone = card.cloneNode(true);
-            carousel.appendChild(clone);
-        });
-
-        let currentIndex = 0;
-        let isTransitioning = false;
-
-        function updateCarousel(smooth = true) {
-            const cardWidth = carousel.querySelector('.game-card').offsetWidth;
-            const gap = 32; // 2rem gap
-            let offset = -(currentIndex * (cardWidth + gap));
-            
-            carousel.style.transition = smooth ? 'transform 1s ease-in-out' : 'none';
-            carousel.style.transform = `translateX(${offset}px)`;
-
-            // Si on atteint la fin du premier set de cartes
-            if (currentIndex >= cards.length && !isTransitioning) {
-                isTransitioning = true;
-                setTimeout(() => {
-                    carousel.style.transition = 'none';
-                    currentIndex = 0;
-                    offset = 0;
-                    carousel.style.transform = `translateX(${offset}px)`;
-                    
-                    // Réactiver les transitions après le reset
-                    setTimeout(() => {
-                        carousel.style.transition = 'transform 1s ease-in-out';
-                        isTransitioning = false;
-                    }, 50);
-                }, 1000);
-            }
-        }
-
-        function nextSlide() {
-            if (!isTransitioning) {
-                currentIndex++;
-                updateCarousel(true);
-            }
-        }
-
-        function prevSlide() {
-            if (!isTransitioning && currentIndex > 0) {
-                currentIndex--;
-                updateCarousel(true);
-            } else if (!isTransitioning) {
-                // Aller à la fin du premier set
-                currentIndex = cards.length - 1;
-                updateCarousel(true);
-            }
-        }
-
-        // Navigation
-        document.querySelector('.carousel-nav.prev').addEventListener('click', () => {
-            stopAutoplay();
-            prevSlide();
-            startAutoplay();
-        });
-
-        document.querySelector('.carousel-nav.next').addEventListener('click', () => {
-            stopAutoplay();
-            nextSlide();
-            startAutoplay();
-        });
-
-        // Autoplay plus lent
-        let autoplayInterval;
-        
-        function startAutoplay() {
-            autoplayInterval = setInterval(() => {
-                nextSlide();
-            }, 8000); // 8 secondes entre chaque défilement
-        }
-
-        function stopAutoplay() {
-            clearInterval(autoplayInterval);
-        }
-
-        // Pause sur hover
-        carousel.addEventListener('mouseenter', stopAutoplay);
-        carousel.addEventListener('mouseleave', startAutoplay);
-        
-        // Initialisation
-        updateCarousel(false);
-        startAutoplay();
-
-        // Gestion du redimensionnement
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                updateCarousel(false);
-            }, 250);
-        });
+    // Mobile menu functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+        const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+        mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+        mobileMenu.classList.toggle('hidden');
     });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.getElementById('gamesCarousel');
+            const cards = Array.from(carousel.children);
+            const cardsPerView = 3;
+
+            // Dupliquer les cartes pour créer l'effet infini
+            cards.forEach(card => {
+                const clone = card.cloneNode(true);
+                carousel.appendChild(clone);
+            });
+
+            let currentIndex = 0;
+            let isTransitioning = false;
+
+            function updateCarousel(smooth = true) {
+                const cardWidth = carousel.querySelector('.game-card').offsetWidth;
+                const gap = 32; // 2rem gap
+                let offset = -(currentIndex * (cardWidth + gap));
+                
+                carousel.style.transition = smooth ? 'transform 1s ease-in-out' : 'none';
+                carousel.style.transform = `translateX(${offset}px)`;
+
+                // Si on atteint la fin du premier set de cartes
+                if (currentIndex >= cards.length && !isTransitioning) {
+                    isTransitioning = true;
+                    setTimeout(() => {
+                        carousel.style.transition = 'none';
+                        currentIndex = 0;
+                        offset = 0;
+                        carousel.style.transform = `translateX(${offset}px)`;
+                        
+                        // Réactiver les transitions après le reset
+                        setTimeout(() => {
+                            carousel.style.transition = 'transform 1s ease-in-out';
+                            isTransitioning = false;
+                        }, 50);
+                    }, 1000);
+                }
+            }
+
+            function nextSlide() {
+                if (!isTransitioning) {
+                    currentIndex++;
+                    updateCarousel(true);
+                }
+            }
+
+            function prevSlide() {
+                if (!isTransitioning && currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel(true);
+                } else if (!isTransitioning) {
+                    // Aller à la fin du premier set
+                    currentIndex = cards.length - 1;
+                    updateCarousel(true);
+                }
+            }
+
+            // Navigation
+            document.querySelector('.carousel-nav.prev').addEventListener('click', () => {
+                stopAutoplay();
+                prevSlide();
+                startAutoplay();
+            });
+
+            document.querySelector('.carousel-nav.next').addEventListener('click', () => {
+                stopAutoplay();
+                nextSlide();
+                startAutoplay();
+            });
+
+            // Autoplay plus lent
+            let autoplayInterval;
+            
+            function startAutoplay() {
+                autoplayInterval = setInterval(() => {
+                    nextSlide();
+                }, 8000); // 8 secondes entre chaque défilement
+            }
+
+            function stopAutoplay() {
+                clearInterval(autoplayInterval);
+            }
+
+            // Pause sur hover
+            carousel.addEventListener('mouseenter', stopAutoplay);
+            carousel.addEventListener('mouseleave', startAutoplay);
+            
+            // Initialisation
+            updateCarousel(false);
+            startAutoplay();
+
+            // Gestion du redimensionnement
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    updateCarousel(false);
+                }, 250);
+            });
+        });
     </script>
 </body>
 </html>

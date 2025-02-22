@@ -53,6 +53,7 @@
     --glow-color-80: rgba(34, 197, 94, 0.8);
     --glow-color-50: rgba(34, 197, 94, 0.5);
     --glow-color-30: rgba(34, 197, 94, 0.3);
+    --hover-color: white;
 }
 
 [data-page="contact"] {
@@ -114,4 +115,19 @@
         0 0 10px var(--glow-color-80),
         0 0 20px var(--glow-color-50),
         0 0 30px var(--glow-color-30);
+}
+
+[data-page="courses"] .nav-link[href="./courses.html"].active {
+    color: var(--active-color);
+    text-shadow: 
+        0 0 10px var(--glow-color-80),
+        0 0 20px var(--glow-color-50),
+        0 0 30px var(--glow-color-30);
+}
+
+.glow-green {
+    animation: pulse-glow 2s infinite;
+    --glow-color-80: rgba(34, 197, 94, 0.8);
+    --glow-color-50: rgba(34, 197, 94, 0.5);
+    --glow-color-30: rgba(34, 197, 94, 0.3);
 } 
