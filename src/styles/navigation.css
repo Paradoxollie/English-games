@@ -120,29 +120,20 @@
     }
 
     .main-nav > div {
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
-    }
-
-    .main-nav > div::-webkit-scrollbar {
-        display: none; /* Chrome, Safari and Opera */
+        @apply overflow-x-auto;
+        @apply -mx-4 px-4;
     }
 
     .nav-link {
-        @apply text-sm py-2;
+        @apply text-sm py-2 whitespace-nowrap;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Centrer la navigation */
+    .container.mx-auto.grid {
+        @apply justify-start;
         min-width: max-content;
-    }
-
-    /* Indicateur de défilement */
-    .main-nav::after {
-        content: '';
-        @apply absolute right-0 top-0 h-full w-4 bg-gradient-to-l from-black/95 to-transparent pointer-events-none;
-    }
-
-    .main-nav::before {
-        content: '';
-        @apply absolute left-0 top-0 h-full w-4 bg-gradient-to-r from-black/95 to-transparent pointer-events-none;
     }
 
     .glow-gold, .glow-red {
