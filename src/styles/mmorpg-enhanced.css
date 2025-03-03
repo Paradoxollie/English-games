@@ -1,0 +1,777 @@
+/* Styles améliorés pour une interface MMORPG 3D immersive */
+
+/* Variables globales pour le thème MMORPG */
+:root {
+    --primary-dark: #1a237e;      /* Bleu foncé pour fond */
+    --primary-mid: #3949ab;       /* Bleu moyen pour éléments */
+    --primary-light: #5c6bc0;     /* Bleu clair pour accents */
+    --primary-bright: #7986cb;    /* Bleu brillant pour focus */
+    
+    --accent-gold: #ffd700;       /* Or pour éléments importants */
+    --accent-gold-glow: rgba(255, 215, 0, 0.6); /* Lueur dorée */
+    
+    --success-color: #00c853;     /* Vert vif pour succès */
+    --error-color: #ff3d00;       /* Rouge vif pour erreurs */
+    
+    --shadow-light: rgba(0, 0, 0, 0.2);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --shadow-dark: rgba(0, 0, 0, 0.7);
+    
+    --glow-blue: rgba(33, 150, 243, 0.7);
+    --glow-gold: rgba(255, 215, 0, 0.4);
+}
+
+/* Fond 3D du jeu avec effet de profondeur mais sans flou */
+.game-universe {
+    animation: none !important;
+    background: radial-gradient(ellipse at center, #141e30 0%, #0c111c 100%);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Effet de starfield/particules lointaines */
+.game-universe::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+    background-image: 
+        radial-gradient(1px 1px at calc(50% + 40px) 20%, rgba(255, 255, 255, 0.2), transparent 50%),
+        radial-gradient(1px 1px at calc(50% - 300px) 40%, rgba(255, 255, 255, 0.2), transparent 50%),
+        radial-gradient(1px 1px at calc(50% + 250px) 60%, rgba(255, 255, 255, 0.2), transparent 50%),
+        radial-gradient(1px 1px at calc(50% - 150px) 80%, rgba(255, 255, 255, 0.2), transparent 50%);
+    background-size: 300px 300px;
+    animation: none !important;
+}
+
+/* Effet de brume pour ajouter de la profondeur - SUPPRESSION DU FLOU */
+.game-universe::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -9;
+    background: 
+        linear-gradient(125deg, transparent 0%, rgba(16, 23, 41, 0.2) 40%, transparent 100%),
+        linear-gradient(235deg, transparent 0%, rgba(16, 23, 41, 0.2) 40%, transparent 100%);
+    animation: none !important;
+}
+
+/* Super-structure 3D pour le panneau principal du jeu */
+.game-panel {
+    background: linear-gradient(135deg, rgba(23, 32, 57, 0.9), rgba(12, 17, 30, 0.98));
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(90, 120, 190, 0.1);
+    transform-style: preserve-3d;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+/* Effet de bordure luminescente pour les éléments importants - RÉDUCTION DU FLOU */
+.game-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(90, 120, 190, 0.6), transparent);
+    filter: blur(0.5px);
+    z-index: 1;
+}
+
+/* HUD 3D avec effet de profondeur */
+.game-hud {
+    display: flex;
+    background: linear-gradient(to bottom, rgba(10, 14, 25, 0.95), rgba(16, 24, 45, 0.98));
+    border-radius: 8px 8px 0 0;
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(90, 120, 190, 0.3);
+    transform-style: preserve-3d;
+    perspective: 400px;
+    position: relative;
+    z-index: 10;
+    border-bottom: 1px solid rgba(90, 120, 190, 0.4);
+    padding: 12px 20px;
+    margin-bottom: 15px;
+}
+
+/* Éléments du HUD avec effet 3D */
+.hud-item {
+    position: relative;
+    transform-style: preserve-3d;
+    margin: 0 15px;
+    padding: 5px 10px;
+    min-width: 60px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.hud-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #a0a0c0;
+    margin-bottom: 3px;
+    transform: translateZ(5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hud-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 
+        0 0 5px rgba(90, 120, 190, 0.7),
+        0 0 10px rgba(90, 120, 190, 0.4);
+    transform: translateZ(10px);
+    transition: none;
+}
+
+/* Barre d'énergie/XP améliorée avec effet 3D */
+.xp-bar-container {
+    position: relative;
+    margin: 0 0 20px;
+    padding: 5px 0;
+    transform-style: preserve-3d;
+}
+
+.xp-bar-label {
+    font-size: 0.9rem;
+    color: #a0a0c0;
+    margin-bottom: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: translateZ(5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.xp-bar {
+    height: 10px;
+    background: rgba(10, 14, 25, 0.8);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 
+        inset 0 0 5px rgba(0, 0, 0, 0.7),
+        0 0 3px rgba(90, 120, 190, 0.3);
+    position: relative;
+    transform: translateZ(5px);
+}
+
+.xp-bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(to right, 
+        #1e88e5, 
+        #42a5f5, 
+        #90caf9
+    );
+    position: relative;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.7);
+}
+
+/* Effet de flux lumineux pour la barre d'énergie */
+.energy-flow .xp-bar-fill {
+    background-image: 
+        linear-gradient(to right, #1e88e5, #42a5f5, #90caf9),
+        linear-gradient(90deg, 
+            rgba(255, 255, 255, 0) 0%, 
+            rgba(255, 255, 255, 0.1) 20%, 
+            rgba(255, 255, 255, 0.3) 50%, 
+            rgba(255, 255, 255, 0.1) 80%, 
+            rgba(255, 255, 255, 0) 100%
+        );
+    background-size: 100% 100%, 200% 100%;
+    animation: none !important;
+}
+
+/* Carte de verbe avec effets 3D avancés */
+.verb-card {
+    background: linear-gradient(135deg, rgba(20, 30, 55, 0.8), rgba(10, 15, 30, 0.97));
+    border-radius: 8px;
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 15px rgba(90, 120, 190, 0.1);
+    padding: 25px;
+    margin-bottom: 20px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+}
+
+.verb-card:hover {
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 15px rgba(90, 120, 190, 0.2);
+    transform: translateY(-5px) translateZ(10px);
+    border-color: rgba(90, 120, 190, 0.5);
+}
+
+/* Effet de runes autour de la carte */
+.verb-card::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: 
+        repeating-linear-gradient(45deg, 
+            rgba(90, 120, 190, 0.05) 0%, 
+            rgba(90, 120, 190, 0.05) 10%, 
+            transparent 10%, 
+            transparent 20%
+        );
+    border-radius: 12px;
+    z-index: -1;
+    opacity: 0.5;
+    animation: none !important;
+}
+
+/* Info du verbe */
+.verb-info {
+    margin-bottom: 25px;
+    text-align: center;
+    transform-style: preserve-3d;
+}
+
+.verb-prompt {
+    font-size: 1rem;
+    color: #a0a0c0;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    transform: translateZ(10px);
+}
+
+.verb-display {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 
+        0 0 10px rgba(33, 150, 243, 0.7), 
+        0 0 20px rgba(33, 150, 243, 0.3);
+    margin: 10px 0;
+    letter-spacing: 2px;
+    transform: translateZ(20px);
+    font-family: 'Cinzel', serif;
+}
+
+.verb-translation {
+    font-size: 1.2rem;
+    color: #a0a0c0;
+    font-style: italic;
+    transform: translateZ(10px);
+}
+
+/* Input fields */
+.verb-inputs {
+    margin-bottom: 25px;
+    transform-style: preserve-3d;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    transform-style: preserve-3d;
+    transform: none !important;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #a0a0c0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transform: translateZ(5px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.verb-input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(16, 24, 45, 0.6);
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    transform: translateZ(10px);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.verb-input:focus {
+    background: rgba(20, 30, 60, 0.8);
+    border-color: rgba(33, 150, 243, 0.7);
+    box-shadow: 
+        0 0 15px rgba(33, 150, 243, 0.4),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
+    outline: none;
+}
+
+/* Actions buttons enhanced */
+.verb-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    transform-style: preserve-3d;
+}
+
+/* Styles for buttons */
+.action-button, .primary-button {
+    background: linear-gradient(to bottom, #1976d2, #1565c0);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transform: translateZ(15px);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.3),
+        0 0 5px rgba(33, 150, 243, 0.5),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.action-button:hover, .primary-button:hover {
+    background: linear-gradient(to bottom, #1e88e5, #1976d2);
+    transform: translateZ(20px) translateY(-3px);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(33, 150, 243, 0.7),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.action-button:active, .primary-button:active {
+    background: linear-gradient(to bottom, #1565c0, #0d47a1);
+    transform: translateZ(10px) translateY(1px);
+    box-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.4),
+        0 0 5px rgba(33, 150, 243, 0.5),
+        inset 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.secondary-button {
+    background: linear-gradient(to bottom, #424242, #212121);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    transform: translateZ(10px);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.secondary-button:hover {
+    background: linear-gradient(to bottom, #616161, #424242);
+    box-shadow: 
+        0 5px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    transform: translateZ(15px) translateY(-2px);
+    border-color: rgba(90, 120, 190, 0.5);
+}
+
+.secondary-button:active {
+    background: linear-gradient(to bottom, #212121, #000000);
+    box-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(0, 0, 0, 0.3);
+    transform: translateZ(5px) translateY(1px);
+}
+
+/* Effet de brillance pour l'icône des boutons */
+.action-icon {
+    margin-left: 5px;
+    display: inline-block;
+    animation: none !important;
+}
+
+/* Animation du verbe flottant en 3D - PLUS NETTE */
+.floating-verb {
+    animation: none !important;
+    text-shadow: 
+        0 0 10px rgba(33, 150, 243, 0.9),
+        0 0 20px rgba(33, 150, 243, 0.3);
+}
+
+@keyframes float3D {
+    0%, 100% { 
+        transform: translateZ(20px) translateY(0); 
+    }
+    50% { 
+        transform: translateZ(20px) translateY(0);
+    }
+}
+
+/* Effet de succès avec glow 3D - PLUS NET */
+.success-glow {
+    animation: none !important;
+    color: #fff !important;
+    filter: drop-shadow(0 0 8px rgba(0, 200, 83, 0.8));
+}
+
+@keyframes successGlow3D {
+    0% {
+        transform: translateZ(20px) scale(1);
+    }
+    50% {
+        transform: translateZ(50px) scale(1.3);
+        filter: drop-shadow(0 0 15px rgba(0, 200, 83, 1));
+        color: #fff;
+    }
+    100% {
+        transform: translateZ(20px) scale(1);
+    }
+}
+
+/* Effet d'erreur avec secousse 3D */
+.screen-shake {
+    animation: none !important;
+}
+
+@keyframes screenShake3D {
+    0%, 100% { transform: translateZ(0) translateX(0) rotateY(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: translateZ(-5px) translateX(-5px) rotateY(-2deg); }
+    20%, 40%, 60%, 80% { transform: translateZ(-5px) translateX(5px) rotateY(2deg); }
+}
+
+/* Effet pour le niveau supérieur - AMÉLIORATION DE LA CLARTÉ */
+.level-up-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 9999;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.level-up-aura {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(ellipse at center, 
+        rgba(33, 150, 243, 0.5) 0%, 
+        rgba(33, 150, 243, 0.2) 30%, 
+        rgba(33, 150, 243, 0.1) 60%, 
+        transparent 100%);
+    border-radius: 50%;
+    animation: none !important;
+    transform-style: preserve-3d;
+    transform: translateZ(0) scale(1.2) rotateX(60deg);
+    opacity: 0.8;
+}
+
+.level-up-text {
+    animation: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-style: preserve-3d;
+}
+
+.level-up-label {
+    font-size: 2.5rem;
+    color: #fff;
+    filter: drop-shadow(0 0 8px rgba(33, 150, 243, 0.8));
+    font-family: 'Cinzel', serif;
+    letter-spacing: 3px;
+    font-weight: bold;
+    transform: translateZ(30px);
+}
+
+.level-up-value {
+    font-size: 10rem;
+    color: #fff;
+    filter: drop-shadow(0 0 15px rgba(33, 150, 243, 1));
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    transform: translateZ(50px);
+}
+
+.level-up-rays {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background-image: conic-gradient(
+        transparent 0deg, 
+        transparent 300deg, 
+        rgba(33, 150, 243, 0.6) 360deg
+    );
+    animation: raysSpin3D 8s linear infinite;
+    border-radius: 50%;
+    z-index: -1;
+    transform: translateZ(-20px) rotateX(60deg);
+}
+
+/* Animations pour les effets 3D */
+@keyframes starfield {
+    0% { background-position: 0 0; }
+    100% { background-position: 300px 300px; }
+}
+
+@keyframes fogMovement {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+@keyframes energyFlow {
+    0% { background-position: 0 0, -200px 0; }
+    100% { background-position: 0 0, 200px 0; }
+}
+
+@keyframes iconPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 1; }
+}
+
+@keyframes auraExpand3D {
+    0% { opacity: 0; transform: translateZ(-50px) scale(0.5) rotateX(60deg); }
+    50% { opacity: 1; transform: translateZ(0) scale(1.2) rotateX(60deg); }
+    100% { opacity: 0; transform: translateZ(50px) scale(2) rotateX(60deg); }
+}
+
+@keyframes levelTextFloat3D {
+    0%, 100% { transform: translateY(0) rotateX(0deg); }
+    50% { transform: translateY(-20px) rotateX(5deg); }
+}
+
+@keyframes raysSpin3D {
+    from { transform: translateZ(-20px) rotateX(60deg) rotateZ(0deg); }
+    to { transform: translateZ(-20px) rotateX(60deg) rotateZ(360deg); }
+}
+
+@keyframes runesRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Amélioration des règles et de leur lisibilité */
+.rule-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: rgba(16, 24, 45, 0.6);
+    border-radius: 8px;
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    display: flex;
+    align-items: flex-start;
+    transition: background 0.3s ease, border 0.3s ease !important;
+    transform: none !important;
+}
+
+.rule-item:hover {
+    transform: none !important;
+    background: rgba(20, 30, 60, 0.7);
+    border-color: rgba(33, 150, 243, 0.5);
+}
+
+.rule-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+    color: var(--primary-light);
+    animation: none !important;
+}
+
+.rule-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0 0 8px;
+    color: var(--primary-light);
+}
+
+.rule-content p {
+    margin: 0;
+    color: #e0e0e0;
+    line-height: 1.5;
+}
+
+.highlight-text {
+    color: var(--accent-gold);
+    font-weight: bold;
+}
+
+.sub-rules {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.sub-rules li {
+    margin-bottom: 5px;
+    color: #e0e0e0;
+    position: relative;
+}
+
+.sub-rules li:before {
+    content: "▪";
+    color: var(--primary-light);
+    position: absolute;
+    left: -20px;
+}
+
+.path-text {
+    color: var(--primary-light);
+    font-weight: bold;
+}
+
+/* Correction du background pour le corps de la page */
+.game-body {
+    background: #0c111c;
+}
+
+/* Amélioration des messages de feedback */
+.feedback-message {
+    padding: 10px 20px;
+    margin: 15px 0;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 5px;
+    background: rgba(16, 24, 45, 0.7);
+    border: 1px solid rgba(90, 120, 190, 0.3);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Animations 3D améliorées pour les éléments d'interface */
+@keyframes panelEntry {
+    from { transform: translateY(30px) rotateX(-10deg); opacity: 0; }
+    to { transform: translateY(0) rotateX(0deg); opacity: 1; }
+}
+
+.panel-content {
+    animation: panelEntry 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Amélioration des polices */
+h1, h2, h3, h4, .game-button, .hud-value, .verb-display {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+}
+
+/* Ajustement des contrastes */
+p, li, input, .verb-translation {
+    color: #e0e0e0;
+}
+
+label, .hud-label, .rule-content p {
+    color: #b0b0c0;
+}
+
+/* Stabiliser les éléments avec background-image */
+[style*="background-image"] {
+    animation: none !important;
+}
+
+/* Supprimer la pulsation générale */
+.pulse-effect, .glow-effect, .hover-pulse {
+    animation: none !important;
+}
+
+/* Supprimer la pulsation de la barre d'XP */
+.xp-bar-pulse {
+    animation: none !important;
+}
+
+/* Rendre les input fields et boutons plus stables */
+.input-group, .game-button {
+    transform: none !important;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Stabiliser spécifiquement l'interface de jeu */
+.game-interface {
+    animation: none !important;
+}
+
+/* Supprimer les animations de fond respirantes */
+.game-universe::before,
+.game-universe::after {
+    animation: none !important;
+    background-position: center center !important;
+}
+
+/* Supprimer la rotation des runes */
+.verb-card::before {
+    animation: none !important;
+}
+
+/* Code spécifique pour surcharger les animations existantes dans le fichier CSS principal */
+@keyframes deepBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1); } /* Plus de changement d'échelle */
+}
+
+@keyframes float3D {
+    0%, 100% { 
+        transform: translateZ(20px) translateY(0); 
+    }
+    50% { 
+        transform: translateZ(20px) translateY(0); /* Plus de mouvement vertical */
+    }
+}
+
+@keyframes iconPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 1; } /* Plus de changement d'opacité */
+}
+
+/* Stabiliser les particules */
+.success-particle {
+    animation-duration: 0.5s !important; /* Raccourcir l'animation, ne pas la supprimer complètement */
+}
+
+/* Effet pour le niveau supérieur - sans animation respirante */
+.level-up-aura {
+    background: radial-gradient(ellipse at center, 
+        rgba(33, 150, 243, 0.5) 0%, 
+        rgba(33, 150, 243, 0.2) 30%, 
+        rgba(33, 150, 243, 0.1) 60%, 
+        transparent 100%);
+    border-radius: 50%;
+    animation: none !important;
+    transform-style: preserve-3d;
+    /* Position fixe sans animation */
+    transform: translateZ(0) scale(1.2) rotateX(60deg);
+    opacity: 0.8;
+}
+
+/* Stabiliser tous les éléments avec background-image */
+[style*="background-image"] {
+    animation: none !important;
+} 

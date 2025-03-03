@@ -11,101 +11,336 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="style.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
-    <title>Speed Verb Challenge</title>
+    <meta name="description" content="Speed Verb Challenge - Maîtrisez les verbes irréguliers anglais dans cette expérience RPG immersive">
+    <title>Speed Verb Challenge | English Quest</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=MedievalSharp&display=swap" rel="stylesheet">
+    
+    <!-- Base styles -->
+    <link href="./dist/output.css" rel="stylesheet">
+    <link href="./src/styles/layout.css" rel="stylesheet">
+    
+    <!-- Game-specific styles -->
+    <link href="./src/styles/speed-verb-challenge.css" rel="stylesheet">
+    <link href="./src/styles/button-fix.css" rel="stylesheet">
+    <link href="./src/styles/mmorpg-enhanced.css" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script async src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
 </head>
-<body class="games-theme speed-verb-page">
-    <header>
-        <div class="logo-container">
-            <img src="images/logo.gif" alt="English Quest Logo">
-        </div>
-        <nav>
-            <div class="flex gap-8">
-                <a href="index.html" class="nav-link">Accueil</a>
-                <a href="all-games.html" class="nav-link active">Jeux</a>
-                <a href="courses.html" class="nav-link">Cours</a>
-                <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-                <a href="contact.html" class="nav-link">Contact</a>
+<body class="game-body">
+    <!-- Navigation -->
+    <nav class="game-nav">
+        <a href="index.html" class="nav-logo">
+            <img src="./images/logo.gif" alt="English Quest" width="80" height="80">
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="all-games.html" class="active">Jeux</a>
+            <a href="courses.html">Cours</a>
+            <a href="leaderboard.html">Classement</a>
+            <a href="contact.html">Contact</a>
             </div>
         </nav>
+
+    <!-- Game container -->
+    <div class="game-universe">
+        <!-- 3D background elements -->
+        <div id="bg-scene"></div>
+        
+        <!-- Floating runes -->
+        <div class="floating-runes"></div>
+        
+        <!-- Game UI -->
+        <main class="game-interface">
+            <!-- Game header -->
+            <header class="game-header">
+                <h1 class="game-title">Speed Verb Challenge</h1>
+                <p class="game-subtitle">Maîtrisez les sorts anciens du <span class="magic-text">Lexicon Arcanum</span></p>
     </header>
 
-    <main>
-        <div class="quest-panel max-w-2xl mx-auto">
-            <h1 class="glow-text">SPEED VERB CHALLENGE</h1>
-            <p>Testez votre maîtrise des verbes irréguliers !</p>
+            <!-- Game sections -->
+            <div class="game-sections">
+                <!-- Left panel: Rules & Leaderboard -->
+                <section class="game-panel rules-panel">
+                    <div class="panel-content">
+                        <h2 class="panel-title">La Quête</h2>
+                        <div class="quest-scroll">
+                            <div class="quest-description">
+                                <p><span class="drop-cap">B</span>rave lanceur de sorts, vous vous tenez devant l'<span class="highlight-text">Épreuve des Verbes</span>, un défi ancestral qui a mis à l'épreuve les plus dignes linguistes arcanes depuis des éons.</p>
+                                
+                                <h3>Votre Mission</h3>
+                                <p>Conjuguez correctement les sorts de verbes qui apparaissent depuis le portail arcanique. Chaque incantation correcte renforce vos pouvoirs magiques et vous rapporte des points d'essence.</p>
+                                
+                                <h3>Les Règles</h3>
+                                <ul>
+                                    <li class="rule-item">
+                                        <span class="rule-icon animated-icon">⏳</span>
+                                        <div class="rule-content">
+                                            <h4 class="rule-title">Temps Limité</h4>
+                                            <p>Votre magie ne dure que <span class="highlight-text">90 secondes</span>. Utilisez-les sagement.</p>
+                                        </div>
+                                    </li>
+                                    
+                                    <li class="rule-item">
+                                        <span class="rule-icon animated-icon">🎯</span>
+                                        <div class="rule-content">
+                                            <h4 class="rule-title">Voies Arcaniques</h4>
+                                            <p>Choisissez une des voies suivantes:</p>
+                                            <ul class="sub-rules">
+                                                <li><span class="path-text">Voie de l'Apprenti ⚔️:</span> Conjuration du Passé Simple uniquement (1 point d'essence)</li>
+                                                <li><span class="path-text">Voie de l'Adepte ⚔️⚔️:</span> Invocation du Participe Passé uniquement (2 points d'essence)</li>
+                                                <li><span class="path-text">Voie du Maître ⚔️⚔️⚔️:</span> Enchantement complet du verbe - les deux formes (3 points d'essence)</li>
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    
+                                    <li class="rule-item">
+                                        <span class="rule-icon animated-icon">🔄</span>
+                                        <div class="rule-content">
+                                            <h4 class="rule-title">Bannissement</h4>
+                                            <p>Vous pouvez bannir les sorts difficiles, mais <span class="warning-text">aucune essence n'est récoltée</span> pour ces sorts.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <h3>Récompenses</h3>
+                                <p>Enchaînez les sorts corrects pour construire des <span class="highlight-text">combos arcaniques</span> ! Chaque incantation correcte consécutive amplifie votre multiplicateur d'essence.</p>
+                                <p>Montez en niveau pour prolonger votre temps et débloquer des <span class="highlight-text">capacités spéciales</span> !</p>
+                                
+                                <div class="special-powers">
+                                    <div class="power-item">
+                                        <div class="power-icon">🔮</div>
+                                        <div class="power-name">Dilatation Temporelle</div>
+                                        <div class="power-desc">Niveau 2 : +10 secondes</div>
+                                    </div>
+                                    <div class="power-item">
+                                        <div class="power-icon">✨</div>
+                                        <div class="power-name">Amplificateur d'Essence</div>
+                                        <div class="power-desc">Niveau 3 : +0.2 au multiplicateur</div>
+                                    </div>
+                                    <div class="power-item">
+                                        <div class="power-icon">🌟</div>
+                                        <div class="power-name">Récupération de Sort</div>
+                                        <div class="power-desc">Niveau 5 : seconde chance</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="leaderboard-container">
+                            <h2 class="panel-title">Légendes Arcaniques</h2>
+                            <div class="leaderboard-scroll">
+                                <table class="leaderboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rang</th>
+                                            <th>Lanceur de sorts</th>
+                                            <th>Essence</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leaderboard-body">
+                                        <!-- Leaderboard entries will be loaded here -->
+                                        <tr class="loading-row">
+                                            <td colspan="4"><span class="loading-text">Invocation des archives ancestrales<span class="loading-dots">...</span></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Right panel: Game area -->
+                <section class="game-panel gameplay-panel">
+                    <div class="panel-content">
+                        <!-- Game state: start -->
+                        <div id="game-start" class="game-state active">
+                            <h2 class="panel-title">Préparez Vos Incantations</h2>
+                            
+                            <div class="difficulty-selection">
+                                <h3>Sélectionnez votre voie arcanique :</h3>
+                                <div class="difficulty-options">
+                                    <label class="difficulty-option">
+                                        <input type="radio" name="difficulty" value="1" checked>
+                                        <span class="option-content">
+                                            <span class="option-title">Voie de l'Apprenti</span>
+                                            <span class="option-description">Passé Simple uniquement</span>
+                                            <span class="option-reward">1 point d'essence par sort</span>
+                                            <span class="difficulty-rune">ᚠ</span>
+                                        </span>
+                                    </label>
+                                    
+                                    <label class="difficulty-option">
+                                        <input type="radio" name="difficulty" value="2">
+                                        <span class="option-content">
+                                            <span class="option-title">Voie de l'Adepte</span>
+                                            <span class="option-description">Participe Passé uniquement</span>
+                                            <span class="option-reward">2 points d'essence par sort</span>
+                                            <span class="difficulty-rune">ᚦ</span>
+                                        </span>
+                                    </label>
+                                    
+                                    <label class="difficulty-option">
+                                        <input type="radio" name="difficulty" value="3">
+                                        <span class="option-content">
+                                            <span class="option-title">Voie du Maître</span>
+                                            <span class="option-description">Les deux formes requises</span>
+                                            <span class="option-reward">3 points d'essence par sort</span>
+                                            <span class="difficulty-rune">ᛟ</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button id="start-game-btn" class="game-button primary-button">
+                                <span class="button-glow"></span>
+                                <span class="button-text">Débuter l'Épreuve</span>
+                                <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Game state: playing -->
+                        <div id="game-playing" class="game-state">
+                            <!-- HUD -->
+                            <div class="game-hud">
+                                <div class="hud-item">
+                                    <div class="hud-label">Niveau</div>
+                                    <div id="player-level" class="hud-value">1</div>
+                                </div>
+                                
+                                <div class="hud-item">
+                                    <div class="hud-label">Essence</div>
+                                    <div id="player-score" class="hud-value">0</div>
+                                </div>
+                                
+                                <div class="hud-item">
+                                    <div class="hud-label">Temps</div>
+                                    <div id="time-left" class="hud-value">90</div>
+                                </div>
+                                
+                                <div class="hud-item">
+                                    <div class="hud-label">Multiplicateur</div>
+                                    <div id="combo-multiplier" class="hud-value">x1.0</div>
+                                </div>
+                            </div>
+                            
+                            <!-- XP Bar -->
+                            <div class="xp-bar-container">
+                                <div class="xp-bar-label">Énergie Arcanique</div>
+                                <div class="xp-bar">
+                                    <div id="xp-progress" class="xp-bar-fill"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Verb challenge -->
+                            <div class="verb-challenge">
+                                <div class="verb-card">
+                                    <div class="verb-info">
+                                        <div class="verb-prompt">Lancez le sort de :</div>
+                                        <div id="current-verb" class="verb-display floating-verb">begin</div>
+                                        <div id="verb-translation" class="verb-translation">(commencer)</div>
         </div>
 
-        <div class="game-intro">
-            <h2>Bienvenue dans l'Arène des Verbes ! ⚔️</h2>
-            <p><strong>🎯 Objectif :</strong> Conjugue correctement les verbes irréguliers en anglais et accumule des points. Fais vite, le chrono est lancé !</p>
-        
-            <p><strong>🕹️ Instructions :</strong></p>
-            <p>1️⃣ Sélectionne ton niveau de difficulté, puis appuie sur "Start Game" pour démarrer.</p>
-            <p>2️⃣ Lis le verbe et entre sa conjugaison dans les cases demandées.</p>
-            <p>3️⃣ Appuie sur "Check Answer" pour vérifier ta réponse. Si elle est correcte, tu gagnes des points !</p>
-            <p>4️⃣ Si tu es bloqué, appuie sur "Skip" pour passer au verbe suivant. Attention, pas de points pour les verbes ignorés !</p>
-        
-            <p><strong>⏳ Timer :</strong> Tu disposes de 90 secondes pour marquer le maximum de points. Le jeu se termine quand le temps est écoulé.</p>
-        
-            <p><strong>💡 Conseil :</strong> La précision et la rapidité sont clés. Prépare-toi pour des défis de plus en plus intenses ! Bonne chance !</p>
+                                    <div id="verb-form-inputs" class="verb-inputs">
+                                        <!-- Inputs will be generated based on difficulty -->
+                                    </div>
+                                    
+                                    <!-- Verb actions -->
+                                    <div class="verb-actions">
+                                        <button id="check-answer-btn" class="game-button action-button">
+                                            <span class="button-text">Lancer le Sort</span>
+                                            <span class="action-icon">✦</span>
+                                        </button>
+                                        
+                                        <button id="skip-verb-btn" class="game-button secondary-button">
+                                            <span class="button-text">Bannir</span>
+                                            <span class="action-icon">✧</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Feedback message -->
+                            <div id="feedback-message" class="feedback-message"></div>
         </div>
         
-        <div id="game-container">
-            <div id="game-area">
-                <label for="difficulty">Choose Difficulty:</label>
-                <select id="difficulty" class="verb-input">
-                    <option value="1">Level 1: 1 correct answer = 1 point</option>
-                    <option value="2">Level 2: 1 correct answer = 2 points</option>
-                    <option value="3">Level 3: 1 correct answer = 3 points</option>
-                </select>
-
-                <div id="timer">Time: <span id="time-left">90</span> seconds</div>
-                <div id="verb-prompt">Verb: <span id="verb-display">---</span> (<span id="verb-translation">---</span>)</div>
-                <div id="verb-forms">
-                    <div id="input-container"></div>
+                        <!-- Game state: game over -->
+                        <div id="game-over" class="game-state">
+                            <h2 class="panel-title">Énergie Arcanique Épuisée</h2>
+                            
+                            <div class="results-container">
+                                <div class="final-score">
+                                    <div class="score-label">Essence Collectée</div>
+                                    <div id="final-score-value" class="score-value">0</div>
+                                </div>
+                                
+                                <div class="stats-container">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Niveau Atteint</div>
+                                        <div id="final-level" class="stat-value">1</div>
                 </div>
 
-                <button id="start-button" class="game-button">Start Game</button>
-                <button id="check-button" class="game-button" disabled>Check Answer</button>
-                <button id="skip-button" class="game-button" disabled>Skip</button>
-
-                <div id="score">Score: <span id="score-value">0</span></div>
-                <div id="message"></div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Sorts Lancés</div>
+                                        <div id="verbs-completed" class="stat-value">0</div>
+                                    </div>
+                                    
+                                    <div class="stat-item">
+                                        <div class="stat-label">Meilleur Combo</div>
+                                        <div id="highest-combo" class="stat-value">x1.0</div>
             </div>
         </div>
 
-        <div id="top-scores">
-            <h3>Top 5 Scores:</h3>
-            <ul id="top-scores-list"></ul>
+                                <div class="name-entry">
+                                    <label for="player-name">Inscrivez votre nom dans les Annales Arcaniques :</label>
+                                    <input type="text" id="player-name" class="name-input" maxlength="15" placeholder="Votre nom">
         </div>
 
-        <button id="home-button" onclick="location.href='index.html';">Back to Home</button>
-    </main>
-
-    <footer class="fixed bottom-0 w-full">
-        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
-            <div class="container mx-auto px-4 py-3">
-                <div class="text-center">
-                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
-                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
+                                <div class="game-over-actions">
+                                    <button id="save-score-btn" class="game-button primary-button">
+                                        <span class="button-glow"></span>
+                                        <span class="button-text">Inscrire</span>
+                                        <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
+                                    </button>
+                                    
+                                    <button id="play-again-btn" class="game-button secondary-button">
+                                        <span class="button-text">Nouveau Rituel</span>
+                                        <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
+                                    </button>
+                                </div>
                 </div>
             </div>
         </div>
-    </footer>
-
-    <!-- D'abord Firebase -->
+                </section>
+            </div>
+        </main>
+        
+        <!-- 3D Floating Objects -->
+        <div id="floating-objects-container"></div>
+        
+        <!-- Achievement notifications -->
+        <div id="achievements-container"></div>
+        
+        <!-- Particle effects container -->
+        <div id="particles-container"></div>
+        
+        <!-- Magic portal effect -->
+        <div id="magic-portal"></div>
+    </div>
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <!-- Ensuite notre configuration Firebase -->
+    <script src="./src/js/firebase-polyfill.js"></script>
     <script src="firebase-init.js"></script>
 
-    <!-- Puis nos scripts spécifiques -->
-    <script src="speed-verb-challenge.js"></script>
-
-    <!-- Le compteur de visites en dernier -->
+    <!-- Game scripts -->
+    <script src="./src/js/verb-data.js"></script>
+    <script src="./src/js/game-effects.js"></script>
+    <script src="./src/js/consolidated-fix.js"></script>
     <script src="visit-counter.js"></script>
 </body>
 </html>

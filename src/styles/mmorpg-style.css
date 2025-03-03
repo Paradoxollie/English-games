@@ -1,0 +1,285 @@
+/* Styles pour rendre l'interface plus immersive comme un MMORPG */
+
+/* Barre d'énergie améliorée */
+.xp-bar {
+    position: relative;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #0c4a6e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 5px rgba(59, 130, 246, 0.5);
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, #0284c7, #38bdf8, #60a5fa);
+    position: relative;
+    transition: width 0.8s cubic-bezier(0.1, 0.9, 0.2, 1.0); /* Easing style MMORPG */
+    box-shadow: 0 0 10px #60a5fa, inset 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Particule d'onde pour la barre d'XP */
+.xp-ripple {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.7), transparent);
+    animation: rippleEffect 1.5s ease-out;
+    pointer-events: none;
+}
+
+/* Effet de flux d'énergie dans la barre */
+.energy-flow {
+    background-image: 
+        linear-gradient(to right, #0284c7, #38bdf8, #60a5fa),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255, 255, 255, 0.1) 10px,
+            rgba(255, 255, 255, 0.1) 20px
+        );
+    background-size: 100% 100%, 20px 20px;
+    animation: energyFlow 1s linear infinite;
+}
+
+/* Animation de montée de niveau */
+.level-up-animation {
+    animation: levelUpPulse 2s ease-in-out;
+    position: relative;
+    z-index: 10;
+}
+
+.level-up-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1000;
+    perspective: 1000px;
+}
+
+.level-up-aura {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
+    border-radius: 50%;
+    animation: auraExpand 3s ease-out;
+}
+
+.level-up-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: floatUpDown 2s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+
+.level-up-label {
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 3px;
+    font-weight: bold;
+}
+
+.level-up-value {
+    font-size: 8rem;
+    color: #60a5fa;
+    text-shadow: 
+        0 0 10px #0284c7, 
+        0 0 20px #0284c7, 
+        0 0 30px #60a5fa,
+        0 0 5px #fff;
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+}
+
+.level-up-rays {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background-image: conic-gradient(
+        transparent 0deg, 
+        transparent 340deg, 
+        rgba(96, 165, 250, 0.8) 360deg
+    );
+    animation: raysSpin 8s linear infinite;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Effet de succès sur le verbe */
+.success-glow {
+    text-shadow: 
+        0 0 10px #60a5fa,
+        0 0 20px #60a5fa,
+        0 0 30px #60a5fa,
+        0 0 40px #60a5fa !important;
+    color: #fff !important;
+    animation: successPulse 0.8s ease-in-out;
+}
+
+/* Effet de tremblement d'écran */
+.screen-shake {
+    animation: screenShake 0.5s ease-in-out;
+}
+
+/* Bonus de temps animation */
+.time-bonus-animation {
+    animation: timeBonusPulse 1.5s ease-in-out;
+    position: relative;
+}
+
+.time-bonus-animation::after {
+    content: "+10s";
+    position: absolute;
+    top: -20px;
+    right: -30px;
+    color: #22c55e;
+    font-size: 1rem;
+    animation: floatUp 1.5s ease-out forwards;
+    opacity: 0;
+}
+
+/* Animations */
+@keyframes rippleEffect {
+    0% { transform: translateX(-100%); opacity: 0.8; }
+    100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes energyFlow {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 0 0, 20px 20px; }
+}
+
+@keyframes levelUpPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); filter: brightness(1.5); }
+    100% { transform: scale(1); }
+}
+
+@keyframes auraExpand {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+@keyframes floatUpDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes raysSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.2); filter: brightness(1.5); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes timeBonusPulse {
+    0% { color: #fff; }
+    50% { color: #22c55e; text-shadow: 0 0 10px #22c55e; }
+    100% { color: #fff; }
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+}
+
+/* Cartes de verbes style MMORPG */
+.verb-card {
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.9));
+    box-shadow: 
+        0 0 20px rgba(59, 130, 246, 0.2),
+        inset 0 0 10px rgba(59, 130, 246, 0.1);
+    transition: all 0.3s ease;
+}
+
+.verb-card:hover {
+    box-shadow: 
+        0 0 25px rgba(59, 130, 246, 0.4),
+        inset 0 0 15px rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* HUD amélioré style MMORPG */
+.game-hud {
+    background: linear-gradient(to bottom, rgba(2, 6, 23, 0.75), rgba(2, 6, 23, 0.9));
+    border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.hud-value {
+    text-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
+}
+
+/* Inputs style MMORPG */
+.verb-input {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.verb-input:focus {
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 
+        0 0 10px rgba(59, 130, 246, 0.4),
+        inset 0 0 8px rgba(0, 0, 0, 0.5);
+    background: rgba(15, 23, 42, 0.9);
+}
+
+/* Fond animé pour plus d'immersion */
+.game-universe {
+    position: relative;
+    backdrop-filter: blur(3px);
+    overflow: hidden;
+}
+
+.game-universe::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+    animation: ambientBackground 30s ease-in-out infinite alternate;
+    z-index: -5;
+    opacity: 0.7;
+}
+
+@keyframes ambientBackground {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+} 

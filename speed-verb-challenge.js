@@ -4,10 +4,14 @@ let timeLeft = 90;
 let timerInterval;
 let currentVerb = "";
 let skippedVerbs = [];
-let lastScrollPosition = 0;
-const header = document.querySelector('header');
-const nav = document.querySelector('nav');
-const logo = document.querySelector('.logo-container');
+let playerLevel = 1;
+let playerXP = 0;
+let xpToNextLevel = 100;
+let correctStreak = 0;
+let comboMultiplier = 1;
+let gameEnhancer;
+let verbParticles;
+let magicPortal;
 
 // Liste des verbes
 const verbs = {
@@ -151,113 +155,6 @@ const verbs = {
     "withdraw": ["withdrew", "withdrawn", "retirer"],
     "withstand": ["withstood", "withstood", "résister"],
     "write": ["wrote", "written", "écrire"],
-    "bend": ["bent", "bent", "plier"],
-    "bet": ["bet", "bet", "parier"],
-    "bind": ["bound", "bound", "lier"],
-    "bleed": ["bled", "bled", "saigner"],
-    "blow": ["blew", "blown", "souffler"],
-    "breed": ["bred", "bred", "élever"],
-    "broadcast": ["broadcast", "broadcast", "diffuser"],
-    "burst": ["burst", "burst", "éclater"],
-    "creep": ["crept", "crept", "ramper"],
-    "deal": ["dealt", "dealt", "distribuer"],
-    "dig": ["dug", "dug", "creuser"],
-    "dream": ["dreamt", "dreamt", "rêver"],
-    "drink": ["drank", "drunk", "boire"],
-    "dwell": ["dwelt", "dwelt", "habiter"],
-    "feed": ["fed", "fed", "nourrir"],
-    "fight": ["fought", "fought", "se battre"],
-    "find": ["found", "found", "trouver"],
-    "fling": ["flung", "flung", "jeter"],
-    "fling": ["flung", "flung", "jeter"],
-    "forbid": ["forbade", "forbidden", "interdire"],
-    "forgive": ["forgave", "forgiven", "pardonner"],
-    "forsake": ["forsook", "forsaken", "abandonner"],
-    "freeze": ["froze", "frozen", "geler"],
-    "get": ["got", "gotten", "obtenir"],
-    "give": ["gave", "given", "donner"],
-    "go": ["went", "gone", "aller"],
-    "grind": ["ground", "ground", "moudre"],
-    "grow": ["grew", "grown", "grandir"],
-    "hang": ["hung", "hung", "pendre"],
-    "have": ["had", "had", "avoir"],
-    "hear": ["heard", "heard", "entendre"],
-    "hide": ["hid", "hidden", "cacher"],
-    "hold": ["held", "held", "tenir"],
-    "hurt": ["hurt", "hurt", "blesser"],
-    "kneel": ["knelt", "knelt", "s'agenouiller"],
-    "lay": ["laid", "laid", "poser"],
-    "lead": ["led", "led", "mener"],
-    "lean": ["leant", "leant", "se pencher"],
-    "leap": ["leapt", "leapt", "sauter"],
-    "learn": ["learnt", "learnt", "apprendre"],
-    "leave": ["left", "left", "partir"],
-    "lend": ["lent", "lent", "prêter"],
-    "let": ["let", "let", "laisser"],
-    "lie (down)": ["lay", "lain", "s'allonger"],
-    "light": ["lit", "lit", "allumer"],
-    "lose": ["lost", "lost", "perdre"],
-    "make": ["made", "made", "faire"],
-    "mean": ["meant", "meant", "signifier"],
-    "meet": ["met", "met", "rencontrer"],
-    "mow": ["mowed", "mown/mowed", "tondre"],
-    "pay": ["paid", "paid", "payer"],
-    "prove": ["proved", "proven", "prouver"],
-    "put": ["put", "put", "mettre"],
-    "quit": ["quit", "quit", "quitter"],
-    "read": ["read", "read", "lire"],
-    "ride": ["rode", "ridden", "monter"],
-    "ring": ["rang", "rung", "sonner"],
-    "rise": ["rose", "risen", "se lever"],
-    "run": ["ran", "run", "courir"],
-    "say": ["said", "said", "dire"],
-    "see": ["saw", "seen", "voir"],
-    "sell": ["sold", "sold", "vendre"],
-    "send": ["sent", "sent", "envoyer"],
-    "set": ["set", "set", "mettre"],
-    "shake": ["shook", "shaken", "secouer"],
-    "shine": ["shone", "shone", "briller"],
-    "shoot": ["shot", "shot", "tirer"],
-    "show": ["showed", "shown", "montrer"],
-    "shut": ["shut", "shut", "fermer"],
-    "sing": ["sang", "sung", "chanter"],
-    "sink": ["sank", "sunk", "couler"],
-    "sit": ["sat", "sat", "s'asseoir"],
-    "sleep": ["slept", "slept", "dormir"],
-    "slide": ["slid", "slid", "glisser"],
-    "speak": ["spoke", "spoken", "parler"],
-    "spend": ["spent", "spent", "dépenser"],
-    "spill": ["spilt", "spilt", "renverser"],
-    "spin": ["spun", "spun", "tourner"],
-    "split": ["split", "split", "diviser"],
-    "spread": ["spread", "spread", "répandre"],
-    "spring": ["sprang", "sprung", "sauter"],
-    "stand": ["stood", "stood", "se tenir debout"],
-    "steal": ["stole", "stolen", "voler"],
-    "stick": ["stuck", "stuck", "coller"],
-    "sting": ["stung", "stung", "piquer"],
-    "stink": ["stank", "stunk", "puer"],
-    "strike": ["struck", "struck", "frapper"],
-    "swear": ["swore", "sworn", "jurer"],
-    "sweep": ["swept", "swept", "balayer"],
-    "swell": ["swelled", "swollen", "gonfler"],
-    "swing": ["swung", "swung", "balancer"],
-    "take": ["took", "taken", "prendre"],
-    "teach": ["taught", "taught", "enseigner"],
-    "tell": ["told", "told", "dire"],
-    "think": ["thought", "thought", "penser"],
-    "throw": ["threw", "thrown", "jeter"],
-    "understand": ["understood", "understood", "comprendre"],
-    "upset": ["upset", "upset", "contrarier"],
-    "wake": ["woke", "woken", "se réveiller"],
-    "wear": ["wore", "worn", "porter"],
-    "weep": ["wept", "wept", "pleurer"],
-    "wet": ["wet/wetted", "wet/wetted", "mouiller"],
-    "win": ["won", "won", "gagner"],
-    "wind": ["wound", "wound", "enrouler"],
-    "withdraw": ["withdrew", "withdrawn", "retirer"],
-    "withstand": ["withstood", "withstood", "résister"],
-    "write": ["wrote", "written", "écrire"],
     "wring": ["wrung", "wrung", "tordre"],
     "plead": ["pled", "pled", "plaider"],
     "prove": ["proved", "proven", "prouver"],
@@ -295,11 +192,41 @@ function startGame() {
     
     timerInterval = setInterval(updateTimer, 1000);
     displayVerb();
+    
+    // Réinitialiser les statistiques de progression
+    correctStreak = 0;
+    comboMultiplier = 1;
+    updateHUD();
+    
+    // Ajouter un portail magique
+    if (gameEnhancer) {
+        const portalPosition = new THREE.Vector3(0, 0, -10);
+        magicPortal = gameEnhancer.addMagicPortal(portalPosition, {
+            radius: 3,
+            color: 0xffd700,
+            intensity: 1.2
+        });
+    }
+    
+    // Ajouter des verbes flottants en 3D
+    if (gameEnhancer) {
+        const randomVerbs = verbs.slice(0, 10).map(v => v.infinitive);
+        gameEnhancer.addFloatingElements(randomVerbs, {
+            color: 0xffd700,
+            fontSize: 0.15
+        });
+    }
 }
 
 function updateTimer() {
     timeLeft--;
     document.getElementById("time-left").textContent = timeLeft;
+    
+    // Ajouter un effet d'urgence quand le temps est presque écoulé
+    if (timeLeft <= 10) {
+        document.getElementById('timer').classList.add('timer-warning');
+    }
+    
     if (timeLeft <= 0) {
         endGame();
     }
@@ -311,93 +238,185 @@ function getRandomVerb() {
 }
 
 function displayVerb() {
-    currentVerb = getRandomVerb();
-    const difficulty = document.getElementById("difficulty").value;
+    // Obtenir un verbe aléatoire
+    const verbKeys = Object.keys(verbs);
+    currentVerb = verbKeys[Math.floor(Math.random() * verbKeys.length)];
+    
+    // Afficher le verbe
+    document.getElementById("verb-display").textContent = currentVerb;
+    document.getElementById("verb-translation").textContent = verbs[currentVerb][2];
+    
+    // Créer les champs de saisie
     const inputContainer = document.getElementById("input-container");
     inputContainer.innerHTML = "";
-
-    document.getElementById("verb-display").textContent = `${currentVerb}`;
-    document.getElementById("verb-translation").textContent = `${verbs[currentVerb][2]}`;
-
+    
+    // Récupérer le niveau de difficulté
+    const difficulty = document.getElementById("difficulty").value;
+    
     if (difficulty === "1") {
-        const input = createInput("past-simple", "Past Simple:", false);
-        inputContainer.appendChild(input);
+        // Niveau 1: seulement le passé simple
+        const pastSimpleLabel = document.createElement("label");
+        pastSimpleLabel.textContent = "Past Simple:";
+        pastSimpleLabel.setAttribute("for", "past-simple");
+        inputContainer.appendChild(pastSimpleLabel);
+        
+        const pastSimpleInput = document.createElement("input");
+        pastSimpleInput.type = "text";
+        pastSimpleInput.id = "past-simple";
+        pastSimpleInput.className = "verb-input";
+        pastSimpleInput.setAttribute("autocomplete", "off");
+        inputContainer.appendChild(pastSimpleInput);
+        
+        // Focus sur le champ
+        pastSimpleInput.focus();
     } else if (difficulty === "2") {
-        const input = createInput("past-participle", "Past Participle:", false);
-        inputContainer.appendChild(input);
-    } else if (difficulty === "3") {
-        const input1 = createInput("past-simple", "Past Simple:", false);
-        const input2 = createInput("past-participle", "Past Participle:", false);
-        inputContainer.appendChild(input1);
-        inputContainer.appendChild(input2);
+        // Niveau 2: seulement le participe passé
+        const pastParticipleLabel = document.createElement("label");
+        pastParticipleLabel.textContent = "Past Participle:";
+        pastParticipleLabel.setAttribute("for", "past-participle");
+        inputContainer.appendChild(pastParticipleLabel);
+        
+        const pastParticipleInput = document.createElement("input");
+        pastParticipleInput.type = "text";
+        pastParticipleInput.id = "past-participle";
+        pastParticipleInput.className = "verb-input";
+        pastParticipleInput.setAttribute("autocomplete", "off");
+        inputContainer.appendChild(pastParticipleInput);
+        
+        // Focus sur le champ
+        pastParticipleInput.focus();
+    } else {
+        // Niveau 3: les deux formes
+        // Créer le champ pour le passé simple
+        const pastSimpleLabel = document.createElement("label");
+        pastSimpleLabel.textContent = "Past Simple:";
+        pastSimpleLabel.setAttribute("for", "past-simple");
+        inputContainer.appendChild(pastSimpleLabel);
+        
+        const pastSimpleInput = document.createElement("input");
+        pastSimpleInput.type = "text";
+        pastSimpleInput.id = "past-simple";
+        pastSimpleInput.className = "verb-input";
+        pastSimpleInput.setAttribute("autocomplete", "off");
+        inputContainer.appendChild(pastSimpleInput);
+        
+        // Créer le champ pour le participe passé
+        const pastParticipleLabel = document.createElement("label");
+        pastParticipleLabel.textContent = "Past Participle:";
+        pastParticipleLabel.setAttribute("for", "past-participle");
+        inputContainer.appendChild(pastParticipleLabel);
+        
+        const pastParticipleInput = document.createElement("input");
+        pastParticipleInput.type = "text";
+        pastParticipleInput.id = "past-participle";
+        pastParticipleInput.className = "verb-input";
+        pastParticipleInput.setAttribute("autocomplete", "off");
+        inputContainer.appendChild(pastParticipleInput);
+        
+        // Focus sur le premier champ
+        pastSimpleInput.focus();
     }
-
-    inputContainer.querySelector("input").focus();
-}
-
-function createInput(id, labelText, disabled) {
-    const div = document.createElement("div");
-    const label = document.createElement("label");
-    label.setAttribute("for", id);
-    label.textContent = labelText;
-    const input = document.createElement("input");
-    input.type = "text";
-    input.id = id;
-    input.className = "verb-input";
-    input.placeholder = `Type ${labelText.toLowerCase()}`;
-    input.disabled = disabled;
-    input.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            checkVerb();
-        }
-    });
-    div.appendChild(label);
-    div.appendChild(input);
-    return div;
 }
 
 function checkVerb() {
-    const pastSimpleInput = document.getElementById("past-simple") ? document.getElementById("past-simple").value.trim() : "";
-    const pastParticipleInput = document.getElementById("past-participle") ? document.getElementById("past-participle").value.trim() : "";
-    const correctForms = verbs[currentVerb];
-
-    let isCorrect = true;
-
     const difficulty = document.getElementById("difficulty").value;
-
+    let isCorrect = false;
+    let correctAnswer = "";
+    
+    // Vérifier selon le niveau de difficulté
     if (difficulty === "1") {
-        if (!pastSimpleInput || pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
-            isCorrect = false;
-        }
-    }
-
-    if (difficulty === "2") {
-        if (!pastParticipleInput || pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
-            isCorrect = false;
-        }
-    }
-
-    if (difficulty === "3") {
-        if (!pastSimpleInput || pastSimpleInput.toLowerCase() !== correctForms[0].toLowerCase()) {
-            isCorrect = false;
-        }
-        if (!pastParticipleInput || pastParticipleInput.toLowerCase() !== correctForms[1].toLowerCase()) {
-            isCorrect = false;
-        }
+        const pastSimpleInput = document.getElementById("past-simple").value.trim().toLowerCase();
+        const correctPastSimple = verbs[currentVerb][0].toLowerCase();
+        
+        isCorrect = pastSimpleInput === correctPastSimple;
+        correctAnswer = correctPastSimple;
+    } else if (difficulty === "2") {
+        const pastParticipleInput = document.getElementById("past-participle").value.trim().toLowerCase();
+        const correctPastParticiple = verbs[currentVerb][1].toLowerCase();
+        
+        isCorrect = pastParticipleInput === correctPastParticiple;
+        correctAnswer = correctPastParticiple;
+    } else {
+        const pastSimpleInput = document.getElementById("past-simple").value.trim().toLowerCase();
+        const pastParticipleInput = document.getElementById("past-participle").value.trim().toLowerCase();
+        
+        const correctPastSimple = verbs[currentVerb][0].toLowerCase();
+        const correctPastParticiple = verbs[currentVerb][1].toLowerCase();
+        
+        isCorrect = pastSimpleInput === correctPastSimple && pastParticipleInput === correctPastParticiple;
+        correctAnswer = `${correctPastSimple} / ${correctPastParticiple}`;
     }
 
     if (isCorrect) {
-        const points = parseInt(difficulty);
-        score += points;
+        // Augmenter le combo
+        correctStreak++;
+        comboMultiplier = 1 + (correctStreak * 0.1); // +10% par réponse correcte consécutive
+        
+        // Calculer les points avec le multiplicateur
+        const basePoints = parseInt(difficulty);
+        const pointsWithCombo = Math.round(basePoints * comboMultiplier);
+        
+        // Ajouter les points au score
+        score += pointsWithCombo;
+        
+        // Ajouter de l'XP
+        addExperience(pointsWithCombo * 5);
+        
+        // Effet de particules pour la bonne réponse
+        if (gameEnhancer) {
+            const inputElement = document.querySelector('.verb-input');
+            inputElement.classList.add('correct-answer');
+            setTimeout(() => {
+                inputElement.classList.remove('correct-answer');
+            }, 100);
+        }
+        
         document.getElementById("score-value").textContent = score;
         displayVerb();
+        
+        // Effet d'animation pour le score
+        const scoreElement = document.getElementById('score-value');
+        scoreElement.classList.add('score-increase');
+        setTimeout(() => {
+            scoreElement.classList.remove('score-increase');
+        }, 500);
+        
+        // Afficher un message avec animation
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = "Correct! Well done!";
+        messageElement.className = "message-correct message-show";
+        setTimeout(() => {
+            messageElement.classList.remove('message-show');
+        }, 2000);
     } else {
+        // Réinitialiser le combo
+        correctStreak = 0;
+        comboMultiplier = 1;
+        
+        // Effet de verre brisé
+        const inputContainer = document.getElementById("input-container");
+        inputContainer.classList.add("shatter-effect");
+        setTimeout(() => {
+            inputContainer.classList.remove("shatter-effect");
+        }, 1000);
+        
         document.getElementById("input-container").classList.add("shake");
 
         setTimeout(() => {
             document.getElementById("input-container").classList.remove("shake");
         }, 500);
+        
+        // Afficher un message d'erreur avec animation
+        const messageElement = document.getElementById('message');
+        messageElement.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+        messageElement.className = "message-incorrect message-show";
+        setTimeout(() => {
+            messageElement.classList.remove('message-show');
+        }, 2000);
     }
+    
+    // Mettre à jour le HUD
+    updateHUD();
 }
 
 function skipVerb() {
@@ -473,22 +492,69 @@ function saveScore(score) {
 }
 
 function loadTopScores() {
+    console.log("Chargement des meilleurs scores...");
     window.db.collection("speed_verb_scores")
         .orderBy("score", "desc") // Trie les scores par ordre décroissant
         .limit(5) // Limite à 5 meilleurs scores
         .get()
         .then((querySnapshot) => {
+            console.log("Scores récupérés:", querySnapshot.size);
             const topScoresList = document.getElementById("top-scores-list");
             topScoresList.innerHTML = ""; // Vide la liste avant de la remplir
 
+            let rank = 1;
             querySnapshot.forEach((doc) => {
                 const li = document.createElement("li");
-                li.textContent = `${doc.data().name}: ${doc.data().score}`; // Affiche le nom et le score
+                li.className = `rank-${rank <= 3 ? rank : 'other'}`;
+                const scoreData = doc.data();
+                
+                // Créer la structure du tableau comme dans leaderboard.html
+                const rankCell = document.createElement('td');
+                rankCell.className = 'rank';
+                rankCell.textContent = rank;
+                
+                const nameCell = document.createElement('td');
+                nameCell.className = 'champion';
+                nameCell.textContent = scoreData.name || 'Anonymous';
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.className = 'score';
+                scoreCell.textContent = scoreData.score;
+                
+                const dateCell = document.createElement('td');
+                dateCell.className = 'date';
+                if (scoreData.timestamp) {
+                    const date = new Date(scoreData.timestamp.seconds * 1000);
+                    dateCell.textContent = date.toLocaleDateString();
+                } else {
+                    dateCell.textContent = 'N/A';
+                }
+                
+                li.appendChild(rankCell);
+                li.appendChild(nameCell);
+                li.appendChild(scoreCell);
+                li.appendChild(dateCell);
+                
                 topScoresList.appendChild(li);
+                rank++;
             });
+            
+            // Si aucun score n'est trouvé
+            if (querySnapshot.empty) {
+                const li = document.createElement("li");
+                li.innerHTML = `<td colspan="4" class="text-center py-8 text-gray-400">
+                    No scores yet. Be the first to play!
+                </td>`;
+                topScoresList.appendChild(li);
+            }
         })
         .catch((error) => {
             console.error("Error loading top scores: ", error);
+            // Afficher un message d'erreur dans la liste
+            const topScoresList = document.getElementById("top-scores-list");
+            topScoresList.innerHTML = `<li><td colspan="4" class="text-center py-8 text-red-500">
+                Error loading scores. Please try again later.
+            </td></li>`;
         });
 }
 
@@ -503,20 +569,73 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (skipButton) skipButton.addEventListener("click", skipVerb);
 
     loadTopScores();
-});
-
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
     
-    if (currentScroll > 100) { // Si on n'est pas en haut de la page
-        header.classList.add('nav-hidden');
-        nav.classList.add('nav-hidden');
-        logo.classList.add('nav-hidden');
-    } else { // Si on est en haut de la page
-        header.classList.remove('nav-hidden');
-        nav.classList.remove('nav-hidden');
-        logo.classList.remove('nav-hidden');
+    // Référencer l'instance de GameEnhancer créée dans le HTML
+    if (window.gameEnhancerInstance) {
+        gameEnhancer = window.gameEnhancerInstance;
     }
     
-    lastScrollPosition = currentScroll;
+    // Ajouter des classes pour les effets 3D
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.classList.add('verb-input');
+    });
+    
+    // Ajouter des effets de survol pour les éléments interactifs
+    document.getElementById('verb-display').classList.add('interactive-element');
+    document.getElementById('verb-translation').classList.add('interactive-element');
 });
+
+// Fonction pour mettre à jour le HUD
+function updateHUD() {
+    document.getElementById('score-value').textContent = score;
+    document.getElementById('time-left').textContent = timeLeft;
+    document.getElementById('level-value').textContent = playerLevel;
+    document.getElementById('streak-value').textContent = correctStreak;
+    document.getElementById('combo-value').textContent = `x${comboMultiplier.toFixed(1)}`;
+    
+    // Mettre à jour la barre de progression
+    const progressPercent = (playerXP / xpToNextLevel) * 100;
+    document.getElementById('xp-progress').style.width = `${progressPercent}%`;
+}
+
+// Fonction pour ajouter de l'expérience
+function addExperience(xp) {
+    playerXP += xp;
+    
+    // Vérifier si le joueur monte de niveau
+    if (playerXP >= xpToNextLevel) {
+        levelUp();
+    }
+    
+    updateHUD();
+}
+
+// Fonction pour monter de niveau
+function levelUp() {
+    playerLevel++;
+    playerXP -= xpToNextLevel;
+    xpToNextLevel = Math.floor(xpToNextLevel * 1.5); // Augmenter l'XP nécessaire
+    
+    // Effet visuel de montée de niveau
+    const levelUpElement = document.createElement('div');
+    levelUpElement.className = 'level-up-effect';
+    levelUpElement.textContent = `LEVEL UP! ${playerLevel}`;
+    document.querySelector('.game-container').appendChild(levelUpElement);
+    
+    setTimeout(() => {
+        levelUpElement.remove();
+    }, 3000);
+    
+    // Bonus de temps pour la montée de niveau
+    timeLeft += 10;
+    document.getElementById('time-left').textContent = timeLeft;
+    
+    // Effet de particules spécial
+    if (gameEnhancer) {
+        const levelIndicator = document.querySelector('.level-indicator');
+        gameEnhancer.emitParticles(
+            levelIndicator.getBoundingClientRect(),
+            { count: 100, color: 0xffd700, size: 0.15, spread: 2 }
+        );
+    }
+}

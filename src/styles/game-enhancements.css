@@ -1,0 +1,468 @@
+/* Effets de profondeur et de glassmorphism */
+.game-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.5s ease;
+}
+
+.game-container:hover {
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.game-3d-container {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.game-content {
+  position: relative;
+  z-index: 10;
+  padding: 2rem;
+}
+
+/* Effet de profondeur pour les cartes */
+.game-card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.5s ease;
+}
+
+.game-card-3d:hover {
+  transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+}
+
+/* Effet de verre brisé pour les réponses incorrectes */
+@keyframes shatter {
+  0% { clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%, 50% 50%); }
+  25% { clip-path: polygon(50% 50%, 0 0, 33% 0, 66% 0, 100% 0, 100% 33%); }
+  50% { clip-path: polygon(50% 50%, 100% 33%, 100% 66%, 100% 100%, 66% 100%, 33% 100%); }
+  75% { clip-path: polygon(50% 50%, 33% 100%, 0 100%, 0 66%, 0 33%, 0 0); }
+  100% { clip-path: polygon(50% 50%, 0 0, 33% 0, 66% 0, 100% 0, 100% 33%, 100% 66%, 100% 100%, 66% 100%, 33% 100%, 0 100%, 0 66%, 0 33%); }
+}
+
+.shatter-effect {
+  position: relative;
+}
+
+.shatter-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 68, 68, 0.3);
+  animation: shatter 0.5s forwards;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Effet de portail magique */
+.portal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Effet de runes magiques */
+.magic-runes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.2;
+  background-image: url('../images/runes-pattern.png');
+  background-size: cover;
+  mix-blend-mode: screen;
+}
+
+/* Effet de brouillard */
+.fog-effect {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0) 0%, 
+    rgba(0, 0, 0, 0.1) 40%, 
+    rgba(0, 0, 0, 0.2) 60%, 
+    rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* Effet de HUD de jeu */
+.game-hud {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.25rem;
+}
+
+.hud-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Effet de progression */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Effet de niveau */
+.level-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Effets de particules */
+.particles-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Effet de lueur pour les éléments du jeu */
+#verb-display, #verb-translation {
+  display: inline-block;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#verb-display:hover, #verb-translation:hover {
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+  transform: scale(1.05);
+}
+
+/* Amélioration des inputs */
+.verb-input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  color: white;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.verb-input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  outline: none;
+}
+
+/* Effet de score */
+@keyframes scoreIncrease {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); color: #ffd700; }
+  100% { transform: scale(1); }
+}
+
+.score-increase {
+  animation: scoreIncrease 0.5s ease-out;
+}
+
+/* Animations pour les éléments de jeu */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.floating-element {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Effets de néon pour les boutons et éléments interactifs */
+.neon-button {
+  position: relative;
+  color: var(--primary-color, #ffd700);
+  border: 2px solid var(--primary-color, #ffd700);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: all 0.3s;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.6);
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px var(--primary-color, #ffd700);
+}
+
+.neon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-color, #ffd700);
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease-out;
+}
+
+.neon-button:hover {
+  color: black;
+  box-shadow: 0 0 20px var(--primary-color, #ffd700);
+}
+
+.neon-button:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Effet de pulsation pour les boutons */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.game-button {
+  animation: pulse 2s infinite;
+}
+
+/* Effet pour le timer */
+#timer {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  margin: 1rem 0;
+  transition: all 0.3s ease;
+}
+
+@keyframes timerWarning {
+  0% { color: white; }
+  50% { color: #ff4444; text-shadow: 0 0 15px rgba(255, 68, 68, 0.8); }
+  100% { color: white; }
+}
+
+.timer-warning {
+  animation: timerWarning 1s infinite;
+}
+
+/* Effet pour les messages */
+#message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.message-show {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.message-correct {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  color: #4ade80;
+}
+
+.message-incorrect {
+  background: rgba(255, 68, 68, 0.2);
+  border: 1px solid rgba(255, 68, 68, 0.5);
+  color: #ff6b6b;
+}
+
+/* Styles pour les meilleurs scores */
+#top-scores {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+#top-scores h3 {
+  color: #ffd700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Styles pour le tableau des scores */
+.podium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+}
+
+.podium-table th {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.podium-table tr {
+  background: rgba(255, 215, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.podium-table tr:hover {
+  background: rgba(255, 215, 0, 0.2);
+  transform: translateX(5px);
+}
+
+.podium-table td {
+  padding: 1rem;
+  color: white;
+}
+
+/* Styles pour les rangs */
+.rank-1 {
+  background: rgba(255, 215, 0, 0.3) !important;
+}
+
+.rank-2 {
+  background: rgba(192, 192, 192, 0.3) !important;
+}
+
+.rank-3 {
+  background: rgba(205, 127, 50, 0.3) !important;
+}
+
+.rank-1 td:first-child {
+  color: #ffd700 !important;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
+}
+
+.rank-2 td:first-child {
+  color: #C0C0C0 !important;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(192, 192, 192, 0.5) !important;
+}
+
+.rank-3 td:first-child {
+  color: #cd7f32 !important;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(205, 127, 50, 0.5) !important;
+}
+
+/* Alignements des colonnes */
+.podium-table td.champion {
+  text-align: left;
+}
+
+.podium-table td.score {
+  text-align: right;
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.podium-table td.date {
+  text-align: right;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+/* Effet de montée de niveau */
+.level-up-effect {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  border: 3px solid #ffd700;
+  border-radius: 12px;
+  padding: 2rem 3rem;
+  color: #ffd700;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  z-index: 100;
+  animation: levelUpAnimation 3s forwards;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes levelUpAnimation {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  30% { transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+} 
