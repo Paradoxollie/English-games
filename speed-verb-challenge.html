@@ -146,6 +146,122 @@
         .glow-button:hover::after {
             opacity: 1;
         }
+        
+        /* Style pour les bonus cumulatifs */
+        .cumulative-bonus {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            display: inline-block;
+            margin-left: 4px;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+        
+        .power-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .power-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Styles pour l'option de seconde chance */
+        .second-chance-option {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(23, 32, 57, 0.95), rgba(12, 17, 30, 0.98));
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+            animation: secondChanceAppear 0.5s ease-out forwards;
+            max-width: 90%;
+            width: 400px;
+        }
+        
+        .second-chance-title {
+            font-size: 1.8rem;
+            color: rgba(255, 215, 0, 0.9);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-family: 'MedievalSharp', cursive;
+            letter-spacing: 2px;
+        }
+        
+        .second-chance-icon {
+            margin-right: 10px;
+            font-size: 1.5rem;
+            animation: pulseIcon 2s infinite ease-in-out;
+            display: inline-block;
+        }
+        
+        .second-chance-desc {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin: 1.5rem 0;
+        }
+        
+        .second-chance-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        @keyframes secondChanceAppear {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* Effet de lueur pour la seconde chance */
+        .second-chance-glow {
+            animation: secondChanceGlow 1s ease-out;
+        }
+        
+        @keyframes secondChanceGlow {
+            0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7); }
+            100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        /* Style pour le compteur spécial de secondes chances */
+        .special-hud-item {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            animation: specialItemPulse 2s infinite ease-in-out;
+        }
+        
+        @keyframes specialItemPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        }
+        
+        /* Animation pour nouvelle seconde chance */
+        .new-chance {
+            animation: newChanceAnimation 2s ease-out;
+        }
+        
+        @keyframes newChanceAnimation {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="game-body">
@@ -247,12 +363,22 @@
                                     <div class="power-item">
                                         <div class="power-icon">✨</div>
                                         <div class="power-name">Amplificateur d'Essence</div>
-                                        <div class="power-desc">Niveau 3 : +0.2 au multiplicateur</div>
+                                        <div class="power-desc">Niveau 3 : +0.2 au multiplicateur <span class="cumulative-bonus">(+10 secondes)</span></div>
                                     </div>
                                     <div class="power-item">
                                         <div class="power-icon">🌟</div>
                                         <div class="power-name">Récupération de Sort</div>
-                                        <div class="power-desc">Niveau 5 : seconde chance</div>
+                                        <div class="power-desc">Niveau 5 : seconde chance <span class="cumulative-bonus">(+0.2 au multiplicateur, +10 secondes)</span></div>
+                                    </div>
+                                    <div class="power-item">
+                                        <div class="power-icon">⚡</div>
+                                        <div class="power-name">Maîtrise Arcanique</div>
+                                        <div class="power-desc">Niveau 7 : +0.3 au multiplicateur <span class="cumulative-bonus">(+seconde chance, +0.2 au multiplicateur, +10 secondes)</span></div>
+                                    </div>
+                                    <div class="power-item">
+                                        <div class="power-icon">🕰️</div>
+                                        <div class="power-name">Distorsion Temporelle</div>
+                                        <div class="power-desc">Niveau 10 : +15 secondes <span class="cumulative-bonus">(+tous les bonus précédents)</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -353,6 +479,12 @@
                                 <div class="hud-item">
                                     <div class="hud-label">Multiplicateur</div>
                                     <div id="combo-multiplier" class="hud-value">x1.0</div>
+                                </div>
+                                
+                                <!-- Nouveau compteur de secondes chances -->
+                                <div id="second-chance-counter" class="hud-item special-hud-item" style="display: none;">
+                                    <div class="hud-label">Secondes Chances</div>
+                                    <div id="second-chance-count" class="hud-value">0</div>
                                 </div>
                             </div>
                             

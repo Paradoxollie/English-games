@@ -134,6 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
         verbsCompleted = 0;
         displayVerbCallCount = 0;
         
+        // Réinitialiser le compteur de secondes chances
+        window.secondChanceCount = 0;
+        
         // Mettre à jour l'affichage
         updateHUD();
         
@@ -524,6 +527,81 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleIncorrectAnswer() {
         console.log("Handling incorrect answer");
         
+        // Vérifier si le joueur a une seconde chance disponible (niveau 5+)
+        if (playerLevel >= 5 && window.secondChanceCount > 0) {
+            // Proposer d'utiliser une seconde chance
+            showSecondChanceOption();
+            return;
+        }
+        
+        // Si pas de seconde chance, appliquer la pénalité normale
+        applyIncorrectAnswerPenalty();
+    }
+    
+    // Fonction pour afficher l'option de seconde chance
+    function showSecondChanceOption() {
+        // Créer un élément pour l'option de seconde chance
+        const secondChanceElement = document.createElement('div');
+        secondChanceElement.className = 'second-chance-option';
+        secondChanceElement.innerHTML = `
+            <div class="second-chance-title">
+                <span class="second-chance-icon">🌟</span>
+                Utiliser une Seconde Chance?
+            </div>
+            <div class="second-chance-desc">
+                Vous avez ${window.secondChanceCount} chance(s) de récupération disponible(s).
+            </div>
+            <div class="second-chance-actions">
+                <button id="use-second-chance" class="game-button primary-button">Utiliser</button>
+                <button id="skip-second-chance" class="game-button secondary-button">Non merci</button>
+            </div>
+        `;
+        
+        // Ajouter au conteneur de jeu
+        const gameInterface = document.querySelector('.game-interface');
+        if (gameInterface) {
+            gameInterface.appendChild(secondChanceElement);
+            
+            // Ajouter les écouteurs d'événements
+            document.getElementById('use-second-chance').addEventListener('click', useSecondChance);
+            document.getElementById('skip-second-chance').addEventListener('click', () => {
+                // Supprimer l'élément
+                secondChanceElement.remove();
+                // Appliquer la pénalité
+                applyIncorrectAnswerPenalty();
+            });
+        }
+    }
+    
+    // Fonction pour utiliser une seconde chance
+    function useSecondChance() {
+        // Supprimer l'élément de seconde chance
+        const secondChanceElement = document.querySelector('.second-chance-option');
+        if (secondChanceElement) {
+            secondChanceElement.remove();
+        }
+        
+        // Décrémenter le compteur de secondes chances
+        window.secondChanceCount--;
+        
+        // Afficher un message de succès
+        showFeedback(true, "Seconde chance utilisée! Réessayez sans pénalité.");
+        
+        // Effet visuel de seconde chance
+        const gameInterface = document.querySelector('.game-interface');
+        if (gameInterface) {
+            gameInterface.classList.add('second-chance-glow');
+            setTimeout(() => {
+                gameInterface.classList.remove('second-chance-glow');
+            }, 1000);
+        }
+        
+        // Jouer un son spécial
+        playSound('powerup');
+    }
+    
+    // Fonction pour appliquer la pénalité de réponse incorrecte
+    function applyIncorrectAnswerPenalty() {
         // Réduire le temps restant comme pénalité (5 secondes)
         timeLeft = Math.max(1, timeLeft - 5);
         
@@ -683,8 +761,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (elements.xpProgressBar) {
-            const progressPercent = (playerXP / xpToNextLevel) * 100;
-            elements.xpProgressBar.style.width = `${progressPercent}%`;
+            const progressPercentage = (playerXP / xpToNextLevel) * 100;
+            elements.xpProgressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        // Mettre à jour le compteur de secondes chances
+        updateSecondChanceCounter();
+    }
+    
+    // Fonction pour mettre à jour le compteur de secondes chances
+    function updateSecondChanceCounter() {
+        const secondChanceCounter = document.getElementById('second-chance-counter');
+        const secondChanceCount = document.getElementById('second-chance-count');
+        
+        if (secondChanceCounter && secondChanceCount) {
+            // Afficher le compteur seulement si le joueur a débloqué cette capacité
+            if (playerLevel >= 5) {
+                secondChanceCounter.style.display = 'block';
+                secondChanceCount.textContent = window.secondChanceCount || 0;
+                
+                // Ajouter une animation si le joueur vient de gagner une nouvelle chance
+                if (playerLevel === 5 || playerLevel % 5 === 0) {
+                    secondChanceCounter.classList.add('new-chance');
+                    setTimeout(() => {
+                        secondChanceCounter.classList.remove('new-chance');
+                    }, 2000);
+                }
+            } else {
+                secondChanceCounter.style.display = 'none';
+            }
         }
     }
     
@@ -729,8 +834,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Augmenter l'XP nécessaire pour le prochain niveau
         xpToNextLevel = Math.floor(xpToNextLevel * 1.5);
         
-        // Bonus de temps
-        timeLeft += 10;
+        // Appliquer les bonus en fonction du niveau (système cumulatif)
+        applyLevelBonuses(playerLevel);
         
         // Mettre à jour l'affichage
         updateHUD();
@@ -749,20 +854,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }));
     }
     
+    // Nouvelle fonction pour appliquer les bonus cumulatifs
+    function applyLevelBonuses(level) {
+        // Bonus de base pour tous les niveaux supérieurs à 1
+        if (level >= 2) {
+            // Dilatation Temporelle (Niveau 2+)
+            timeLeft += 10;
+            console.log("Bonus appliqué: +10 secondes (Dilatation Temporelle)");
+        }
+        
+        if (level >= 3) {
+            // Amplificateur d'Essence (Niveau 3+)
+            comboMultiplier += 0.2;
+            console.log("Bonus appliqué: +0.2 au multiplicateur (Amplificateur d'Essence)");
+        }
+        
+        if (level >= 5) {
+            // Récupération de Sort (Niveau 5+)
+            // Ce bonus est géré lors de l'utilisation, mais on peut ajouter un compteur
+            if (!window.secondChanceCount) {
+                window.secondChanceCount = 0;
+            }
+            window.secondChanceCount++;
+            console.log(`Bonus appliqué: Seconde chance (Récupération de Sort) - Total: ${window.secondChanceCount}`);
+        }
+        
+        if (level >= 7) {
+            // Maîtrise Arcanique (Niveau 7+)
+            comboMultiplier += 0.3;
+            console.log("Bonus appliqué: +0.3 au multiplicateur (Maîtrise Arcanique)");
+        }
+        
+        if (level >= 10) {
+            // Distorsion Temporelle (Niveau 10+)
+            timeLeft += 15;
+            console.log("Bonus appliqué: +15 secondes (Distorsion Temporelle)");
+        }
+        
+        // Niveaux supérieurs - continuer à ajouter des bonus
+        if (level > 10) {
+            // Bonus supplémentaires tous les 3 niveaux après le niveau 10
+            if (level % 3 === 0) {
+                timeLeft += 10;
+                comboMultiplier += 0.1;
+                console.log(`Bonus de niveau supérieur appliqué (Niveau ${level}): +10 secondes, +0.1 au multiplicateur`);
+            }
+        }
+    }
+    
     // Fonction pour afficher une notification de montée de niveau
     function showLevelUpNotification(level) {
         const achievementContainer = document.getElementById('achievements-container');
         if (!achievementContainer) return;
         
+        // Déterminer les bonus obtenus à ce niveau
+        let bonusText = '';
+        let bonusIcon = '⭐';
+        
+        switch(level) {
+            case 2:
+                bonusText = 'Dilatation Temporelle : +10 secondes';
+                bonusIcon = '🔮';
+                break;
+            case 3:
+                bonusText = 'Amplificateur d\'Essence : +0.2 au multiplicateur (+10 secondes)';
+                bonusIcon = '✨';
+                break;
+            case 5:
+                bonusText = 'Récupération de Sort : seconde chance (+0.2 au multiplicateur, +10 secondes)';
+                bonusIcon = '🌟';
+                break;
+            case 7:
+                bonusText = 'Maîtrise Arcanique : +0.3 au multiplicateur (+seconde chance, +0.2 au multiplicateur, +10 secondes)';
+                bonusIcon = '⚡';
+                break;
+            case 10:
+                bonusText = 'Distorsion Temporelle : +15 secondes (+tous les bonus précédents)';
+                bonusIcon = '🕰️';
+                break;
+            default:
+                if (level > 10 && level % 3 === 0) {
+                    bonusText = `Maîtrise Supérieure : +10 secondes, +0.1 au multiplicateur (+tous les bonus précédents)`;
+                    bonusIcon = '🔥';
+                } else {
+                    bonusText = 'Votre puissance arcanique augmente !';
+                }
+        }
+        
         const achievement = document.createElement('div');
-        achievement.className = 'achievement';
+        achievement.className = 'achievement level-up-achievement';
         
         achievement.innerHTML = `
             <div class="achievement-title">
-                <span class="achievement-icon">⭐</span>
-                Niveau Supérieur !
+                <span class="achievement-icon">${bonusIcon}</span>
+                Niveau ${level} Atteint !
             </div>
-            <div class="achievement-desc">Vous avez atteint le niveau ${level}. Nouveaux pouvoirs débloqués !</div>
+            <div class="achievement-desc">${bonusText}</div>
         `;
         
         achievementContainer.appendChild(achievement);
@@ -771,6 +958,41 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             achievement.remove();
         }, 5000);
+        
+        // Afficher également une notification plus grande au centre de l'écran
+        showCenterLevelUpNotification(level, bonusIcon, bonusText);
+    }
+    
+    // Fonction pour afficher une notification au centre de l'écran
+    function showCenterLevelUpNotification(level, icon, bonusText) {
+        // Vérifier si une notification existe déjà et la supprimer
+        const existingNotification = document.querySelector('.level-up-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Créer la notification
+        const notification = document.createElement('div');
+        notification.className = 'level-up-notification';
+        
+        notification.innerHTML = `
+            <div class="level-up-title">${icon} Niveau Supérieur !</div>
+            <div class="level-up-level">${level}</div>
+            <div class="level-up-bonus">${bonusText}</div>
+        `;
+        
+        // Ajouter au corps du document
+        document.body.appendChild(notification);
+        
+        // Supprimer après l'animation
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 1000);
+        }, 4000);
     }
     
     // Fonction pour démarrer le timer
