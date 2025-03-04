@@ -1,0 +1,27 @@
+<!-- Firebase Scripts - Make sure these are in the correct order -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<!-- Load firebase polyfill first in case Firebase fails to load -->
+<script src="js/firebase-polyfill.js"></script>
+
+<!-- Then load your own Firebase implementation -->
+<script src="js/firebase-init.js"></script>
+<script src="js/leaderboard.js"></script>
+
+<!-- Load game data before the game script -->
+<script src="js/verb-data.js"></script>
+
+<!-- Leaderboard Section -->
+<div class="game-panel leaderboard-panel">
+    <div class="game-hud">
+        <h2>Top Scores</h2>
+    </div>
+    <div id="speed-verb-leaderboard" class="leaderboard-container">
+        <!-- Leaderboard will be loaded here -->
+        <div class="loading-scores">Invocation des archives ancestrales...</div>
+    </div>
+</div>
+
+<!-- Finally load your game script -->
+<script src="js/speed-verb-challenge.js"></script> 

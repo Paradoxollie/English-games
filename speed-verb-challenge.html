@@ -28,25 +28,154 @@
     
     <!-- Three.js -->
     <script async src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    
+    <!-- Script de correction de la navigation -->
+    <script src="src/js/navigation-fix.js" defer></script>
+    
+    <!-- Nouvel ajout: CSS pour les effets avancés -->
+    <style>
+        /* Effets de particules améliorés */
+        .magic-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -5;
+        }
+        
+        /* Effet de brume magique */
+        .magic-fog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            filter: blur(8px);
+            opacity: 0.6;
+            z-index: -6;
+            animation: fogMovement 30s infinite alternate ease-in-out;
+        }
+        
+        /* Runes flottantes améliorées */
+        .arcane-runes {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -4;
+            pointer-events: none;
+        }
+        
+        .rune {
+            position: absolute;
+            font-family: 'MedievalSharp', cursive;
+            color: var(--primary-color);
+            opacity: 0;
+            text-shadow: 0 0 10px var(--primary-glow);
+            animation: runeFloat 15s infinite ease-in-out;
+        }
+        
+        @keyframes runeFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        /* Effet de profondeur pour les cartes */
+        .depth-card {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        
+        /* Suppression de l'effet de mouvement au survol */
+        .depth-card:hover {
+            transform: none;
+        }
+        
+        /* Effet de portail amélioré */
+        .enhanced-portal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(59, 130, 246, 0.1) 70%, transparent 100%);
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .enhanced-portal.active {
+            animation: portalOpen 2s forwards ease-out;
+        }
+        
+        @keyframes portalOpen {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+        }
+        
+        /* Effet de lumière pour les boutons */
+        .glow-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .glow-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .glow-button:hover::after {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body class="game-body">
     <!-- Navigation -->
-    <nav class="game-nav">
-        <a href="index.html" class="nav-logo">
-            <img src="./images/logo.gif" alt="English Quest" width="80" height="80">
-        </a>
-        <div class="nav-links">
-            <a href="index.html">Accueil</a>
-            <a href="all-games.html" class="active">Jeux</a>
-            <a href="courses.html">Cours</a>
-            <a href="leaderboard.html">Classement</a>
-            <a href="contact.html">Contact</a>
-            </div>
-        </nav>
+    <header class="site-header">
+        <div class="container">
+            <a href="index.html" class="site-logo">
+                <img src="./images/logo.gif" alt="English Quest" width="80" height="80">
+            </a>
+            <nav class="main-navigation">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+                    <li class="nav-item"><a href="all-games.html" class="nav-link active">Jeux</a></li>
+                    <li class="nav-item"><a href="courses.html" class="nav-link">Cours</a></li>
+                    <li class="nav-item"><a href="leaderboard.html" class="nav-link">Classement</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <!-- Game container -->
     <div class="game-universe">
-        <!-- 3D background elements -->
+        <!-- Nouveaux éléments pour effets visuels -->
+        <div class="magic-fog"></div>
+        <div class="magic-particles" id="particles-js"></div>
+        <div class="arcane-runes" id="arcane-runes"></div>
+        <div class="enhanced-portal" id="enhanced-portal"></div>
+        
+        <!-- Fond 3D -->
         <div id="bg-scene"></div>
         
         <!-- Floating runes -->
@@ -58,12 +187,12 @@
             <header class="game-header">
                 <h1 class="game-title">Speed Verb Challenge</h1>
                 <p class="game-subtitle">Maîtrisez les sorts anciens du <span class="magic-text">Lexicon Arcanum</span></p>
-    </header>
+            </header>
 
             <!-- Game sections -->
             <div class="game-sections">
                 <!-- Left panel: Rules & Leaderboard -->
-                <section class="game-panel rules-panel">
+                <section class="game-panel rules-panel depth-card">
                     <div class="panel-content">
                         <h2 class="panel-title">La Quête</h2>
                         <div class="quest-scroll">
@@ -154,7 +283,7 @@
                 </section>
                 
                 <!-- Right panel: Game area -->
-                <section class="game-panel gameplay-panel">
+                <section class="game-panel gameplay-panel depth-card">
                     <div class="panel-content">
                         <!-- Game state: start -->
                         <div id="game-start" class="game-state active">
@@ -195,7 +324,7 @@
                                 </div>
                             </div>
                             
-                            <button id="start-game-btn" class="game-button primary-button">
+                            <button id="start-game-btn" class="game-button primary-button glow-button">
                                 <span class="button-glow"></span>
                                 <span class="button-text">Débuter l'Épreuve</span>
                                 <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
@@ -242,7 +371,7 @@
                                         <div class="verb-prompt">Lancez le sort de :</div>
                                         <div id="current-verb" class="verb-display floating-verb">begin</div>
                                         <div id="verb-translation" class="verb-translation">(commencer)</div>
-        </div>
+                                    </div>
 
                                     <div id="verb-form-inputs" class="verb-inputs">
                                         <!-- Inputs will be generated based on difficulty -->
@@ -250,12 +379,12 @@
                                     
                                     <!-- Verb actions -->
                                     <div class="verb-actions">
-                                        <button id="check-answer-btn" class="game-button action-button">
+                                        <button id="check-answer-btn" class="game-button action-button glow-button">
                                             <span class="button-text">Lancer le Sort</span>
                                             <span class="action-icon">✦</span>
                                         </button>
                                         
-                                        <button id="skip-verb-btn" class="game-button secondary-button">
+                                        <button id="skip-verb-btn" class="game-button secondary-button glow-button">
                                             <span class="button-text">Bannir</span>
                                             <span class="action-icon">✧</span>
                                         </button>
@@ -265,8 +394,8 @@
                             
                             <!-- Feedback message -->
                             <div id="feedback-message" class="feedback-message"></div>
-        </div>
-        
+                        </div>
+                        
                         <!-- Game state: game over -->
                         <div id="game-over" class="game-state">
                             <h2 class="panel-title">Énergie Arcanique Épuisée</h2>
@@ -281,7 +410,7 @@
                                     <div class="stat-item">
                                         <div class="stat-label">Niveau Atteint</div>
                                         <div id="final-level" class="stat-value">1</div>
-                </div>
+                                    </div>
 
                                     <div class="stat-item">
                                         <div class="stat-label">Sorts Lancés</div>
@@ -291,29 +420,29 @@
                                     <div class="stat-item">
                                         <div class="stat-label">Meilleur Combo</div>
                                         <div id="highest-combo" class="stat-value">x1.0</div>
-            </div>
-        </div>
+                                    </div>
+                                </div>
 
                                 <div class="name-entry">
                                     <label for="player-name">Inscrivez votre nom dans les Annales Arcaniques :</label>
                                     <input type="text" id="player-name" class="name-input" maxlength="15" placeholder="Votre nom">
-        </div>
+                                </div>
 
                                 <div class="game-over-actions">
-                                    <button id="save-score-btn" class="game-button primary-button">
+                                    <button id="save-score-btn" class="game-button primary-button glow-button">
                                         <span class="button-glow"></span>
                                         <span class="button-text">Inscrire</span>
                                         <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
                                     </button>
                                     
-                                    <button id="play-again-btn" class="game-button secondary-button">
+                                    <button id="play-again-btn" class="game-button secondary-button glow-button">
                                         <span class="button-text">Nouveau Rituel</span>
                                         <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
                                     </button>
                                 </div>
-                </div>
-            </div>
-        </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
         </main>
@@ -330,17 +459,190 @@
         <!-- Magic portal effect -->
         <div id="magic-portal"></div>
     </div>
-    
-    <!-- Firebase -->
+
+    <!-- SCRIPTS CORRIGÉS - CHARGEMENT UNIQUE -->
+    <!-- Firebase depuis CDN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="./src/js/firebase-polyfill.js"></script>
-    <script src="firebase-init.js"></script>
 
-    <!-- Game scripts -->
+    <!-- Scripts du jeu dans le bon ordre -->
+    <script src="./src/js/firebase-polyfill.js"></script>
+    <script src="./src/js/firebase-init.js"></script>
     <script src="./src/js/verb-data.js"></script>
     <script src="./src/js/game-effects.js"></script>
+    <script src="./src/js/speed-verb-leaderboard.js"></script>
+    <script src="./src/js/speed-verb-challenge.js"></script>
+
+    <!-- Scripts additionnels -->
     <script src="./src/js/consolidated-fix.js"></script>
     <script src="visit-counter.js"></script>
+
+    <!-- Nouveau script pour les effets visuels améliorés -->
+    <script>
+        // Créer les runes flottantes
+        function createFloatingRunes() {
+            const runeContainer = document.getElementById('arcane-runes');
+            const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛞ', 'ᛟ'];
+            
+            for (let i = 0; i < 20; i++) {
+                const rune = document.createElement('div');
+                rune.className = 'rune';
+                rune.textContent = runes[Math.floor(Math.random() * runes.length)];
+                rune.style.left = `${Math.random() * 100}%`;
+                rune.style.fontSize = `${Math.random() * 2 + 1}rem`;
+                rune.style.animationDelay = `${Math.random() * 15}s`;
+                rune.style.animationDuration = `${Math.random() * 10 + 15}s`;
+                runeContainer.appendChild(rune);
+            }
+        }
+        
+        // Initialiser les particules
+        function initParticles() {
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#3b82f6"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        },
+                        "polygon": {
+                            "nb_sides": 5
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 2,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#3b82f6",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": true,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 0.5
+                            }
+                        },
+                        "bubble": {
+                            "distance": 400,
+                            "size": 40,
+                            "duration": 2,
+                            "opacity": 8,
+                            "speed": 3
+                        },
+                        "repulse": {
+                            "distance": 200,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        },
+                        "remove": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        }
+        
+        // Ajouter des effets 3D aux cartes
+        function enhance3DCards() {
+            const cards = document.querySelectorAll('.depth-card');
+            
+            // Désactivation de l'effet de mouvement au survol de la souris
+            // Les cartes restent statiques pour une meilleure expérience utilisateur
+            cards.forEach(card => {
+                // Suppression des écouteurs d'événements qui causent le mouvement
+                card.removeEventListener('mousemove', null);
+                card.removeEventListener('mouseleave', null);
+                
+                // Réinitialisation de la transformation pour s'assurer qu'il n'y a pas d'effet résiduel
+                card.style.transform = 'none';
+            });
+        }
+        
+        // Initialiser les effets visuels améliorés
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingRunes();
+            initParticles();
+            enhance3DCards();
+            
+            // Ajouter des écouteurs d'événements pour les effets spéciaux
+            const startButton = document.getElementById('start-game-btn');
+            const portal = document.getElementById('enhanced-portal');
+            
+            if (startButton && portal) {
+                startButton.addEventListener('click', function() {
+                    portal.classList.add('active');
+                    setTimeout(() => {
+                        portal.classList.remove('active');
+                    }, 2000);
+                });
+            }
+        });
+    </script>
+    
+    <!-- Script pour les effets améliorés -->
+    <script src="src/js/enhanced-effects.js"></script>
 </body>
 </html>

@@ -456,15 +456,72 @@
     }
 }
 
-/* Effet d'erreur avec secousse 3D */
-.screen-shake {
-    animation: none !important;
+/* Styles améliorés pour les animations d'erreur */
+.error-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0.15);
+    z-index: 9999;
+    pointer-events: none;
+    animation: errorFlash 0.5s ease-out forwards;
 }
 
-@keyframes screenShake3D {
-    0%, 100% { transform: translateZ(0) translateX(0) rotateY(0deg); }
-    10%, 30%, 50%, 70%, 90% { transform: translateZ(-5px) translateX(-5px) rotateY(-2deg); }
-    20%, 40%, 60%, 80% { transform: translateZ(-5px) translateX(5px) rotateY(2deg); }
+@keyframes errorFlash {
+    0% { opacity: 0; }
+    25% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.screen-shake {
+    animation: screenShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+    transform-origin: center center;
+}
+
+@keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.verb-card.error {
+    animation: errorPulse 0.6s ease-out;
+    border: 2px solid #ff3d00 !important;
+    box-shadow: 0 0 15px rgba(255, 61, 0, 0.5) !important;
+}
+
+@keyframes errorPulse {
+    0% { transform: scale(1); background-color: transparent; }
+    20% { transform: scale(1.02); background-color: rgba(255, 61, 0, 0.1); }
+    100% { transform: scale(1); background-color: transparent; }
+}
+
+.error-feedback {
+    color: #ff3d00;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
+    animation: fadeInOut 3s ease-out forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.error-shake {
+    animation: errorShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+    20%, 40%, 60%, 80% { transform: translateX(3px); }
 }
 
 /* Effet pour le niveau supérieur - AMÉLIORATION DE LA CLARTÉ */
@@ -774,4 +831,302 @@ label, .hud-label, .rule-content p {
 /* Stabiliser tous les éléments avec background-image */
 [style*="background-image"] {
     animation: none !important;
+}
+
+/* Leaderboard Panel Styles */
+.leaderboard-panel {
+    margin-top: 30px;
+    transform-style: preserve-3d;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.leaderboard-panel .game-hud {
+    justify-content: center;
+}
+
+.leaderboard-panel h2 {
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px var(--accent-gold-glow);
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.leaderboard-container {
+    padding: 20px;
+    min-height: 200px;
+}
+
+.loading-scores {
+    text-align: center;
+    padding: 40px;
+    color: #a0a0c0;
+    font-style: italic;
+}
+
+/* Leaderboard Animation */
+.leaderboard-panel {
+    animation: leaderboardAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+@keyframes leaderboardAppear {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Replace any parchment texture references with a gradient background instead */
+.parchment, .scroll, [class*="parchment"], [class*="scroll"] {
+    background-image: none !important; /* Remove the missing texture */
+    background: linear-gradient(135deg, rgba(30, 40, 70, 0.9), rgba(15, 20, 40, 0.95)) !important; /* Add a gradient instead */
+}
+
+/* If there are specific rules for the parchment background, update them */
+[style*="parchment-texture.png"] {
+    background-image: none !important;
+    background: linear-gradient(135deg, rgba(30, 40, 70, 0.9), rgba(15, 20, 40, 0.95)) !important;
+}
+
+/* More comprehensive fallbacks for missing image files */
+[src$=".png"]:not([src*="data:"]), 
+[src$=".jpg"]:not([src*="data:"]), 
+[src$=".jpeg"]:not([src*="data:"]), 
+[src$=".gif"]:not([src*="data:"]) {
+    position: relative;
+}
+
+[src$=".png"]:not([src*="data:"])::after, 
+[src$=".jpg"]:not([src*="data:"])::after, 
+[src$=".jpeg"]:not([src*="data:"])::after, 
+[src$=".gif"]:not([src*="data:"])::after {
+    content: attr(alt);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-mid), var(--primary-dark));
+    color: white;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 5px;
+}
+
+/* Ensure backgrounds with missing images have fallbacks */
+*[style*="background-image"] {
+    background-color: var(--primary-dark) !important;
+}
+
+/* Additional fixes for parchment textures */
+.parchment-bg, .scroll-bg, .paper-bg, .ancient-bg {
+    background-image: none !important;
+    background: linear-gradient(135deg, rgba(30, 40, 70, 0.9), rgba(15, 20, 40, 0.95)) !important;
+}
+
+/* Styles améliorés pour le leaderboard */
+.leaderboard-container {
+    background-color: rgba(20, 20, 40, 0.9);
+    border: 2px solid #87658c;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(106, 13, 173, 0.5);
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e0e0e0;
+    font-family: 'Cinzel', serif;
+}
+
+.leaderboard-table th {
+    border-bottom: 2px solid #6a0dad;
+    padding: 10px 5px;
+    text-align: center;
+    color: #ffd700;
+    font-size: 1.1em;
+    text-shadow: 0 0 5px rgba(173, 106, 13, 0.7);
+}
+
+.leaderboard-table td {
+    padding: 8px 5px;
+    text-align: center;
+    border-bottom: 1px solid rgba(135, 101, 140, 0.3);
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-table .rank-1 {
+    background-color: rgba(255, 215, 0, 0.15);
+}
+
+.leaderboard-table .rank-2 {
+    background-color: rgba(192, 192, 192, 0.15);
+}
+
+.leaderboard-table .rank-3 {
+    background-color: rgba(205, 127, 50, 0.15);
+}
+
+.leaderboard-table .rank {
+    font-weight: bold;
+    font-size: 1.2em;
+    width: 50px;
+}
+
+.leaderboard-table .champion {
+    font-weight: bold;
+    color: #c8a2c8;
+    text-align: left;
+}
+
+.leaderboard-table .score {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.leaderboard-table .date {
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+.leaderboard-table .loading-row td,
+.leaderboard-table .empty-row td {
+    padding: 20px;
+    text-align: center;
+    color: #a0a0a0;
+    font-style: italic;
+}
+
+/* Animation de chargement pour le leaderboard */
+.leaderboard-table .loading-row td:after {
+    content: "";
+    animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+    0% { content: ""; }
+    25% { content: "."; }
+    50% { content: ".."; }
+    75% { content: "..."; }
+    100% { content: ""; }
+}
+
+/* NOUVEAU: Styles spécifiques pour la structure de navigation du site */
+.site-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(90, 120, 190, 0.3);
+    padding: 10px 0;
+    position: relative;
+    z-index: 100;
+}
+
+.site-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Sur mobile, passer en colonne */
+@media (max-width: 768px) {
+    .site-header .container {
+        flex-direction: column;
+    }
+}
+
+.site-logo {
+    display: block;
+    margin: 0;
+}
+
+.site-logo img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.main-navigation {
+    display: flex;
+    align-items: center;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin: 0 15px;
+}
+
+.nav-link {
+    display: block;
+    padding: 8px 15px;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
+}
+
+.nav-link:hover {
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px var(--accent-gold-glow);
+    transform: translateY(-2px);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 80%;
+}
+
+.nav-link.active {
+    color: #5c6bc0; /* Bleu clair */
+    text-shadow: 0 0 10px rgba(33, 150, 243, 0.7);
+}
+
+.nav-link.active::after {
+    width: 80%;
+    background: #3949ab; /* Bleu moyen */
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.7);
+}
+
+/* Responsive navigation */
+@media (max-width: 768px) {
+    .nav-menu {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-item {
+        margin: 5px 0;
+    }
 } 
