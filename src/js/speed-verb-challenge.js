@@ -529,9 +529,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Vérifier si le joueur a une seconde chance disponible (niveau 5+)
         if (playerLevel >= 5 && window.secondChanceCount > 0) {
+            console.log(`Le joueur a ${window.secondChanceCount} secondes chances disponibles. Affichage de l'option...`);
             // Proposer d'utiliser une seconde chance
             showSecondChanceOption();
             return;
+        } else {
+            console.log(`Pas de seconde chance disponible. Niveau: ${playerLevel}, Secondes chances: ${window.secondChanceCount || 0}`);
         }
         
         // Si pas de seconde chance, appliquer la pénalité normale
@@ -540,9 +543,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fonction pour afficher l'option de seconde chance
     function showSecondChanceOption() {
+        console.log("Affichage de l'option de seconde chance");
+        
+        // Vérifier si une option de seconde chance existe déjà et la supprimer
+        const existingOption = document.querySelector('.second-chance-option');
+        if (existingOption) {
+            existingOption.remove();
+        }
+        
         // Créer un élément pour l'option de seconde chance
         const secondChanceElement = document.createElement('div');
         secondChanceElement.className = 'second-chance-option';
+        secondChanceElement.id = 'second-chance-option';
         secondChanceElement.innerHTML = `
             <div class="second-chance-title">
                 <span class="second-chance-icon">🌟</span>
@@ -557,32 +569,60 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // Ajouter au conteneur de jeu
-        const gameInterface = document.querySelector('.game-interface');
-        if (gameInterface) {
-            gameInterface.appendChild(secondChanceElement);
-            
-            // Ajouter les écouteurs d'événements
-            document.getElementById('use-second-chance').addEventListener('click', useSecondChance);
-            document.getElementById('skip-second-chance').addEventListener('click', () => {
+        // Ajouter au corps du document (pas au conteneur de jeu)
+        document.body.appendChild(secondChanceElement);
+        
+        // Ajouter les écouteurs d'événements
+        const useButton = document.getElementById('use-second-chance');
+        const skipButton = document.getElementById('skip-second-chance');
+        
+        if (useButton) {
+            useButton.addEventListener('click', function() {
+                console.log("Bouton 'Utiliser' cliqué");
+                useSecondChance();
+            });
+        } else {
+            console.error("Bouton 'Utiliser' non trouvé");
+        }
+        
+        if (skipButton) {
+            skipButton.addEventListener('click', function() {
+                console.log("Bouton 'Non merci' cliqué");
                 // Supprimer l'élément
-                secondChanceElement.remove();
+                const element = document.getElementById('second-chance-option');
+                if (element) {
+                    element.remove();
+                }
                 // Appliquer la pénalité
                 applyIncorrectAnswerPenalty();
             });
+        } else {
+            console.error("Bouton 'Non merci' non trouvé");
         }
     }
     
     // Fonction pour utiliser une seconde chance
     function useSecondChance() {
+        console.log("Utilisation d'une seconde chance");
+        
         // Supprimer l'élément de seconde chance
-        const secondChanceElement = document.querySelector('.second-chance-option');
+        const secondChanceElement = document.getElementById('second-chance-option');
         if (secondChanceElement) {
             secondChanceElement.remove();
+        } else {
+            console.error("Élément de seconde chance non trouvé");
         }
         
         // Décrémenter le compteur de secondes chances
-        window.secondChanceCount--;
+        if (typeof window.secondChanceCount !== 'undefined' && window.secondChanceCount > 0) {
+            window.secondChanceCount--;
+            console.log(`Seconde chance utilisée. Restantes: ${window.secondChanceCount}`);
+        } else {
+            console.error("Impossible d'utiliser une seconde chance: compteur invalide");
+        }
+        
+        // Mettre à jour l'affichage du compteur
+        updateSecondChanceCounter();
         
         // Afficher un message de succès
         showFeedback(true, "Seconde chance utilisée! Réessayez sans pénalité.");
@@ -658,20 +698,12 @@ document.addEventListener('DOMContentLoaded', function() {
             feedbackElement.innerHTML = `<span class="skip-message">Verbe banni !</span>`;
             feedbackElement.classList.add('skip');
             
-            // Afficher le feedback
+            // Afficher le feedback sans le masquer automatiquement
             feedbackElement.style.opacity = '1';
             feedbackElement.style.transform = 'translateY(0)';
             
-            // Masquer le feedback après un délai
-            setTimeout(() => {
-                feedbackElement.style.opacity = '0';
-                feedbackElement.style.transform = 'translateY(-20px)';
-                
-                setTimeout(() => {
-                    feedbackElement.innerHTML = '';
-                    feedbackElement.classList.remove('skip');
-                }, 500);
-            }, 1500);
+            // Ne pas masquer automatiquement le feedback
+            // Le message restera affiché jusqu'à ce qu'un nouveau message soit affiché
         }
         
         // Effet visuel de bannissement
@@ -719,20 +751,12 @@ document.addEventListener('DOMContentLoaded', function() {
             feedbackElement.classList.add('error');
         }
         
-        // Afficher le feedback
+        // Afficher le feedback sans le masquer automatiquement
         feedbackElement.style.opacity = '1';
         feedbackElement.style.transform = 'translateY(0)';
         
-        // Masquer le feedback après un délai
-        setTimeout(() => {
-            feedbackElement.style.opacity = '0';
-            feedbackElement.style.transform = 'translateY(-20px)';
-            
-            setTimeout(() => {
-                feedbackElement.innerHTML = '';
-                feedbackElement.classList.remove('success', 'error');
-            }, 500);
-        }, 2000);
+        // Ne pas masquer automatiquement le feedback
+        // Le message restera affiché jusqu'à ce qu'un nouveau message soit affiché
     }
     
     // Fonction pour mettre à jour le HUD
@@ -790,7 +814,12 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 secondChanceCounter.style.display = 'none';
             }
+        } else {
+            console.error("Éléments du compteur de secondes chances non trouvés dans le DOM");
         }
+        
+        // Afficher dans la console pour le débogage
+        console.log(`État du compteur de secondes chances: Niveau ${playerLevel}, Chances: ${window.secondChanceCount || 0}`);
     }
     
     // Fonction pour ajouter de l'expérience
@@ -872,7 +901,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (level >= 5) {
             // Récupération de Sort (Niveau 5+)
             // Ce bonus est géré lors de l'utilisation, mais on peut ajouter un compteur
-            if (!window.secondChanceCount) {
+            if (typeof window.secondChanceCount === 'undefined') {
                 window.secondChanceCount = 0;
             }
             window.secondChanceCount++;
@@ -900,6 +929,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Bonus de niveau supérieur appliqué (Niveau ${level}): +10 secondes, +0.1 au multiplicateur`);
             }
         }
+        
+        // Mettre à jour le compteur de secondes chances dans l'interface
+        updateSecondChanceCounter();
     }
     
     // Fonction pour afficher une notification de montée de niveau
@@ -975,6 +1007,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const notification = document.createElement('div');
         notification.className = 'level-up-notification';
         
+        // Ajouter un identifiant unique pour le débogage
+        notification.id = `level-up-notification-${level}`;
+        
         notification.innerHTML = `
             <div class="level-up-title">${icon} Niveau Supérieur !</div>
             <div class="level-up-level">${level}</div>
@@ -983,6 +1018,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Ajouter au corps du document
         document.body.appendChild(notification);
+        
+        // Log pour le débogage
+        console.log(`Notification de niveau ${level} affichée avec le texte: "${bonusText}"`);
         
         // Supprimer après l'animation
         setTimeout(() => {
@@ -1353,16 +1391,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Bouton de démarrage
         if (elements.startButton) {
             elements.startButton.addEventListener('click', startGame);
+            // Ajouter un écouteur tactile pour mobile
+            elements.startButton.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Empêcher le double-clic sur mobile
+            }, { passive: false });
         }
         
         // Bouton de vérification
         const checkButton = document.getElementById('check-answer-btn');
         if (checkButton) {
             console.log("Bouton 'Lancer le Sort' trouvé, ajout de l'écouteur d'événement");
+            // Supprimer les écouteurs existants pour éviter les doublons
+            checkButton.removeEventListener('click', checkAnswer);
+            // Ajouter un nouvel écouteur
             checkButton.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log("Bouton 'Lancer le Sort' cliqué");
                 checkAnswer();
             });
+            
+            // Ajouter un écouteur tactile pour mobile
+            checkButton.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Empêcher le double-clic sur mobile
+            }, { passive: false });
         } else {
             console.error("Bouton 'Lancer le Sort' non trouvé");
         }
@@ -1371,10 +1422,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const skipButton = document.getElementById('skip-verb-btn');
         if (skipButton) {
             console.log("Bouton 'Bannir' trouvé, ajout de l'écouteur d'événement");
+            // Supprimer les écouteurs existants pour éviter les doublons
+            skipButton.removeEventListener('click', skipVerb);
+            // Ajouter un nouvel écouteur
             skipButton.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log("Bouton 'Bannir' cliqué");
                 skipVerb();
             });
+            
+            // Ajouter un écouteur tactile pour mobile
+            skipButton.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Empêcher le double-clic sur mobile
+            }, { passive: false });
         } else {
             console.error("Bouton 'Bannir' non trouvé");
         }
@@ -1382,12 +1442,32 @@ document.addEventListener('DOMContentLoaded', function() {
         // Bouton de sauvegarde du score
         if (elements.saveScoreButton) {
             elements.saveScoreButton.addEventListener('click', saveScore);
+            // Ajouter un écouteur tactile pour mobile
+            elements.saveScoreButton.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Empêcher le double-clic sur mobile
+            }, { passive: false });
         }
         
         // Bouton de rejouer
         if (elements.playAgainButton) {
             elements.playAgainButton.addEventListener('click', resetGame);
+            // Ajouter un écouteur tactile pour mobile
+            elements.playAgainButton.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Empêcher le double-clic sur mobile
+            }, { passive: false });
         }
+        
+        // Améliorer la gestion des inputs sur mobile
+        const verbInputs = document.querySelectorAll('.verb-input');
+        verbInputs.forEach(input => {
+            // Ajouter un écouteur pour le focus sur mobile
+            input.addEventListener('focus', function() {
+                // Faire défiler la page pour s'assurer que l'input est visible
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+        });
         
         // Écouteur pour la touche Entrée
         document.addEventListener('keydown', e => {
@@ -1525,8 +1605,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Enregistrer cette instance
         window.speedVerbGameInstance = gameInstanceId;
         
+        // Initialiser le compteur de secondes chances
+        window.secondChanceCount = 0;
+        
         // Ajouter les écouteurs d'événements
         addEventListeners();
+        
+        // S'assurer que les boutons sont correctement configurés
+        const checkButton = document.getElementById('check-answer-btn');
+        const skipButton = document.getElementById('skip-verb-btn');
+        
+        if (checkButton) {
+            console.log("Réinitialisation du bouton 'Lancer le Sort'");
+            checkButton.disabled = false;
+            checkButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Bouton 'Lancer le Sort' cliqué");
+                checkAnswer();
+            });
+        }
+        
+        if (skipButton) {
+            console.log("Réinitialisation du bouton 'Bannir'");
+            skipButton.disabled = false;
+            skipButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Bouton 'Bannir' cliqué");
+                skipVerb();
+            });
+        }
         
         // NOUVEAU: Initialiser notre système de leaderboard dédié
         if (window.SpeedVerbLeaderboard) {
@@ -1558,6 +1665,60 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log("✅ Initialisation terminée");
     }
+    
+    // Fonction pour optimiser l'affichage sur les petits écrans
+    function optimizeForSmallScreens() {
+        // Détecter si l'écran est petit
+        const isSmallScreen = window.innerWidth <= 768;
+        
+        if (isSmallScreen) {
+            console.log("Optimisation pour petit écran détectée");
+            
+            // Ajuster la taille des éléments pour une meilleure visibilité
+            const verbDisplay = document.getElementById('current-verb');
+            if (verbDisplay) {
+                verbDisplay.style.fontSize = window.innerWidth <= 480 ? '1.8rem' : '2.5rem';
+            }
+            
+            // Assurer que les inputs sont suffisamment grands pour être facilement touchés
+            const inputs = document.querySelectorAll('.verb-input');
+            inputs.forEach(input => {
+                input.style.fontSize = '1.2rem';
+                input.style.padding = '12px 15px';
+            });
+            
+            // Ajuster l'espacement des boutons pour éviter les clics accidentels
+            const buttons = document.querySelectorAll('.game-button');
+            buttons.forEach(button => {
+                button.style.marginBottom = '15px';
+                button.style.minHeight = window.innerWidth <= 480 ? '50px' : '60px';
+            });
+            
+            // Améliorer la visibilité du HUD
+            const hudItems = document.querySelectorAll('.hud-item');
+            hudItems.forEach(item => {
+                item.style.padding = window.innerWidth <= 480 ? '8px' : '10px';
+            });
+            
+            // Assurer que les notifications sont bien visibles
+            const levelUpNotification = document.querySelector('.level-up-notification');
+            if (levelUpNotification) {
+                levelUpNotification.style.width = window.innerWidth <= 480 ? '85%' : '90%';
+                levelUpNotification.style.padding = window.innerWidth <= 480 ? '1rem' : '1.5rem';
+            }
+            
+            // Assurer que la seconde chance est bien visible
+            const secondChanceOption = document.querySelector('.second-chance-option');
+            if (secondChanceOption) {
+                secondChanceOption.style.width = window.innerWidth <= 480 ? '85%' : '90%';
+                secondChanceOption.style.padding = window.innerWidth <= 480 ? '1rem' : '1.5rem';
+            }
+        }
+    }
+    
+    // Appeler la fonction lors du chargement et du redimensionnement
+    window.addEventListener('load', optimizeForSmallScreens);
+    window.addEventListener('resize', optimizeForSmallScreens);
     
     // Démarrer le jeu
     init();

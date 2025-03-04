@@ -10,8 +10,9 @@
         gtag('config', 'G-RMCQTMKDVP');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Speed Verb Challenge - Maîtrisez les verbes irréguliers anglais dans cette expérience RPG immersive">
+    <meta name="theme-color" content="#0f172a">
     <title>Speed Verb Challenge | English Quest</title>
     
     <!-- Fonts -->
@@ -34,13 +35,38 @@
     
     <!-- Nouvel ajout: CSS pour les effets avancés -->
     <style>
+        /* Variables pour la hauteur de la vue sur mobile */
+        :root {
+            --vh: 1vh;
+        }
+        
+        /* Style pour le corps de la page */
+        body.game-body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: #020617; /* Fond très sombre */
+            overflow-x: hidden;
+        }
+        
+        /* Utiliser la hauteur de la vue personnalisée pour les conteneurs principaux */
+        .game-universe {
+            position: relative;
+            min-height: 100vh; /* Fallback */
+            min-height: calc(var(--vh, 1vh) * 100);
+            width: 100%;
+            overflow: hidden;
+            background-color: #020617; /* Fond très sombre pour éviter les espaces vides */
+            padding-bottom: 50px; /* Espace supplémentaire en bas */
+        }
+        
         /* Effets de particules améliorés */
         .magic-particles {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
             z-index: -5;
         }
@@ -50,13 +76,13 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: 
-                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 70%),
-                radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.02) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.02) 0%, transparent 70%);
             filter: blur(8px);
-            opacity: 0.6;
+            opacity: 0.4;
             z-index: -6;
             animation: fogMovement 30s infinite alternate ease-in-out;
         }
@@ -64,8 +90,8 @@
         /* Runes flottantes améliorées */
         .arcane-runes {
             position: fixed;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             top: 0;
             left: 0;
             z-index: -4;
@@ -262,6 +288,162 @@
             75% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+        
+        /* Améliorations pour la visibilité sur mobile et PC */
+        
+        /* Augmenter la taille des boutons sur mobile */
+        @media (max-width: 768px) {
+            .game-button {
+                padding: 15px 20px;
+                font-size: 1.1rem;
+                min-height: 60px;
+                margin-bottom: 15px;
+            }
+            
+            /* Améliorer la visibilité des inputs */
+            .verb-input {
+                font-size: 1.2rem;
+                padding: 12px 15px;
+                margin-bottom: 15px;
+                border-width: 2px;
+            }
+            
+            /* Augmenter l'espacement pour éviter les clics accidentels */
+            .verb-actions {
+                gap: 15px;
+                margin-top: 20px;
+            }
+            
+            /* Améliorer la visibilité du HUD */
+            .hud-item {
+                padding: 10px;
+            }
+            
+            .hud-value {
+                font-size: 1.6rem;
+            }
+            
+            /* Rendre la seconde chance plus visible sur mobile */
+            .second-chance-option {
+                width: 90%;
+                padding: 20px;
+            }
+            
+            .second-chance-actions {
+                flex-direction: column;
+            }
+            
+            .second-chance-actions button {
+                width: 100%;
+            }
+        }
+        
+        /* Améliorations pour les très petits écrans */
+        @media (max-width: 480px) {
+            .verb-display {
+                font-size: 1.8rem !important;
+                padding: 10px 0;
+            }
+            
+            .verb-translation {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+            }
+            
+            .input-group label {
+                font-size: 1rem;
+                margin-bottom: 5px;
+            }
+            
+            /* Réduire la taille des notifications pour qu'elles ne prennent pas tout l'écran */
+            .level-up-notification {
+                width: 85%;
+                padding: 15px;
+            }
+            
+            .level-up-title {
+                font-size: 1.5rem;
+            }
+            
+            .level-up-level {
+                font-size: 2.5rem;
+            }
+            
+            /* Améliorer la visibilité du feedback */
+            .feedback-message {
+                font-size: 1.1rem;
+                padding: 10px;
+            }
+        }
+        
+        /* Améliorations pour les grands écrans */
+        @media (min-width: 1200px) {
+            .game-sections {
+                gap: 2rem;
+            }
+            
+            .game-panel {
+                padding: 2rem;
+            }
+            
+            /* Améliorer la lisibilité */
+            .verb-display {
+                font-size: 3rem;
+            }
+            
+            .verb-input {
+                font-size: 1.2rem;
+            }
+            
+            /* Rendre les boutons plus visibles */
+            .game-button {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* Correction spécifique pour le leaderboard */
+        .leaderboard-container {
+            display: block;
+            width: 100%;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .leaderboard-scroll {
+            height: 250px;
+            max-height: 250px;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Correction pour les panneaux de jeu */
+        .game-panel {
+            margin-bottom: 2rem;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        
+        .panel-content {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        
+        /* Correction pour la section des règles */
+        .rules-panel {
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+        
+        .quest-scroll {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
 <body class="game-body">
@@ -334,9 +516,21 @@
                                             <h4 class="rule-title">Voies Arcaniques</h4>
                                             <p>Choisissez une des voies suivantes:</p>
                                             <ul class="sub-rules">
-                                                <li><span class="path-text">Voie de l'Apprenti ⚔️:</span> Conjuration du Passé Simple uniquement (1 point d'essence)</li>
-                                                <li><span class="path-text">Voie de l'Adepte ⚔️⚔️:</span> Invocation du Participe Passé uniquement (2 points d'essence)</li>
-                                                <li><span class="path-text">Voie du Maître ⚔️⚔️⚔️:</span> Enchantement complet du verbe - les deux formes (3 points d'essence)</li>
+                                                <li>
+                                                    <span class="path-text">Voie de l'Apprenti ⚔️</span>
+                                                    <span class="path-description">Conjuration du Passé Simple uniquement</span>
+                                                    <span class="path-reward">(1 point d'essence)</span>
+                                                </li>
+                                                <li>
+                                                    <span class="path-text">Voie de l'Adepte ⚔️⚔️</span>
+                                                    <span class="path-description">Invocation du Participe Passé uniquement</span>
+                                                    <span class="path-reward">(2 points d'essence)</span>
+                                                </li>
+                                                <li>
+                                                    <span class="path-text">Voie du Maître ⚔️⚔️⚔️</span>
+                                                    <span class="path-description">Enchantement complet du verbe - les deux formes</span>
+                                                    <span class="path-reward">(3 points d'essence)</span>
+                                                </li>
                                             </ul>
                                         </div>
                                     </li>
@@ -776,5 +970,56 @@
     
     <!-- Script pour les effets améliorés -->
     <script src="src/js/enhanced-effects.js"></script>
+    
+    <!-- Script pour améliorer le défilement sur mobile -->
+    <script>
+        // Améliorer le défilement sur mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gérer le focus des inputs sur mobile
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    // Faire défiler la page pour s'assurer que l'input est visible
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                });
+                
+                // Ajouter un padding supplémentaire pour les inputs sur mobile
+                if (window.innerWidth <= 768) {
+                    input.style.fontSize = '16px'; // Empêcher le zoom automatique sur iOS
+                }
+            });
+            
+            // Empêcher le zoom sur double-tap pour les boutons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    // Simuler un clic après un court délai pour éviter les problèmes de double-tap
+                    setTimeout(() => {
+                        this.click();
+                    }, 10);
+                }, { passive: false });
+            });
+            
+            // Améliorer le défilement des panneaux de jeu
+            const gamePanel = document.querySelector('.game-panel');
+            if (gamePanel && window.innerWidth <= 768) {
+                gamePanel.style.overflowY = 'auto';
+                gamePanel.style.webkitOverflowScrolling = 'touch'; // Défilement fluide sur iOS
+            }
+            
+            // Ajuster la hauteur de la vue sur mobile pour éviter les problèmes avec la barre d'adresse
+            function adjustViewportHeight() {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+            
+            // Appeler la fonction au chargement et au redimensionnement
+            adjustViewportHeight();
+            window.addEventListener('resize', adjustViewportHeight);
+        });
+    </script>
 </body>
 </html>

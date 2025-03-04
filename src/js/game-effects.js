@@ -26,8 +26,9 @@ class GameEffects {
             return;
         }
         
-        // Créer la scène
+        // Créer la scène avec un fond transparent
         this.scene = new THREE.Scene();
+        this.scene.background = null; // Fond transparent
         
         // Créer la caméra
         this.camera = new THREE.PerspectiveCamera(
@@ -38,13 +39,15 @@ class GameEffects {
         );
         this.camera.position.z = 5;
         
-        // Créer le renderer
+        // Créer le renderer avec transparence
         this.renderer = new THREE.WebGLRenderer({ 
             alpha: true,
-            antialias: true 
+            antialias: true,
+            premultipliedAlpha: false
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setClearColor(0x000000, 0); // Couleur de fond transparente
         
         // Ajouter le renderer au DOM
         const bgScene = document.getElementById('bg-scene');
@@ -101,13 +104,13 @@ class GameEffects {
         canvas.height = 1024;
         const ctx = canvas.getContext('2d');
         
-        // Fond avec un dégradé radial
+        // Fond avec un dégradé radial plus sombre (suppression des carrés bleus)
         const gradient = ctx.createRadialGradient(
             canvas.width / 2, canvas.height / 2, 0,
             canvas.width / 2, canvas.height / 2, canvas.width / 2
         );
-        gradient.addColorStop(0, '#1e3a8a');   // Bleu foncé au centre
-        gradient.addColorStop(1, '#0f172a');   // Presque noir aux bords
+        gradient.addColorStop(0, '#0f172a');   // Bleu très foncé au centre
+        gradient.addColorStop(1, '#020617');   // Presque noir aux bords
         
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -141,7 +144,7 @@ class GameEffects {
             ctx.restore();
         }
         
-        // Ajouter un effet de nébuleuse
+        // Ajouter un effet de nébuleuse plus subtil
         for (let i = 0; i < 20; i++) {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
@@ -152,16 +155,16 @@ class GameEffects {
                 x, y, radius
             );
             
-            // Couleurs aléatoires pour la nébuleuse (bleu, violet ou cyan)
+            // Couleurs plus subtiles pour la nébuleuse
             const colors = [
-                [62, 116, 245],  // Bleu
-                [134, 88, 255],  // Violet
-                [0, 208, 255]    // Cyan
+                [30, 58, 138],   // Bleu très foncé
+                [67, 56, 202],   // Violet foncé
+                [12, 74, 110]    // Cyan foncé
             ];
             
             const color = colors[Math.floor(Math.random() * colors.length)];
             
-            nebulaGradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.2)`);
+            nebulaGradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.1)`);
             nebulaGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
             
             ctx.fillStyle = nebulaGradient;
@@ -321,9 +324,17 @@ class GameEffects {
     handleResize() {
         if (!this.camera || !this.renderer) return;
         
+        // Mettre à jour les dimensions
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+        
+        // S'assurer que le renderer couvre toute la page
+        const bgScene = document.getElementById('bg-scene');
+        if (bgScene) {
+            bgScene.style.width = '100vw';
+            bgScene.style.height = '100vh';
+        }
     }
     
     // Utiliser des effets de secours si Three.js n'est pas disponible
