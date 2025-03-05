@@ -11,12 +11,66 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Bubbles - English Quest</title>
+    <title>Word Bubbles 3D - English Quest</title>
     <link href="style.css" rel="stylesheet">
     <link href="word-bubbles.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Three.js pour les effets 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP pour les animations avancées -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <style>
+        /* Animation de secousse pour le champ de saisie */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            10% { transform: translateX(-10px); }
+            20% { transform: translateX(10px); }
+            30% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            50% { transform: translateX(-5px); }
+            60% { transform: translateX(5px); }
+            70% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+            90% { transform: translateX(-2px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Styles pour le conteneur de jeu */
+        #word-box {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(201, 170, 113, 0.3);
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Styles pour les statistiques du jeu */
+        #game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 1px solid rgba(201, 170, 113, 0.3);
+        }
+        
+        .stat-item {
+            font-weight: bold;
+            color: #c9aa71;
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+    <!-- Overlay pour les effets de particules -->
+    <div id="particles-overlay"></div>
+    
     <!-- Logo et Navigation -->
     <div class="logo-container">
         <img src="images/logo.gif" alt="English Quest Logo">
@@ -34,50 +88,100 @@
 
     <main class="pt-32">
         <div class="container mx-auto px-4">
-            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30">
-                <h2 class="text-2xl font-medieval text-quest-gold mb-4">Bienvenue dans Word Bubbles ! 🌊</h2>
-                <p><strong>🎯 Objectif :</strong> Saisis rapidement les mots en mode entrainement ou trouve des mots qui commencent par la lettre proposée en mode normal pour marquer des points.</p>
+            <!-- Intro du jeu avec animation -->
+            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30 intro-panel">
+                <h2 class="text-2xl font-medieval text-quest-gold mb-4 glow-text">Bienvenue dans Word Bubbles 3D ! 🌊</h2>
                 
-                <p class="mt-4"><strong>🕹️ Instructions :</strong></p>
-                <ul class="list-disc list-inside space-y-2 ml-4">
-                    <li>Sélectionne le mode de jeu (Normal ou Training), puis appuie sur "Start Game".</li>
-                    <li>Lis la lettre ou le mot dans les bulles qui tombent.</li>
-                    <li>Tape un mot qui commence par la lettre de la bulle ou le mot affiché.</li>
-                    <li>Si ta réponse est correcte, tu gagnes des points. Sinon, essaie encore !</li>
-                </ul>
-                
-                <p class="mt-4"><strong>⏳ Timer :</strong> Plus le jeu avance, plus les bulles accélèrent. Reste concentré !</p>
-                <p><strong>💡 Conseil :</strong> Évite les mots déjà utilisés.</p>
+                <div class="game-description">
+                    <p><strong class="highlight">🎯 Objectif :</strong> Saisis rapidement les mots en mode entrainement ou trouve des mots qui commencent par la lettre proposée en mode normal pour marquer des points.</p>
+                    
+                    <p class="mt-4"><strong class="highlight">🕹️ Instructions :</strong></p>
+                    <ul class="list-disc list-inside space-y-2 ml-4 instructions-list">
+                        <li>Sélectionne le mode de jeu (Normal ou Training), puis appuie sur "Start Game".</li>
+                        <li>Lis la lettre ou le mot dans les bulles 3D qui flottent dans l'espace.</li>
+                        <li>Tape un mot qui commence par la lettre de la bulle ou le mot affiché.</li>
+                        <li>Si ta réponse est correcte, tu gagnes des points et la bulle explose en particules magiques !</li>
+                    </ul>
+                    
+                    <p class="mt-4"><strong class="highlight">⏳ Timer :</strong> Plus le jeu avance, plus les bulles accélèrent. Reste concentré !</p>
+                    <p><strong class="highlight">💡 Conseil :</strong> Évite les mots déjà utilisés pour maximiser ton score.</p>
+                </div>
             </div>
 
+            <!-- Conteneur principal du jeu -->
             <div id="game-container" class="word-bubbles bg-black/80 rounded-xl p-6 border border-quest-gold/30">
-                <div id="mode-selection" class="mb-4">
-                    <label for="game-mode" class="text-quest-gold">Choose Game Mode:</label>
-                    <select id="game-mode" class="bg-black/60 text-white border border-quest-gold/30 rounded px-4 py-2">
-                        <option value="normal">Normal</option>
-                        <option value="training">Training</option>
-                    </select>
+                <!-- Sélection du mode et difficulté -->
+                <div id="game-settings" class="mb-4 flex flex-wrap gap-4 justify-center">
+                    <div class="setting-group">
+                        <label for="game-mode" class="text-quest-gold">Mode de jeu:</label>
+                        <select id="game-mode" class="game-select">
+                            <option value="normal">Normal</option>
+                            <option value="training">Training</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="difficulty-level" class="text-quest-gold">Difficulté:</label>
+                        <select id="difficulty-level" class="game-select">
+                            <option value="easy">Facile</option>
+                            <option value="medium">Moyen</option>
+                            <option value="hard">Difficile</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="word-box" class="border-2 border-quest-gold/30 rounded-xl"></div>
-                
-                <div id="game-controls" class="mt-4 flex gap-4 justify-center">
-                    <input type="text" id="current-word" placeholder="Enter word..." 
-                           class="bg-black/60 text-white border border-quest-gold/30 rounded px-4 py-2">
-                    <button id="submit-word" class="quest-button">Submit</button>
-                    <button id="start-reset" class="quest-button">Start Game</button>
+                <!-- Scène 3D pour les bulles -->
+                <div id="game-scene-container">
+                    <div id="word-box" class="scene-3d"></div>
+                    <div id="game-stats">
+                        <div id="score-display" class="stat-item">Score: 0</div>
+                        <div id="time-display" class="stat-item">Temps: 0:00</div>
+                        <div id="combo-display" class="stat-item">Combo: x1</div>
+                    </div>
                 </div>
                 
-                <div id="score-display" class="text-quest-gold text-xl mt-4">Score: 0</div>
-                <div id="message" class="text-white mt-2"></div>
+                <!-- Contrôles du jeu -->
+                <div id="game-controls" class="mt-4 flex flex-wrap gap-4 justify-center">
+                    <input type="text" id="current-word" placeholder="Entrez un mot..." 
+                           class="game-input">
+                    <button id="submit-word" class="quest-button glow-button">Soumettre</button>
+                    <button id="start-reset" class="quest-button glow-button">Démarrer</button>
+                </div>
                 
-                <div id="top-scores" class="mt-8">
-                    <h3 class="text-quest-gold text-xl mb-4">Top Scores</h3>
-                    <ul id="top-scores-list" class="space-y-2"></ul>
+                <!-- Affichage des messages -->
+                <div id="message-container">
+                    <div id="message" class="text-white mt-2 message-text"></div>
+                </div>
+                
+                <!-- Tableau des meilleurs scores -->
+                <div id="top-scores" class="mt-8 scores-panel">
+                    <h3 class="text-quest-gold text-xl mb-4 glow-text">Meilleurs Scores</h3>
+                    <ul id="top-scores-list" class="space-y-2 scores-list"></ul>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Modals pour les tutoriels et récompenses -->
+    <div id="tutorial-modal" class="game-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Comment jouer à Word Bubbles 3D</h2>
+            <div class="tutorial-steps">
+                <!-- Contenu du tutoriel -->
+            </div>
+            <button id="start-game-tutorial" class="quest-button glow-button">Commencer à jouer</button>
+        </div>
+    </div>
+
+    <div id="reward-modal" class="game-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Félicitations !</h2>
+            <div id="reward-content"></div>
+            <button id="continue-game" class="quest-button glow-button">Continuer</button>
+        </div>
+    </div>
 
     <footer class="fixed bottom-0 w-full">
         <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
