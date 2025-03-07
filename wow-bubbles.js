@@ -41,14 +41,14 @@ fetch('data/filtered_words.json')
         }
         return response.json();
     })
-    .then(wordList => {
-        // S'assurer que wordList est un tableau
-        if (!Array.isArray(wordList)) {
-            throw new Error('Format de données invalide: la liste de mots doit être un tableau');
+    .then(data => {
+        // S'assurer que data.words est un tableau
+        if (!data.words || !Array.isArray(data.words)) {
+            throw new Error('Format de données invalide: data.words doit être un tableau');
         }
         
         // Filtrer les mots trop courts et les convertir en majuscules
-        words = wordList
+        words = data.words
             .filter(word => word.length >= 3) // Ne garder que les mots de 3 lettres ou plus
             .map(word => word.toUpperCase());
         
