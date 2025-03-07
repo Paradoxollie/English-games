@@ -577,76 +577,103 @@
                             </tr>
                         `;
                         
-                        // Créer la requête de base - toujours trier par score décroissant
-                        let query = db.collection("word_bubbles_scores").orderBy("score", "desc");
+                        console.log("Chargement des scores Word Bubbles pour difficulté:", difficulty);
                         
-                        // Limiter à 3 résultats seulement
-                        query = query.limit(3);
-                        
-                        // Exécuter la requête
-                        const snapshot = await query.get();
-                        
-                        // Filtrer les résultats côté client si nécessaire (pour éviter l'erreur d'index)
-                        let filteredScores = [];
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            // Si on filtre par difficulté et que ce n'est pas "all", vérifier la difficulté
-                            if (difficulty === 'all' || data.difficulty === difficulty) {
-                                filteredScores.push({
-                                    id: doc.id,
-                                    ...data
-                                });
+                        try {
+                            // Vérifier si Firebase est disponible
+                            if (!db || !db.collection) {
+                                console.warn("Firebase n'est pas disponible, chargement des scores locaux");
+                                loadLocalWordBubblesScores(difficulty);
+                                return;
                             }
-                        });
-                        
-                        // Trier à nouveau les scores filtrés
-                        filteredScores.sort((a, b) => b.score - a.score);
-                        
-                        // Limiter à 3 scores maximum
-                        filteredScores = filteredScores.slice(0, 3);
-                        
-                        // Vérifier s'il y a des résultats après filtrage
-                        if (filteredScores.length === 0) {
-                            tableBody.innerHTML = `
-                                <tr>
-                                    <td colspan="6" class="text-center py-4">
-                                        <p>Aucun score enregistré pour cette difficulté.</p>
-                                    </td>
-                                </tr>
-                            `;
-                            return;
+                            
+                            // Créer la requête de base - toujours trier par score décroissant
+                            let query = db.collection("word_bubbles_scores").orderBy("score", "desc");
+                            
+                            // Limiter à 10 résultats pour avoir plus de chances de trouver des scores pour chaque difficulté
+                            query = query.limit(10);
+                            
+                            // Exécuter la requête
+                            const snapshot = await query.get();
+                            
+                            console.log(`Requête exécutée, ${snapshot.size} résultats trouvés`);
+                            
+                            // Vérifier s'il y a des résultats
+                            if (snapshot.empty) {
+                                console.log("Aucun score trouvé dans Firebase, essai avec les scores locaux");
+                                loadLocalWordBubblesScores(difficulty);
+                                return;
+                            }
+                            
+                            // Filtrer les résultats côté client si nécessaire (pour éviter l'erreur d'index)
+                            let filteredScores = [];
+                            snapshot.forEach((doc) => {
+                                const data = doc.data();
+                                console.log("Score trouvé:", data);
+                                
+                                // Si on filtre par difficulté et que ce n'est pas "all", vérifier la difficulté
+                                if (difficulty === 'all' || data.difficulty === difficulty) {
+                                    filteredScores.push({
+                                        id: doc.id,
+                                        ...data
+                                    });
+                                }
+                            });
+                            
+                            console.log(`Après filtrage: ${filteredScores.length} scores pour difficulté ${difficulty}`);
+                            
+                            // Si aucun score après filtrage, essayer les scores locaux
+                            if (filteredScores.length === 0) {
+                                console.log("Aucun score Firebase pour cette difficulté, essai avec les scores locaux");
+                                loadLocalWordBubblesScores(difficulty);
+                                return;
+                            }
+                            
+                            // Trier à nouveau les scores filtrés
+                            filteredScores.sort((a, b) => Number(b.score) - Number(a.score));
+                            
+                            // Limiter à 3 scores maximum
+                            filteredScores = filteredScores.slice(0, 3);
+                            
+                            // Vider le tableau
+                            tableBody.innerHTML = "";
+                            
+                            // Ajouter les scores
+                            filteredScores.forEach((data, index) => {
+                                const rank = index + 1;
+                                const row = document.createElement('tr');
+                                row.className = rank === 1 ? 'top-score' : '';
+                                
+                                // Essayer d'obtenir la date à partir de timestamp ou date
+                                let dateStr = 'N/A';
+                                if (data.timestamp && data.timestamp.seconds) {
+                                    dateStr = new Date(data.timestamp.seconds * 1000).toLocaleDateString();
+                                } else if (data.date) {
+                                    dateStr = new Date(data.date).toLocaleDateString();
+                                }
+                                
+                                const difficultyName = data.difficulty ? 
+                                    data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1) : 
+                                    'Normal';
+                                
+                                row.innerHTML = `
+                                    <td class="rank">${rank}</td>
+                                    <td>${data.name || 'Anonyme'}</td>
+                                    <td class="score">${data.score}</td>
+                                    <td>${data.level || 1}</td>
+                                    <td>${difficultyName}</td>
+                                    <td>${dateStr}</td>
+                                `;
+                                
+                                tableBody.appendChild(row);
+                            });
+                            
+                            console.log(`Scores Word Bubbles affichés (difficulté: ${difficulty}, nombre: ${filteredScores.length})`);
+                        } catch (error) {
+                            console.error("Erreur Firebase lors du chargement des scores:", error);
+                            console.log("Tentative de chargement des scores locaux suite à l'erreur Firebase");
+                            loadLocalWordBubblesScores(difficulty);
                         }
-                        
-                        // Vider le tableau
-                        tableBody.innerHTML = "";
-                        
-                        // Ajouter les scores
-                        filteredScores.forEach((data, index) => {
-                            const rank = index + 1;
-                            const row = document.createElement('tr');
-                            row.className = rank === 1 ? 'top-score' : '';
-                            
-                            const date = data.timestamp ? 
-                                new Date(data.timestamp.seconds * 1000).toLocaleDateString() : 
-                                'N/A';
-                            
-                            const difficultyName = data.difficulty ? 
-                                data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1) : 
-                                'Normal';
-                            
-                            row.innerHTML = `
-                                <td class="rank">${rank}</td>
-                                <td>${data.name || 'Anonyme'}</td>
-                                <td class="score">${data.score}</td>
-                                <td>${data.level || 1}</td>
-                                <td>${difficultyName}</td>
-                                <td>${date}</td>
-                            `;
-                            
-                            tableBody.appendChild(row);
-                        });
-                        
-                        console.log(`Scores Word Bubbles chargés (difficulté: ${difficulty}, nombre: ${filteredScores.length})`);
                     } catch (error) {
                         console.error("Erreur lors du chargement des scores Word Bubbles:", error);
                         const tableBody = document.getElementById('word-bubbles-leaderboard');
@@ -654,7 +681,10 @@
                             tableBody.innerHTML = `
                                 <tr>
                                     <td colspan="6" class="text-center py-4">
-                                        <p>Erreur lors du chargement des scores. Veuillez réessayer plus tard.</p>
+                                        <p>Erreur lors du chargement des scores: ${error.message}</p>
+                                        <button class="tab-btn mt-2" onclick="loadLocalWordBubblesScores('${difficulty}')">
+                                            Essayer avec les scores locaux
+                                        </button>
                                     </td>
                                 </tr>
                             `;
@@ -675,7 +705,15 @@
                         
                         // Charger les scores pour la difficulté sélectionnée
                         const difficulty = this.dataset.difficulty;
-                        loadWordBubblesScores(difficulty);
+                        
+                        // Essayer d'abord avec Firebase
+                        try {
+                            loadWordBubblesScores(difficulty);
+                        } catch (error) {
+                            console.error("Erreur lors du chargement des scores Firebase:", error);
+                            // En cas d'erreur, essayer avec les scores locaux
+                            loadLocalWordBubblesScores(difficulty);
+                        }
                     });
                 });
 
@@ -689,6 +727,97 @@
                 loadGameScores("whisper_trials_scores", "whisper-trials-leaderboard");
                 loadWordBubblesScores('all'); // Charger tous les scores Word Bubbles
                 loadGameScores("echoes_lexicon_scores", "echoes-lexicon-leaderboard");
+
+                // Fonction pour charger les scores locaux si Firebase n'est pas disponible
+                function loadLocalWordBubblesScores(difficulty = 'all') {
+                    try {
+                        const tableBody = document.getElementById('word-bubbles-leaderboard');
+                        if (!tableBody) return;
+                        
+                        console.log("Tentative de chargement des scores locaux pour Word Bubbles");
+                        
+                        // Récupérer les scores du localStorage
+                        const localScoresJson = localStorage.getItem('wordBubblesGlobalScores');
+                        if (!localScoresJson) {
+                            console.log("Aucun score local trouvé");
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p>Aucun score local enregistré.</p>
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+                        
+                        // Convertir les scores en objet
+                        let localScores = JSON.parse(localScoresJson);
+                        console.log(`${localScores.length} scores locaux trouvés`);
+                        
+                        // Filtrer par difficulté si nécessaire
+                        if (difficulty !== 'all') {
+                            localScores = localScores.filter(score => score.difficulty === difficulty);
+                        }
+                        
+                        // Vérifier s'il y a des scores après filtrage
+                        if (localScores.length === 0) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p>Aucun score local pour cette difficulté.</p>
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+                        
+                        // Trier les scores
+                        localScores.sort((a, b) => Number(b.score) - Number(a.score));
+                        
+                        // Limiter à 3 scores
+                        localScores = localScores.slice(0, 3);
+                        
+                        // Vider le tableau
+                        tableBody.innerHTML = "";
+                        
+                        // Ajouter les scores
+                        localScores.forEach((score, index) => {
+                            const rank = index + 1;
+                            const row = document.createElement('tr');
+                            row.className = rank === 1 ? 'top-score' : '';
+                            
+                            const dateStr = score.date ? new Date(score.date).toLocaleDateString() : 'N/A';
+                            const difficultyName = score.difficulty ? 
+                                score.difficulty.charAt(0).toUpperCase() + score.difficulty.slice(1) : 
+                                'Normal';
+                            
+                            row.innerHTML = `
+                                <td class="rank">${rank}</td>
+                                <td>${score.name || 'Anonyme'}</td>
+                                <td class="score">${score.score}</td>
+                                <td>${score.level || 1}</td>
+                                <td>${difficultyName}</td>
+                                <td>${dateStr} (local)</td>
+                            `;
+                            
+                            tableBody.appendChild(row);
+                        });
+                        
+                        console.log(`Scores locaux affichés: ${localScores.length}`);
+                    } catch (error) {
+                        console.error("Erreur lors du chargement des scores locaux:", error);
+                        const tableBody = document.getElementById('word-bubbles-leaderboard');
+                        if (tableBody) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p>Erreur lors du chargement des scores locaux.</p>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                    }
+                }
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
                 monitoring.trackError(error, {

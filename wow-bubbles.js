@@ -723,7 +723,7 @@ function spawnOrb() {
     
     // Ralentir encore plus les orbes pendant l'événement "pluie de lettres"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
-        baseSpeed *= 0.5; // Les orbes de la pluie de lettres sont 50% plus lents
+        baseSpeed *= 0.3; // Les orbes de la pluie de lettres sont 70% plus lents (au lieu de 50%)
     }
     
     // Calculer la vitesse finale
@@ -768,7 +768,7 @@ function spawnOrb() {
     
     // Augmenter le délai pendant l'événement "pluie de lettres"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
-        nextSpawnTime *= 1.5; // Plus de temps entre les orbes pendant la pluie de lettres
+        nextSpawnTime *= 2.0; // Encore plus de temps entre les orbes pendant la pluie de lettres (2x au lieu de 1.5x)
     }
     
     if (gameActive) {
@@ -1476,8 +1476,8 @@ function triggerSpecialEvent() {
     specialEventActive = true;
     specialEventTimer = eventType;
     
-    // Durée de l'événement (15 secondes par défaut)
-    const eventDuration = 15;
+    // Durée de l'événement (variable selon le type)
+    let eventDuration = 15;
     
     // Afficher un message pour l'événement
     let eventMessage = "";
@@ -1486,11 +1486,13 @@ function triggerSpecialEvent() {
     switch (eventType) {
         case SPECIAL_EVENTS.LETTER_RAIN:
             eventMessage = "Pluie de lettres !";
-            // Générer plusieurs orbes rapidement
-            for (let i = 0; i < 5; i++) {
+            // Réduire la durée de l'événement à 8 secondes
+            eventDuration = 8;
+            // Générer seulement 3 orbes au lieu de 5, avec plus de temps entre chaque
+            for (let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     if (gameActive) spawnOrb();
-                }, i * 500);
+                }, i * 800); // Augmenter le délai entre les orbes à 800ms
             }
             break;
             
@@ -1640,7 +1642,8 @@ function createChallengeRound() {
     }
     
     // Créer plusieurs orbes avec la même lettre
-    const numOrbs = 3 + Math.floor(Math.random() * 3); // 3 à 5 orbes
+    // Réduire le nombre d'orbes de 3-5 à 2-3
+    const numOrbs = 2 + Math.floor(Math.random() * 2); // 2 à 3 orbes au lieu de 3 à 5
     
     for (let i = 0; i < numOrbs; i++) {
         setTimeout(() => {
@@ -1672,8 +1675,8 @@ function createChallengeRound() {
             // Ajouter l'orbe au cadre du jeu
             gameFrame.appendChild(orb);
             
-            // Vitesse variable pour les orbes du défi
-            const speed = 0.3 + (Math.random() * 0.2);
+            // Vitesse variable pour les orbes du défi - Réduire la vitesse pour les rendre plus faciles à attraper
+            const speed = 0.2 + (Math.random() * 0.15); // Vitesse réduite (0.2-0.35 au lieu de 0.3-0.5)
             
             // Stocker les informations de l'orbe
             const orbInfo = {
@@ -1690,7 +1693,7 @@ function createChallengeRound() {
             orbs.push(orbInfo);
             
             console.log(`Orbe de défi créé avec la lettre: ${letter}`);
-        }, i * 800); // Espacer la création des orbes
+        }, i * 1200); // Augmenter l'espacement entre les orbes (1200ms au lieu de 800ms)
     }
 }
 
@@ -1735,18 +1738,21 @@ function submitScoreToGlobalLeaderboard(score, level, difficulty) {
             // Créer l'objet score
             const scoreData = {
                 name: playerName,
-                score: score,
-                level: level,
+                score: Number(score), // S'assurer que le score est un nombre
+                level: Number(level), // S'assurer que le niveau est un nombre
                 difficulty: difficulty,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                game: "word_bubbles" // Identifiant spécifique pour ce jeu
+                game: "word_bubbles", // Identifiant spécifique pour ce jeu
+                date: new Date().toISOString() // Ajouter une date au format ISO pour compatibilité
             };
+            
+            console.log("Données du score à envoyer:", scoreData);
             
             // Envoyer le score à Firestore
             firebase.firestore().collection("word_bubbles_scores")
                 .add(scoreData)
-                .then(() => {
-                    console.log("Score envoyé avec succès au leaderboard global");
+                .then((docRef) => {
+                    console.log("Score envoyé avec succès au leaderboard global avec ID:", docRef.id);
                     showMessage("Score envoyé au classement global !");
                 })
                 .catch((error) => {
@@ -1772,8 +1778,8 @@ function submitScoreToGlobalLeaderboard(score, level, difficulty) {
             // Sauvegarder le score localement avec le nom du joueur
             const localScore = {
                 name: playerName,
-                score: score,
-                level: level,
+                score: Number(score),
+                level: Number(level),
                 difficulty: difficulty,
                 date: new Date().toISOString()
             };
