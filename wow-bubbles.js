@@ -34,14 +34,30 @@ let gameOverModal;
 let closeButtons;
 
 // Charger la liste de mots depuis le fichier JSON
-fetch('words.json')
-    .then(response => response.json())
+fetch('data/filtered_words.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(wordList => {
+        // S'assurer que wordList est un tableau
+        if (!Array.isArray(wordList)) {
+            throw new Error('Format de données invalide: la liste de mots doit être un tableau');
+        }
+        
         // Filtrer les mots trop courts et les convertir en majuscules
         words = wordList
             .filter(word => word.length >= 3) // Ne garder que les mots de 3 lettres ou plus
             .map(word => word.toUpperCase());
+        
         console.log(`${words.length} mots chargés avec succès`);
+        
+        // Activer le bouton de démarrage une fois les mots chargés
+        if (startButton) {
+            startButton.disabled = false;
+        }
     })
     .catch(error => {
         console.error('Erreur lors du chargement des mots:', error);
@@ -51,6 +67,12 @@ fetch('words.json')
             "IMAGE", "JUICE", "KNIFE", "LEMON", "MOUSE", "NIGHT", "OCEAN", "PIANO",
             "QUEEN", "RIVER", "SNAKE", "TABLE", "UNCLE", "VOICE", "WATER", "YOUTH"
         ];
+        console.log("Liste de secours chargée avec " + words.length + " mots");
+        
+        // Activer le bouton de démarrage même avec la liste de secours
+        if (startButton) {
+            startButton.disabled = false;
+        }
     });
 
 // Initialisation au chargement de la page
