@@ -52,6 +52,17 @@
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
+    
+    --vh: 1vh; /* Variable pour la hauteur du viewport, sera mise à jour par JavaScript */
+    --primary-color: #00ccff;
+    --secondary-color: #ff6600;
+    --background-color: #0A1428;
+    --text-color: #ffffff;
+    --border-color: rgba(0, 204, 255, 0.3);
+    --shadow-color: rgba(0, 204, 255, 0.5);
+    --orb-glow: 0 0 15px rgba(0, 204, 255, 0.7);
+    --fire-glow: 0 0 15px rgba(255, 102, 0, 0.7);
+    --frost-glow: 0 0 15px rgba(0, 204, 255, 0.7);
 } 
 
 /* ===== ANIMATIONS DE BASE ===== */
@@ -1565,6 +1576,9 @@ body::before {
     
     .game-frame {
         padding: 15px;
+        height: calc(var(--vh, 1vh) * 50); /* Utiliser la variable vh personnalisée */
+        min-height: 350px;
+        overflow: hidden;
     }
     
     .frame-decoration {
@@ -1578,6 +1592,14 @@ body::before {
     
     .word-input-container {
         margin-bottom: 20px;
+        width: 100%;
+    }
+    
+    .wow-input {
+        width: 100%;
+        font-size: 16px; /* Empêcher le zoom automatique sur iOS */
+        padding: 12px 15px; /* Plus grand pour les doigts */
+        border-radius: 8px; /* Plus arrondi pour un look mobile */
     }
     
     .control-group {
@@ -1586,8 +1608,10 @@ body::before {
     }
     
     .wow-btn {
-        padding: 8px 15px;
-        font-size: 0.9rem;
+        padding: 12px 20px; /* Plus grand pour les doigts */
+        font-size: 1rem;
+        margin: 5px;
+        min-width: 100px; /* Largeur minimale pour faciliter le toucher */
     }
     
     #gameCanvas {
@@ -1606,6 +1630,32 @@ body::before {
     .modal-content {
         padding: 20px;
         width: 95%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    /* Styles pour le clavier virtuel */
+    .wow-input:focus {
+        position: sticky;
+        bottom: 0;
+        z-index: 100;
+    }
+    
+    /* Améliorer la visibilité des messages */
+    .message-container {
+        font-size: 1.2rem;
+        padding: 10px 15px;
+    }
+    
+    /* Rendre les orbes plus faciles à toucher */
+    .magic-orb {
+        touch-action: manipulation; /* Optimisation pour le toucher */
+    }
+    
+    /* Ajouter un effet de pression sur les orbes */
+    .magic-orb:active {
+        transform: scale(1.1);
+        filter: brightness(1.2);
     }
 }
 
@@ -1631,13 +1681,18 @@ body::before {
         height: 350px;
     }
     
+    .game-frame {
+        height: calc(var(--vh, 1vh) * 45); /* Plus petit sur très petits écrans */
+        min-height: 300px;
+    }
+    
     .magic-orb {
-        width: 50px;
-        height: 50px;
+        width: 55px; /* Légèrement plus grand pour faciliter le toucher */
+        height: 55px;
     }
     
     .orb-letter {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
     .stat-item {
@@ -1649,25 +1704,76 @@ body::before {
         font-size: 0.7rem;
     }
     
-    .stat-value {
-        font-size: 1rem;
+    .wow-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
     }
     
+    /* Optimiser l'affichage du clavier virtuel */
+    .word-input-container {
+        position: sticky;
+        bottom: 0;
+        background-color: rgba(10, 20, 40, 0.9);
+        padding: 10px;
+        z-index: 100;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Ajuster les statistiques pour qu'elles soient plus compactes */
+    .game-stats {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Améliorer la visibilité des modales */
     .modal-content {
         padding: 15px;
+        max-height: 75vh;
     }
     
     .modal-title {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
     
-    .control-group {
-        gap: 5px;
+    .modal-body {
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles spécifiques pour les appareils tactiles */
+@media (hover: none) {
+    /* Ces styles s'appliquent uniquement aux appareils sans hover (tactiles) */
+    .magic-orb {
+        cursor: pointer;
     }
     
-    .wow-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
+    .wow-btn:active {
+        transform: scale(0.95);
+        filter: brightness(1.1);
+    }
+    
+    /* Désactiver les animations de survol qui peuvent causer des problèmes sur mobile */
+    .nav-link:hover, .wow-btn:hover {
+        transform: none;
+    }
+    
+    /* Améliorer la visibilité du focus pour l'accessibilité */
+    .wow-input:focus {
+        outline: 2px solid #00ccff;
+    }
+}
+
+/* Correction pour les appareils iOS */
+@supports (-webkit-touch-callout: none) {
+    /* Styles spécifiques pour iOS */
+    .game-frame {
+        height: calc(var(--vh, 1vh) * 50);
+    }
+    
+    /* Éviter les problèmes avec le clavier virtuel */
+    .word-input-container {
+        position: relative;
+        z-index: 100;
     }
 }
 
@@ -2299,4 +2405,51 @@ body::before {
     font-weight: bold;
     color: #ffcc00;
     font-style: normal;
+}
+
+/* Styles pour le bouton de soumission mobile */
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-color), #0088cc);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover, .submit-btn:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.7);
+}
+
+.submit-btn:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    /* Styles spécifiques pour le bouton de soumission sur mobile */
+    .submit-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+    
+    /* Ajuster le conteneur d'input pour le bouton de soumission */
+    .word-input-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* Ajuster la largeur de l'input pour laisser de la place au bouton */
+    .wow-input {
+        flex: 1;
+    }
 } 
