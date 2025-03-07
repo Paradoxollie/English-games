@@ -65,6 +65,10 @@
                         </div>
                         <p class="game-description">Bienvenue dans le monde magique des mots ! Des bulles contenant des lettres descendent lentement. Tapez un mot commençant par la lettre affichée dans la bulle pour la faire disparaître avant qu'elle n'atteigne le bas de l'écran. Plus votre mot est long, plus vous gagnez de points !</p>
                         
+                        <!-- Indicateurs de bonus et combo -->
+                        <div id="bonusIndicator" class="bonus-indicator" style="display: none;"></div>
+                        <div id="comboIndicator" class="combo-indicator" style="display: none;"></div>
+                        
                         <div class="game-stats">
                             <div class="stat-item">
                                 <span class="stat-label">Score</span>
@@ -93,6 +97,7 @@
                         </div>
                         
                         <div class="game-controls">
+                            <!-- Le sélecteur de difficulté sera ajouté ici par JavaScript -->
                             <div class="word-input-container">
                                 <input type="text" id="wordInput" class="wow-input" placeholder="Tapez le mot ici..." autocomplete="off">
                             </div>
@@ -123,21 +128,33 @@
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Bienvenue dans <strong>Word Bubbles</strong>, le jeu magique des mots !</p>
-                <ol>
-                    <li>Des orbes magiques contenant une lettre descendront de l'écran.</li>
-                    <li>Tapez un mot commençant par cette lettre dans la zone de texte.</li>
-                    <li>Appuyez sur Entrée pour valider votre mot.</li>
-                    <li>Chaque mot correctement saisi fait disparaître l'orbe correspondant.</li>
-                    <li>Plus votre mot est long, plus vous gagnez de points !</li>
-                    <li>Vous gagnez aussi plus de points si vous détruisez l'orbe rapidement.</li>
-                    <li>Si un orbe atteint le bas, vous perdez une vie.</li>
-                    <li>Le jeu se termine lorsque vous n'avez plus de vies ou que le temps est écoulé.</li>
-                </ol>
-                <p>Prêt à tester vos compétences ? Cliquez sur <strong>Commencer</strong> pour lancer l'aventure !</p>
+                <p>Bienvenue dans <strong>Word Bubbles</strong>, un jeu de mots magique !</p>
+                <p>Des bulles contenant des lettres descendent lentement à l'écran. Votre mission est de taper des mots commençant par ces lettres avant que les bulles n'atteignent le bas de l'écran.</p>
+                <h3>Règles du jeu :</h3>
+                <ul>
+                    <li>Tapez un mot commençant par la lettre affichée dans une bulle</li>
+                    <li>Appuyez sur Entrée pour valider votre mot</li>
+                    <li>Si le mot est valide, la bulle disparaît</li>
+                    <li>Si une bulle atteint le bas de l'écran, vous perdez une vie</li>
+                    <li>Le jeu se termine quand vous n'avez plus de vies ou que le temps est écoulé</li>
+                </ul>
+                <h3>Système de points :</h3>
+                <ul>
+                    <li>Plus votre mot est long, plus vous gagnez de points</li>
+                    <li>Les mots de 8 lettres ou plus donnent un bonus spécial</li>
+                    <li>Attraper une bulle près du haut de l'écran rapporte plus de points</li>
+                    <li>Enchaîner rapidement des mots crée un combo qui multiplie vos points</li>
+                </ul>
+                <h3>Bonus et événements :</h3>
+                <ul>
+                    <li>Les bulles spéciales contiennent des bonus puissants</li>
+                    <li>Des événements spéciaux se déclenchent au fil des niveaux</li>
+                    <li>Chaque niveau augmente la difficulté mais vous donne du temps supplémentaire</li>
+                </ul>
+                <p>Bonne chance et que la magie des mots soit avec vous !</p>
             </div>
             <div class="modal-footer">
-                <button class="wow-btn modal-close-btn">Fermer</button>
+                <button class="wow-btn wow-btn-primary modal-close-btn">J'ai compris</button>
             </div>
         </div>
     </div>
@@ -149,21 +166,16 @@
                 <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Votre quête est terminée, brave aventurier !</p>
-                <div class="final-score">
-                    <p>Score final: <span id="finalScore">0</span></p>
-                    <p>Niveau atteint: <span id="finalLevel">1</span></p>
-                </div>
-                <p>Voulez-vous tenter une nouvelle aventure ?</p>
+                <p>Votre aventure magique est terminée !</p>
+                <p>Score final : <span id="finalScore">0</span></p>
+                <p>Niveau atteint : <span id="finalLevel">1</span></p>
             </div>
             <div class="modal-footer">
                 <button id="restartButton" class="wow-btn wow-btn-primary">Rejouer</button>
-                <button class="wow-btn modal-close-btn">Fermer</button>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="wow-bubbles.js"></script>
 </body>
 </html> 

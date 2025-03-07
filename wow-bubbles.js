@@ -162,39 +162,47 @@ function init() {
         // Créer le sélecteur de difficulté
         const controlsContainer = document.querySelector('.game-controls');
         
-        difficultySelector = document.createElement('select');
-        difficultySelector.id = 'difficultySelector';
-        difficultySelector.className = 'difficulty-selector';
-        
-        const options = [
-            { value: 'easy', text: 'Facile' },
-            { value: 'normal', text: 'Normal' },
-            { value: 'hard', text: 'Difficile' }
-        ];
-        
-        options.forEach(option => {
-            const optElement = document.createElement('option');
-            optElement.value = option.value;
-            optElement.textContent = option.text;
-            if (option.value === 'normal') {
-                optElement.selected = true;
+        if (controlsContainer) {
+            // Créer un conteneur pour le sélecteur
+            const difficultyContainer = document.createElement('div');
+            difficultyContainer.className = 'difficulty-container';
+            
+            // Créer le sélecteur
+            difficultySelector = document.createElement('select');
+            difficultySelector.id = 'difficultySelector';
+            difficultySelector.className = 'difficulty-selector';
+            
+            const options = [
+                { value: 'easy', text: 'Facile' },
+                { value: 'normal', text: 'Normal' },
+                { value: 'hard', text: 'Difficile' }
+            ];
+            
+            options.forEach(option => {
+                const optElement = document.createElement('option');
+                optElement.value = option.value;
+                optElement.textContent = option.text;
+                if (option.value === 'normal') {
+                    optElement.selected = true;
+                }
+                difficultySelector.appendChild(optElement);
+            });
+            
+            const difficultyLabel = document.createElement('label');
+            difficultyLabel.htmlFor = 'difficultySelector';
+            difficultyLabel.textContent = 'Difficulté:';
+            
+            difficultyContainer.appendChild(difficultyLabel);
+            difficultyContainer.appendChild(difficultySelector);
+            
+            // Ajouter le conteneur au début des contrôles
+            const firstChild = controlsContainer.firstChild;
+            if (firstChild) {
+                controlsContainer.insertBefore(difficultyContainer, firstChild);
+            } else {
+                controlsContainer.appendChild(difficultyContainer);
             }
-            difficultySelector.appendChild(optElement);
-        });
-        
-        // Créer un conteneur pour le sélecteur
-        const difficultyContainer = document.createElement('div');
-        difficultyContainer.className = 'difficulty-container';
-        
-        const difficultyLabel = document.createElement('label');
-        difficultyLabel.htmlFor = 'difficultySelector';
-        difficultyLabel.textContent = 'Difficulté:';
-        
-        difficultyContainer.appendChild(difficultyLabel);
-        difficultyContainer.appendChild(difficultySelector);
-        
-        // Ajouter le conteneur avant le bouton de démarrage
-        controlsContainer.insertBefore(difficultyContainer, startButton);
+        }
     }
     
     // Configurer le cadre du jeu
@@ -218,13 +226,17 @@ function init() {
     helpButton.addEventListener('click', showHelp);
     
     // Gestionnaire d'événement pour le bouton de redémarrage
-    restartButton.addEventListener('click', restartGame);
+    if (restartButton) {
+        restartButton.addEventListener('click', restartGame);
+    }
     
     // Gestionnaire d'événement pour le sélecteur de difficulté
-    difficultySelector.addEventListener('change', function() {
-        difficulty = this.value;
-        console.log(`Difficulté changée à: ${difficulty}`);
-    });
+    if (difficultySelector) {
+        difficultySelector.addEventListener('change', function() {
+            difficulty = this.value;
+            console.log(`Difficulté changée à: ${difficulty}`);
+        });
+    }
     
     // Initialiser les effets d'ambiance
     initAmbientEffects();
@@ -255,31 +267,35 @@ function resizeCanvas() {
 function initModalHandlers() {
     console.log("Initialisation des gestionnaires de modales...");
     
-    // Fermer les modales en cliquant sur le bouton de fermeture
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            closeModals();
-            console.log("Bouton fermer cliqué");
+    // Gestionnaires pour les boutons de fermeture
+    if (closeButtons && closeButtons.length > 0) {
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                console.log("Bouton fermer cliqué");
+                closeModals();
+            });
         });
-    });
+    } else {
+        console.warn("Aucun bouton de fermeture trouvé");
+    }
     
-    // Fermer les modales en cliquant en dehors du contenu
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', event => {
+    // Fermer les modales en cliquant à l'extérieur du contenu
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            // Si le clic est sur la modale elle-même (pas son contenu)
             if (event.target === modal) {
                 closeModals();
-                console.log("Clic en dehors de la modale");
             }
         });
     });
     
-    // Gestionnaire pour le bouton de redémarrage
-    if (restartButton) {
-        restartButton.addEventListener('click', () => {
-            restartGame();
-            console.log("Bouton Rejouer cliqué");
-        });
-    }
+    // Fermer les modales avec la touche Echap
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeModals();
+        }
+    });
 }
 
 /**
@@ -287,11 +303,36 @@ function initModalHandlers() {
  */
 function showHelp() {
     console.log("Affichage de la modale d'aide");
-    if (helpModal) {
-        helpModal.style.display = 'flex';
-        helpModal.classList.add('show');
-    } else {
+    
+    if (!helpModal) {
         console.error("La modale d'aide n'a pas été trouvée");
+        return;
+    }
+    
+    // Fermer d'abord toutes les modales
+    closeModals();
+    
+    // Afficher la modale d'aide
+    helpModal.classList.add('show');
+    helpModal.style.display = 'flex';
+    
+    // Désactiver le jeu pendant que la modale est affichée
+    if (gameActive) {
+        // Sauvegarder l'état du jeu pour le reprendre après
+        const wasActive = gameActive;
+        gameActive = false;
+        
+        // Réactiver le jeu quand la modale est fermée
+        const onModalClose = () => {
+            helpModal.removeEventListener('hidden', onModalClose);
+            if (wasActive) {
+                gameActive = true;
+                // Reprendre l'animation des orbes
+                animateOrbs();
+            }
+        };
+        
+        helpModal.addEventListener('hidden', onModalClose);
     }
 }
 
@@ -315,9 +356,28 @@ function showGameOver() {
  */
 function closeModals() {
     console.log("Fermeture de toutes les modales");
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.style.display = 'none';
+    
+    // Fermer la modale d'aide
+    if (helpModal) {
+        helpModal.classList.remove('show');
+        helpModal.style.display = 'none';
+        
+        // Déclencher l'événement 'hidden'
+        const event = new Event('hidden');
+        helpModal.dispatchEvent(event);
+    }
+    
+    // Fermer la modale de fin de jeu
+    if (gameOverModal) {
+        gameOverModal.classList.remove('show');
+        gameOverModal.style.display = 'none';
+    }
+    
+    // Fermer toutes les autres modales potentielles
+    const allModals = document.querySelectorAll('.modal');
+    allModals.forEach(modal => {
         modal.classList.remove('show');
+        modal.style.display = 'none';
     });
 }
 
@@ -326,6 +386,13 @@ function closeModals() {
  */
 function startGame() {
     console.log("Démarrage du jeu");
+    
+    // Vérifier que les mots sont chargés
+    if (words.length === 0) {
+        console.error("La liste de mots n'est pas encore chargée");
+        showMessage("Chargement des mots en cours, veuillez patienter...");
+        return;
+    }
     
     // Récupérer la difficulté sélectionnée
     if (difficultySelector) {
@@ -370,10 +437,12 @@ function startGame() {
     closeModals();
     
     // Activation/désactivation des boutons
-    startButton.disabled = true;
-    wordInput.disabled = false;
-    wordInput.value = '';
-    wordInput.focus();
+    if (startButton) startButton.disabled = true;
+    if (wordInput) {
+        wordInput.disabled = false;
+        wordInput.value = '';
+        wordInput.focus();
+    }
     
     // Masquer les indicateurs
     if (bonusIndicator) bonusIndicator.style.display = 'none';
