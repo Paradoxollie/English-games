@@ -1786,4 +1786,313 @@ body::before {
 @keyframes twinkle {
     0%, 100% { opacity: 0; transform: scale(1); }
     50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Styles pour les orbes spéciaux */
+.special-orb {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    z-index: 10;
+}
+
+.bonus-double-points {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 140, 0, 0.9) 100%);
+    border: 2px solid gold;
+}
+
+.bonus-slow-motion {
+    background: radial-gradient(circle, rgba(0, 191, 255, 0.8) 0%, rgba(30, 144, 255, 0.9) 100%);
+    border: 2px solid deepskyblue;
+}
+
+.bonus-extra-life {
+    background: radial-gradient(circle, rgba(255, 105, 180, 0.8) 0%, rgba(219, 112, 147, 0.9) 100%);
+    border: 2px solid hotpink;
+}
+
+.bonus-freeze-time {
+    background: radial-gradient(circle, rgba(135, 206, 250, 0.8) 0%, rgba(70, 130, 180, 0.9) 100%);
+    border: 2px solid lightskyblue;
+}
+
+.bonus-letter-bomb {
+    background: radial-gradient(circle, rgba(255, 69, 0, 0.8) 0%, rgba(178, 34, 34, 0.9) 100%);
+    border: 2px solid orangered;
+    animation: pulseBomb 0.8s infinite alternate !important;
+}
+
+.golden-orb {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.9) 0%, rgba(218, 165, 32, 0.95) 100%);
+    border: 3px solid gold;
+    box-shadow: 0 0 20px gold;
+    z-index: 15;
+}
+
+.golden-letter {
+    color: white;
+    text-shadow: 0 0 10px gold, 0 0 5px white;
+    font-weight: bold;
+    font-size: 2.2em;
+}
+
+.challenge-orb {
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.8) 0%, rgba(75, 0, 130, 0.9) 100%);
+    border: 2px solid blueviolet;
+    box-shadow: 0 0 15px blueviolet;
+}
+
+.challenge-letter {
+    color: white;
+    text-shadow: 0 0 8px blueviolet, 0 0 4px white;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+/* Indicateurs de bonus et combo */
+.bonus-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 100;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.bonus-double_points {
+    background-color: rgba(255, 215, 0, 0.8);
+    color: black;
+}
+
+.bonus-slow_motion {
+    background-color: rgba(0, 191, 255, 0.8);
+    color: black;
+}
+
+.bonus-extra_life {
+    background-color: rgba(255, 105, 180, 0.8);
+    color: black;
+}
+
+.bonus-freeze_time {
+    background-color: rgba(135, 206, 250, 0.8);
+    color: black;
+}
+
+.bonus-letter_bomb {
+    background-color: rgba(255, 69, 0, 0.8);
+    color: black;
+}
+
+.combo-indicator {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background-color: rgba(138, 43, 226, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 100;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Messages et effets */
+.game-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 200;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    animation: messageAppear 0.5s forwards;
+}
+
+.event-message {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 30px;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 300;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+}
+
+.event-letter_rain {
+    background-color: rgba(65, 105, 225, 0.8);
+    box-shadow: 0 0 25px rgba(65, 105, 225, 0.7);
+}
+
+.event-golden_letter {
+    background-color: rgba(255, 215, 0, 0.8);
+    color: black;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+}
+
+.event-word_rush {
+    background-color: rgba(220, 20, 60, 0.8);
+    box-shadow: 0 0 25px rgba(220, 20, 60, 0.7);
+}
+
+.event-challenge_round {
+    background-color: rgba(138, 43, 226, 0.8);
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.7);
+}
+
+.level-up-effect {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(50, 205, 50, 0.8);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-size: 26px;
+    font-weight: bold;
+    z-index: 250;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(50, 205, 50, 0.6);
+    animation: levelUpAppear 0.5s forwards;
+}
+
+/* Sélecteur de difficulté */
+.difficulty-container {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.difficulty-selector {
+    margin-left: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Animations */
+@keyframes pulseBomb {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 69, 0, 0.7);
+    }
+    100% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 69, 0, 0.9);
+    }
+}
+
+@keyframes goldenPulse {
+    0% {
+        box-shadow: 0 0 15px gold;
+    }
+    100% {
+        box-shadow: 0 0 25px gold, 0 0 40px rgba(255, 215, 0, 0.6);
+    }
+}
+
+@keyframes challengePulse {
+    0% {
+        box-shadow: 0 0 10px blueviolet;
+    }
+    100% {
+        box-shadow: 0 0 20px blueviolet, 0 0 30px rgba(138, 43, 226, 0.6);
+    }
+}
+
+@keyframes messageAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -70%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes levelUpAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -70%) scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes eventMessageEnter {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes eventMessageExit {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, 0%);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 } 
