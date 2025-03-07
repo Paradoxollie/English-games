@@ -399,32 +399,64 @@ function displayRecentScores(containerId, limit = 3) {
 function showGameOver() {
     console.log("Affichage de la modale de fin de jeu");
     
+    // Fermer d'abord toutes les autres modales
+    closeModals();
+    
     // Mettre à jour les scores finaux
     if (finalScore) {
         finalScore.textContent = score;
+    } else {
+        console.warn("Élément finalScore non trouvé");
     }
+    
     if (finalLevel) {
         finalLevel.textContent = level;
+    } else {
+        console.warn("Élément finalLevel non trouvé");
     }
     
-    // Sauvegarder le score dans les top scores
-    saveScore(score, level, difficulty);
-    
-    // Afficher le top score
-    const topScore = getTopScore();
-    if (document.getElementById('topScore')) {
-        document.getElementById('topScore').textContent = topScore;
+    try {
+        // Sauvegarder le score dans les top scores
+        saveScore(score, level, difficulty);
+        
+        // Afficher le top score
+        const topScore = getTopScore();
+        const topScoreElement = document.getElementById('topScore');
+        if (topScoreElement) {
+            topScoreElement.textContent = topScore;
+        } else {
+            console.warn("Élément topScore non trouvé");
+        }
+        
+        // Afficher les scores récents
+        displayRecentScores('recentScores');
+    } catch (error) {
+        console.error("Erreur lors de la gestion des scores:", error);
     }
-    
-    // Afficher les scores récents
-    displayRecentScores('recentScores');
     
     // Afficher la modale
     if (gameOverModal) {
+        // Forcer le style display à flex
         gameOverModal.style.display = 'flex';
         gameOverModal.classList.add('show');
+        
+        // S'assurer que la modale est visible
+        gameOverModal.style.opacity = '1';
+        gameOverModal.style.visibility = 'visible';
+        gameOverModal.style.zIndex = '1000';
+        
+        console.log("Modale de fin de jeu affichée");
     } else {
         console.error("La modale de fin de jeu n'a pas été trouvée");
+    }
+    
+    // Ajouter un gestionnaire d'événement pour le bouton de redémarrage
+    const restartBtn = document.getElementById('restartButton');
+    if (restartBtn) {
+        // Supprimer les gestionnaires existants pour éviter les doublons
+        restartBtn.removeEventListener('click', restartGame);
+        // Ajouter le nouveau gestionnaire
+        restartBtn.addEventListener('click', restartGame);
     }
 }
 
@@ -650,26 +682,36 @@ function spawnOrb() {
     
     switch (difficulty) {
         case 'easy':
-            baseSpeed = 0.2; // Très lent
-            levelMultiplier = 0.1;
+            baseSpeed = 0.1; // Très lent (réduit de 0.2 à 0.1)
+            levelMultiplier = 0.05; // Réduit de 0.1 à 0.05
             break;
         case 'normal':
-            baseSpeed = 0.25; // Plus lent qu'avant
-            levelMultiplier = 0.12;
+            baseSpeed = 0.15; // Plus lent qu'avant (réduit de 0.25 à 0.15)
+            levelMultiplier = 0.08; // Réduit de 0.12 à 0.08
             break;
         case 'hard':
-            baseSpeed = 0.3;
-            levelMultiplier = 0.15;
+            baseSpeed = 0.2; // Réduit de 0.3 à 0.2
+            levelMultiplier = 0.1; // Réduit de 0.15 à 0.1
             break;
         default:
-            baseSpeed = 0.25;
-            levelMultiplier = 0.12;
+            baseSpeed = 0.15;
+            levelMultiplier = 0.08;
     }
     
     // Appliquer le bonus de ralentissement si actif
     if (activeBonus === BONUS_TYPES.SLOW_MOTION) {
         baseSpeed *= 0.5;
         levelMultiplier *= 0.5;
+    }
+    
+    // Ralentir davantage les orbes spéciaux
+    if (isSpecial) {
+        baseSpeed *= 0.7; // Les orbes spéciaux sont 30% plus lents
+    }
+    
+    // Ralentir encore plus les orbes pendant l'événement "pluie de lettres"
+    if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
+        baseSpeed *= 0.5; // Les orbes de la pluie de lettres sont 50% plus lents
     }
     
     // Calculer la vitesse finale
@@ -695,21 +737,26 @@ function spawnOrb() {
     
     switch (difficulty) {
         case 'easy':
-            nextSpawnTime = Math.max(3000, 3500 - (level * 100)); // Délai minimum de 3 secondes
+            nextSpawnTime = Math.max(4000, 4500 - (level * 100)); // Délai minimum de 4 secondes (augmenté de 3s à 4s)
             break;
         case 'normal':
-            nextSpawnTime = Math.max(2500, 3000 - (level * 100)); // Délai minimum de 2.5 secondes
+            nextSpawnTime = Math.max(3500, 4000 - (level * 100)); // Délai minimum de 3.5 secondes (augmenté de 2.5s à 3.5s)
             break;
         case 'hard':
-            nextSpawnTime = Math.max(2000, 2500 - (level * 100)); // Délai minimum de 2 secondes
+            nextSpawnTime = Math.max(3000, 3500 - (level * 100)); // Délai minimum de 3 secondes (augmenté de 2s à 3s)
             break;
         default:
-            nextSpawnTime = Math.max(2500, 3000 - (level * 100));
+            nextSpawnTime = Math.max(3500, 4000 - (level * 100));
     }
     
     // Réduire le délai pendant l'événement spécial "Word Rush"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.WORD_RUSH) {
-        nextSpawnTime *= 0.6;
+        nextSpawnTime *= 0.7; // Réduit de 0.6 à 0.7 pour être moins agressif
+    }
+    
+    // Augmenter le délai pendant l'événement "pluie de lettres"
+    if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
+        nextSpawnTime *= 1.5; // Plus de temps entre les orbes pendant la pluie de lettres
     }
     
     if (gameActive) {
@@ -1254,6 +1301,9 @@ function startTimer() {
  * Termine la partie
  */
 function endGame(victory = false) {
+    console.log("Fin de la partie, victoire:", victory);
+    
+    // S'assurer que le jeu est bien arrêté
     gameActive = false;
     
     // Arrêter le timer
@@ -1267,14 +1317,30 @@ function endGame(victory = false) {
     orbs = [];
     
     // Mise à jour de l'interface
-    startButton.disabled = false;
-    wordInput.disabled = true;
+    if (startButton) startButton.disabled = false;
+    if (wordInput) wordInput.disabled = true;
     
     // Supprimer l'écouteur d'événement pour la saisie de mots
-    wordInput.removeEventListener('keypress', checkWord);
+    if (wordInput) {
+        wordInput.removeEventListener('keydown', checkWord);
+        wordInput.removeEventListener('keypress', checkWord);
+    }
     
-    // Afficher la modale de fin de jeu
-    showGameOver();
+    // Désactiver les bonus actifs
+    if (activeBonus) {
+        deactivateBonus(activeBonus);
+    }
+    
+    // Terminer les événements spéciaux
+    if (specialEventActive) {
+        endSpecialEvent();
+    }
+    
+    // Petit délai avant d'afficher la modale pour s'assurer que tout est bien nettoyé
+    setTimeout(() => {
+        // Afficher la modale de fin de jeu
+        showGameOver();
+    }, 500);
 }
 
 /**
@@ -1633,6 +1699,52 @@ function getDifficultyName(difficultyValue) {
 }
 
 /**
+ * Envoie le score au système de leaderboard global
+ */
+function submitScoreToGlobalLeaderboard(score, level, difficulty) {
+    try {
+        // Vérifier si Firebase est disponible
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+            console.log("Envoi du score au leaderboard global");
+            
+            // Demander le nom du joueur
+            let playerName = localStorage.getItem('playerName');
+            if (!playerName) {
+                playerName = prompt("Entrez votre nom pour le classement:", "Joueur");
+                if (playerName) {
+                    localStorage.setItem('playerName', playerName);
+                } else {
+                    playerName = "Anonyme";
+                }
+            }
+            
+            // Créer l'objet score
+            const scoreData = {
+                name: playerName,
+                score: score,
+                level: level,
+                difficulty: difficulty,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            
+            // Envoyer le score à Firestore
+            firebase.firestore().collection("word_bubbles_scores")
+                .add(scoreData)
+                .then(() => {
+                    console.log("Score envoyé avec succès au leaderboard global");
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de l'envoi du score:", error);
+                });
+        } else {
+            console.log("Firebase n'est pas disponible, score sauvegardé localement uniquement");
+        }
+    } catch (error) {
+        console.error("Erreur lors de la soumission du score global:", error);
+    }
+}
+
+/**
  * Sauvegarde un score dans le localStorage
  */
 function saveScore(score, level, difficulty) {
@@ -1663,6 +1775,9 @@ function saveScore(score, level, difficulty) {
     localStorage.setItem('wordBubblesScores', JSON.stringify(scores));
     
     console.log(`Score sauvegardé: ${score} points, niveau ${level}, difficulté ${difficulty}`);
+    
+    // Essayer d'envoyer le score au leaderboard global
+    submitScoreToGlobalLeaderboard(score, level, difficulty);
     
     return newScore;
 }

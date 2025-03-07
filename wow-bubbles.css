@@ -1148,19 +1148,20 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    display: none; /* Caché par défaut */
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.8);
-    background-image: 
-        radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.05), transparent 70%),
-        radial-gradient(ellipse at 70% 70%, rgba(255, 255, 255, 0.05), transparent 70%);
-    backdrop-filter: blur(5px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .wow-modal.show {
-    display: flex; /* Affiché lorsque la classe 'show' est ajoutée */
+    opacity: 1;
+    visibility: visible;
+    display: flex !important; /* Forcer l'affichage */
 }
 
 .wow-modal-content {
