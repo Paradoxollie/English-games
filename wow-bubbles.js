@@ -117,78 +117,135 @@ document.addEventListener('DOMContentLoaded', () => {
  * Initialise le jeu
  */
 function init() {
-    console.log("Initialisation du jeu Word Bubbles");
-    
-    // Initialiser les mots à partir de la liste de base
-    words = [...baseWords];
+    console.log("Initialisation du jeu...");
     
     // Récupérer les éléments du DOM
-    const gameFrame = document.querySelector('.game-frame');
-    const startButton = document.getElementById('startButton');
-    const helpButton = document.getElementById('helpButton');
-    const restartButton = document.getElementById('restartButton');
-    const difficultySelector = document.getElementById('difficultySelector');
+    gameCanvas = document.getElementById('gameCanvas');
+    ctx = gameCanvas.getContext('2d');
     wordInput = document.getElementById('wordInput');
+    startButton = document.getElementById('startButton');
+    helpButton = document.getElementById('helpButton');
+    restartButton = document.getElementById('restartButton');
+    scoreValue = document.getElementById('scoreValue');
+    levelValue = document.getElementById('levelValue');
+    livesValue = document.getElementById('livesValue');
+    timeValue = document.getElementById('timeValue');
+    finalScore = document.getElementById('finalScore');
+    finalLevel = document.getElementById('finalLevel');
+    helpModal = document.getElementById('helpModal');
+    gameOverModal = document.getElementById('gameOverModal');
+    closeButtons = document.querySelectorAll('.modal-close, .modal-close-btn');
+    difficultySelector = document.getElementById('difficultySelector');
+    bonusIndicator = document.getElementById('bonusIndicator');
+    comboIndicator = document.getElementById('comboIndicator');
     
-    // Vérifier si les éléments existent
-    if (!gameFrame || !startButton || !helpButton || !wordInput) {
-        console.error("Éléments manquants dans le DOM");
-        return;
+    console.log("Modales:", helpModal, gameOverModal);
+    
+    // Créer les éléments manquants
+    if (!bonusIndicator) {
+        bonusIndicator = document.createElement('div');
+        bonusIndicator.id = 'bonusIndicator';
+        bonusIndicator.className = 'bonus-indicator';
+        bonusIndicator.style.display = 'none';
+        document.querySelector('.game-container').appendChild(bonusIndicator);
+    }
+    
+    if (!comboIndicator) {
+        comboIndicator = document.createElement('div');
+        comboIndicator.id = 'comboIndicator';
+        comboIndicator.className = 'combo-indicator';
+        comboIndicator.style.display = 'none';
+        document.querySelector('.game-container').appendChild(comboIndicator);
+    }
+    
+    if (!difficultySelector) {
+        // Créer le sélecteur de difficulté
+        const controlsContainer = document.querySelector('.game-controls');
+        
+        if (controlsContainer) {
+            // Créer un conteneur pour le sélecteur
+            const difficultyContainer = document.createElement('div');
+            difficultyContainer.className = 'difficulty-container';
+            
+            // Créer le sélecteur
+            difficultySelector = document.createElement('select');
+            difficultySelector.id = 'difficultySelector';
+            difficultySelector.className = 'difficulty-selector';
+            
+            const options = [
+                { value: 'easy', text: 'Facile' },
+                { value: 'normal', text: 'Normal' },
+                { value: 'hard', text: 'Difficile' }
+            ];
+            
+            options.forEach(option => {
+                const optElement = document.createElement('option');
+                optElement.value = option.value;
+                optElement.textContent = option.text;
+                if (option.value === 'normal') {
+                    optElement.selected = true;
+                }
+                difficultySelector.appendChild(optElement);
+            });
+            
+            const difficultyLabel = document.createElement('label');
+            difficultyLabel.htmlFor = 'difficultySelector';
+            difficultyLabel.textContent = 'Difficulté:';
+            
+            difficultyContainer.appendChild(difficultyLabel);
+            difficultyContainer.appendChild(difficultySelector);
+            
+            // Ajouter le conteneur au début des contrôles
+            const firstChild = controlsContainer.firstChild;
+            if (firstChild) {
+                controlsContainer.insertBefore(difficultyContainer, firstChild);
+            } else {
+                controlsContainer.appendChild(difficultyContainer);
+            }
+        }
+    }
+    
+    // Configurer le cadre du jeu
+    const gameFrame = document.querySelector('.game-frame');
+    if (gameFrame) {
+        // S'assurer que le cadre est vide au démarrage
+        gameFrame.innerHTML = '';
+        console.log("Cadre du jeu configuré");
     }
     
     // Initialiser les gestionnaires d'événements
+    initModalHandlers();
+    
+    // Gestionnaire d'événement pour la saisie de mots
     wordInput.addEventListener('keydown', checkWord);
     
-    // Ajouter la gestion des événements tactiles pour mobile
-    wordInput.addEventListener('input', function(e) {
-        // Sur mobile, vérifier le mot après chaque saisie si le mot a au moins 3 caractères
-        const input = e.target.value.trim();
-        if (input.length >= 3) {
-            // Vérifier si le mot est valide
-            const event = new KeyboardEvent('keydown', {
-                key: 'Enter',
-                code: 'Enter',
-                keyCode: 13,
-                which: 13
-            });
-            checkWord(event);
-        }
-    });
-    
+    // Gestionnaire d'événement pour le bouton de démarrage
     startButton.addEventListener('click', startGame);
     
+    // Gestionnaire d'événement pour le bouton d'aide
     helpButton.addEventListener('click', showHelp);
     
+    // Gestionnaire d'événement pour le bouton de redémarrage
     if (restartButton) {
         restartButton.addEventListener('click', restartGame);
     }
     
+    // Gestionnaire d'événement pour le sélecteur de difficulté
     if (difficultySelector) {
         difficultySelector.addEventListener('change', function() {
             difficulty = this.value;
-            console.log(`Difficulté changée: ${difficulty}`);
+            console.log(`Difficulté changée à: ${difficulty}`);
         });
     }
-    
-    // Désactiver l'entrée de texte au démarrage
-    wordInput.disabled = true;
-    
-    // Initialiser les gestionnaires de modales
-    initModalHandlers();
     
     // Initialiser les effets d'ambiance
     initAmbientEffects();
     
+    // Désactiver l'entrée de texte au démarrage
+    wordInput.disabled = true;
+    
     // Afficher l'aide au démarrage après un court délai
-    setTimeout(() => {
-        showHelp();
-    }, 1000);
-    
-    // Initialiser le canvas
-    resizeCanvas();
-    
-    // Optimiser l'interface pour les appareils mobiles
-    optimizeForMobile();
+    setTimeout(showHelp, 1000);
     
     console.log("Initialisation terminée");
 }
@@ -666,7 +723,7 @@ function spawnOrb() {
     
     // Ralentir encore plus les orbes pendant l'événement "pluie de lettres"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
-        baseSpeed *= 0.3; // Les orbes de la pluie de lettres sont 70% plus lents (au lieu de 50%)
+        baseSpeed *= 0.5; // Les orbes de la pluie de lettres sont 50% plus lents
     }
     
     // Calculer la vitesse finale
@@ -711,7 +768,7 @@ function spawnOrb() {
     
     // Augmenter le délai pendant l'événement "pluie de lettres"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.LETTER_RAIN) {
-        nextSpawnTime *= 2.0; // Encore plus de temps entre les orbes pendant la pluie de lettres (2x au lieu de 1.5x)
+        nextSpawnTime *= 1.5; // Plus de temps entre les orbes pendant la pluie de lettres
     }
     
     if (gameActive) {
@@ -790,86 +847,106 @@ function createOrbDisappearEffect(orb) {
  */
 function checkWord(event) {
     // Vérifier si la touche Entrée a été pressée
-    if (event.type === 'keydown' && event.key !== 'Enter') {
-        return;
-    }
-    
-    // Si le jeu n'est pas actif, ne rien faire
-    if (!gameActive) {
-        return;
-    }
-    
-    // Récupérer la valeur de l'input et la convertir en majuscules
-    const input = wordInput.value.toUpperCase().trim();
-    
-    // Si l'input est vide ou trop court, ne rien faire
-    if (input.length < 2) {
-        return;
-    }
-    
-    // Vérifier si le mot existe dans la liste
-    if (!words.includes(input)) {
-        console.log(`Le mot "${input}" n'existe pas dans la liste`);
-        showIncorrectEffect();
-        return;
-    }
-    
-    // Vérifier si le mot a déjà été utilisé
-    if (usedWords.has(input)) {
-        console.log(`Le mot "${input}" a déjà été utilisé`);
-        showIncorrectEffect();
-        return;
-    }
-    
-    // Vérifier si le mot commence par une lettre présente dans un orbe
-    const firstLetter = input.charAt(0);
-    let foundOrb = false;
-    
-    // Ajouter le mot à la liste des mots utilisés
-    usedWords.add(input);
-    
-    // Parcourir tous les orbes pour trouver celui qui correspond
-    for (let i = 0; i < orbs.length; i++) {
-        if (orbs[i].letter === firstLetter) {
-            foundOrb = true;
-            
-            // Calculer les points
-            const points = calculatePoints(orbs[i], input);
-            
-            // Mettre à jour le score
-            score += points;
-            
-            // Mettre à jour le combo
-            comboCount++;
-            updateComboDisplay();
-            
-            // Afficher l'effet de points
-            showPointsEffect(orbs[i], points);
-            
-            // Créer un effet de disparition
-            createOrbDisappearEffect(orbs[i]);
-            
-            // Supprimer l'orbe
-            removeOrb(orbs[i]);
-            
-            // Mettre à jour l'interface
-            updateUI();
-            
-            // Vider l'input
-            wordInput.value = '';
-            
-            // Sortir de la boucle
-            break;
+    if (event && event.key === 'Enter') {
+        const input = wordInput.value.toUpperCase().trim();
+        
+        if (input.length < 2) {
+            // Mot trop court
+            showIncorrectEffect();
+            return;
         }
-    }
-    
-    // Si aucun orbe correspondant n'a été trouvé
-    if (!foundOrb) {
-        console.log(`Aucun orbe avec la lettre "${firstLetter}" n'a été trouvé`);
+        
+        // Vérifier si le mot existe dans la liste
+        if (!words.includes(input)) {
+            showIncorrectEffect();
+            return;
+        }
+        
+        // Vérifier si le mot a déjà été utilisé
+        if (usedWords.has(input)) {
+            showIncorrectEffect();
+            return;
+        }
+        
+        // Rechercher un orbe dont la lettre correspond à la première lettre du mot saisi
+        for (let i = 0; i < orbs.length; i++) {
+            const orbLetter = orbs[i].letter.toUpperCase();
+            const firstLetter = input.charAt(0);
+            
+            if (orbLetter === firstLetter) {
+                // Ajouter le mot à la liste des mots utilisés
+                usedWords.add(input);
+                
+                // Vérifier le combo (mots trouvés rapidement à la suite)
+                const now = Date.now();
+                if (now - lastWordTime < 3000) { // 3 secondes pour maintenir un combo
+                    comboCount++;
+                    updateComboDisplay();
+                } else {
+                    comboCount = 1;
+                    updateComboDisplay();
+                }
+                lastWordTime = now;
+                
+                // Mot valide commençant par la lettre de l'orbe
+                const points = calculatePoints(orbs[i], input);
+                
+                // Appliquer les bonus
+                let finalPoints = points;
+                
+                // Bonus de combo (10% par niveau de combo, à partir de 2)
+                if (comboCount >= 2) {
+                    const comboMultiplier = 1 + ((comboCount - 1) * 0.1);
+                    finalPoints = Math.floor(finalPoints * comboMultiplier);
+                }
+                
+                // Bonus de points doublés
+                if (activeBonus === BONUS_TYPES.DOUBLE_POINTS) {
+                    finalPoints *= 2;
+                }
+                
+                // Ajouter les points au score
+                score += finalPoints;
+                
+                // Vérifier si c'est un orbe spécial
+                if (orbs[i].isSpecial) {
+                    activateBonus(orbs[i].bonusType);
+                }
+                
+                // Afficher un effet de points
+                showPointsEffect(orbs[i], finalPoints);
+                
+                // Supprimer l'orbe
+                removeOrb(orbs[i]);
+                orbs.splice(i, 1);
+                
+                // Réinitialiser l'entrée
+                wordInput.value = '';
+                
+                // Mettre à jour l'interface
+                updateUI();
+                
+                // Vérifier si le niveau doit augmenter (tous les 100 points)
+                if (score >= level * 100) {
+                    levelUp();
+                }
+                
+                return;
+            }
+        }
+        
+        // Aucun orbe correspondant trouvé
+        comboCount = 0;
+        updateComboDisplay();
+        
+        score = Math.max(0, score - 5);
+        updateUI();
         showIncorrectEffect();
         
-        // Vider l'input
-        wordInput.value = '';
+        // Réinitialiser l'entrée après un court délai
+        setTimeout(() => {
+            wordInput.value = '';
+        }, 300);
     }
 }
 
@@ -1399,8 +1476,8 @@ function triggerSpecialEvent() {
     specialEventActive = true;
     specialEventTimer = eventType;
     
-    // Durée de l'événement (variable selon le type)
-    let eventDuration = 15;
+    // Durée de l'événement (15 secondes par défaut)
+    const eventDuration = 15;
     
     // Afficher un message pour l'événement
     let eventMessage = "";
@@ -1409,13 +1486,11 @@ function triggerSpecialEvent() {
     switch (eventType) {
         case SPECIAL_EVENTS.LETTER_RAIN:
             eventMessage = "Pluie de lettres !";
-            // Réduire la durée de l'événement à 8 secondes
-            eventDuration = 8;
-            // Générer seulement 3 orbes au lieu de 5, avec plus de temps entre chaque
-            for (let i = 0; i < 3; i++) {
+            // Générer plusieurs orbes rapidement
+            for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     if (gameActive) spawnOrb();
-                }, i * 800); // Augmenter le délai entre les orbes à 800ms
+                }, i * 500);
             }
             break;
             
@@ -1565,8 +1640,7 @@ function createChallengeRound() {
     }
     
     // Créer plusieurs orbes avec la même lettre
-    // Réduire le nombre d'orbes de 3-5 à 2-3
-    const numOrbs = 2 + Math.floor(Math.random() * 2); // 2 à 3 orbes au lieu de 3 à 5
+    const numOrbs = 3 + Math.floor(Math.random() * 3); // 3 à 5 orbes
     
     for (let i = 0; i < numOrbs; i++) {
         setTimeout(() => {
@@ -1598,8 +1672,8 @@ function createChallengeRound() {
             // Ajouter l'orbe au cadre du jeu
             gameFrame.appendChild(orb);
             
-            // Vitesse variable pour les orbes du défi - Réduire la vitesse pour les rendre plus faciles à attraper
-            const speed = 0.2 + (Math.random() * 0.15); // Vitesse réduite (0.2-0.35 au lieu de 0.3-0.5)
+            // Vitesse variable pour les orbes du défi
+            const speed = 0.3 + (Math.random() * 0.2);
             
             // Stocker les informations de l'orbe
             const orbInfo = {
@@ -1616,7 +1690,7 @@ function createChallengeRound() {
             orbs.push(orbInfo);
             
             console.log(`Orbe de défi créé avec la lettre: ${letter}`);
-        }, i * 1200); // Augmenter l'espacement entre les orbes (1200ms au lieu de 800ms)
+        }, i * 800); // Espacer la création des orbes
     }
 }
 
@@ -1849,130 +1923,4 @@ function displayTopScores(containerId) {
     `;
     
     container.innerHTML = html;
-}
-
-/**
- * Optimise l'interface pour les appareils mobiles
- */
-function optimizeForMobile() {
-    // Détecter si l'appareil est mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        console.log("Appareil mobile détecté, optimisation de l'interface");
-        
-        // Ajuster la taille de la police pour l'input
-        if (wordInput) {
-            wordInput.style.fontSize = '16px'; // Empêcher le zoom automatique sur iOS
-            wordInput.setAttribute('autocomplete', 'off');
-            wordInput.setAttribute('autocorrect', 'off');
-            wordInput.setAttribute('autocapitalize', 'off');
-            wordInput.setAttribute('spellcheck', 'false');
-            
-            // Ajouter un bouton de soumission à côté de l'input pour les appareils mobiles
-            const inputContainer = wordInput.parentElement;
-            if (inputContainer && !document.getElementById('mobileSubmitBtn')) {
-                const submitBtn = document.createElement('button');
-                submitBtn.id = 'mobileSubmitBtn';
-                submitBtn.className = 'wow-btn submit-btn';
-                submitBtn.innerHTML = '✓';
-                submitBtn.setAttribute('aria-label', 'Soumettre le mot');
-                
-                // Ajouter le gestionnaire d'événement pour le bouton
-                submitBtn.addEventListener('click', function() {
-                    // Créer un événement de touche Entrée
-                    const event = new KeyboardEvent('keydown', {
-                        key: 'Enter',
-                        code: 'Enter',
-                        keyCode: 13,
-                        which: 13
-                    });
-                    
-                    // Appeler la fonction checkWord avec cet événement
-                    checkWord(event);
-                });
-                
-                // Ajouter le bouton à côté de l'input
-                inputContainer.style.display = 'flex';
-                inputContainer.style.alignItems = 'center';
-                inputContainer.style.gap = '10px';
-                inputContainer.appendChild(submitBtn);
-            }
-        }
-        
-        // Ajouter des gestionnaires d'événements tactiles pour les orbes
-        document.addEventListener('touchstart', handleTouchStart, false);
-        document.addEventListener('touchend', handleTouchEnd, false);
-        
-        // Ajuster la hauteur du viewport pour les appareils mobiles
-        adjustViewportHeight();
-        window.addEventListener('resize', adjustViewportHeight);
-        
-        // Ajouter un gestionnaire pour le focus de l'input
-        if (wordInput) {
-            wordInput.addEventListener('focus', function() {
-                // Faire défiler la page pour s'assurer que l'input est visible
-                setTimeout(() => {
-                    wordInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            });
-        }
-    }
-}
-
-/**
- * Ajuste la hauteur du viewport pour les appareils mobiles
- */
-function adjustViewportHeight() {
-    // Définir la hauteur du viewport à la hauteur de la fenêtre
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-    
-    // Ajuster la hauteur du canvas
-    resizeCanvas();
-}
-
-/**
- * Gère les événements de toucher pour les orbes
- */
-let touchStartX = 0;
-let touchStartY = 0;
-let touchedOrb = null;
-
-function handleTouchStart(event) {
-    if (!gameActive) return;
-    
-    // Obtenir les coordonnées du toucher
-    const touch = event.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    
-    // Vérifier si un orbe a été touché
-    const elements = document.elementsFromPoint(touchStartX, touchStartY);
-    for (const element of elements) {
-        if (element.classList.contains('magic-orb')) {
-            touchedOrb = element;
-            break;
-        }
-    }
-}
-
-function handleTouchEnd(event) {
-    if (!gameActive || !touchedOrb) return;
-    
-    // Trouver l'orbe correspondant dans le tableau des orbes
-    const orbIndex = orbs.findIndex(orb => orb.element === touchedOrb);
-    
-    if (orbIndex !== -1) {
-        const orb = orbs[orbIndex];
-        
-        // Ajouter la lettre de l'orbe à l'input
-        if (wordInput && !wordInput.disabled) {
-            wordInput.value += orb.letter;
-            wordInput.focus();
-        }
-    }
-    
-    // Réinitialiser l'orbe touché
-    touchedOrb = null;
 }
