@@ -337,10 +337,68 @@ function showHelp() {
 }
 
 /**
+ * Affiche les scores récents dans un élément HTML
+ */
+function displayRecentScores(containerId, limit = 3) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Conteneur de scores récents ${containerId} non trouvé`);
+        return;
+    }
+    
+    const scores = getScores();
+    
+    if (scores.length === 0) {
+        container.innerHTML = '<p class="no-scores">Aucun score enregistré pour le moment.</p>';
+        return;
+    }
+    
+    // Limiter le nombre de scores à afficher
+    const recentScores = scores.slice(0, limit);
+    
+    // Créer un tableau HTML pour afficher les scores
+    let html = `
+        <table class="scores-table">
+            <thead>
+                <tr>
+                    <th>Score</th>
+                    <th>Niveau</th>
+                    <th>Difficulté</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    recentScores.forEach((score) => {
+        const date = new Date(score.date);
+        const formattedDate = `${date.toLocaleDateString()}`;
+        const difficultyName = getDifficultyName(score.difficulty);
+        
+        html += `
+            <tr>
+                <td>${score.score}</td>
+                <td>${score.level}</td>
+                <td>${difficultyName}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = html;
+}
+
+/**
  * Affiche la modale de fin de jeu
  */
 function showGameOver() {
     console.log("Affichage de la modale de fin de jeu");
+    
     // Mettre à jour les scores finaux
     if (finalScore) {
         finalScore.textContent = score;
@@ -348,7 +406,26 @@ function showGameOver() {
     if (finalLevel) {
         finalLevel.textContent = level;
     }
-    gameOverModal.classList.add('show');
+    
+    // Sauvegarder le score dans les top scores
+    saveScore(score, level, difficulty);
+    
+    // Afficher le top score
+    const topScore = getTopScore();
+    if (document.getElementById('topScore')) {
+        document.getElementById('topScore').textContent = topScore;
+    }
+    
+    // Afficher les scores récents
+    displayRecentScores('recentScores');
+    
+    // Afficher la modale
+    if (gameOverModal) {
+        gameOverModal.style.display = 'flex';
+        gameOverModal.classList.add('show');
+    } else {
+        console.error("La modale de fin de jeu n'a pas été trouvée");
+    }
 }
 
 /**
@@ -1553,4 +1630,124 @@ function getDifficultyName(difficultyValue) {
         default:
             return "Normal";
     }
+}
+
+/**
+ * Sauvegarde un score dans le localStorage
+ */
+function saveScore(score, level, difficulty) {
+    // Récupérer les scores existants
+    let scores = getScores();
+    
+    // Ajouter le nouveau score
+    const newScore = {
+        score: score,
+        level: level,
+        difficulty: difficulty,
+        date: new Date().toISOString(),
+        // Générer un ID unique pour ce score
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
+    };
+    
+    scores.push(newScore);
+    
+    // Trier les scores par ordre décroissant
+    scores.sort((a, b) => b.score - a.score);
+    
+    // Limiter à 10 scores maximum
+    if (scores.length > 10) {
+        scores = scores.slice(0, 10);
+    }
+    
+    // Sauvegarder dans le localStorage
+    localStorage.setItem('wordBubblesScores', JSON.stringify(scores));
+    
+    console.log(`Score sauvegardé: ${score} points, niveau ${level}, difficulté ${difficulty}`);
+    
+    return newScore;
+}
+
+/**
+ * Récupère tous les scores du localStorage
+ */
+function getScores() {
+    const scoresJson = localStorage.getItem('wordBubblesScores');
+    if (!scoresJson) {
+        return [];
+    }
+    
+    try {
+        return JSON.parse(scoresJson);
+    } catch (e) {
+        console.error("Erreur lors de la récupération des scores:", e);
+        return [];
+    }
+}
+
+/**
+ * Récupère le meilleur score
+ */
+function getTopScore() {
+    const scores = getScores();
+    if (scores.length === 0) {
+        return 0;
+    }
+    
+    return scores[0].score;
+}
+
+/**
+ * Affiche les top scores dans un élément HTML
+ */
+function displayTopScores(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Conteneur de scores ${containerId} non trouvé`);
+        return;
+    }
+    
+    const scores = getScores();
+    
+    if (scores.length === 0) {
+        container.innerHTML = '<p class="no-scores">Aucun score enregistré pour le moment.</p>';
+        return;
+    }
+    
+    // Créer un tableau HTML pour afficher les scores
+    let html = `
+        <table class="scores-table">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Score</th>
+                    <th>Niveau</th>
+                    <th>Difficulté</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    scores.forEach((score, index) => {
+        const date = new Date(score.date);
+        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        const difficultyName = getDifficultyName(score.difficulty);
+        
+        html += `
+            <tr class="${index === 0 ? 'top-score' : ''}">
+                <td>${index + 1}</td>
+                <td>${score.score}</td>
+                <td>${score.level}</td>
+                <td>${difficultyName}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = html;
 }

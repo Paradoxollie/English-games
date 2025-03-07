@@ -167,11 +167,25 @@
             </div>
             <div class="modal-body">
                 <p>Votre aventure magique est terminée !</p>
-                <p>Score final : <span id="finalScore">0</span></p>
-                <p>Niveau atteint : <span id="finalLevel">1</span></p>
+                <div class="score-container">
+                    <div class="score-item">
+                        <h3>Votre score</h3>
+                        <p class="final-score"><span id="finalScore">0</span> points</p>
+                        <p>Niveau atteint : <span id="finalLevel">1</span></p>
+                    </div>
+                    <div class="score-item">
+                        <h3>Meilleur score</h3>
+                        <p class="top-score"><span id="topScore">0</span> points</p>
+                    </div>
+                </div>
+                <div class="recent-scores">
+                    <h3>Vos 3 derniers scores</h3>
+                    <div id="recentScores"></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="restartButton" class="wow-btn wow-btn-primary">Rejouer</button>
+                <a href="leaderboard.html" class="wow-btn">Voir tous les scores</a>
             </div>
         </div>
     </div>
