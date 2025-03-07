@@ -1,456 +1,861 @@
+/* ===== WORD BUBBLES - THE ARCANE LEXICON ===== */
+/* Thème MMORPG original pour le jeu Word Bubbles */
+
 /* ===== VARIABLES ET FONDATIONS ===== */
 :root {
-    --primary-color: #c9aa71;
-    --primary-glow: rgba(201, 170, 113, 0.7);
-    --secondary-color: #4a2c98;
-    --accent-color: #ff6b6b;
-    --dark-bg: rgba(0, 0, 0, 0.8);
-    --light-text: #ffffff;
-    --success-color: #4CAF50;
-    --error-color: #ff5252;
-    --bubble-border: rgba(201, 170, 113, 0.5);
-    --bubble-glow: rgba(201, 170, 113, 0.3);
-    --bubble-inner: rgba(74, 44, 152, 0.7);
+    /* Palette de couleurs WoW */
+    --wow-dark: #0a0a0f;           /* Fond très sombre */
+    --wow-medium: #1a1a2e;         /* Fond des éléments */
+    --wow-light: #2a2a40;          /* Éléments plus clairs */
+    
+    /* Accents dorés et magiques */
+    --wow-gold: #c7a758;           /* Or WoW classique */
+    --wow-gold-light: #f8df83;     /* Or clair pour les effets */
+    --wow-blue: #0a84ff;           /* Bleu magique */
+    --wow-blue-dark: #0a3b6d;      /* Bleu foncé */
+    --wow-purple: #7b4397;         /* Violet arcane */
+    
+    /* Couleurs fonctionnelles */
+    --text-light: #e6d6a9;         /* Texte clair doré */
+    --text-white: #ffffff;         /* Texte blanc */
+    --text-blue: #00aeff;          /* Texte bleu */
+    --success: #4caf50;            /* Vert pour les succès */
+    --warning: #ff9800;            /* Orange pour les avertissements */
+    --danger: #f44336;             /* Rouge pour les dangers */
+    
+    /* Effets de lueur */
+    --glow-gold: rgba(199, 167, 88, 0.6);
+    --glow-blue: rgba(10, 132, 255, 0.6);
+    --glow-purple: rgba(123, 67, 151, 0.6);
+    
+    /* Polices */
+    --font-wow: 'Cinzel', serif;
+    --font-title: 'MedievalSharp', fantasy;
+    --font-text: 'Spectral', serif;
+    
+    /* Ombres */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.6);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    
+    /* Bordures */
+    --border-wow: 2px solid var(--wow-gold);
+    --border-subtle: 1px solid rgba(199, 167, 88, 0.3);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Arrondis */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
 }
 
-/* ===== ANIMATIONS DE BASE ===== */
+/* Animations de base */
 @keyframes float {
-    0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-15px) rotate(5deg); }
-    100% { transform: translateY(0px) rotate(0deg); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 10px var(--bubble-glow); }
-    50% { transform: scale(1.05); box-shadow: 0 0 20px var(--bubble-glow); }
-    100% { transform: scale(1); box-shadow: 0 0 10px var(--bubble-glow); }
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
 }
 
 @keyframes glow {
-    0% { text-shadow: 0 0 5px var(--primary-glow); }
-    50% { text-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--primary-glow); }
-    100% { text-shadow: 0 0 5px var(--primary-glow); }
+    0%, 100% { filter: drop-shadow(0 0 5px var(--glow-gold)); }
+    50% { filter: drop-shadow(0 0 15px var(--glow-gold)); }
+}
+
+@keyframes textGlow {
+    0%, 100% { text-shadow: 0 0 5px var(--glow-gold); }
+    50% { text-shadow: 0 0 15px var(--glow-gold), 0 0 20px var(--glow-blue); }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(-20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes spin {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(360deg); }
+@keyframes runeRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-@keyframes explode {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.7; }
-    100% { transform: scale(2); opacity: 0; }
+@keyframes fogMovement {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
 }
 
-/* ===== STYLES GÉNÉRAUX ===== */
-#particles-overlay {
+@keyframes borderGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+@keyframes runeFloat {
+    0% { 
+        transform: translateY(0) rotate(0deg); 
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translateY(-15px) rotate(180deg); 
+        opacity: 0.7;
+    }
+    100% { 
+        transform: translateY(0) rotate(360deg); 
+        opacity: 0.3;
+    }
+}
+
+/* Animation du fond WoW */
+@keyframes backgroundPulse {
+    0%, 100% { background-size: 100% 100%; }
+    50% { background-size: 105% 105%; }
+}
+
+/* Styles de base */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-text);
+    color: var(--text-light);
+    background-color: var(--wow-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 10;
+    background-image: url('https://bnetcmsus-a.akamaihd.net/cms/template_resource/FTSAJ9WQEKX91461948458899.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    z-index: -2;
+    animation: backgroundPulse 20s infinite ease-in-out;
 }
 
-.intro-panel {
-    animation: fadeIn 1s ease-out;
+.arcane-theme {
     position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(201, 170, 113, 0.2);
-}
-
-.intro-panel::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    background: linear-gradient(45deg, rgba(201, 170, 113, 0.1), transparent, rgba(74, 44, 152, 0.1));
-    z-index: -1;
-    filter: blur(10px);
-    animation: pulse 8s infinite;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 .glow-text {
-    animation: glow 3s infinite;
-    font-weight: bold;
+    text-shadow: 0 0 5px var(--glow-gold), 0 0 10px var(--glow-blue);
+    animation: textGlow 3s infinite alternate;
 }
 
 .highlight {
-    color: var(--primary-color);
+    color: var(--wow-gold-light);
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--glow-gold);
+}
+
+/* ===== EFFETS D'AMBIANCE WOW ===== */
+
+/* Brume magique */
+.magic-fog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 20% 20%, rgba(10, 132, 255, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse at 80% 80%, rgba(123, 67, 151, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse at 50% 50%, rgba(199, 167, 88, 0.05) 0%, transparent 100%);
+    background-size: 200% 200%;
+    filter: blur(40px);
+    opacity: 0.6;
+    z-index: -1;
+    animation: fogMovement 60s infinite alternate ease-in-out;
+    pointer-events: none;
+}
+
+/* Runes arcanes */
+.arcane-runes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-family="Arial" font-size="40" fill="%237b4397" opacity="0.1" text-anchor="middle" dominant-baseline="middle">⦿</text></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-family="Arial" font-size="30" fill="%230a84ff" opacity="0.1" text-anchor="middle" dominant-baseline="middle">⧗</text></svg>'),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-family="Arial" font-size="35" fill="%23c7a758" opacity="0.1" text-anchor="middle" dominant-baseline="middle">⧉</text></svg>');
+    background-size: 300px 300px, 200px 200px, 250px 250px;
+    background-position: 
+        calc(20% + 10px) calc(30% + 10px),
+        calc(70% - 20px) calc(20% + 15px),
+        calc(40% + 15px) calc(80% - 10px);
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Particules flottantes */
+.floating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--wow-gold);
+    opacity: 0.4;
+    pointer-events: none;
+    animation: float-particle 15s infinite linear;
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    90% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ===== HEADER ET NAVIGATION ===== */
+.game-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* Permet de cliquer à travers le header */
+    background: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 0.9), 
+        rgba(0, 0, 0, 0.7) 70%, 
+        rgba(0, 0, 0, 0) 100%);
+    padding-bottom: 20px;
+}
+
+/* Logo style WoW */
+.logo-container {
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    z-index: 102;
+    pointer-events: auto; /* Permet de cliquer sur le logo */
+    width: 300px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 100px;
+    background: radial-gradient(ellipse at center, var(--glow-gold), transparent 70%);
+    filter: blur(10px);
+    z-index: -1;
+    animation: pulse 3s infinite;
+}
+
+.logo-image {
+    width: 280px;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+.logo-container:hover .logo-image {
+    filter: drop-shadow(0 6px 12px var(--glow-gold));
+    transform: scale(1.02);
+}
+
+/* Navigation style WoW */
+.main-navigation {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 101;
+    pointer-events: auto; /* Permet de cliquer sur la navigation */
+}
+
+.nav-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="60" viewBox="0 0 600 60"><rect width="600" height="60" fill="%23000000" opacity="0.7"/><path d="M0,0 L600,0 L580,20 L20,20 L0,0 Z" fill="%23c7a758" opacity="0.3"/><path d="M0,60 L600,60 L580,40 L20,40 L0,60 Z" fill="%23c7a758" opacity="0.3"/></svg>');
+    background-size: 100% 100%;
+    z-index: -1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.nav-border {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-image: linear-gradient(
+        to right, 
+        transparent, 
+        var(--wow-gold) 20%, 
+        var(--wow-gold-light) 50%, 
+        var(--wow-gold) 80%, 
+        transparent
+    );
+    z-index: 1;
+}
+
+.nav-border.top {
+    top: 0;
+}
+
+.nav-border.bottom {
+    bottom: 0;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+    gap: 10px;
+}
+
+.nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    color: var(--text-light);
+    text-decoration: none;
+    font-family: var(--font-wow);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
     font-weight: bold;
 }
 
-.instructions-list li {
-    transition: transform 0.3s ease;
-    position: relative;
-    padding-left: 5px;
-}
-
-.instructions-list li:hover {
-    transform: translateX(5px);
-    color: var(--primary-color);
-}
-
-.instructions-list li::before {
-    content: '✦';
+.nav-link::after {
+    content: '';
     position: absolute;
-    left: -20px;
-    color: var(--primary-color);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    bottom: -2px;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background: var(--wow-gold);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    opacity: 0.7;
 }
 
-.instructions-list li:hover::before {
-    opacity: 1;
+.nav-link:hover {
+    color: var(--wow-gold);
 }
 
-/* ===== CONTENEUR DE JEU ===== */
-#game-container {
+.nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+.nav-link.active {
+    color: var(--wow-gold);
+}
+
+.nav-link.active::after {
+    transform: scaleX(1);
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8));
+}
+
+.home-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" fill="%23c7a758"/></svg>');
+}
+
+.games-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21,6H3C1.9,6 1,6.9 1,8V16C1,17.1 1.9,18 3,18H21C22.1,18 23,17.1 23,16V8C23,6.9 22.1,6 21,6M11,13H8V16H6V13H3V11H6V8H8V11H11M15.5,15C14.67,15 14,14.33 14,13.5C14,12.67 14.67,12 15.5,12C16.33,12 17,12.67 17,13.5C17,14.33 16.33,15 15.5,15M19.5,12C18.67,12 18,11.33 18,10.5C18,9.67 18.67,9 19.5,9C20.33,9 21,9.67 21,10.5C21,11.33 20.33,12 19.5,12Z" fill="%23c7a758"/></svg>');
+}
+
+.courses-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" fill="%23c7a758"/></svg>');
+}
+
+.leaderboard-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7,13H21V11H7M7,19H21V17H7M7,7H21V5H7M2,11H5.5L2,13.5V15H6V13H2.5L6,10.5V9H2M2,19H6V17H2M2,7H6V5H2V7Z" fill="%23c7a758"/></svg>');
+}
+
+.contact-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z" fill="%23c7a758"/></svg>');
+}
+
+/* ===== MAIN CONTENT ===== */
+.game-main {
+    padding-top: 180px; /* Augmenté pour laisser de l'espace pour le header fixe */
+    padding-bottom: 100px; /* Augmenté pour laisser de l'espace pour le footer fixe */
+    min-height: 100vh;
     position: relative;
-    transition: all 0.5s ease;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-    overflow: hidden;
+    z-index: 1;
 }
 
-#game-container::after {
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* ===== GAME SECTION ===== */
+.game-section {
+    margin-bottom: 40px;
+}
+
+.game-frame {
+    position: relative;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23000000" opacity="0.7"/><path d="M0,0 L100,0 L95,5 L5,5 L0,0 Z" fill="%23c7a758" opacity="0.2"/><path d="M0,100 L100,100 L95,95 L5,95 L0,100 Z" fill="%23c7a758" opacity="0.2"/><path d="M0,0 L0,100 L5,95 L5,5 L0,0 Z" fill="%23c7a758" opacity="0.2"/><path d="M100,0 L100,100 L95,95 L95,5 L100,0 Z" fill="%23c7a758" opacity="0.2"/></svg>');
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(10, 132, 255, 0.2);
+    overflow: hidden;
+    border: var(--border-wow);
+}
+
+.game-frame::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(10, 132, 255, 0.1), transparent 70%),
+        radial-gradient(circle at 70% 70%, rgba(123, 67, 151, 0.1), transparent 70%);
+    z-index: 0;
     pointer-events: none;
-    z-index: 1;
 }
 
-/* ===== SCÈNE 3D ===== */
-#game-scene-container {
-    position: relative;
-    width: 100%;
-    margin: 20px 0;
-}
-
-.scene-3d {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7), 0 0 20px var(--bubble-glow) inset;
-    border: 2px solid var(--bubble-border);
-    perspective: 1000px;
-}
-
-/* ===== BULLES 3D ===== */
-.word-bubble {
+/* Décorations des coins du cadre */
+.frame-decoration {
     position: absolute;
+    width: 60px;
+    height: 60px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 1;
+    animation: glow 4s infinite alternate ease-in-out;
+}
+
+.frame-decoration.top-left {
+    top: 0;
+    left: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0,0 L80,0 L80,20 L20,20 L20,80 L0,80 Z" fill="%23c7a758" opacity="0.7"/><circle cx="40" cy="40" r="15" fill="none" stroke="%23c7a758" stroke-width="2" opacity="0.5"/></svg>');
+}
+
+.frame-decoration.top-right {
+    top: 0;
+    right: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M100,0 L100,80 L80,80 L80,20 L20,20 L20,0 Z" fill="%23c7a758" opacity="0.7"/><circle cx="60" cy="40" r="15" fill="none" stroke="%23c7a758" stroke-width="2" opacity="0.5"/></svg>');
+}
+
+.frame-decoration.bottom-left {
+    bottom: 0;
+    left: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0,100 L0,20 L20,20 L20,80 L80,80 L80,100 Z" fill="%23c7a758" opacity="0.7"/><circle cx="40" cy="60" r="15" fill="none" stroke="%23c7a758" stroke-width="2" opacity="0.5"/></svg>');
+}
+
+.frame-decoration.bottom-right {
+    bottom: 0;
+    right: 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M100,100 L20,100 L20,80 L80,80 L80,20 L100,20 Z" fill="%23c7a758" opacity="0.7"/><circle cx="60" cy="60" r="15" fill="none" stroke="%23c7a758" stroke-width="2" opacity="0.5"/></svg>');
+}
+
+/* En-tête du jeu */
+.game-header-section {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at 30% 30%, var(--bubble-inner), rgba(0, 0, 0, 0.8));
-    color: var(--light-text);
-    padding: 15px;
-    border-radius: 50%;
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    box-shadow: 
-        0 0 15px var(--bubble-glow),
-        0 0 5px var(--bubble-glow) inset;
-    border: 2px solid var(--bubble-border);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(199, 167, 88, 0.3);
+    position: relative;
     z-index: 2;
 }
 
-.word-bubble::before {
+.game-title {
+    font-family: var(--font-wow);
+    font-size: 2.2rem;
+    color: var(--wow-gold);
+    margin: 0;
+    text-shadow: 0 0 10px var(--glow-gold);
+    animation: textGlow 3s infinite alternate;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-title .subtitle {
+    display: block;
+    font-family: var(--font-wow);
+    font-size: 1.1rem;
+    color: var(--text-blue);
+    font-weight: normal;
+    margin-top: 5px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Contrôles du jeu */
+.game-controls {
+    display: flex;
+    gap: 12px;
+}
+
+/* Bouton style WoW */
+.arcane-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60"><rect width="200" height="60" rx="5" ry="5" fill="%23000000" opacity="0.7"/><path d="M5,5 L195,5 L190,15 L10,15 L5,5 Z" fill="%23c7a758" opacity="0.5"/><path d="M5,55 L195,55 L190,45 L10,45 L5,55 Z" fill="%23c7a758" opacity="0.5"/></svg>');
+    background-size: 100% 100%;
+    border: 1px solid var(--wow-gold);
+    border-radius: var(--radius-md);
+    color: var(--text-light);
+    font-family: var(--font-wow);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.arcane-button::before {
     content: '';
     position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 20%;
-    height: 20%;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    filter: blur(2px);
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
 }
 
-.word-bubble:hover {
-    transform: scale(1.1) rotateY(10deg);
-    box-shadow: 
-        0 0 25px var(--bubble-glow),
-        0 0 8px var(--bubble-glow) inset;
+.arcane-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(10, 132, 255, 0.4);
+    color: var(--wow-gold-light);
 }
 
-.word-bubble.popping {
-    animation: explode 0.5s forwards;
+.arcane-button:hover::before {
+    left: 100%;
 }
 
-.word-bubble.correct {
-    background: radial-gradient(circle at 30% 30%, rgba(76, 175, 80, 0.7), rgba(0, 0, 0, 0.8));
-    box-shadow: 
-        0 0 20px rgba(76, 175, 80, 0.5),
-        0 0 8px rgba(76, 175, 80, 0.3) inset;
-    border-color: rgba(76, 175, 80, 0.5);
+.arcane-button:active {
+    transform: translateY(1px);
 }
 
-.word-bubble.wrong {
-    background: radial-gradient(circle at 30% 30%, rgba(255, 82, 82, 0.7), rgba(0, 0, 0, 0.8));
-    box-shadow: 
-        0 0 20px rgba(255, 82, 82, 0.5),
-        0 0 8px rgba(255, 82, 82, 0.3) inset;
-    border-color: rgba(255, 82, 82, 0.5);
+.arcane-button:disabled {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60"><rect width="200" height="60" rx="5" ry="5" fill="%23000000" opacity="0.5"/><path d="M5,5 L195,5 L190,15 L10,15 L5,5 Z" fill="%23c7a758" opacity="0.2"/><path d="M5,55 L195,55 L190,45 L10,45 L5,55 Z" fill="%23c7a758" opacity="0.2"/></svg>');
+    background-size: 100% 100%;
+    border-color: rgba(199, 167, 88, 0.3);
+    cursor: not-allowed;
+    color: rgba(230, 214, 169, 0.5);
 }
 
-/* ===== CONTRÔLES ET INTERFACE ===== */
-#game-stats {
+.arcane-button.large {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.button-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8));
+}
+
+.start-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z" fill="%23c7a758"/></svg>');
+}
+
+.pause-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14,19H18V5H14M6,19H10V5H6V19Z" fill="%23c7a758"/></svg>');
+}
+
+.help-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" fill="%23c7a758"/></svg>');
+}
+
+.restart-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.65,6.35C16.2,4.9 14.21,4.5 12,4.5C9.79,4.5 7.8,4.9 6.35,6.35C4.9,7.8 4.5,9.79 4.5,12C4.5,14.21 4.9,16.2 6.35,17.65C7.8,19.1 9.79,19.5 12,19.5C14.21,19.5 16.2,19.1 17.65,17.65C19.1,16.2 19.5,14.21 19.5,12C19.5,9.79 19.1,7.8 17.65,6.35Z" fill="%23c7a758"/></svg>');
+}
+
+.share-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z" fill="%23c7a758"/></svg>');
+}
+
+.submit-icon {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2,21L23,12L2,3V10L17,12L2,14V21Z" fill="%23c7a758"/></svg>');
+}
+
+/* ===== FOOTER ===== */
+.game-footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, 
+        rgba(0, 0, 0, 0.9), 
+        rgba(0, 0, 0, 0.7) 70%, 
+        rgba(0, 0, 0, 0) 100%);
+    border-top: 1px solid var(--wow-gold);
+    padding: 15px 0;
+    z-index: 100;
+    pointer-events: none; /* Permet de cliquer à travers le footer */
+}
+
+.footer-content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 8px;
-    border: 1px solid var(--bubble-border);
+    align-items: center;
+    position: relative;
+    pointer-events: auto; /* Permet de cliquer sur le contenu du footer */
 }
 
-.stat-item {
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.setting-group {
+.footer-info {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.game-select {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--bubble-border);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
+.copyright {
+    font-family: var(--font-wow);
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.game-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px var(--bubble-glow);
-    outline: none;
+.visit-counter {
+    font-size: 0.8rem;
+    color: var(--text-blue);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.game-input {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--bubble-border);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    min-width: 250px;
-    transition: all 0.3s ease;
-}
-
-.game-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--bubble-glow);
-    outline: none;
-}
-
-.glow-button {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.glow-button::before {
-    content: '';
+.footer-decoration {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.glow-button:hover::before {
-    opacity: 0.3;
-}
-
-.glow-button:active {
-    transform: scale(0.95);
-}
-
-/* ===== MESSAGES ET FEEDBACK ===== */
-#message-container {
-    min-height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 15px 0;
-}
-
-.message-text {
-    font-size: 1.2rem;
-    text-align: center;
-    padding: 10px 20px;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    max-width: 80%;
-    transition: all 0.3s ease;
-}
-
-/* ===== TABLEAU DES SCORES ===== */
-.scores-panel {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    padding: 15px;
-    border: 1px solid var(--bubble-border);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.scores-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 10px;
-}
-
-.scores-list li {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--bubble-border);
-    padding: 10px 15px;
-    border-radius: 6px;
-    color: var(--primary-color);
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-}
-
-.scores-list li:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-    border-color: var(--primary-color);
-}
-
-/* ===== MODALS ===== */
-.game-modal {
-    display: none;
-    position: fixed;
-    top: 0;
+    top: -20px;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
+    height: 20px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
 }
 
-.modal-content {
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid var(--primary-color);
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 0 30px var(--bubble-glow);
-    animation: fadeIn 0.5s ease-out;
+.footer-rune {
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: runeFloat 8s infinite ease-in-out;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
+.footer-rune.left {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="70" font-family="Arial" font-size="60" fill="%23c7a758" opacity="0.8" text-anchor="middle">ᛟ</text></svg>');
 }
 
-.close-modal:hover {
-    color: var(--light-text);
-    transform: scale(1.1);
+.footer-rune.right {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="70" font-family="Arial" font-size="60" fill="%23c7a758" opacity="0.8" text-anchor="middle">ᛏ</text></svg>');
 }
 
-/* ===== PARTICULES ET EFFETS SPÉCIAUX ===== */
+.orb-text {
+    color: white;
+    font-family: var(--font-wow);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(10, 132, 255, 0.8);
+    text-align: center;
+    transform: translateZ(10px);
+}
+
+.magic-orb.descending {
+    animation: orb-descend var(--orb-speed, 10s) linear forwards, orb-float 6s infinite ease-in-out, orb-pulse 3s infinite ease-in-out, orb-glow 4s infinite ease-in-out;
+}
+
+.magic-orb.captured {
+    animation: orb-capture 0.5s ease-out forwards;
+}
+
+.magic-orb.missed {
+    animation: orb-miss 1s ease-out forwards;
+}
+
+/* Particules d'effet */
 .particle {
     position: absolute;
-    background: var(--primary-color);
+    background: var(--wow-gold);
     border-radius: 50%;
     pointer-events: none;
-    z-index: 100;
 }
 
-.combo-text {
+.score-popup {
     position: absolute;
-    color: var(--primary-color);
+    color: var(--wow-gold);
+    font-family: var(--font-wow);
+    font-size: 1.5rem;
     font-weight: bold;
-    font-size: 24px;
-    text-shadow: 0 0 10px var(--bubble-glow);
+    text-shadow: 0 0 10px var(--glow-gold);
+    animation: score-float 1.5s ease-out forwards;
     pointer-events: none;
-    z-index: 100;
-    animation: fadeIn 0.5s forwards;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    .scene-3d {
-        height: 400px;
-    }
-    
-    #game-stats {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    
-    .scores-list {
-        grid-template-columns: 1fr;
-    }
-    
-    .game-input {
-        min-width: 200px;
-    }
+@keyframes score-float {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
 }
 
-@media (max-width: 480px) {
-    .scene-3d {
-        height: 350px;
-    }
-    
-    .word-bubble {
-        font-size: 20px;
-        padding: 10px;
-    }
-    
-    #game-controls {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .game-input {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+/* ===== ORBES MAGIQUES ET EFFETS SPÉCIAUX ===== */
+
+/* Animations des orbes */
+@keyframes orb-float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(-5px, -10px) rotate(-5deg); }
+    66% { transform: translate(5px, -5px) rotate(5deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
 }
 
+@keyframes orb-pulse {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.05); filter: brightness(1.2); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes orb-glow {
+    0% { box-shadow: 0 0 15px rgba(10, 132, 255, 0.5), 0 0 30px rgba(10, 132, 255, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(10, 132, 255, 0.7), 0 0 40px rgba(10, 132, 255, 0.4); }
+    100% { box-shadow: 0 0 15px rgba(10, 132, 255, 0.5), 0 0 30px rgba(10, 132, 255, 0.2); }
+}
+
+@keyframes orb-descend {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100vh); }
+}
+
+@keyframes orb-capture {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.7; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+@keyframes orb-miss {
+    0% { transform: scale(1); opacity: 1; }
+    20% { transform: scale(1.1) rotate(10deg); opacity: 0.9; }
+    40% { transform: scale(0.9) rotate(-10deg); opacity: 0.8; }
+    60% { transform: scale(1.05) rotate(5deg); opacity: 0.7; }
+    80% { transform: scale(0.95) rotate(-5deg); opacity: 0.6; }
+    100% { transform: scale(0.5); opacity: 0; }
+}
+
+/* Style des orbes WoW */
+.magic-orb {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><defs><radialGradient id="orbGrad" cx="50%" cy="50%" r="50%" fx="30%" fy="30%"><stop offset="0%" stop-color="%230a84ff" stop-opacity="0.9"/><stop offset="70%" stop-color="%230a3b6d" stop-opacity="0.8"/><stop offset="100%" stop-color="%23000000" stop-opacity="0.7"/></radialGradient></defs><circle cx="80" cy="80" r="80" fill="url(%23orbGrad)"/><circle cx="50" cy="50" r="15" fill="white" opacity="0.3"/></svg>');
+    background-size: cover;
+    box-shadow: 0 0 15px rgba(10, 132, 255, 0.5), 0 0 30px rgba(10, 132, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: orb-float 6s infinite ease-in-out, orb-pulse 3s infinite ease-in-out, orb-glow 4s infinite ease-in-out;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.magic-orb::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 10%;
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    filter: blur(3px);
+}
+
+.magic-orb::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-sizing: border-box;
+    animation: orb-pulse 3s infinite ease-in-out alternate;
+}
+
+.magic-orb.descending {
+    animation: orb-descend var(--orb-speed, 10s) linear forwards, orb-float 6s infinite ease-in-out, orb-pulse 3s infinite ease-in-out, orb-glow 4s infinite ease-in-out;
+}
+
+.magic-orb.captured {
+    animation: orb-capture 0.5s ease-out forwards;
+}
+
+.magic-orb.missed {
+    animation: orb-miss 1s ease-out forwards;
+}

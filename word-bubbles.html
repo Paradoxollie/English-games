@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
@@ -11,10 +11,13 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Bubbles 3D - English Quest</title>
-    <link href="style.css" rel="stylesheet">
-    <link href="word-bubbles.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="description" content="Word Bubbles - The Arcane Lexicon : Un jeu de vocabulaire magique où vous devez capturer des orbes de mots pour améliorer vos compétences linguistiques.">
+    <meta name="theme-color" content="#1a237e">
+    <title>Word Bubbles - The Arcane Lexicon</title>
+    <link rel="stylesheet" href="word-bubbles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant:wght@400;600&family=MedievalSharp&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
     <!-- Three.js pour les effets 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- GSAP pour les animations avancées -->
@@ -42,163 +45,501 @@
         /* Styles pour le conteneur de jeu */
         #word-box {
             width: 100%;
-            height: 400px;
+            height: 500px;
             position: relative;
             overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid rgba(201, 170, 113, 0.3);
-            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 2px solid rgba(100, 149, 237, 0.7); /* Bleu cornflower plus subtil */
+            background: linear-gradient(to bottom, rgba(25, 40, 80, 0.9), rgba(10, 20, 50, 0.9)); /* Dégradé bleu profond plus élégant */
+            box-shadow: 0 0 30px rgba(100, 149, 237, 0.3); /* Ombre plus douce */
+            margin-bottom: 20px;
         }
         
         /* Styles pour les statistiques du jeu */
         #game-stats {
             display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
+            justify-content: space-between;
+            margin: 10px 0;
             padding: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(10, 25, 41, 0.8);
             border-radius: 8px;
-            border: 1px solid rgba(201, 170, 113, 0.3);
+            border: 1px solid rgba(0, 191, 255, 0.4);
+            color: white;
         }
         
         .stat-item {
             font-weight: bold;
-            color: #c9aa71;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+        
+        /* Style pour le champ de saisie */
+        #current-word {
+            font-size: 1.2em;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(0, 191, 255, 0.6);
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #0A1929;
+            width: 70%;
+            margin-right: 10px;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+        
+        /* Style pour les boutons */
+        .btn-primary, .btn-danger {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background-color: #00BFFF;
+        }
+        
+        .btn-danger {
+            background-color: #FF4500;
+        }
+        
+        .btn-primary:hover, .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
         }
     </style>
 </head>
-<body class="min-h-screen bg-quest-pattern bg-cover bg-fixed games-theme">
+<body class="arcane-theme">
     <!-- Overlay pour les effets de particules -->
     <div id="particles-overlay"></div>
     
-    <!-- Logo et Navigation -->
+    <!-- Effet de brume magique -->
+    <div class="magic-fog"></div>
+    
+    <!-- Runes arcanes flottantes -->
+    <div class="arcane-runes"></div>
+    
+    <!-- Particules flottantes -->
+    <div class="floating-particles"></div>
+    
+    <!-- Header avec logo et navigation (maintenant fixe) -->
+    <header class="game-header">
     <div class="logo-container">
-        <img src="images/logo.gif" alt="English Quest Logo">
-    </div>
-
-    <nav>
-        <div class="flex gap-8">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="all-games.html" class="nav-link active">Games</a>
-            <a href="courses.html" class="nav-link">Courses</a>
-            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
-            <a href="contact.html" class="nav-link">Contact</a>
+            <div class="logo-glow"></div>
+            <img src="logo.svg" alt="Word Bubbles - The Arcane Lexicon" class="logo-image">
         </div>
+        <nav class="main-navigation">
+            <div class="nav-background"></div>
+            <div class="nav-border top"></div>
+            <div class="nav-border bottom"></div>
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link"><span class="nav-icon home-icon"></span>Accueil</a></li>
+                <li><a href="#" class="nav-link active"><span class="nav-icon games-icon"></span>Jeux</a></li>
+                <li><a href="#" class="nav-link"><span class="nav-icon courses-icon"></span>Cours</a></li>
+                <li><a href="#" class="nav-link"><span class="nav-icon leaderboard-icon"></span>Classement</a></li>
+                <li><a href="#" class="nav-link"><span class="nav-icon contact-icon"></span>Contact</a></li>
+            </ul>
     </nav>
+    </header>
 
-    <main class="pt-32">
-        <div class="container mx-auto px-4">
-            <!-- Intro du jeu avec animation -->
-            <div class="game-intro bg-black/60 rounded-xl p-6 mb-8 border border-quest-gold/30 intro-panel">
-                <h2 class="text-2xl font-medieval text-quest-gold mb-4 glow-text">Bienvenue dans Word Bubbles 3D ! 🌊</h2>
-                
-                <div class="game-description">
-                    <p><strong class="highlight">🎯 Objectif :</strong> Saisis rapidement les mots en mode entrainement ou trouve des mots qui commencent par la lettre proposée en mode normal pour marquer des points.</p>
+    <!-- Contenu principal avec padding ajusté pour le header et footer fixes -->
+    <main class="game-main">
+        <div class="container">
+            <!-- Section du jeu -->
+            <section class="game-section">
+                <div class="game-frame">
+                    <div class="frame-decoration top-left"></div>
+                    <div class="frame-decoration top-right"></div>
+                    <div class="frame-decoration bottom-left"></div>
+                    <div class="frame-decoration bottom-right"></div>
                     
-                    <p class="mt-4"><strong class="highlight">🕹️ Instructions :</strong></p>
-                    <ul class="list-disc list-inside space-y-2 ml-4 instructions-list">
-                        <li>Sélectionne le mode de jeu (Normal ou Training), puis appuie sur "Start Game".</li>
-                        <li>Lis la lettre ou le mot dans les bulles 3D qui flottent dans l'espace.</li>
-                        <li>Tape un mot qui commence par la lettre de la bulle ou le mot affiché.</li>
-                        <li>Si ta réponse est correcte, tu gagnes des points et la bulle explose en particules magiques !</li>
-                    </ul>
+                    <div class="game-header-section">
+                        <h1 class="game-title">Word Bubbles <span class="subtitle">The Arcane Lexicon</span></h1>
+                        <div class="game-controls">
+                            <button id="startButton" class="arcane-button">
+                                <span class="button-icon start-icon"></span>
+                                <span class="button-text">Commencer</span>
+                            </button>
+                            <button id="pauseButton" class="arcane-button" disabled>
+                                <span class="button-icon pause-icon"></span>
+                                <span class="button-text">Pause</span>
+                            </button>
+                            <button id="helpButton" class="arcane-button">
+                                <span class="button-icon help-icon"></span>
+                                <span class="button-text">Aide</span>
+                            </button>
+                        </div>
+                    </div>
                     
-                    <p class="mt-4"><strong class="highlight">⏳ Timer :</strong> Plus le jeu avance, plus les bulles accélèrent. Reste concentré !</p>
-                    <p><strong class="highlight">💡 Conseil :</strong> Évite les mots déjà utilisés pour maximiser ton score.</p>
+                    <div class="game-content">
+                        <div class="game-stats">
+                            <div class="stat-item">
+                                <div class="stat-icon score-icon"></div>
+                                <div class="stat-value">
+                                    <span class="stat-label">Score</span>
+                                    <span id="score" class="stat-number">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon level-icon"></div>
+                                <div class="stat-value">
+                                    <span class="stat-label">Niveau</span>
+                                    <span id="level" class="stat-number">1</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon time-icon"></div>
+                                <div class="stat-value">
+                                    <span class="stat-label">Temps</span>
+                                    <span id="timer" class="stat-number">60</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon lives-icon"></div>
+                                <div class="stat-value">
+                                    <span class="stat-label">Vies</span>
+                                    <span id="lives" class="stat-number">3</span>
+                                </div>
                 </div>
             </div>
 
-            <!-- Conteneur principal du jeu -->
-            <div id="game-container" class="word-bubbles bg-black/80 rounded-xl p-6 border border-quest-gold/30">
-                <!-- Sélection du mode et difficulté -->
-                <div id="game-settings" class="mb-4 flex flex-wrap gap-4 justify-center">
-                    <div class="setting-group">
-                        <label for="game-mode" class="text-quest-gold">Mode de jeu:</label>
-                        <select id="game-mode" class="game-select">
-                            <option value="normal">Normal</option>
-                            <option value="training">Training</option>
-                        </select>
+                        <div class="game-area">
+                            <canvas id="gameCanvas"></canvas>
+                            <div id="inputArea" class="input-area">
+                                <div class="input-container">
+                                    <input type="text" id="wordInput" class="word-input" placeholder="Tapez le mot ici..." disabled>
+                                    <button id="submitButton" class="submit-button" disabled>
+                                        <span class="submit-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
                     </div>
                     
-                    <div class="setting-group">
-                        <label for="difficulty-level" class="text-quest-gold">Difficulté:</label>
-                        <select id="difficulty-level" class="game-select">
-                            <option value="easy">Facile</option>
-                            <option value="medium">Moyen</option>
-                            <option value="hard">Difficile</option>
-                        </select>
+                        <div class="game-sidebar">
+                            <div class="sidebar-section">
+                                <h3 class="sidebar-title">Mots capturés</h3>
+                                <div id="capturedWords" class="captured-words-list">
+                                    <div class="empty-list-message">Aucun mot capturé</div>
+                                </div>
+                            </div>
+                            <div class="sidebar-section">
+                                <h3 class="sidebar-title">Statistiques</h3>
+                                <div class="sidebar-stats">
+                                    <div class="sidebar-stat-item">
+                                        <span class="sidebar-stat-label">Précision</span>
+                                        <div class="progress-bar">
+                                            <div id="accuracyBar" class="progress-fill" style="width: 0%"></div>
+                                        </div>
+                                        <span id="accuracy" class="sidebar-stat-value">0%</span>
+                                    </div>
+                                    <div class="sidebar-stat-item">
+                                        <span class="sidebar-stat-label">Vitesse</span>
+                                        <div class="progress-bar">
+                                            <div id="speedBar" class="progress-fill" style="width: 0%"></div>
+                                        </div>
+                                        <span id="speed" class="sidebar-stat-value">0 mpm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Scène 3D pour les bulles -->
-                <div id="game-scene-container">
-                    <div id="word-box" class="scene-3d"></div>
-                    <div id="game-stats">
-                        <div id="score-display" class="stat-item">Score: 0</div>
-                        <div id="time-display" class="stat-item">Temps: 0:00</div>
-                        <div id="combo-display" class="stat-item">Combo: x1</div>
+            </section>
+            
+            <!-- Section d'information -->
+            <section class="info-section">
+                <div class="info-card">
+                    <div class="card-decoration top"></div>
+                    <div class="card-decoration bottom"></div>
+                    <h2 class="info-title">Comment jouer</h2>
+                    <div class="info-content">
+                        <p>Bienvenue dans <span class="highlight">Word Bubbles: The Arcane Lexicon</span>, un jeu magique pour améliorer votre vocabulaire !</p>
+                        <ol class="instruction-list">
+                            <li>Des orbes magiques contenant des mots descendent de l'écran</li>
+                            <li>Tapez le mot exact dans la zone de texte avant qu'il n'atteigne le bas</li>
+                            <li>Chaque mot correctement saisi vous rapporte des points</li>
+                            <li>Si un orbe atteint le bas, vous perdez une vie</li>
+                            <li>Complétez les niveaux pour débloquer des sorts plus puissants !</li>
+                        </ol>
+                        <p class="info-note">Améliorez votre score en capturant des séries de mots sans erreur pour obtenir des multiplicateurs !</p>
                     </div>
                 </div>
                 
-                <!-- Contrôles du jeu -->
-                <div id="game-controls" class="mt-4 flex flex-wrap gap-4 justify-center">
-                    <input type="text" id="current-word" placeholder="Entrez un mot..." 
-                           class="game-input">
-                    <button id="submit-word" class="quest-button glow-button">Soumettre</button>
-                    <button id="start-reset" class="quest-button glow-button">Démarrer</button>
+                <div class="info-card">
+                    <div class="card-decoration top"></div>
+                    <div class="card-decoration bottom"></div>
+                    <h2 class="info-title">Votre progression</h2>
+                    <div class="info-content">
+                        <div class="progress-section">
+                            <h3 class="progress-title">Niveau de maîtrise</h3>
+                            <div class="mastery-level">
+                                <div class="mastery-icon novice active"></div>
+                                <div class="mastery-icon apprentice"></div>
+                                <div class="mastery-icon adept"></div>
+                                <div class="mastery-icon expert"></div>
+                                <div class="mastery-icon master"></div>
+                            </div>
+                            <p class="mastery-description">Novice</p>
                 </div>
                 
-                <!-- Affichage des messages -->
-                <div id="message-container">
-                    <div id="message" class="text-white mt-2 message-text"></div>
+                        <div class="progress-section">
+                            <h3 class="progress-title">Récompenses débloquées</h3>
+                            <div class="rewards-grid">
+                                <div class="reward-item locked">
+                                    <div class="reward-icon speed-boost"></div>
+                                    <span class="reward-name">Boost de vitesse</span>
+                                </div>
+                                <div class="reward-item locked">
+                                    <div class="reward-icon time-freeze"></div>
+                                    <span class="reward-name">Gel du temps</span>
+                                </div>
+                                <div class="reward-item locked">
+                                    <div class="reward-icon word-reveal"></div>
+                                    <span class="reward-name">Révélation</span>
+                                </div>
+                                <div class="reward-item locked">
+                                    <div class="reward-icon extra-life"></div>
+                                    <span class="reward-name">Vie supplémentaire</span>
+                                </div>
+                            </div>
+                        </div>
                 </div>
-                
-                <!-- Tableau des meilleurs scores -->
-                <div id="top-scores" class="mt-8 scores-panel">
-                    <h3 class="text-quest-gold text-xl mb-4 glow-text">Meilleurs Scores</h3>
-                    <ul id="top-scores-list" class="space-y-2 scores-list"></ul>
                 </div>
-            </div>
+            </section>
         </div>
     </main>
 
-    <!-- Modals pour les tutoriels et récompenses -->
-    <div id="tutorial-modal" class="game-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Comment jouer à Word Bubbles 3D</h2>
-            <div class="tutorial-steps">
-                <!-- Contenu du tutoriel -->
-            </div>
-            <button id="start-game-tutorial" class="quest-button glow-button">Commencer à jouer</button>
+    <!-- Pied de page (maintenant fixe) -->
+    <footer class="game-footer">
+        <div class="footer-decoration">
+            <div class="footer-rune left"></div>
+            <div class="footer-rune right"></div>
         </div>
-    </div>
-
-    <div id="reward-modal" class="game-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Félicitations !</h2>
-            <div id="reward-content"></div>
-            <button id="continue-game" class="quest-button glow-button">Continuer</button>
-        </div>
-    </div>
-
-    <footer class="fixed bottom-0 w-full">
-        <div class="bg-gradient-to-t from-black via-black/95 to-black/75 backdrop-blur-sm border-t border-quest-gold/30">
-            <div class="container mx-auto px-4 py-3">
-                <div class="text-center">
-                    <p class="text-quest-gold/90 font-quest">&copy; 2024 English Quest by Pierre Marienne</p>
-                    <div id="visit-stats" class="text-quest-gold/70 mt-1 font-medieval"></div>
-                </div>
+        <div class="footer-content">
+            <div class="footer-info">
+                <p class="copyright">© 2023 Word Bubbles - The Arcane Lexicon</p>
+                <div id="visit-stats" class="visit-counter"></div>
             </div>
         </div>
     </footer>
+    
+    <!-- Modales -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-decoration top-left"></div>
+            <div class="modal-decoration top-right"></div>
+            <div class="modal-decoration bottom-left"></div>
+            <div class="modal-decoration bottom-right"></div>
+            <h2 class="modal-title">Fin de partie</h2>
+            <div class="modal-body">
+                <p>Votre quête s'achève ici, brave aventurier...</p>
+                <div class="final-stats">
+                    <div class="final-stat">
+                        <span class="final-stat-label">Score final</span>
+                        <span id="finalScore" class="final-stat-value">0</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">Niveau atteint</span>
+                        <span id="finalLevel" class="final-stat-value">1</span>
+                    </div>
+                    <div class="final-stat">
+                        <span class="final-stat-label">Mots capturés</span>
+                        <span id="finalWords" class="final-stat-value">0</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="restartButton" class="arcane-button large">
+                        <span class="button-icon restart-icon"></span>
+                        <span class="button-text">Recommencer</span>
+                    </button>
+                    <button id="shareButton" class="arcane-button large">
+                        <span class="button-icon share-icon"></span>
+                        <span class="button-text">Partager</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-decoration top-left"></div>
+            <div class="modal-decoration top-right"></div>
+            <div class="modal-decoration bottom-left"></div>
+            <div class="modal-decoration bottom-right"></div>
+            <h2 class="modal-title">Niveau Supérieur !</h2>
+            <div class="modal-body">
+                <div class="level-up-animation"></div>
+                <p>Vous avez atteint le niveau <span id="newLevel" class="highlight">2</span> !</p>
+                <div class="reward-unlocked">
+                    <h3>Récompense débloquée</h3>
+                    <div class="reward-display">
+                        <div id="unlockedReward" class="reward-icon large"></div>
+                        <div class="reward-info">
+                            <h4 id="rewardName">Nom de la récompense</h4>
+                            <p id="rewardDescription">Description de la récompense...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="continueButton" class="arcane-button large">
+                        <span class="button-text">Continuer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-decoration top-left"></div>
+            <div class="modal-decoration top-right"></div>
+            <div class="modal-decoration bottom-left"></div>
+            <div class="modal-decoration bottom-right"></div>
+            <h2 class="modal-title">Guide du Jeu</h2>
+            <div class="modal-body">
+                <div class="help-tabs">
+                    <button class="tab-button active" data-tab="basics">Bases</button>
+                    <button class="tab-button" data-tab="controls">Contrôles</button>
+                    <button class="tab-button" data-tab="rewards">Récompenses</button>
+                    <button class="tab-button" data-tab="tips">Astuces</button>
+                </div>
+                <div class="tab-content">
+                    <div id="basicsTab" class="tab-pane active">
+                        <h3>Les bases du jeu</h3>
+                        <p>Word Bubbles est un jeu éducatif qui vous aide à améliorer votre vocabulaire tout en vous amusant dans un univers magique.</p>
+                        <div class="help-image basics-image"></div>
+                        <ul class="help-list">
+                            <li>Des orbes magiques contenant des mots descendent de l'écran</li>
+                            <li>Votre objectif est de taper ces mots avant qu'ils n'atteignent le bas</li>
+                            <li>Chaque niveau augmente la difficulté et la vitesse des orbes</li>
+                            <li>Vous avez trois vies au départ</li>
+                            <li>Complétez des niveaux pour débloquer des récompenses spéciales</li>
+                        </ul>
+                    </div>
+                    <div id="controlsTab" class="tab-pane">
+                        <h3>Contrôles du jeu</h3>
+                        <div class="controls-grid">
+                            <div class="control-item">
+                                <div class="control-icon keyboard"></div>
+                                <div class="control-info">
+                                    <h4>Clavier</h4>
+                                    <p>Tapez les mots qui apparaissent dans les orbes</p>
+                                </div>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon enter"></div>
+                                <div class="control-info">
+                                    <h4>Entrée</h4>
+                                    <p>Valider le mot tapé</p>
+                                </div>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon escape"></div>
+                                <div class="control-info">
+                                    <h4>Échap</h4>
+                                    <p>Mettre le jeu en pause</p>
+                                </div>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon space"></div>
+                                <div class="control-info">
+                                    <h4>Espace</h4>
+                                    <p>Activer la récompense sélectionnée</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="rewardsTab" class="tab-pane">
+                        <h3>Récompenses et pouvoirs</h3>
+                        <div class="rewards-list">
+                            <div class="reward-detail">
+                                <div class="reward-icon speed-boost"></div>
+                                <div class="reward-detail-info">
+                                    <h4>Boost de vitesse</h4>
+                                    <p>Augmente temporairement votre vitesse de frappe, vous permettant de saisir les mots plus rapidement.</p>
+                                    <p class="unlock-info">Débloqué au niveau 2</p>
+                                </div>
+                            </div>
+                            <div class="reward-detail">
+                                <div class="reward-icon time-freeze"></div>
+                                <div class="reward-detail-info">
+                                    <h4>Gel du temps</h4>
+                                    <p>Arrête temporairement la descente des orbes, vous donnant plus de temps pour saisir les mots.</p>
+                                    <p class="unlock-info">Débloqué au niveau 3</p>
+                                </div>
+                            </div>
+                            <div class="reward-detail">
+                                <div class="reward-icon word-reveal"></div>
+                                <div class="reward-detail-info">
+                                    <h4>Révélation</h4>
+                                    <p>Révèle automatiquement un mot difficile, le faisant disparaître de l'écran.</p>
+                                    <p class="unlock-info">Débloqué au niveau 4</p>
+                                </div>
+                            </div>
+                            <div class="reward-detail">
+                                <div class="reward-icon extra-life"></div>
+                                <div class="reward-detail-info">
+                                    <h4>Vie supplémentaire</h4>
+                                    <p>Vous accorde une vie supplémentaire, vous permettant de faire une erreur de plus.</p>
+                                    <p class="unlock-info">Débloqué au niveau 5</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tipsTab" class="tab-pane">
+                        <h3>Astuces et stratégies</h3>
+                        <ul class="tips-list">
+                            <li>
+                                <h4>Priorité aux orbes bas</h4>
+                                <p>Concentrez-vous d'abord sur les orbes qui sont les plus proches du bas de l'écran.</p>
+                            </li>
+                            <li>
+                                <h4>Séries de mots</h4>
+                                <p>Essayez de capturer plusieurs mots d'affilée sans erreur pour obtenir des multiplicateurs de score.</p>
+                            </li>
+                            <li>
+                                <h4>Économisez vos pouvoirs</h4>
+                                <p>Gardez vos récompenses pour les moments difficiles où plusieurs orbes descendent en même temps.</p>
+                            </li>
+                            <li>
+                                <h4>Entraînement régulier</h4>
+                                <p>Plus vous jouez, plus votre vitesse de frappe s'améliorera naturellement.</p>
+                            </li>
+                            <li>
+                                <h4>Mémorisez les mots</h4>
+                                <p>Essayez de mémoriser les mots qui apparaissent souvent pour les taper plus rapidement la prochaine fois.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="closeHelpButton" class="arcane-button">
+                        <span class="button-text">Fermer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="firebase-init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="three-bubbles.js"></script>
     <script src="word-bubbles.js"></script>
     <script src="visit-counter.js"></script>
+    <script>
+        // Initialisation du jeu après le chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser Three.js
+            if (window.ThreeBubbles) {
+                window.ThreeBubbles.init();
+            }
+        });
+    </script>
 </body>
 </html>

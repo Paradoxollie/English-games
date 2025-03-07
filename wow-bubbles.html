@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Word Bubbles - Un jeu de mots magique inspiré de World of Warcraft. Testez votre vocabulaire et vos réflexes dans cet univers fantastique.">
+    <meta name="theme-color" content="#0A1428">
+    <title>Word Bubbles - L'aventure magique des mots</title>
+    <link rel="stylesheet" href="wow-bubbles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="wow-theme">
+    <!-- Effets d'ambiance -->
+    <div class="magic-fog"></div>
+    <div class="arcane-runes"></div>
+    <div class="floating-particles"></div>
+    <div class="twinkling-stars"></div>
+    <div class="fire-bottom"></div>
+    <div class="ice-top"></div>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="game-header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 80'><defs><linearGradient id='logo-gradient' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ff6600'/><stop offset='50%' stop-color='%23ffcc00'/><stop offset='50%' stop-color='%2300ccff'/><stop offset='100%' stop-color='%230066cc'/></linearGradient></defs><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Cinzel, serif' font-size='32' fill='url(%23logo-gradient)' font-weight='bold'>WORD BUBBLES</text></svg>" alt="Word Bubbles Logo" class="logo">
+                </div>
+                <nav class="main-nav">
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon home-icon"></span>
+                        Accueil
+                    </a>
+                    <a href="#" class="nav-link active">
+                        <span class="nav-icon games-icon"></span>
+                        Jeux
+                    </a>
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon courses-icon"></span>
+                        Cours
+                    </a>
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon leaderboard-icon"></span>
+                        Classement
+                    </a>
+                    <a href="#" class="nav-link">
+                        <span class="nav-icon contact-icon"></span>
+                        Contact
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="game-main">
+            <div class="container">
+                <section class="game-section">
+                    <div class="game-container">
+                        <div class="game-title-container">
+                            <div class="game-title-decoration">
+                                <div class="fire-side"></div>
+                                <div class="ice-side"></div>
+                            </div>
+                            <h1 class="game-title">Word Bubbles</h1>
+                        </div>
+                        <p class="game-description">Bienvenue dans le monde magique des mots ! Des bulles contenant des lettres descendent lentement. Tapez un mot commençant par la lettre affichée dans la bulle pour la faire disparaître avant qu'elle n'atteigne le bas de l'écran. Plus votre mot est long, plus vous gagnez de points !</p>
+                        
+                        <div class="game-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Score</span>
+                                <span class="stat-value" id="scoreValue">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Niveau</span>
+                                <span class="stat-value" id="levelValue">1</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vies</span>
+                                <span class="stat-value" id="livesValue">3</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Temps</span>
+                                <span class="stat-value" id="timeValue">60</span>
+                            </div>
+                        </div>
+                        
+                        <div class="game-frame">
+                            <div class="frame-decoration top-left"></div>
+                            <div class="frame-decoration top-right"></div>
+                            <div class="frame-decoration bottom-left"></div>
+                            <div class="frame-decoration bottom-right"></div>
+                            <canvas id="gameCanvas"></canvas>
+                        </div>
+                        
+                        <div class="game-controls">
+                            <div class="word-input-container">
+                                <input type="text" id="wordInput" class="wow-input" placeholder="Tapez le mot ici..." autocomplete="off">
+                            </div>
+                            <div class="control-group">
+                                <button id="startButton" class="wow-btn wow-btn-primary wow-btn-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8,5.14V19.14L19,12.14L8,5.14Z" fill="currentColor"/></svg>
+                                    Commencer
+                                </button>
+                            </div>
+                            <div class="control-group">
+                                <button id="helpButton" class="wow-btn wow-btn-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z" fill="currentColor"/></svg>
+                                    Aide
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal wow-modal" id="helpModal">
+        <div class="modal-content wow-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Comment jouer</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Bienvenue dans <strong>Word Bubbles</strong>, le jeu magique des mots !</p>
+                <ol>
+                    <li>Des orbes magiques contenant une lettre descendront de l'écran.</li>
+                    <li>Tapez un mot commençant par cette lettre dans la zone de texte.</li>
+                    <li>Appuyez sur Entrée pour valider votre mot.</li>
+                    <li>Chaque mot correctement saisi fait disparaître l'orbe correspondant.</li>
+                    <li>Plus votre mot est long, plus vous gagnez de points !</li>
+                    <li>Vous gagnez aussi plus de points si vous détruisez l'orbe rapidement.</li>
+                    <li>Si un orbe atteint le bas, vous perdez une vie.</li>
+                    <li>Le jeu se termine lorsque vous n'avez plus de vies ou que le temps est écoulé.</li>
+                </ol>
+                <p>Prêt à tester vos compétences ? Cliquez sur <strong>Commencer</strong> pour lancer l'aventure !</p>
+            </div>
+            <div class="modal-footer">
+                <button class="wow-btn modal-close-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal wow-modal" id="gameOverModal">
+        <div class="modal-content wow-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Partie terminée</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Votre quête est terminée, brave aventurier !</p>
+                <div class="final-score">
+                    <p>Score final: <span id="finalScore">0</span></p>
+                    <p>Niveau atteint: <span id="finalLevel">1</span></p>
+                </div>
+                <p>Voulez-vous tenter une nouvelle aventure ?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="restartButton" class="wow-btn wow-btn-primary">Rejouer</button>
+                <button class="wow-btn modal-close-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="wow-bubbles.js"></script>
+</body>
+</html> 

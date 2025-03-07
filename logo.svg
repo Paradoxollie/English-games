@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="80" viewBox="0 0 280 80">
+  <!-- Fond du logo avec effet de lueur -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a237e" />
+      <stop offset="50%" stop-color="#3949ab" />
+      <stop offset="100%" stop-color="#1a237e" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="1" />
+      <feGaussianBlur stdDeviation="1" result="offset-blur" />
+      <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
+      <feFlood flood-color="black" flood-opacity="0.4" result="color" />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+    </filter>
+  </defs>
+  
+  <!-- Fond du logo -->
+  <rect x="10" y="10" width="260" height="60" rx="10" ry="10" fill="url(#logoGradient)" />
+  
+  <!-- Bordure décorative -->
+  <path d="M20,10 L260,10 C265.5,10 270,14.5 270,20 L270,60 C270,65.5 265.5,70 260,70 L20,70 C14.5,70 10,65.5 10,60 L10,20 C10,14.5 14.5,10 20,10 Z" 
+        fill="none" 
+        stroke="#ffd54f" 
+        stroke-width="2" 
+        stroke-dasharray="2,2" />
+  
+  <!-- Éléments décoratifs -->
+  <circle cx="30" cy="40" r="10" fill="#7e57c2" opacity="0.7" filter="url(#glow)" />
+  <circle cx="250" cy="40" r="10" fill="#7e57c2" opacity="0.7" filter="url(#glow)" />
+  
+  <!-- Runes décoratives -->
+  <text x="30" y="44" font-family="Arial" font-size="14" fill="#ffd54f" text-anchor="middle">ᚠ</text>
+  <text x="250" y="44" font-family="Arial" font-size="14" fill="#ffd54f" text-anchor="middle">ᛉ</text>
+  
+  <!-- Titre principal -->
+  <text x="140" y="38" font-family="MedievalSharp, fantasy" font-size="24" fill="#ffffff" text-anchor="middle" filter="url(#glow)">WORD BUBBLES</text>
+  <text x="140" y="38" font-family="MedievalSharp, fantasy" font-size="24" fill="#ffffff" text-anchor="middle">WORD BUBBLES</text>
+  
+  <!-- Sous-titre -->
+  <text x="140" y="55" font-family="Cinzel, serif" font-size="12" fill="#ffd54f" text-anchor="middle">THE ARCANE LEXICON</text>
+  
+  <!-- Bulles décoratives -->
+  <circle cx="65" cy="25" r="4" fill="#b39ddb" opacity="0.8" />
+  <circle cx="75" cy="20" r="3" fill="#b39ddb" opacity="0.6" />
+  <circle cx="85" cy="25" r="2" fill="#b39ddb" opacity="0.4" />
+  
+  <circle cx="195" cy="25" r="4" fill="#b39ddb" opacity="0.8" />
+  <circle cx="205" cy="20" r="3" fill="#b39ddb" opacity="0.6" />
+  <circle cx="215" cy="25" r="2" fill="#b39ddb" opacity="0.4" />
+</svg> 
