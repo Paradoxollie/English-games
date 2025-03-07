@@ -2286,4 +2286,17 @@ body::before {
     .scores-table th, .scores-table td {
         padding: 8px 10px;
     }
+}
+
+.player-name {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #e0e0e0;
+    font-style: italic;
+}
+
+.player-name span {
+    font-weight: bold;
+    color: #ffcc00;
+    font-style: normal;
 } 

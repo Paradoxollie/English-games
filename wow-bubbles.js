@@ -361,6 +361,7 @@ function displayRecentScores(containerId, limit = 3) {
         <table class="scores-table">
             <thead>
                 <tr>
+                    <th>Joueur</th>
                     <th>Score</th>
                     <th>Niveau</th>
                     <th>Difficulté</th>
@@ -374,9 +375,11 @@ function displayRecentScores(containerId, limit = 3) {
         const date = new Date(score.date);
         const formattedDate = `${date.toLocaleDateString()}`;
         const difficultyName = getDifficultyName(score.difficulty);
+        const playerName = score.name || "Anonyme";
         
         html += `
             <tr>
+                <td>${playerName}</td>
                 <td>${score.score}</td>
                 <td>${score.level}</td>
                 <td>${difficultyName}</td>
@@ -418,6 +421,15 @@ function showGameOver() {
     try {
         // Sauvegarder le score dans les top scores
         saveScore(score, level, difficulty);
+        
+        // Demander le nom du joueur et soumettre le score au leaderboard global
+        const playerName = submitScoreToGlobalLeaderboard(score, level, difficulty);
+        
+        // Afficher le nom du joueur dans la modale
+        const playerNameElement = document.getElementById('playerName');
+        if (playerNameElement) {
+            playerNameElement.textContent = playerName;
+        }
         
         // Afficher le top score
         const topScore = getTopScore();
@@ -1703,28 +1715,31 @@ function getDifficultyName(difficultyValue) {
  */
 function submitScoreToGlobalLeaderboard(score, level, difficulty) {
     try {
+        // Toujours demander le nom du joueur à la fin de chaque partie
+        let playerName = prompt("Entrez votre nom pour le classement:", localStorage.getItem('playerName') || "");
+        
+        // Si l'utilisateur annule, utiliser le nom précédent ou "Anonyme"
+        if (playerName === null) {
+            playerName = localStorage.getItem('playerName') || "Anonyme";
+        } else if (playerName.trim() === "") {
+            playerName = "Anonyme";
+        } else {
+            // Sauvegarder le nom pour les prochaines parties
+            localStorage.setItem('playerName', playerName);
+        }
+        
+        console.log(`Envoi du score de ${playerName} au leaderboard global`);
+        
         // Vérifier si Firebase est disponible
         if (typeof firebase !== 'undefined' && firebase.firestore) {
-            console.log("Envoi du score au leaderboard global");
-            
-            // Demander le nom du joueur
-            let playerName = localStorage.getItem('playerName');
-            if (!playerName) {
-                playerName = prompt("Entrez votre nom pour le classement:", "Joueur");
-                if (playerName) {
-                    localStorage.setItem('playerName', playerName);
-                } else {
-                    playerName = "Anonyme";
-                }
-            }
-            
             // Créer l'objet score
             const scoreData = {
                 name: playerName,
                 score: score,
                 level: level,
                 difficulty: difficulty,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                game: "word_bubbles" // Identifiant spécifique pour ce jeu
             };
             
             // Envoyer le score à Firestore
@@ -1732,15 +1747,51 @@ function submitScoreToGlobalLeaderboard(score, level, difficulty) {
                 .add(scoreData)
                 .then(() => {
                     console.log("Score envoyé avec succès au leaderboard global");
+                    showMessage("Score envoyé au classement global !");
                 })
                 .catch((error) => {
                     console.error("Erreur lors de l'envoi du score:", error);
+                    showMessage("Erreur lors de l'envoi du score");
+                });
+                
+            // Essayer également d'envoyer au classement général
+            firebase.firestore().collection("all_games_scores")
+                .add({
+                    ...scoreData,
+                    gameTitle: "Word Bubbles"
+                })
+                .then(() => {
+                    console.log("Score envoyé au classement général");
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de l'envoi au classement général:", error);
                 });
         } else {
             console.log("Firebase n'est pas disponible, score sauvegardé localement uniquement");
+            
+            // Sauvegarder le score localement avec le nom du joueur
+            const localScore = {
+                name: playerName,
+                score: score,
+                level: level,
+                difficulty: difficulty,
+                date: new Date().toISOString()
+            };
+            
+            // Sauvegarder dans le localStorage
+            let globalScores = JSON.parse(localStorage.getItem('wordBubblesGlobalScores') || '[]');
+            globalScores.push(localScore);
+            globalScores.sort((a, b) => b.score - a.score);
+            if (globalScores.length > 10) globalScores = globalScores.slice(0, 10);
+            localStorage.setItem('wordBubblesGlobalScores', JSON.stringify(globalScores));
+            
+            showMessage("Score sauvegardé localement");
         }
+        
+        return playerName;
     } catch (error) {
         console.error("Erreur lors de la soumission du score global:", error);
+        return "Anonyme";
     }
 }
 
@@ -1751,8 +1802,12 @@ function saveScore(score, level, difficulty) {
     // Récupérer les scores existants
     let scores = getScores();
     
+    // Récupérer le nom du joueur (ou utiliser "Anonyme" par défaut)
+    const playerName = localStorage.getItem('playerName') || "Anonyme";
+    
     // Ajouter le nouveau score
     const newScore = {
+        name: playerName,
         score: score,
         level: level,
         difficulty: difficulty,
@@ -1774,10 +1829,7 @@ function saveScore(score, level, difficulty) {
     // Sauvegarder dans le localStorage
     localStorage.setItem('wordBubblesScores', JSON.stringify(scores));
     
-    console.log(`Score sauvegardé: ${score} points, niveau ${level}, difficulté ${difficulty}`);
-    
-    // Essayer d'envoyer le score au leaderboard global
-    submitScoreToGlobalLeaderboard(score, level, difficulty);
+    console.log(`Score sauvegardé: ${score} points, niveau ${level}, difficulté ${difficulty}, joueur: ${playerName}`);
     
     return newScore;
 }
@@ -1834,6 +1886,7 @@ function displayTopScores(containerId) {
             <thead>
                 <tr>
                     <th>Rang</th>
+                    <th>Joueur</th>
                     <th>Score</th>
                     <th>Niveau</th>
                     <th>Difficulté</th>
@@ -1847,10 +1900,12 @@ function displayTopScores(containerId) {
         const date = new Date(score.date);
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
         const difficultyName = getDifficultyName(score.difficulty);
+        const playerName = score.name || "Anonyme";
         
         html += `
             <tr class="${index === 0 ? 'top-score' : ''}">
                 <td>${index + 1}</td>
+                <td>${playerName}</td>
                 <td>${score.score}</td>
                 <td>${score.level}</td>
                 <td>${difficultyName}</td>

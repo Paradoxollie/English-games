@@ -63,6 +63,70 @@
         .counter-value {
             @apply font-bold;
         }
+        
+        /* Styles pour les onglets de difficulté */
+        .difficulty-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .tab-btn {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-btn.active {
+            background-color: rgba(255, 68, 68, 0.2);
+            border-color: rgba(255, 68, 68, 0.5);
+            color: #ff4444;
+            box-shadow: 0 0 8px rgba(255, 68, 68, 0.3);
+        }
+        
+        /* Styles pour le bouton "Jouer maintenant" */
+        .play-btn {
+            display: inline-block;
+            background-color: rgba(255, 68, 68, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .play-btn:hover {
+            background-color: rgba(255, 68, 68, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Styles pour le spinner de chargement */
+        .loading-spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 68, 68, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff4444;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-quest-pattern" data-page="leaderboard" style="background-image: url('./images/background.webp');">
@@ -110,10 +174,11 @@
                         </h2>
                     </div>
                     <div class="w-full">
+                        <p class="text-center text-sm text-gray-300 mb-2">Top 3 des meilleurs scores</p>
                         <table class="podium-table w-full min-w-[300px] text-sm md:text-base">
                             <thead>
                                 <tr>
-                                    <th class="px-2 py-2">Rank</th>
+                                    <th class="px-2 py-2">Rang</th>
                                     <th class="px-2 py-2">Champion</th>
                                     <th class="px-2 py-2">Score</th>
                                     <th class="px-2 py-2">Date</th>
@@ -244,17 +309,36 @@
                         <span class="game-icon">🫧</span>
                     </h2>
                     <div class="w-full">
+                        <div class="difficulty-tabs mb-4 flex justify-center gap-2">
+                            <button class="tab-btn active" data-difficulty="all" data-game="word-bubbles">Tous</button>
+                            <button class="tab-btn" data-difficulty="easy" data-game="word-bubbles">Facile</button>
+                            <button class="tab-btn" data-difficulty="normal" data-game="word-bubbles">Normal</button>
+                            <button class="tab-btn" data-difficulty="hard" data-game="word-bubbles">Difficile</button>
+                        </div>
+                        <p class="text-center text-sm text-gray-300 mb-2">Top 3 des meilleurs scores</p>
                         <table class="podium-table w-full min-w-[500px]">
                             <thead>
                                 <tr>
-                                    <th>RANK</th>
+                                    <th>RANG</th>
                                     <th>CHAMPION</th>
                                     <th>SCORE</th>
+                                    <th>NIVEAU</th>
+                                    <th>DIFFICULTÉ</th>
                                     <th>DATE</th>
                                 </tr>
                             </thead>
-                            <tbody id="word-bubbles-leaderboard"></tbody>
+                            <tbody id="word-bubbles-leaderboard">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="loading-spinner"></div>
+                                        <p class="mt-2">Chargement des scores...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
+                        <div class="text-center mt-4">
+                            <a href="wow-bubbles.html" class="play-btn">Jouer maintenant</a>
+                        </div>
                     </div>
                 </div>
 
@@ -360,12 +444,26 @@
                     const tableBody = document.getElementById(tableId);
                     if (!tableBody) return;
                     
+                    // Vider le tableau
                     tableBody.innerHTML = "";
-                    let rank = 1;
                     
-                    scores.forEach((doc) => {
+                    // Si aucun score, afficher un message
+                    if (scores.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <p>Aucun score enregistré.</p>
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    // Ajouter les scores (maximum 3)
+                    scores.slice(0, 3).forEach((doc, index) => {
+                        const rank = index + 1;
                         const row = document.createElement('tr');
-                        row.className = `rank-${rank}`;
+                        row.className = rank === 1 ? 'top-score' : '';
                         
                         const date = doc.timestamp ? 
                             new Date(doc.timestamp.seconds * 1000).toLocaleDateString() : 
@@ -373,12 +471,11 @@
                         
                         row.innerHTML = `
                             <td class="rank">${rank}</td>
-                            <td>${doc.name || 'Anonymous'}</td>
+                            <td>${doc.name || 'Anonyme'}</td>
                             <td class="score">${doc.score}</td>
                             <td>${date}</td>
                         `;
                         tableBody.appendChild(row);
-                        rank++;
                     });
                 }
 
@@ -386,9 +483,23 @@
                 async function loadGameScores(collectionName, tableId) {
                     try {
                         console.log(`Loading scores for ${collectionName}`);
+                        
+                        // Afficher un message de chargement
+                        const tableBody = document.getElementById(tableId);
+                        if (tableBody) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="loading-spinner"></div>
+                                        <p class="mt-2">Chargement des scores...</p>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        
                         const snapshot = await db.collection(collectionName)
                             .orderBy("score", "desc")
-                            .limit(3)
+                            .limit(3) // Limiter à 3 résultats
                             .get();
                         
                         const scores = [];
@@ -402,6 +513,20 @@
                             }
                         });
                         
+                        // Vérifier s'il y a des résultats
+                        if (scores.length === 0) {
+                            if (tableBody) {
+                                tableBody.innerHTML = `
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <p>Aucun score enregistré.</p>
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                            return;
+                        }
+                        
                         updateLeaderboardTable(scores, tableId);
                         
                         // Mettre en cache pour plus tard
@@ -411,8 +536,23 @@
                             name: `scores_loaded_${collectionName}`,
                             value: Date.now()
                         });
+                        
+                        console.log(`Scores ${collectionName} chargés (nombre: ${scores.length})`);
                     } catch (error) {
                         console.error(`Error loading ${collectionName} scores:`, error);
+                        
+                        // Afficher un message d'erreur
+                        const tableBody = document.getElementById(tableId);
+                        if (tableBody) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <p>Erreur lors du chargement des scores. Veuillez réessayer plus tard.</p>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                        
                         monitoring.trackError(error, {
                             context: 'loadGameScores',
                             collectionName,
@@ -420,6 +560,124 @@
                         });
                     }
                 }
+
+                // Fonction spécifique pour charger les scores de Word Bubbles
+                async function loadWordBubblesScores(difficulty = 'all') {
+                    try {
+                        const tableBody = document.getElementById('word-bubbles-leaderboard');
+                        if (!tableBody) return;
+                        
+                        // Afficher un message de chargement
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="loading-spinner"></div>
+                                    <p class="mt-2">Chargement des scores...</p>
+                                </td>
+                            </tr>
+                        `;
+                        
+                        // Créer la requête de base - toujours trier par score décroissant
+                        let query = db.collection("word_bubbles_scores").orderBy("score", "desc");
+                        
+                        // Limiter à 3 résultats seulement
+                        query = query.limit(3);
+                        
+                        // Exécuter la requête
+                        const snapshot = await query.get();
+                        
+                        // Filtrer les résultats côté client si nécessaire (pour éviter l'erreur d'index)
+                        let filteredScores = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            // Si on filtre par difficulté et que ce n'est pas "all", vérifier la difficulté
+                            if (difficulty === 'all' || data.difficulty === difficulty) {
+                                filteredScores.push({
+                                    id: doc.id,
+                                    ...data
+                                });
+                            }
+                        });
+                        
+                        // Trier à nouveau les scores filtrés
+                        filteredScores.sort((a, b) => b.score - a.score);
+                        
+                        // Limiter à 3 scores maximum
+                        filteredScores = filteredScores.slice(0, 3);
+                        
+                        // Vérifier s'il y a des résultats après filtrage
+                        if (filteredScores.length === 0) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p>Aucun score enregistré pour cette difficulté.</p>
+                                    </td>
+                                </tr>
+                            `;
+                            return;
+                        }
+                        
+                        // Vider le tableau
+                        tableBody.innerHTML = "";
+                        
+                        // Ajouter les scores
+                        filteredScores.forEach((data, index) => {
+                            const rank = index + 1;
+                            const row = document.createElement('tr');
+                            row.className = rank === 1 ? 'top-score' : '';
+                            
+                            const date = data.timestamp ? 
+                                new Date(data.timestamp.seconds * 1000).toLocaleDateString() : 
+                                'N/A';
+                            
+                            const difficultyName = data.difficulty ? 
+                                data.difficulty.charAt(0).toUpperCase() + data.difficulty.slice(1) : 
+                                'Normal';
+                            
+                            row.innerHTML = `
+                                <td class="rank">${rank}</td>
+                                <td>${data.name || 'Anonyme'}</td>
+                                <td class="score">${data.score}</td>
+                                <td>${data.level || 1}</td>
+                                <td>${difficultyName}</td>
+                                <td>${date}</td>
+                            `;
+                            
+                            tableBody.appendChild(row);
+                        });
+                        
+                        console.log(`Scores Word Bubbles chargés (difficulté: ${difficulty}, nombre: ${filteredScores.length})`);
+                    } catch (error) {
+                        console.error("Erreur lors du chargement des scores Word Bubbles:", error);
+                        const tableBody = document.getElementById('word-bubbles-leaderboard');
+                        if (tableBody) {
+                            tableBody.innerHTML = `
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p>Erreur lors du chargement des scores. Veuillez réessayer plus tard.</p>
+                                    </td>
+                                </tr>
+                            `;
+                        }
+                    }
+                }
+
+                // Gestionnaire d'événements pour les onglets de difficulté
+                document.querySelectorAll('.tab-btn[data-game="word-bubbles"]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Retirer la classe active de tous les boutons
+                        document.querySelectorAll('.tab-btn[data-game="word-bubbles"]').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        // Ajouter la classe active au bouton cliqué
+                        this.classList.add('active');
+                        
+                        // Charger les scores pour la difficulté sélectionnée
+                        const difficulty = this.dataset.difficulty;
+                        loadWordBubblesScores(difficulty);
+                    });
+                });
 
                 // Charger les scores
                 loadGameScores("speed_verb_scores", "speed-verb-leaderboard");
@@ -429,7 +687,7 @@
                 loadGameScores("brewYourWordsScores", "brew-words-leaderboard");
                 loadGameScores("enigma_scroll_scores", "enigma-scroll-leaderboard");
                 loadGameScores("whisper_trials_scores", "whisper-trials-leaderboard");
-                loadGameScores("word_bubbles_scores", "word-bubbles-leaderboard");
+                loadWordBubblesScores('all'); // Charger tous les scores Word Bubbles
                 loadGameScores("echoes_lexicon_scores", "echoes-lexicon-leaderboard");
             } catch (error) {
                 console.error("Error loading leaderboard:", error);
