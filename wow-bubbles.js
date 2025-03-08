@@ -852,25 +852,47 @@ function createOrbDisappearEffect(orb) {
 function checkWord(event) {
     // Vérifier si la touche Entrée a été pressée
     if (event && event.key === 'Enter') {
+        // Empêcher le comportement par défaut de la touche Entrée
+        event.preventDefault();
+        
+        // Récupérer et nettoyer l'entrée
         const input = wordInput.value.toUpperCase().trim();
         
-        if (input.length < 2) {
+        // Vérifier si l'entrée est vide
+        if (!input || input.length < 2) {
             // Mot trop court
             showIncorrectEffect();
+            // Vider l'entrée immédiatement
+            wordInput.value = '';
             return;
         }
         
         // Vérifier si le mot existe dans la liste
         if (!words.includes(input)) {
             showIncorrectEffect();
+            // Vider l'entrée après un court délai
+            setTimeout(() => {
+                wordInput.value = '';
+                // Remettre le focus sur le champ de saisie
+                wordInput.focus();
+            }, 300);
             return;
         }
         
         // Vérifier si le mot a déjà été utilisé
         if (usedWords.has(input)) {
             showIncorrectEffect();
+            // Vider l'entrée après un court délai
+            setTimeout(() => {
+                wordInput.value = '';
+                // Remettre le focus sur le champ de saisie
+                wordInput.focus();
+            }, 300);
             return;
         }
+        
+        // Variable pour suivre si un orbe correspondant a été trouvé
+        let orbFound = false;
         
         // Rechercher un orbe dont la lettre correspond à la première lettre du mot saisi
         for (let i = 0; i < orbs.length; i++) {
@@ -878,6 +900,9 @@ function checkWord(event) {
             const firstLetter = input.charAt(0);
             
             if (orbLetter === firstLetter) {
+                // Marquer qu'un orbe a été trouvé
+                orbFound = true;
+                
                 // Ajouter le mot à la liste des mots utilisés
                 usedWords.add(input);
                 
@@ -895,7 +920,7 @@ function checkWord(event) {
                 // Mot valide commençant par la lettre de l'orbe
                 const points = calculatePoints(orbs[i], input);
                 
-                // Appliquer les bonus
+                // Appliquer les bonuses
                 let finalPoints = points;
                 
                 // Bonus de combo (10% par niveau de combo, à partir de 2)
@@ -924,8 +949,11 @@ function checkWord(event) {
                 removeOrb(orbs[i]);
                 orbs.splice(i, 1);
                 
-                // Réinitialiser l'entrée
+                // Réinitialiser l'entrée immédiatement
                 wordInput.value = '';
+                
+                // Remettre le focus sur le champ de saisie
+                wordInput.focus();
                 
                 // Mettre à jour l'interface
                 updateUI();
@@ -935,22 +963,27 @@ function checkWord(event) {
                     levelUp();
                 }
                 
-                return;
+                // Sortir de la boucle dès qu'un orbe correspondant est trouvé
+                break;
             }
         }
         
-        // Aucun orbe correspondant trouvé
-        comboCount = 0;
-        updateComboDisplay();
-        
-        score = Math.max(0, score - 5);
-        updateUI();
-        showIncorrectEffect();
-        
-        // Réinitialiser l'entrée après un court délai
-        setTimeout(() => {
-            wordInput.value = '';
-        }, 300);
+        // Si aucun orbe correspondant n'a été trouvé
+        if (!orbFound) {
+            comboCount = 0;
+            updateComboDisplay();
+            
+            score = Math.max(0, score - 5);
+            updateUI();
+            showIncorrectEffect();
+            
+            // Réinitialiser l'entrée après un court délai
+            setTimeout(() => {
+                wordInput.value = '';
+                // Remettre le focus sur le champ de saisie
+                wordInput.focus();
+            }, 300);
+        }
     }
 }
 
