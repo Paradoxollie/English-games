@@ -694,20 +694,20 @@ function spawnOrb() {
     
     switch (difficulty) {
         case 'easy':
-            baseSpeed = 0.1; // Très lent (réduit de 0.2 à 0.1)
-            levelMultiplier = 0.05; // Réduit de 0.1 à 0.05
+            baseSpeed = 0.05; // Extrêmement lent (réduit de 0.1 à 0.05)
+            levelMultiplier = 0.01; // Progression très douce (réduit de 0.05 à 0.01)
             break;
         case 'normal':
-            baseSpeed = 0.15; // Plus lent qu'avant (réduit de 0.25 à 0.15)
-            levelMultiplier = 0.08; // Réduit de 0.12 à 0.08
+            baseSpeed = 0.08; // Très lent (réduit de 0.15 à 0.08)
+            levelMultiplier = 0.02; // Progression douce (réduit de 0.08 à 0.02)
             break;
         case 'hard':
-            baseSpeed = 0.2; // Réduit de 0.3 à 0.2
-            levelMultiplier = 0.1; // Réduit de 0.15 à 0.1
+            baseSpeed = 0.12; // Lent (réduit de 0.2 à 0.12)
+            levelMultiplier = 0.03; // Progression modérée (réduit de 0.1 à 0.03)
             break;
         default:
-            baseSpeed = 0.15;
-            levelMultiplier = 0.08;
+            baseSpeed = 0.08;
+            levelMultiplier = 0.02;
     }
     
     // Appliquer le bonus de ralentissement si actif
@@ -726,8 +726,12 @@ function spawnOrb() {
         baseSpeed *= 0.5; // Les orbes de la pluie de lettres sont 50% plus lents
     }
     
-    // Calculer la vitesse finale
-    const speed = baseSpeed + (level * levelMultiplier);
+    // Calculer la vitesse finale avec une progression logarithmique pour une accélération très douce
+    // Utiliser Math.log pour que l'augmentation de vitesse soit de moins en moins importante à mesure que le niveau augmente
+    const levelFactor = 1 + (Math.log(level) / Math.log(10)) * levelMultiplier;
+    const speed = baseSpeed * levelFactor;
+    
+    console.log(`Niveau ${level}: Vitesse de base = ${baseSpeed}, Facteur de niveau = ${levelFactor}, Vitesse finale = ${speed}`);
     
     // Stocker les informations de l'orbe
     const orbInfo = {
@@ -749,21 +753,21 @@ function spawnOrb() {
     
     switch (difficulty) {
         case 'easy':
-            nextSpawnTime = Math.max(4000, 4500 - (level * 100)); // Délai minimum de 4 secondes (augmenté de 3s à 4s)
+            nextSpawnTime = Math.max(5000, 5500 - (level * 50)); // Délai minimum de 5 secondes (augmenté de 4s à 5s)
             break;
         case 'normal':
-            nextSpawnTime = Math.max(3500, 4000 - (level * 100)); // Délai minimum de 3.5 secondes (augmenté de 2.5s à 3.5s)
+            nextSpawnTime = Math.max(4000, 4500 - (level * 50)); // Délai minimum de 4 secondes (augmenté de 3.5s à 4s)
             break;
         case 'hard':
-            nextSpawnTime = Math.max(3000, 3500 - (level * 100)); // Délai minimum de 3 secondes (augmenté de 2s à 3s)
+            nextSpawnTime = Math.max(3500, 4000 - (level * 50)); // Délai minimum de 3.5 secondes (augmenté de 3s à 3.5s)
             break;
         default:
-            nextSpawnTime = Math.max(3500, 4000 - (level * 100));
+            nextSpawnTime = Math.max(4000, 4500 - (level * 50));
     }
     
     // Réduire le délai pendant l'événement spécial "Word Rush"
     if (specialEventActive && specialEventTimer === SPECIAL_EVENTS.WORD_RUSH) {
-        nextSpawnTime *= 0.7; // Réduit de 0.6 à 0.7 pour être moins agressif
+        nextSpawnTime *= 0.8; // Réduit de 0.7 à 0.8 pour être moins agressif
     }
     
     // Augmenter le délai pendant l'événement "pluie de lettres"
@@ -1433,8 +1437,9 @@ function restartGame() {
 function levelUp() {
     level++;
     
-    // Ajouter du temps supplémentaire
-    timeRemaining += 10;
+    // Ajouter du temps supplémentaire (plus de temps aux niveaux supérieurs)
+    const timeBonus = Math.min(20, 10 + Math.floor(level / 2)); // Entre 10 et 20 secondes selon le niveau
+    timeRemaining += timeBonus;
     
     // Mettre à jour l'interface
     updateUI();
@@ -1442,7 +1447,7 @@ function levelUp() {
     // Afficher un effet visuel
     const levelUpEffect = document.createElement('div');
     levelUpEffect.className = 'level-up-effect';
-    levelUpEffect.textContent = `Niveau ${level} !`;
+    levelUpEffect.textContent = `Niveau ${level} ! +${timeBonus}s`;
     
     const gameFrame = document.querySelector('.game-frame');
     gameFrame.appendChild(levelUpEffect);
@@ -1459,7 +1464,22 @@ function levelUp() {
         triggerSpecialEvent();
     }
     
-    console.log(`Niveau augmenté à ${level}`);
+    console.log(`Niveau augmenté à ${level}, +${timeBonus} secondes ajoutées`);
+    
+    // Afficher un message pour encourager le joueur
+    const messages = [
+        "Excellent !",
+        "Continuez comme ça !",
+        "Vous êtes en forme !",
+        "Impressionnant !",
+        "Magnifique !",
+        "Superbe !",
+        "Fantastique !",
+        "Incroyable !"
+    ];
+    
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    showMessage(randomMessage);
 }
 
 /**
