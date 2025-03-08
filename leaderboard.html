@@ -587,11 +587,13 @@
                                 return;
                             }
                             
-                            // Créer la requête de base - toujours trier par score décroissant
+                            // Pour l'onglet "Tous", récupérer tous les scores sans filtre de difficulté
+                            // et prendre les 3 meilleurs scores toutes difficultés confondues
                             let query = db.collection("word_bubbles_scores").orderBy("score", "desc");
                             
-                            // Limiter à 10 résultats pour avoir plus de chances de trouver des scores pour chaque difficulté
-                            query = query.limit(10);
+                            // Limiter à 20 résultats pour avoir une bonne chance de trouver les meilleurs scores
+                            // toutes difficultés confondues
+                            query = query.limit(20);
                             
                             // Exécuter la requête
                             const snapshot = await query.get();
@@ -605,20 +607,26 @@
                                 return;
                             }
                             
-                            // Filtrer les résultats côté client si nécessaire (pour éviter l'erreur d'index)
-                            let filteredScores = [];
+                            // Collecter tous les scores
+                            let allScores = [];
                             snapshot.forEach((doc) => {
                                 const data = doc.data();
-                                console.log("Score trouvé:", data);
-                                
-                                // Si on filtre par difficulté et que ce n'est pas "all", vérifier la difficulté
-                                if (difficulty === 'all' || data.difficulty === difficulty) {
-                                    filteredScores.push({
-                                        id: doc.id,
-                                        ...data
-                                    });
-                                }
+                                allScores.push({
+                                    id: doc.id,
+                                    ...data
+                                });
                             });
+                            
+                            // Filtrer les scores selon la difficulté sélectionnée
+                            let filteredScores = [];
+                            
+                            if (difficulty === 'all') {
+                                // Pour l'onglet "Tous", prendre les 3 meilleurs scores toutes difficultés confondues
+                                filteredScores = allScores;
+                            } else {
+                                // Pour les autres onglets, filtrer par difficulté
+                                filteredScores = allScores.filter(score => score.difficulty === difficulty);
+                            }
                             
                             console.log(`Après filtrage: ${filteredScores.length} scores pour difficulté ${difficulty}`);
                             
@@ -629,7 +637,7 @@
                                 return;
                             }
                             
-                            // Trier à nouveau les scores filtrés
+                            // Trier à nouveau les scores filtrés par score décroissant
                             filteredScores.sort((a, b) => Number(b.score) - Number(a.score));
                             
                             // Limiter à 3 scores maximum
@@ -755,12 +763,18 @@
                         console.log(`${localScores.length} scores locaux trouvés`);
                         
                         // Filtrer par difficulté si nécessaire
-                        if (difficulty !== 'all') {
-                            localScores = localScores.filter(score => score.difficulty === difficulty);
+                        let filteredScores = [];
+                        
+                        if (difficulty === 'all') {
+                            // Pour l'onglet "Tous", prendre tous les scores sans filtrer par difficulté
+                            filteredScores = localScores;
+                        } else {
+                            // Pour les autres onglets, filtrer par difficulté
+                            filteredScores = localScores.filter(score => score.difficulty === difficulty);
                         }
                         
                         // Vérifier s'il y a des scores après filtrage
-                        if (localScores.length === 0) {
+                        if (filteredScores.length === 0) {
                             tableBody.innerHTML = `
                                 <tr>
                                     <td colspan="6" class="text-center py-4">
@@ -771,17 +785,17 @@
                             return;
                         }
                         
-                        // Trier les scores
-                        localScores.sort((a, b) => Number(b.score) - Number(a.score));
+                        // Trier les scores par score décroissant
+                        filteredScores.sort((a, b) => Number(b.score) - Number(a.score));
                         
                         // Limiter à 3 scores
-                        localScores = localScores.slice(0, 3);
+                        filteredScores = filteredScores.slice(0, 3);
                         
                         // Vider le tableau
                         tableBody.innerHTML = "";
                         
                         // Ajouter les scores
-                        localScores.forEach((score, index) => {
+                        filteredScores.forEach((score, index) => {
                             const rank = index + 1;
                             const row = document.createElement('tr');
                             row.className = rank === 1 ? 'top-score' : '';
@@ -803,7 +817,7 @@
                             tableBody.appendChild(row);
                         });
                         
-                        console.log(`Scores locaux affichés: ${localScores.length}`);
+                        console.log(`Scores locaux affichés: ${filteredScores.length}`);
                     } catch (error) {
                         console.error("Erreur lors du chargement des scores locaux:", error);
                         const tableBody = document.getElementById('word-bubbles-leaderboard');
