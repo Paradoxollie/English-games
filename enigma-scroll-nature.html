@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RMCQTMKDVP');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Enigma Scroll: Nature's Whisper - Plongez dans un monde naturel magique où les mots sont le pouvoir">
+    <meta name="theme-color" content="#010401">
+    <title>Enigma Scroll: Nature's Whisper | English Quest</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=MedievalSharp&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="enigma-scroll-nature.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Initialisation de Firebase -->
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH5mQvRZBTm5-I7-7SfBOFrjvQGdTVIbA",
+            authDomain: "english-quest-app.firebaseapp.com",
+            projectId: "english-quest-app",
+            storageBucket: "english-quest-app.appspot.com",
+            messagingSenderId: "1026560443864",
+            appId: "1:1026560443864:web:6c0b4c0b49e0e0c1d9b8a5",
+            measurementId: "G-RMCQTMKDVP"
+        };
+        
+        // Initialiser Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        // Référence à Firestore
+        const db = firebase.firestore();
+        console.log("Firebase initialisé avec succès");
+    </script>
+</head>
+<body>
+    <!-- Effets d'ambiance (ajoutés dynamiquement par JS) -->
+    <div class="vignette-effect"></div>
+    
+    <!-- Logo et Navigation -->
+    <header class="game-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="images/logo.gif" alt="English Quest Logo" class="logo">
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon home-icon"></span>
+                    Accueil
+                </a>
+                <a href="all-games.html" class="nav-link active">
+                    <span class="nav-icon games-icon"></span>
+                    Jeux
+                </a>
+                <a href="courses.html" class="nav-link">
+                    <span class="nav-icon courses-icon"></span>
+                    Cours
+                </a>
+                <a href="leaderboard.html" class="nav-link">
+                    <span class="nav-icon leaderboard-icon"></span>
+                    Classement
+                </a>
+                <a href="contact.html" class="nav-link">
+                    <span class="nav-icon contact-icon"></span>
+                    Contact
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="game-container" id="enigma-scroll-container">
+            <!-- Titre et introduction -->
+            <div class="game-intro">
+                <h2>Bienvenue dans Enigma Scroll: Nature's Whisper 🌿</h2>
+                
+                <!-- Bouton de démarrage -->
+                <button id="start-game-button" class="start-button">Commencer le jeu</button>
+            </div>
+            
+            <!-- Statistiques du jeu -->
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Mots trouvés</span>
+                    <span class="stat-value" id="words-found">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Niveau</span>
+                    <span class="stat-value" id="level">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Temps</span>
+                    <div class="timer-container">
+                        <span class="timer-icon">⏱️</span>
+                        <span class="timer" id="time-remaining">60</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Zone de jeu principale -->
+            <div class="game-frame" id="game-area" style="display: none;">
+                <div class="frame-decoration top-left"></div>
+                <div class="frame-decoration top-right"></div>
+                <div class="frame-decoration bottom-left"></div>
+                <div class="frame-decoration bottom-right"></div>
+                
+                <div id="word-grid" class="word-grid"></div>
+                
+                <div id="message" class="message">Devine le mot ! La première lettre est révélée.</div>
+                
+                <div id="keyboard" class="keyboard-container">
+                    <div class="enigma-keyboard">
+                        <button>A</button>
+                        <button>Z</button>
+                        <button>E</button>
+                        <button>R</button>
+                        <button>T</button>
+                        <button>Y</button>
+                        <button>U</button>
+                        <button>I</button>
+                        <button>O</button>
+                        <button>P</button>
+                    </div>
+                    <div class="enigma-keyboard">
+                        <button>Q</button>
+                        <button>S</button>
+                        <button>D</button>
+                        <button>F</button>
+                        <button>G</button>
+                        <button>H</button>
+                        <button>J</button>
+                        <button>K</button>
+                        <button>L</button>
+                        <button>M</button>
+                    </div>
+                    <div class="enigma-keyboard">
+                        <button>W</button>
+                        <button>X</button>
+                        <button>C</button>
+                        <button>V</button>
+                        <button>B</button>
+                        <button>N</button>
+                        <button class="special">←</button>
+                        <button class="special">Enter</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bonus et power-ups -->
+            <div class="power-ups" id="power-ups-container" style="display: none;">
+                <h3 class="power-ups-title">Power-ups</h3>
+                <div class="power-ups-container">
+                    <div class="power-up" id="hint-power">
+                        <div class="power-up-icon">💡</div>
+                        <div class="power-up-name">Indice</div>
+                        <div class="power-up-description">Révèle une lettre</div>
+                    </div>
+                    <div class="power-up" id="time-power">
+                        <div class="power-up-icon">⏱️</div>
+                        <div class="power-up-name">Temps</div>
+                        <div class="power-up-description">+30 secondes</div>
+                    </div>
+                    <div class="power-up" id="skip-power">
+                        <div class="power-up-icon">⏭️</div>
+                        <div class="power-up-name">Passer</div>
+                        <div class="power-up-description">Mot suivant</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="enigma-scroll-nature.js"></script>
+    <script src="enigma-scroll-core.js"></script>
+    
+    <!-- Modale des règles du jeu -->
+    <div class="modal rules-modal" id="rulesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Règles du jeu</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Bienvenue dans <strong>Enigma Scroll: Nature's Whisper</strong>, un jeu de mots mystérieux !</p>
+                
+                <h3>Objectif :</h3>
+                <p>Devine le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, tu gagnes des points et accèdes à un nouveau mot !</p>
+                
+                <h3>Comment jouer :</h3>
+                <ul>
+                    <li>Appuie sur les lettres pour former un mot de 5 lettres.</li>
+                    <li>La première lettre est déjà révélée. Trouve les autres lettres.</li>
+                    <li>Clique sur "Enter" pour valider ton mot.</li>
+                    <li>Si le mot est correct, tu gagnes des points et passes au mot suivant.</li>
+                    <li>Si le mot est incorrect, essaie encore. Attention, tu as un nombre limité d'essais !</li>
+                </ul>
+                
+                <h3>Indices de couleur :</h3>
+                <ul>
+                    <li><span class="color-example correct"></span> Vert : La lettre est correcte et bien placée.</li>
+                    <li><span class="color-example present"></span> Jaune : La lettre est dans le mot mais mal placée.</li>
+                    <li><span class="color-example incorrect"></span> Marron : La lettre n'est pas dans le mot.</li>
+                </ul>
+                
+                <h3>Power-ups :</h3>
+                <ul>
+                    <li><strong>Indice</strong> : Révèle une lettre aléatoire du mot (3 utilisations).</li>
+                    <li><strong>Temps</strong> : Ajoute 10 secondes au chronomètre (2 utilisations).</li>
+                    <li><strong>Passer</strong> : Passe au mot suivant (1 utilisation).</li>
+                </ul>
+                
+                <p>Tu as 60 secondes pour trouver autant de mots que possible. Chaque mot correct te rapporte 10 points et 10 secondes supplémentaires !</p>
+                
+                <p>Bonne chance et que la nature guide tes mots !</p>
+            </div>
+            <div class="modal-footer">
+                <button class="nature-btn modal-close-btn">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modale de fin de jeu et scores -->
+    <div class="modal game-over-modal" id="gameOverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Partie terminée</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Votre aventure magique est terminée !</p>
+                
+                <div class="name-input-container">
+                    <label for="playerNameInput">Entrez votre nom pour le classement :</label>
+                    <input type="text" id="playerNameInput" class="name-input" placeholder="Votre nom" maxlength="20" required>
+                </div>
+                
+                <div class="score-container">
+                    <div class="score-item">
+                        <h3>Votre score</h3>
+                        <p class="final-score"><span id="finalScore">0</span> points</p>
+                        <p>Mots trouvés : <span id="finalWordsFound">0</span></p>
+                    </div>
+                    <div class="score-item">
+                        <h3>Meilleur score</h3>
+                        <p class="top-score"><span id="topScore">0</span> points</p>
+                    </div>
+                </div>
+                
+                <div class="recent-scores">
+                    <h3>Top 3 scores</h3>
+                    <div id="top-scores-list"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="submitScoreButton" class="nature-btn">Sauvegarder le score</button>
+                <button id="playAgainButton" class="nature-btn">Rejouer</button>
+                <a href="leaderboard.html" class="nature-btn">Voir tous les scores</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

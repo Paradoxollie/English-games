@@ -13,6 +13,78 @@ let gameEnhancer;
 let verbParticles;
 let magicPortal;
 
+// Fonction pour initialiser la modale des règles
+function initRulesModal() {
+    // Afficher la modale des règles au chargement
+    showRulesModal();
+    
+    // Gestionnaire pour le bouton d'aide
+    const helpButton = document.getElementById('help-button');
+    if (helpButton) {
+        helpButton.addEventListener('click', showRulesModal);
+    }
+    
+    // Gestionnaires pour les boutons de fermeture
+    const closeButtons = document.querySelectorAll('.modal-close, .modal-close-btn');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', closeModals);
+    });
+    
+    // Fermer les modales en cliquant à l'extérieur du contenu
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModals();
+            }
+        });
+    });
+    
+    // Fermer les modales avec la touche Echap
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeModals();
+        }
+    });
+}
+
+// Fonction pour afficher la modale des règles
+function showRulesModal() {
+    const rulesModal = document.getElementById('rulesModal');
+    if (!rulesModal) return;
+    
+    // Fermer d'abord toutes les modales
+    closeModals();
+    
+    // Afficher la modale des règles
+    rulesModal.classList.add('show');
+    rulesModal.style.display = 'flex';
+    rulesModal.style.opacity = '1';
+    rulesModal.style.visibility = 'visible';
+    
+    console.log("Modale des règles affichée");
+}
+
+// Fonction pour fermer toutes les modales
+function closeModals() {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (modal) {
+            modal.classList.remove('show');
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            
+            setTimeout(() => {
+                if (!modal.classList.contains('show')) {
+                    modal.style.display = 'none';
+                }
+            }, 500);
+        }
+    });
+    
+    console.log("Modales fermées");
+}
+
 // Liste des verbes
 const verbs = {
     "become": ["became", "become", "devenir"],
@@ -558,18 +630,8 @@ function loadTopScores() {
         });
 }
 
-// Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', (event) => {
-    const startButton = document.getElementById("start-button");
-    const checkButton = document.getElementById("check-button");
-    const skipButton = document.getElementById("skip-button");
-
-    if (startButton) startButton.addEventListener("click", startGame);
-    if (checkButton) checkButton.addEventListener("click", checkVerb);
-    if (skipButton) skipButton.addEventListener("click", skipVerb);
-
-    loadTopScores();
-    
+// Fonction pour initialiser les effets visuels
+function initVisualEffects() {
     // Référencer l'instance de GameEnhancer créée dans le HTML
     if (window.gameEnhancerInstance) {
         gameEnhancer = window.gameEnhancerInstance;
@@ -580,7 +642,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
         input.classList.add('verb-input');
     });
     
-    // Ajouter des effets de survol pour les éléments interactifs
+    // Autres effets visuels...
+    loadTopScores();
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', (event) => {
+    const startButton = document.getElementById("start-button");
+    const checkButton = document.getElementById("check-button");
+    const skipButton = document.getElementById("skip-button");
+
+    if (startButton) startButton.addEventListener("click", startGame);
+    if (checkButton) checkButton.addEventListener("click", checkVerb);
+    if (skipButton) skipButton.addEventListener("click", skipVerb);
+    
+    // Initialiser les animations et effets
+    initVisualEffects();
+    
+    // Initialiser la modale des règles
+    initRulesModal();
+    
+    // Dynamiser les éléments interactifs
     document.getElementById('verb-display').classList.add('interactive-element');
     document.getElementById('verb-translation').classList.add('interactive-element');
 });

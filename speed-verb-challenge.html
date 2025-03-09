@@ -58,6 +58,7 @@
             overflow: hidden;
             background-color: #020617; /* Fond très sombre pour éviter les espaces vides */
             padding-bottom: 50px; /* Espace supplémentaire en bas */
+            padding-top: 60px; /* Espace pour la barre de navigation */
         }
         
         /* Effets de particules améliorés */
@@ -412,10 +413,114 @@
         }
         
         .leaderboard-scroll {
-            height: 250px;
-            max-height: 250px;
+            height: auto;
+            max-height: 400px;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
+            padding: 0.5rem;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .leaderboard-table thead th {
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            color: #3b82f6;
+            font-family: 'MedievalSharp', cursive;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+        
+        .leaderboard-table tbody tr {
+            background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+        }
+        
+        .leaderboard-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-left: 3px solid rgba(59, 130, 246, 0.5);
+        }
+        
+        .leaderboard-table td {
+            padding: 0.75rem 0.5rem;
+            color: #e5e7eb;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .leaderboard-table .rank-cell {
+            font-weight: bold;
+            color: #3b82f6;
+            font-size: 1.2rem;
+            width: 60px;
+            text-align: center;
+        }
+        
+        .leaderboard-table .player-cell {
+            font-weight: 600;
+            color: #93c5fd;
+        }
+        
+        .leaderboard-table .score-cell {
+            font-weight: 600;
+            color: #dbeafe;
+        }
+        
+        .leaderboard-table .date-cell {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+        
+        /* Top 3 styles */
+        .leaderboard-table tbody tr:nth-child(1) {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border-left: 3px solid gold;
+        }
+        
+        .leaderboard-table tbody tr:nth-child(2) {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
+            border-left: 3px solid silver;
+        }
+        
+        .leaderboard-table tbody tr:nth-child(3) {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.1), rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
+            border-left: 3px solid #cd7f32;
+        }
+        
+        .loading-row td {
+            text-align: center;
+            padding: 2rem 0;
+            color: #3b82f6;
+        }
+        
+        .loading-text {
+            font-family: 'MedievalSharp', cursive;
+            font-style: italic;
+            display: inline-block;
+            position: relative;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            animation: loadingDots 1.5s infinite;
+        }
+        
+        @keyframes loadingDots {
+            0% { content: "."; }
+            33% { content: ".."; }
+            66% { content: "..."; }
+            100% { content: ""; }
         }
         
         /* Correction pour les panneaux de jeu */
@@ -444,23 +549,825 @@
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
         }
+        
+        /* Styles pour la modale */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .modal.show {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .modal.persistent {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #172039 0%, #0c111e 100%);
+            color: #e5e7eb;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), 0 0 50px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 2px solid #3b82f6;
+            animation: modalGlow 3s infinite alternate;
+            pointer-events: auto;
+            padding: 0;
+        }
+        
+        @keyframes modalGlow {
+            0% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), 0 0 50px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.5), 0 0 60px rgba(0, 0, 0, 0.6); }
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, #172039, #1e293b);
+            padding: 1.5rem;
+            border-bottom: 1px solid #3b82f6;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-title {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.8rem;
+            color: #3b82f6;
+            text-align: center;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            letter-spacing: 1px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #3b82f6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        
+        .modal-close:hover {
+            background-color: rgba(59, 130, 246, 0.2);
+            transform: scale(1.1);
+            color: #93c5fd;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #d1d5db;
+        }
+        
+        .modal-body h3 {
+            font-family: 'MedievalSharp', cursive;
+            color: #93c5fd;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        .modal-body ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-body li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 0.5rem;
+        }
+        
+        .modal-body li::before {
+            content: "•";
+            color: #3b82f6;
+            position: absolute;
+            left: -1rem;
+            top: 0;
+            font-size: 1.2rem;
+        }
+        
+        .modal-body strong {
+            color: #93c5fd;
+            font-weight: 600;
+        }
+        
+        /* Styles spécifiques pour la modale enrichie */
+        .modal-body .drop-cap {
+            font-size: 2.5em;
+            float: left;
+            line-height: 0.8em;
+            margin-right: 0.2em;
+            color: #3b82f6;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+        
+        .modal-body .highlight-text {
+            color: #93c5fd;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+        
+        .modal-body .warning-text {
+            color: #f87171;
+            font-weight: 600;
+        }
+        
+        .modal-body .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .modal-body .rule-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .modal-body .rule-icon {
+            font-size: 1.8rem;
+            margin-right: 1rem;
+            align-self: flex-start;
+            display: inline-block;
+        }
+        
+        .modal-body .animated-icon {
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        .modal-body .rule-content {
+            flex: 1;
+        }
+        
+        .modal-body .rule-title {
+            font-family: 'MedievalSharp', cursive;
+            color: #3b82f6;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .modal-body .sub-rules {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+        }
+        
+        .modal-body .sub-rules li {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 4px;
+            border-left: 3px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .modal-body .sub-rules li::before {
+            content: none;
+        }
+        
+        .modal-body .path-text {
+            font-weight: 600;
+            color: #3b82f6;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        
+        .modal-body .path-description {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 0.2rem;
+        }
+        
+        .modal-body .path-reward {
+            font-size: 0.85em;
+            color: #93c5fd;
+            font-style: italic;
+        }
+        
+        .modal-body .special-powers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-body .power-item {
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .modal-body .power-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .modal-body .power-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        .modal-body .power-name {
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 0.3rem;
+        }
+        
+        .modal-body .power-desc {
+            font-size: 0.9em;
+        }
+        
+        .modal-body .cumulative-bonus {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            display: inline-block;
+            margin-left: 4px;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.3);
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Bouton d'aide flottant */
+        .help-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #172039, #0c111e);
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .help-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            border-color: #93c5fd;
+        }
+        
+        .help-icon {
+            font-size: 2rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        @media (max-width: 600px) {
+            .help-button {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .help-icon {
+                font-size: 1.5rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+        }
+        
+        .game-over-actions {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        /* Styles pour les scores récents */
+        .recent-scores {
+            border-top: 1px solid rgba(59, 130, 246, 0.3);
+            padding-top: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .recent-scores-title {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .recent-scores-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .recent-scores-list li {
+            background: rgba(59, 130, 246, 0.05);
+            margin-bottom: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            border-left: 3px solid rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .recent-scores-list li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-left: 3px solid rgba(59, 130, 246, 0.7);
+        }
+        
+        .recent-scores-list .score-info {
+            font-weight: 600;
+            color: #93c5fd;
+        }
+        
+        .recent-scores-list .score-details {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .recent-scores-list .score-date {
+            font-style: italic;
+        }
+        
+        .loading-recent-scores {
+            text-align: center;
+            color: #3b82f6;
+            font-family: 'MedievalSharp', cursive;
+            font-style: italic;
+            padding: 1rem;
+        }
+        
+        /* Mise à jour de la structure de la section de jeu */
+        .game-sections {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .gameplay-panel {
+            width: 100%;
+            margin: 0 auto;
+            max-width: 900px;
+        }
+        
+        /* Ajustements pour l'écran de fin de jeu */
+        .results-container {
+            background: linear-gradient(135deg, rgba(23, 32, 57, 0.8), rgba(12, 17, 30, 0.9));
+            border-radius: 10px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 700px;
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2), inset 0 0 15px rgba(59, 130, 246, 0.1);
+            margin-top: 1.5rem;
+        }
+        
+        /* Ajout d'un onglet pour basculer entre les scores récents et le leaderboard */
+        .score-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .score-tab {
+            padding: 0.75rem 1.5rem;
+            font-family: 'MedievalSharp', cursive;
+            color: #93c5fd;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .score-tab.active {
+            color: #3b82f6;
+            border-bottom: 3px solid #3b82f6;
+            font-weight: bold;
+        }
+        
+        .score-tab:hover:not(.active) {
+            color: #60a5fa;
+            border-bottom: 3px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .score-content {
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .score-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Nouvelle barre de navigation inspirée de Word Bubbles */
+        .game-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(12, 17, 30, 0.95) 0%, rgba(18, 27, 47, 0.9) 100%);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            padding: 0.5rem 0;
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .game-nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+        
+        .game-nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .game-nav-logo img {
+            width: 40px;
+            height: 40px;
+            margin-right: 0.5rem;
+            filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+        }
+        
+        .game-nav-title {
+            font-family: 'MedievalSharp', cursive;
+            color: #3b82f6;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            margin: 0;
+        }
+        
+        .game-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .game-nav-link {
+            color: #d1d5db;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-nav-link:hover, .game-nav-link.active {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .game-nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .game-nav-link:hover::after, .game-nav-link.active::after {
+            width: 80%;
+        }
+        
+        .game-nav-link.active {
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+        
+        .game-nav-home-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
+        }
+        
+        .game-nav-home-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Ajustement du contenu du jeu pour la barre de navigation fixe */
+        .game-universe {
+            padding-top: 60px; /* Espace pour la barre de navigation */
+        }
+        
+        /* Styles responsives */
+        @media (max-width: 600px) {
+            .game-nav-title {
+                font-size: 1rem;
+            }
+            
+            .game-nav-links {
+                gap: 0.2rem;
+            }
+            
+            .game-nav-link {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Styles pour la nouvelle barre de navigation style Word Bubbles */
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header-content {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 50px;
+            width: auto;
+            margin-right: 15px;
+            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+        }
+        
+        .main-nav {
+            display: flex;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .nav-link {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: brightness(0) invert(1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover .nav-icon,
+        .nav-link.active .nav-icon {
+            filter: brightness(0) saturate(100%) invert(50%) sepia(70%) saturate(5000%) hue-rotate(200deg) brightness(100%) contrast(101%);
+        }
+        
+        .home-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" fill="currentColor"/></svg>');
+        }
+        
+        .games-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21,6H3C1.9,6 1,6.9 1,8V16C1,17.1 1.9,18 3,18H21C22.1,18 23,17.1 23,16V8C23,6.9 22.1,6 21,6M11,13H8V16H6V13H3V11H6V8H8V11H11M15.5,15C14.67,15 14,14.33 14,13.5C14,12.67 14.67,12 15.5,12C16.33,12 17,12.67 17,13.5C17,14.33 16.33,15 15.5,15M19.5,12C18.67,12 18,11.33 18,10.5C18,9.67 18.67,9 19.5,9C20.33,9 21,9.67 21,10.5C21,11.33 20.33,12 19.5,12Z" fill="currentColor"/></svg>');
+        }
+        
+        .courses-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z M11,7H13V9H11V7M11,11H13V17H11V11Z" fill="currentColor"/></svg>');
+        }
+        
+        .leaderboard-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5,21H2V9H7.5M14,21H8.5V5H14M22,21H15V3H22V21Z" fill="currentColor"/></svg>');
+        }
+        
+        .contact-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z" fill="currentColor"/></svg>');
+        }
+        
+        /* Adapter l'interface principal du jeu */
+        .game-interface {
+            margin-top: 0;
+            padding-top: 20px;
+        }
+        
+        /* Ajustements pour mobile */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .main-nav {
+                overflow-x: auto;
+                padding: 5px 10px;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 6px 10px;
+            }
+            
+            .logo {
+                height: 40px;
+            }
+        }
+        
+        /* Styles pour le sous-titre du jeu */
+        .game-header-content {
+            text-align: center;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        .game-subtitle {
+            font-family: 'Cinzel', serif;
+            color: #e5e7eb;
+            font-size: 1.2rem;
+            margin: 0;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        
+        .magic-text {
+            color: #3b82f6;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
     </style>
 </head>
 <body class="game-body">
-    <!-- Navigation -->
-    <header class="site-header">
-        <div class="container">
-            <a href="index.html" class="site-logo">
-                <img src="./images/logo.gif" alt="English Quest" width="80" height="80">
-            </a>
-            <nav class="main-navigation">
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
-                    <li class="nav-item"><a href="all-games.html" class="nav-link active">Jeux</a></li>
-                    <li class="nav-item"><a href="courses.html" class="nav-link">Cours</a></li>
-                    <li class="nav-item"><a href="leaderboard.html" class="nav-link">Classement</a></li>
-                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                </ul>
+    <!-- En-tête et navigation exactement comme Word Bubbles -->
+    <header class="game-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="./images/logo.gif" alt="English Quest" class="logo">
+                <h1 class="game-title">Speed Verb Challenge</h1>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon home-icon"></span>
+                    Accueil
+                </a>
+                <a href="all-games.html" class="nav-link active">
+                    <span class="nav-icon games-icon"></span>
+                    Jeux
+                </a>
+                <a href="courses.html" class="nav-link">
+                    <span class="nav-icon courses-icon"></span>
+                    Cours
+                </a>
+                <a href="leaderboard.html" class="nav-link">
+                    <span class="nav-icon leaderboard-icon"></span>
+                    Classement
+                </a>
+                <a href="contact.html" class="nav-link">
+                    <span class="nav-icon contact-icon"></span>
+                    Contact
+                </a>
             </nav>
         </div>
     </header>
@@ -481,129 +1388,15 @@
         
         <!-- Game UI -->
         <main class="game-interface">
-            <!-- Game header -->
-            <header class="game-header">
-                <h1 class="game-title">Speed Verb Challenge</h1>
+            <!-- Game header - Sous-titre centré -->
+            <div class="game-header-content">
                 <p class="game-subtitle">Maîtrisez les sorts anciens du <span class="magic-text">Lexicon Arcanum</span></p>
-            </header>
+            </div>
 
             <!-- Game sections -->
             <div class="game-sections">
-                <!-- Left panel: Rules & Leaderboard -->
-                <section class="game-panel rules-panel depth-card">
-                    <div class="panel-content">
-                        <h2 class="panel-title">La Quête</h2>
-                        <div class="quest-scroll">
-                            <div class="quest-description">
-                                <p><span class="drop-cap">B</span>rave lanceur de sorts, vous vous tenez devant l'<span class="highlight-text">Épreuve des Verbes</span>, un défi ancestral qui a mis à l'épreuve les plus dignes linguistes arcanes depuis des éons.</p>
-                                
-                                <h3>Votre Mission</h3>
-                                <p>Conjuguez correctement les sorts de verbes qui apparaissent depuis le portail arcanique. Chaque incantation correcte renforce vos pouvoirs magiques et vous rapporte des points d'essence.</p>
-                                
-                                <h3>Les Règles</h3>
-                                <ul>
-                                    <li class="rule-item">
-                                        <span class="rule-icon animated-icon">⏳</span>
-                                        <div class="rule-content">
-                                            <h4 class="rule-title">Temps Limité</h4>
-                                            <p>Votre magie ne dure que <span class="highlight-text">90 secondes</span>. Utilisez-les sagement.</p>
-                                        </div>
-                                    </li>
-                                    
-                                    <li class="rule-item">
-                                        <span class="rule-icon animated-icon">🎯</span>
-                                        <div class="rule-content">
-                                            <h4 class="rule-title">Voies Arcaniques</h4>
-                                            <p>Choisissez une des voies suivantes:</p>
-                                            <ul class="sub-rules">
-                                                <li>
-                                                    <span class="path-text">Voie de l'Apprenti ⚔️</span>
-                                                    <span class="path-description">Conjuration du Passé Simple uniquement</span>
-                                                    <span class="path-reward">(1 point d'essence)</span>
-                                                </li>
-                                                <li>
-                                                    <span class="path-text">Voie de l'Adepte ⚔️⚔️</span>
-                                                    <span class="path-description">Invocation du Participe Passé uniquement</span>
-                                                    <span class="path-reward">(2 points d'essence)</span>
-                                                </li>
-                                                <li>
-                                                    <span class="path-text">Voie du Maître ⚔️⚔️⚔️</span>
-                                                    <span class="path-description">Enchantement complet du verbe - les deux formes</span>
-                                                    <span class="path-reward">(3 points d'essence)</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </li>
-                                    
-                                    <li class="rule-item">
-                                        <span class="rule-icon animated-icon">🔄</span>
-                                        <div class="rule-content">
-                                            <h4 class="rule-title">Bannissement</h4>
-                                            <p>Vous pouvez bannir les sorts difficiles, mais <span class="warning-text">aucune essence n'est récoltée</span> pour ces sorts.</p>
-                                        </div>
-                                    </li>
-                                </ul>
-                                
-                                <h3>Récompenses</h3>
-                                <p>Enchaînez les sorts corrects pour construire des <span class="highlight-text">combos arcaniques</span> ! Chaque incantation correcte consécutive amplifie votre multiplicateur d'essence.</p>
-                                <p>Montez en niveau pour prolonger votre temps et débloquer des <span class="highlight-text">capacités spéciales</span> !</p>
-                                
-                                <div class="special-powers">
-                                    <div class="power-item">
-                                        <div class="power-icon">🔮</div>
-                                        <div class="power-name">Dilatation Temporelle</div>
-                                        <div class="power-desc">Niveau 2 : +10 secondes</div>
-                                    </div>
-                                    <div class="power-item">
-                                        <div class="power-icon">✨</div>
-                                        <div class="power-name">Amplificateur d'Essence</div>
-                                        <div class="power-desc">Niveau 3 : +0.2 au multiplicateur <span class="cumulative-bonus">(+10 secondes)</span></div>
-                                    </div>
-                                    <div class="power-item">
-                                        <div class="power-icon">🌟</div>
-                                        <div class="power-name">Récupération de Sort</div>
-                                        <div class="power-desc">Niveau 5 : seconde chance <span class="cumulative-bonus">(+0.2 au multiplicateur, +10 secondes)</span></div>
-                                    </div>
-                                    <div class="power-item">
-                                        <div class="power-icon">⚡</div>
-                                        <div class="power-name">Maîtrise Arcanique</div>
-                                        <div class="power-desc">Niveau 7 : +0.3 au multiplicateur <span class="cumulative-bonus">(+seconde chance, +0.2 au multiplicateur, +10 secondes)</span></div>
-                                    </div>
-                                    <div class="power-item">
-                                        <div class="power-icon">🕰️</div>
-                                        <div class="power-name">Distorsion Temporelle</div>
-                                        <div class="power-desc">Niveau 10 : +15 secondes <span class="cumulative-bonus">(+tous les bonus précédents)</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="leaderboard-container">
-                            <h2 class="panel-title">Légendes Arcaniques</h2>
-                            <div class="leaderboard-scroll">
-                                <table class="leaderboard-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Rang</th>
-                                            <th>Lanceur de sorts</th>
-                                            <th>Essence</th>
-                                            <th>Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="leaderboard-body">
-                                        <!-- Leaderboard entries will be loaded here -->
-                                        <tr class="loading-row">
-                                            <td colspan="4"><span class="loading-text">Invocation des archives ancestrales<span class="loading-dots">...</span></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Right panel: Game area -->
-                <section class="game-panel gameplay-panel depth-card">
+                <!-- Game area -->
+                <section class="game-panel gameplay-panel depth-card" style="width: 100%;">
                     <div class="panel-content">
                         <!-- Game state: start -->
                         <div id="game-start" class="game-state active">
@@ -757,14 +1550,46 @@
                                 <div class="game-over-actions">
                                     <button id="save-score-btn" class="game-button primary-button glow-button">
                                         <span class="button-glow"></span>
-                                        <span class="button-text">Inscrire</span>
-                                        <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
+                                        <span class="button-text">Inscrire mon score</span>
                                     </button>
                                     
                                     <button id="play-again-btn" class="game-button secondary-button glow-button">
                                         <span class="button-text">Nouveau Rituel</span>
-                                        <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
                                     </button>
+                                </div>
+                                
+                                <!-- Onglets pour les scores récents et le leaderboard -->
+                                <div class="score-tabs">
+                                    <button class="score-tab active" data-tab="recent">Mes scores récents</button>
+                                    <button class="score-tab" data-tab="leaderboard">Légendes Arcaniques</button>
+                                </div>
+                                
+                                <!-- Contenu des onglets -->
+                                <div id="recent-scores-content" class="score-content active">
+                                    <ul id="recent-scores-list" class="recent-scores-list">
+                                        <li class="loading-recent-scores">Chargement de vos scores récents...</li>
+                                    </ul>
+                                </div>
+                                
+                                <div id="leaderboard-content" class="score-content">
+                                    <div class="leaderboard-scroll">
+                                        <table class="leaderboard-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Rang</th>
+                                                    <th>Lanceur de sorts</th>
+                                                    <th>Essence</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="leaderboard-body">
+                                                <!-- Leaderboard entries will be loaded here -->
+                                                <tr class="loading-row">
+                                                    <td colspan="4"><span class="loading-text">Invocation des archives ancestrales<span class="loading-dots">...</span></span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1019,6 +1844,270 @@
             // Appeler la fonction au chargement et au redimensionnement
             adjustViewportHeight();
             window.addEventListener('resize', adjustViewportHeight);
+            
+            // Afficher la modale des règles après un court délai pour s'assurer que tout est chargé
+            setTimeout(function() {
+                const rulesModal = document.getElementById('rulesModal');
+                if (rulesModal) {
+                    console.log("Affichage automatique de la modale des règles");
+                    rulesModal.classList.add('show');
+                    rulesModal.style.display = 'flex';
+                    rulesModal.style.opacity = '1';
+                    rulesModal.style.visibility = 'visible';
+                    rulesModal.style.zIndex = '9999';
+                } else {
+                    console.error("La modale des règles n'a pas été trouvée");
+                }
+            }, 800);
+        });
+    </script>
+
+    <!-- Modale des règles du jeu -->
+    <div class="modal rules-modal" id="rulesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Règles du jeu</h2>
+                <button class="modal-close" onclick="document.getElementById('rulesModal').classList.remove('show'); document.getElementById('rulesModal').style.opacity = '0'; document.getElementById('rulesModal').style.visibility = 'hidden'; setTimeout(() => { document.getElementById('rulesModal').style.display = 'none'; }, 500);">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><span class="drop-cap">B</span>rave lanceur de sorts, vous vous tenez devant l'<span class="highlight-text">Épreuve des Verbes</span>, un défi ancestral qui a mis à l'épreuve les plus dignes linguistes arcanes depuis des éons.</p>
+                
+                <h3>Votre Mission</h3>
+                <p>Conjuguez correctement les sorts de verbes qui apparaissent depuis le portail arcanique. Chaque incantation correcte renforce vos pouvoirs magiques et vous rapporte des points d'essence.</p>
+                
+                <h3>Les Règles</h3>
+                <ul class="rules-list">
+                    <li class="rule-item">
+                        <span class="rule-icon animated-icon">⏳</span>
+                        <div class="rule-content">
+                            <h4 class="rule-title">Temps Limité</h4>
+                            <p>Votre magie ne dure que <span class="highlight-text">90 secondes</span>. Utilisez-les sagement.</p>
+                        </div>
+                    </li>
+                    
+                    <li class="rule-item">
+                        <span class="rule-icon animated-icon">🎯</span>
+                        <div class="rule-content">
+                            <h4 class="rule-title">Voies Arcaniques</h4>
+                            <p>Choisissez une des voies suivantes:</p>
+                            <ul class="sub-rules">
+                                <li>
+                                    <span class="path-text">Voie de l'Apprenti ⚔️</span>
+                                    <span class="path-description">Conjuration du Passé Simple uniquement</span>
+                                    <span class="path-reward">(1 point d'essence)</span>
+                                </li>
+                                <li>
+                                    <span class="path-text">Voie de l'Adepte ⚔️⚔️</span>
+                                    <span class="path-description">Invocation du Participe Passé uniquement</span>
+                                    <span class="path-reward">(2 points d'essence)</span>
+                                </li>
+                                <li>
+                                    <span class="path-text">Voie du Maître ⚔️⚔️⚔️</span>
+                                    <span class="path-description">Enchantement complet du verbe - les deux formes</span>
+                                    <span class="path-reward">(3 points d'essence)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    
+                    <li class="rule-item">
+                        <span class="rule-icon animated-icon">🔄</span>
+                        <div class="rule-content">
+                            <h4 class="rule-title">Bannissement</h4>
+                            <p>Vous pouvez bannir les sorts difficiles, mais <span class="warning-text">aucune essence n'est récoltée</span> pour ces sorts.</p>
+                        </div>
+                    </li>
+                </ul>
+                
+                <h3>Comment jouer</h3>
+                <ul>
+                    <li>Un verbe à l'infinitif s'affiche au centre</li>
+                    <li>Entrez les formes du <strong>prétérit</strong> et du <strong>participe passé</strong></li>
+                    <li>Utilisez TAB pour passer d'un champ à l'autre</li>
+                    <li>Validez avec ENTRÉE pour passer au verbe suivant</li>
+                </ul>
+                
+                <h3>Récompenses</h3>
+                <p>Enchaînez les sorts corrects pour construire des <span class="highlight-text">combos arcaniques</span> ! Chaque incantation correcte consécutive amplifie votre multiplicateur d'essence.</p>
+                <p>Montez en niveau pour prolonger votre temps et débloquer des <span class="highlight-text">capacités spéciales</span> !</p>
+                
+                <div class="special-powers">
+                    <div class="power-item">
+                        <div class="power-icon">🔮</div>
+                        <div class="power-name">Dilatation Temporelle</div>
+                        <div class="power-desc">Niveau 2 : +10 secondes</div>
+                    </div>
+                    <div class="power-item">
+                        <div class="power-icon">✨</div>
+                        <div class="power-name">Amplificateur d'Essence</div>
+                        <div class="power-desc">Niveau 3 : +0.2 au multiplicateur <span class="cumulative-bonus">(+10 secondes)</span></div>
+                    </div>
+                    <div class="power-item">
+                        <div class="power-icon">🌟</div>
+                        <div class="power-name">Récupération de Sort</div>
+                        <div class="power-desc">Niveau 5 : seconde chance <span class="cumulative-bonus">(+0.2 au multiplicateur, +10 secondes)</span></div>
+                    </div>
+                    <div class="power-item">
+                        <div class="power-icon">⚡</div>
+                        <div class="power-name">Maîtrise Arcanique</div>
+                        <div class="power-desc">Niveau 7 : +0.3 au multiplicateur <span class="cumulative-bonus">(+seconde chance, +0.2 au multiplicateur, +10 secondes)</span></div>
+                    </div>
+                    <div class="power-item">
+                        <div class="power-icon">🕰️</div>
+                        <div class="power-name">Distorsion Temporelle</div>
+                        <div class="power-desc">Niveau 10 : +15 secondes <span class="cumulative-bonus">(+tous les bonus précédents)</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="mmorpg-button modal-close-btn" onclick="document.getElementById('rulesModal').classList.remove('show'); document.getElementById('rulesModal').style.opacity = '0'; document.getElementById('rulesModal').style.visibility = 'hidden'; setTimeout(() => { document.getElementById('rulesModal').style.display = 'none'; }, 500);">J'ai compris</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton d'aide flottant -->
+    <button id="help-button" class="help-button" onclick="const rulesModal = document.getElementById('rulesModal'); rulesModal.classList.add('show'); rulesModal.style.display = 'flex'; rulesModal.style.opacity = '1'; rulesModal.style.visibility = 'visible'; rulesModal.style.zIndex = '9999';">
+        <span class="help-icon">?</span>
+    </button>
+    
+    <!-- Script final pour garantir l'affichage de la modale -->
+    <script>
+        // Afficher la modale des règles avec un délai pour s'assurer que tout est bien chargé
+        window.onload = function() {
+            setTimeout(function() {
+                const rulesModal = document.getElementById('rulesModal');
+                if (rulesModal) {
+                    console.log("Affichage de la modale des règles depuis window.onload");
+                    rulesModal.classList.add('show');
+                    rulesModal.style.display = 'flex';
+                    rulesModal.style.opacity = '1';
+                    rulesModal.style.visibility = 'visible';
+                    rulesModal.style.zIndex = '9999';
+                }
+            }, 1000);
+            
+            // Gestion des onglets de scores
+            document.querySelectorAll('.score-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Retirer la classe active de tous les onglets
+                    document.querySelectorAll('.score-tab').forEach(t => t.classList.remove('active'));
+                    // Ajouter la classe active à l'onglet cliqué
+                    this.classList.add('active');
+                    
+                    // Cacher tous les contenus d'onglet
+                    document.querySelectorAll('.score-content').forEach(content => content.classList.remove('active'));
+                    // Afficher le contenu correspondant à l'onglet
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId + '-scores-content').classList.add('active');
+                    
+                    // Si l'onglet leaderboard est activé, forcer le rechargement du tableau des scores
+                    if (tabId === 'leaderboard' && typeof loadTopScores === 'function') {
+                        loadTopScores();
+                    }
+                });
+            });
+            
+            // Observer les changements d'affichage de l'écran de fin de jeu
+            const gameOverObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        const gameOver = document.getElementById('game-over');
+                        if (gameOver && gameOver.classList.contains('active')) {
+                            console.log("Fin de jeu detectée, chargement des scores...");
+                            // Charger les scores récents et les top scores quand le game over est affiché
+                            if (typeof loadTopScores === 'function') {
+                                setTimeout(function() {
+                                    loadTopScores();
+                                    console.log("Top scores chargés");
+                                }, 500);
+                            } else {
+                                console.error("La fonction loadTopScores n'est pas définie");
+                            }
+                        }
+                    }
+                });
+            });
+            
+            const gameOver = document.getElementById('game-over');
+            if (gameOver) {
+                gameOverObserver.observe(gameOver, { attributes: true });
+            }
+        };
+    </script>
+    
+    <!-- Ajout d'un script de secours pour le chargement des top scores -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Définir la fonction de chargement des top scores si elle n'existe pas déjà
+            if (typeof window.loadTopScores !== 'function') {
+                window.loadTopScores = function() {
+                    console.log("Chargement des meilleurs scores...");
+                    const leaderboardBody = document.getElementById('leaderboard-body');
+                    
+                    if (!leaderboardBody) {
+                        console.error("Le tableau des scores n'a pas été trouvé");
+                        return;
+                    }
+                    
+                    // Afficher un message de chargement
+                    leaderboardBody.innerHTML = '<tr class="loading-row"><td colspan="4"><span class="loading-text">Invocation des archives ancestrales<span class="loading-dots">...</span></span></td></tr>';
+                    
+                    // Vérifier si Firebase est disponible
+                    if (typeof firebase !== 'undefined' && firebase.firestore) {
+                        const db = firebase.firestore();
+                        
+                        db.collection("speed-verb-scores")
+                            .orderBy("score", "desc")
+                            .limit(10)
+                            .get()
+                            .then((querySnapshot) => {
+                                if (querySnapshot.empty) {
+                                    leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Aucun score trouvé. Soyez le premier à inscrire votre nom !</td></tr>';
+                                    return;
+                                }
+                                
+                                let html = '';
+                                let rank = 1;
+                                
+                                querySnapshot.forEach((doc) => {
+                                    const data = doc.data();
+                                    const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Date inconnue';
+                                    
+                                    html += `
+                                    <tr>
+                                        <td class="rank-cell">${rank}</td>
+                                        <td class="player-cell">${data.name || 'Anonyme'}</td>
+                                        <td class="score-cell">${data.score}</td>
+                                        <td class="date-cell">${date}</td>
+                                    </tr>
+                                    `;
+                                    rank++;
+                                });
+                                
+                                leaderboardBody.innerHTML = html;
+                            })
+                            .catch((error) => {
+                                console.error("Erreur lors du chargement des scores: ", error);
+                                leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Erreur lors du chargement des scores.</td></tr>';
+                            });
+                    } else {
+                        console.error("Firebase n'est pas disponible");
+                        leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Service de scores indisponible.</td></tr>';
+                    }
+                };
+            }
+            
+            // Surveiller l'état du jeu
+            const checkGameOver = setInterval(function() {
+                const gameOver = document.getElementById('game-over');
+                if (gameOver && window.getComputedStyle(gameOver).display !== 'none') {
+                    console.log("Fin de jeu détectée (interval)");
+                    if (typeof loadTopScores === 'function') {
+                        loadTopScores();
+                    }
+                    clearInterval(checkGameOver);
+                }
+            }, 2000);
         });
     </script>
 </body>
