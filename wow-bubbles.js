@@ -20,7 +20,7 @@ let currentWord = '';
 
 // Configuration des bulles
 let MIN_ORBS = 2;  // Nombre minimum de bulles à l'écran
-let MAX_ORBS = 15; // Nombre maximum de bulles à l'écran
+let MAX_ORBS = 6; // Nombre maximum de bulles à l'écran
 let orbSpawnTimer = null; // Référence au timer pour contrôler la génération de bulles
 
 // Nouvelles variables pour les fonctionnalités avancées
