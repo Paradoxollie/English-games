@@ -18,6 +18,11 @@ let words = [];
 let usedWords = new Set();
 let currentWord = '';
 
+// Configuration des bulles
+let MIN_ORBS = 2;  // Nombre minimum de bulles à l'écran
+let MAX_ORBS = 15; // Nombre maximum de bulles à l'écran
+let orbSpawnTimer = null; // Référence au timer pour contrôler la génération de bulles
+
 // Nouvelles variables pour les fonctionnalités avancées
 let difficulty = 'normal'; // 'easy', 'normal', 'hard'
 let activeBonus = null;
@@ -578,8 +583,8 @@ function startGame() {
     // Afficher un message de début de partie
     showMessage(`Mode ${getDifficultyName(difficulty)} - Bonne chance !`);
     
-    // Démarrer la génération d'orbes
-    spawnOrb();
+    // Lancer la première vérification pour générer des orbes
+    checkAndSpawnOrbs();
     
     // Démarrer l'animation des orbes
     animateOrbs();
@@ -603,6 +608,14 @@ function updateUI() {
  */
 function spawnOrb() {
     if (!gameActive) return;
+    
+    // Vérifier si nous avons atteint le nombre maximum d'orbes
+    if (orbs.length >= MAX_ORBS) {
+        console.log(`Limite d'orbes atteinte (${orbs.length}/${MAX_ORBS}). Attente avant d'en générer d'autres.`);
+        // Planifier une nouvelle vérification après un délai
+        orbSpawnTimer = setTimeout(checkAndSpawnOrbs, 1000);
+        return;
+    }
     
     // Générer une lettre aléatoire
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -748,18 +761,18 @@ function spawnOrb() {
     
     console.log(`Orbe créé avec la lettre: ${letter}${isSpecial ? ` (Bonus: ${bonusType})` : ''}`);
     
-    // Planifier la création du prochain orbe (délai plus long)
+    // Calculer le délai pour le prochain orbe
     let nextSpawnTime;
     
     switch (difficulty) {
         case 'easy':
-            nextSpawnTime = Math.max(5000, 5500 - (level * 50)); // Délai minimum de 5 secondes (augmenté de 4s à 5s)
+            nextSpawnTime = Math.max(5000, 5500 - (level * 50));
             break;
         case 'normal':
-            nextSpawnTime = Math.max(4000, 4500 - (level * 50)); // Délai minimum de 4 secondes (augmenté de 3.5s à 4s)
+            nextSpawnTime = Math.max(4000, 4500 - (level * 50));
             break;
         case 'hard':
-            nextSpawnTime = Math.max(3500, 4000 - (level * 50)); // Délai minimum de 3.5 secondes (augmenté de 3s à 3.5s)
+            nextSpawnTime = Math.max(3500, 4000 - (level * 50));
             break;
         default:
             nextSpawnTime = Math.max(4000, 4500 - (level * 50));
@@ -775,8 +788,31 @@ function spawnOrb() {
         nextSpawnTime *= 1.5; // Plus de temps entre les orbes pendant la pluie de lettres
     }
     
+    // Planifier la prochaine vérification de génération d'orbes
     if (gameActive) {
-        setTimeout(spawnOrb, nextSpawnTime);
+        orbSpawnTimer = setTimeout(checkAndSpawnOrbs, nextSpawnTime);
+    }
+}
+
+/**
+ * Vérifie le nombre d'orbes actuel et en génère de nouveaux si nécessaire
+ */
+function checkAndSpawnOrbs() {
+    if (!gameActive) return;
+    
+    // Si nous avons moins que le minimum requis d'orbes, en créer immédiatement
+    if (orbs.length < MIN_ORBS) {
+        console.log(`Trop peu d'orbes (${orbs.length}/${MIN_ORBS}), génération immédiate.`);
+        spawnOrb();
+        return;
+    }
+    
+    // Si nous n'avons pas atteint le maximum, générer un nouvel orbe
+    if (orbs.length < MAX_ORBS) {
+        spawnOrb();
+    } else {
+        // Sinon, attendre et vérifier à nouveau plus tard
+        orbSpawnTimer = setTimeout(checkAndSpawnOrbs, 1000);
     }
 }
 
@@ -805,6 +841,11 @@ function animateOrbs() {
             loseLife();
             removeOrb(orb);
             orbs.splice(i, 1);
+            
+            // Vérifier si nous avons besoin de générer plus d'orbes
+            if (orbs.length < MIN_ORBS && !orbSpawnTimer) {
+                orbSpawnTimer = setTimeout(checkAndSpawnOrbs, 500);
+            }
         }
     }
     
@@ -1384,6 +1425,10 @@ function endGame(victory = false) {
     if (specialEventActive) {
         endSpecialEvent();
     }
+    
+    // Arrêter les timers
+    clearTimeout(orbSpawnTimer);
+    orbSpawnTimer = null;
     
     // Petit délai avant d'afficher la modale pour s'assurer que tout est bien nettoyé
     setTimeout(() => {
