@@ -283,7 +283,7 @@ function addAdminTabDirectly() {
 }
 
 // Fonction pour charger la liste des utilisateurs
-function loadUsersList(searchTerm = '') {
+async function loadUsersList(searchTerm = '') {
   console.log("Chargement de la liste des utilisateurs...");
 
   try {
@@ -293,8 +293,24 @@ function loadUsersList(searchTerm = '') {
       return;
     }
 
-    // Récupérer tous les utilisateurs
-    const users = getAllUsers();
+    // Afficher un message de chargement
+    usersListContainer.innerHTML = `
+      <div class="loading-users">
+        <p>Chargement des utilisateurs depuis Firebase...</p>
+      </div>
+    `;
+
+    // Récupérer tous les utilisateurs depuis Firebase
+    let users = {};
+
+    // Vérifier si la fonction Firebase est disponible
+    if (typeof getAllFirebaseData === 'function') {
+      users = await getAllFirebaseData();
+    } else {
+      // Fallback sur les utilisateurs locaux
+      users = getAllUsers();
+    }
+
     console.log("Utilisateurs récupérés:", users);
 
     // Filtrer les utilisateurs si un terme de recherche est fourni
@@ -420,21 +436,52 @@ function loadUsersList(searchTerm = '') {
     });
   } catch (error) {
     console.error("Erreur lors du chargement de la liste des utilisateurs:", error);
+
+    // Afficher un message d'erreur
+    const usersListContainer = document.getElementById('users-list');
+    if (usersListContainer) {
+      usersListContainer.innerHTML = `
+        <div class="error-users">
+          <p>Erreur lors du chargement des utilisateurs: ${error.message}</p>
+          <button id="retry-load-users" class="btn btn-primary">
+            <i class="fas fa-sync"></i> Réessayer
+          </button>
+        </div>
+      `;
+
+      // Ajouter l'écouteur d'événement pour le bouton de réessai
+      const retryButton = document.getElementById('retry-load-users');
+      if (retryButton) {
+        retryButton.addEventListener('click', function() {
+          loadUsersList(searchTerm);
+        });
+      }
+    }
   }
 }
 
 // Fonction pour éditer un utilisateur
-function editUser(userId) {
+async function editUser(userId) {
   console.log("Édition de l'utilisateur:", userId);
 
   try {
-    // Récupérer tous les utilisateurs
-    const users = getAllUsers();
+    // Récupérer tous les utilisateurs depuis Firebase
+    let users = {};
+    let user = null;
 
-    // Récupérer l'utilisateur à éditer
-    const user = users[userId];
+    // Vérifier si la fonction Firebase est disponible
+    if (typeof getAllFirebaseData === 'function') {
+      users = await getAllFirebaseData();
+      user = users[userId];
+    } else {
+      // Fallback sur les utilisateurs locaux
+      users = getAllUsers();
+      user = users[userId];
+    }
+
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
+      alert("Utilisateur non trouvé. Veuillez rafraîchir la liste des utilisateurs.");
       return;
     }
 
@@ -500,53 +547,103 @@ function editUser(userId) {
 
     const saveEditBtn = document.getElementById('save-edit-btn');
     if (saveEditBtn) {
-      saveEditBtn.addEventListener('click', function() {
-        // Récupérer les valeurs du formulaire
-        const username = document.getElementById('edit-username').value;
-        const level = parseInt(document.getElementById('edit-level').value);
-        const xp = parseInt(document.getElementById('edit-xp').value);
-        const coins = parseInt(document.getElementById('edit-coins').value);
-        const isAdmin = document.getElementById('edit-admin').checked;
+      saveEditBtn.addEventListener('click', async function() {
+        // Afficher un indicateur de chargement
+        saveEditBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement...';
+        saveEditBtn.disabled = true;
 
-        // Mettre à jour l'utilisateur
-        user.username = username;
-        user.level = level;
-        user.xp = xp;
-        user.coins = coins;
-        user.isAdmin = isAdmin;
+        try {
+          // Récupérer les valeurs du formulaire
+          const username = document.getElementById('edit-username').value;
+          const level = parseInt(document.getElementById('edit-level').value);
+          const xp = parseInt(document.getElementById('edit-xp').value);
+          const coins = parseInt(document.getElementById('edit-coins').value);
+          const isAdmin = document.getElementById('edit-admin').checked;
 
-        // Sauvegarder les modifications
-        saveUsers(users);
+          // Créer l'objet de mise à jour
+          const userData = {
+            username: username,
+            level: level,
+            xp: xp,
+            coins: coins,
+            isAdmin: isAdmin
+          };
 
-        // Supprimer le formulaire
-        form.remove();
+          // Mettre à jour l'utilisateur dans Firebase
+          let success = false;
 
-        // Afficher la liste des utilisateurs
-        if (usersListContainer) {
-          usersListContainer.style.display = 'block';
+          if (typeof updateFirebaseUser === 'function') {
+            success = await updateFirebaseUser(userId, userData);
+          } else {
+            // Fallback sur la sauvegarde locale
+            user.username = username;
+            user.level = level;
+            user.xp = xp;
+            user.coins = coins;
+            user.isAdmin = isAdmin;
+
+            success = saveUsers(users);
+          }
+
+          if (success) {
+            // Supprimer le formulaire
+            form.remove();
+
+            // Afficher la liste des utilisateurs
+            if (usersListContainer) {
+              usersListContainer.style.display = 'block';
+            }
+
+            // Recharger la liste des utilisateurs
+            await loadUsersList();
+
+            // Afficher un message de succès
+            alert("Utilisateur mis à jour avec succès.");
+          } else {
+            alert("Erreur lors de la mise à jour de l'utilisateur. Veuillez réessayer.");
+
+            // Réactiver le bouton
+            saveEditBtn.innerHTML = 'Enregistrer';
+            saveEditBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error("Erreur lors de la sauvegarde de l'utilisateur:", error);
+          alert("Erreur lors de la mise à jour de l'utilisateur: " + error.message);
+
+          // Réactiver le bouton
+          saveEditBtn.innerHTML = 'Enregistrer';
+          saveEditBtn.disabled = false;
         }
-
-        // Recharger la liste des utilisateurs
-        loadUsersList();
       });
     }
   } catch (error) {
     console.error("Erreur lors de l'édition de l'utilisateur:", error);
+    alert("Erreur lors de l'édition de l'utilisateur: " + error.message);
   }
 }
 
 // Fonction pour ajouter de l'XP à un utilisateur
-function addXP(userId) {
+async function addXP(userId) {
   console.log("Ajout d'XP à l'utilisateur:", userId);
 
   try {
-    // Récupérer tous les utilisateurs
-    const users = getAllUsers();
+    // Récupérer tous les utilisateurs depuis Firebase
+    let users = {};
+    let user = null;
 
-    // Récupérer l'utilisateur
-    const user = users[userId];
+    // Vérifier si la fonction Firebase est disponible
+    if (typeof getAllFirebaseData === 'function') {
+      users = await getAllFirebaseData();
+      user = users[userId];
+    } else {
+      // Fallback sur les utilisateurs locaux
+      users = getAllUsers();
+      user = users[userId];
+    }
+
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
+      alert("Utilisateur non trouvé. Veuillez rafraîchir la liste des utilisateurs.");
       return;
     }
 
@@ -564,36 +661,55 @@ function addXP(userId) {
     }
 
     // Ajouter l'XP
-    user.xp = (user.xp || 0) + xp;
+    let success = false;
 
-    // Mettre à jour le niveau en fonction de l'XP
-    user.level = Math.floor(Math.sqrt(user.xp / 100)) + 1;
+    if (typeof addXPToFirebaseUser === 'function') {
+      // Utiliser la fonction Firebase
+      success = await addXPToFirebaseUser(userId, xp);
+    } else {
+      // Fallback sur la sauvegarde locale
+      user.xp = (user.xp || 0) + xp;
+      user.level = Math.floor(Math.sqrt(user.xp / 100)) + 1;
+      success = saveUsers(users);
+    }
 
-    // Sauvegarder les modifications
-    saveUsers(users);
+    if (success) {
+      // Recharger la liste des utilisateurs
+      await loadUsersList();
 
-    // Recharger la liste des utilisateurs
-    loadUsersList();
-
-    // Afficher un message de confirmation
-    alert(`${xp} XP ajoutés à ${user.username}. Nouveau niveau: ${user.level}`);
+      // Afficher un message de confirmation
+      alert(`${xp} XP ajoutés à ${user.username}.`);
+    } else {
+      alert("Erreur lors de l'ajout d'XP. Veuillez réessayer.");
+    }
   } catch (error) {
     console.error("Erreur lors de l'ajout d'XP:", error);
+    alert("Erreur lors de l'ajout d'XP: " + error.message);
   }
 }
 
 // Fonction pour ajouter des pièces à un utilisateur
-function addCoins(userId) {
+async function addCoins(userId) {
   console.log("Ajout de pièces à l'utilisateur:", userId);
 
   try {
-    // Récupérer tous les utilisateurs
-    const users = getAllUsers();
+    // Récupérer tous les utilisateurs depuis Firebase
+    let users = {};
+    let user = null;
 
-    // Récupérer l'utilisateur
-    const user = users[userId];
+    // Vérifier si la fonction Firebase est disponible
+    if (typeof getAllFirebaseData === 'function') {
+      users = await getAllFirebaseData();
+      user = users[userId];
+    } else {
+      // Fallback sur les utilisateurs locaux
+      users = getAllUsers();
+      user = users[userId];
+    }
+
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
+      alert("Utilisateur non trouvé. Veuillez rafraîchir la liste des utilisateurs.");
       return;
     }
 
@@ -611,54 +727,86 @@ function addCoins(userId) {
     }
 
     // Ajouter les pièces
-    user.coins = (user.coins || 0) + coins;
+    let success = false;
 
-    // Sauvegarder les modifications
-    saveUsers(users);
+    if (typeof addCoinsToFirebaseUser === 'function') {
+      // Utiliser la fonction Firebase
+      success = await addCoinsToFirebaseUser(userId, coins);
+    } else {
+      // Fallback sur la sauvegarde locale
+      user.coins = (user.coins || 0) + coins;
+      success = saveUsers(users);
+    }
 
-    // Recharger la liste des utilisateurs
-    loadUsersList();
+    if (success) {
+      // Recharger la liste des utilisateurs
+      await loadUsersList();
 
-    // Afficher un message de confirmation
-    alert(`${coins} pièces ajoutées à ${user.username}. Nouveau solde: ${user.coins}`);
+      // Afficher un message de confirmation
+      alert(`${coins} pièces ajoutées à ${user.username}.`);
+    } else {
+      alert("Erreur lors de l'ajout de pièces. Veuillez réessayer.");
+    }
   } catch (error) {
     console.error("Erreur lors de l'ajout de pièces:", error);
+    alert("Erreur lors de l'ajout de pièces: " + error.message);
   }
 }
 
 // Fonction pour supprimer un utilisateur
-function deleteUser(userId) {
+async function deleteUser(userId) {
   console.log("Suppression de l'utilisateur:", userId);
 
   try {
-    // Récupérer tous les utilisateurs
-    const users = getAllUsers();
+    // Récupérer tous les utilisateurs depuis Firebase
+    let users = {};
+    let user = null;
 
-    // Récupérer l'utilisateur
-    const user = users[userId];
+    // Vérifier si la fonction Firebase est disponible
+    if (typeof getAllFirebaseData === 'function') {
+      users = await getAllFirebaseData();
+      user = users[userId];
+    } else {
+      // Fallback sur les utilisateurs locaux
+      users = getAllUsers();
+      user = users[userId];
+    }
+
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
+      alert("Utilisateur non trouvé. Veuillez rafraîchir la liste des utilisateurs.");
       return;
     }
 
     // Demander confirmation
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.username}?`)) {
+    if (!confirm(`ATTENTION : Cette action est irréversible. Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.username}?`)) {
       return;
     }
 
     // Supprimer l'utilisateur
-    delete users[userId];
+    let success = false;
 
-    // Sauvegarder les modifications
-    saveUsers(users);
+    if (typeof deleteFirebaseUser === 'function') {
+      // Utiliser la fonction Firebase
+      success = await deleteFirebaseUser(userId);
+    } else {
+      // Fallback sur la sauvegarde locale
+      delete users[userId];
+      success = saveUsers(users);
+    }
 
-    // Recharger la liste des utilisateurs
-    loadUsersList();
+    if (success) {
+      // Recharger la liste des utilisateurs
+      await loadUsersList();
 
-    // Afficher un message de confirmation
-    alert(`L'utilisateur ${user.username} a été supprimé.`);
+      // Afficher un message de confirmation
+      alert(`L'utilisateur ${user.username} a été supprimé avec succès.`);
+    } else {
+      alert("Erreur lors de la suppression de l'utilisateur. Veuillez réessayer.");
+    }
   } catch (error) {
     console.error("Erreur lors de la suppression de l'utilisateur:", error);
+    alert("Erreur lors de la suppression de l'utilisateur: " + error.message);
   }
 }
 
