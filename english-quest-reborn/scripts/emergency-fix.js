@@ -8,19 +8,14 @@ console.log("Script d'urgence chargé");
 // Fonction pour désactiver les fonctionnalités problématiques
 function disableProblematicFeatures() {
   console.log("Désactivation des fonctionnalités problématiques...");
-  
+
   try {
-    // Désactiver la fonction unlockAllSkins
+    // Sauvegarder la fonction unlockAllSkins originale pour pouvoir l'utiliser plus tard
     if (window.unlockAllSkins) {
-      console.log("Désactivation de la fonction unlockAllSkins");
+      console.log("Sauvegarde de la fonction unlockAllSkins originale");
       window.unlockAllSkins_original = window.unlockAllSkins;
-      window.unlockAllSkins = function() {
-        console.log("Fonction unlockAllSkins désactivée");
-        alert("Cette fonctionnalité a été temporairement désactivée pour maintenance.");
-        return false;
-      };
     }
-    
+
     // Désactiver la fonction forceOllieAdmin
     if (window.forceOllieAdmin) {
       console.log("Désactivation de la fonction forceOllieAdmin");
@@ -30,14 +25,14 @@ function disableProblematicFeatures() {
         return true; // Retourner true pour éviter les erreurs
       };
     }
-    
+
     // Désactiver le rechargement automatique de la page
     console.log("Désactivation du rechargement automatique de la page");
     window.location.reload = function() {
       console.log("Rechargement de la page désactivé");
       return false;
     };
-    
+
     // Désactiver les alertes
     console.log("Désactivation des alertes");
     window.alert_original = window.alert;
@@ -45,7 +40,7 @@ function disableProblematicFeatures() {
       console.log("Alerte désactivée:", message);
       return false;
     };
-    
+
     // Désactiver les confirmations
     console.log("Désactivation des confirmations");
     window.confirm_original = window.confirm;
@@ -53,7 +48,7 @@ function disableProblematicFeatures() {
       console.log("Confirmation désactivée:", message);
       return true;
     };
-    
+
     // Désactiver les prompts
     console.log("Désactivation des prompts");
     window.prompt_original = window.prompt;
@@ -61,7 +56,7 @@ function disableProblematicFeatures() {
       console.log("Prompt désactivé:", message);
       return defaultValue;
     };
-    
+
     // Ajouter un bouton d'urgence pour recharger la page
     const emergencyButton = document.createElement('button');
     emergencyButton.id = 'emergency-reload-btn';
@@ -77,16 +72,16 @@ function disableProblematicFeatures() {
     emergencyButton.style.border = 'none';
     emergencyButton.style.borderRadius = '5px';
     emergencyButton.style.cursor = 'pointer';
-    
+
     emergencyButton.addEventListener('click', function() {
       // Utiliser la méthode originale pour recharger la page
       window.location.href = window.location.href;
     });
-    
+
     document.body.appendChild(emergencyButton);
-    
+
     console.log("Fonctionnalités problématiques désactivées avec succès");
-    
+
     // Ajouter un message d'information
     const infoMessage = document.createElement('div');
     infoMessage.id = 'emergency-info';
@@ -101,7 +96,7 @@ function disableProblematicFeatures() {
     infoMessage.style.fontWeight = 'bold';
     infoMessage.style.border = 'none';
     infoMessage.style.borderRadius = '5px';
-    
+
     document.body.appendChild(infoMessage);
   } catch (error) {
     console.error("Erreur lors de la désactivation des fonctionnalités problématiques:", error);

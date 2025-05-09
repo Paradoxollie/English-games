@@ -900,13 +900,25 @@ function deleteUser(userId) {
 
 // Débloquer tous les skins pour l'utilisateur courant
 function unlockAllSkins() {
-  console.log("Débloquage de tous les skins...");
+  console.log("Débloquage des skins depuis admin.js...");
+
+  // Vérifier si la fonction existe dans admin-fix.js
+  if (window.unlockAllSkins_original) {
+    console.log("Utilisation de la fonction unlockAllSkins_original");
+    return window.unlockAllSkins_original();
+  }
 
   // Récupérer l'utilisateur courant en utilisant notre fonction robuste
   const currentUser = getCurrentUserFromAllSources();
 
   if (!currentUser) {
     console.error("Aucun utilisateur connecté");
+    return;
+  }
+
+  // Vérifier si les skins sont déjà débloqués
+  if (currentUser.hasAllSkins && currentUser.skinsUnlocked) {
+    console.log("Les skins sont déjà débloqués pour cet utilisateur");
     return;
   }
 
@@ -923,23 +935,6 @@ function unlockAllSkins() {
       accessory: ['none'],
       background: ['default']
     };
-
-    // Parcourir toutes les catégories du catalogue pour s'assurer que tous les skins sont débloqués
-    for (const category in skinCatalog) {
-      if (skinCatalog.hasOwnProperty(category)) {
-        // Récupérer tous les IDs de skins pour cette catégorie
-        const skinIds = skinCatalog[category].map(skin => skin.id);
-
-        // S'assurer que tous les skins sont dans la liste des skins débloqués
-        skinIds.forEach(id => {
-          if (!currentUser.skins[category].includes(id)) {
-            currentUser.skins[category].push(id);
-          }
-        });
-      }
-    }
-
-    console.log("Skins débloqués avec succès");
 
     // Marquer que tous les skins sont débloqués
     currentUser.hasAllSkins = true;
@@ -959,7 +954,7 @@ function unlockAllSkins() {
       console.error("Impossible de trouver l'utilisateur pour sauvegarder les skins débloqués");
     }
 
-    // Mettre à jour l'affichage
+    // Mettre à jour l'affichage sans recharger la page
     if (typeof updateSkinCatalog === 'function') {
       updateSkinCatalog();
     }
@@ -974,7 +969,6 @@ function unlockAllSkins() {
 
   } catch (error) {
     console.error("Erreur lors du débloquage des skins:", error);
-    alert("Une erreur s'est produite lors du débloquage des skins. Veuillez réessayer.");
   }
 }
 
@@ -1231,9 +1225,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Ajouter l'onglet d'administration
       addAdminTab();
 
-      // Débloquer tous les skins pour l'administrateur
-      unlockAllSkins();
-
       // Charger la liste des utilisateurs après un court délai
       setTimeout(function() {
         if (document.getElementById('admin-content')) {
@@ -1253,9 +1244,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Ajouter l'onglet d'administration
       addAdminTab();
-
-      // Débloquer tous les skins pour l'administrateur
-      unlockAllSkins();
 
       // Charger la liste des utilisateurs après un court délai
       setTimeout(function() {
