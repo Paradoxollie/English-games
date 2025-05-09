@@ -351,24 +351,28 @@
 
     /* Styles pour le clavier */
     .keyboard {
-      margin: 2rem 0;
+      margin: 1.5rem 0;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.4rem;
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
+      width: 100%; /* Assurer que le clavier prend toute la largeur disponible */
+      padding: 0 0.5rem; /* Ajouter un peu de padding sur les côtés */
     }
 
     .keyboard-row {
       display: flex;
       justify-content: center;
-      gap: 0.3rem;
+      gap: 0.25rem; /* Réduire légèrement l'espace entre les touches */
+      width: 100%; /* Assurer que chaque rangée prend toute la largeur */
     }
 
     .key-btn {
-      min-width: 2.5rem;
-      height: 3.5rem;
+      flex: 1; /* Faire en sorte que les touches s'adaptent à l'espace disponible */
+      min-width: 2.2rem; /* Réduire légèrement la largeur minimale */
+      height: 3.2rem; /* Réduire légèrement la hauteur */
       background: rgba(15, 23, 42, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 4px;
@@ -380,6 +384,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0; /* Supprimer tout padding par défaut */
+      margin: 0; /* Supprimer tout margin par défaut */
+      touch-action: manipulation; /* Améliorer la réactivité tactile */
     }
 
     .key-btn:hover {
@@ -393,8 +400,9 @@
     }
 
     .key-enter, .key-delete {
-      min-width: 4rem;
-      font-size: 0.9rem;
+      min-width: 3.5rem; /* Réduire la largeur minimale */
+      font-size: 0.85rem; /* Réduire légèrement la taille de police */
+      flex: 1.5; /* Donner un peu plus d'espace aux touches spéciales */
     }
 
     /* Styles pour les power-ups */
@@ -1222,6 +1230,7 @@
     }
 
     /* Styles responsifs */
+    /* Media queries pour les tablettes et petits écrans */
     @media (max-width: 768px) {
       .game-sections {
         flex-direction: column;
@@ -1245,6 +1254,12 @@
         min-width: 70px;
       }
 
+      /* Ajustements du clavier pour tablettes */
+      .keyboard {
+        padding: 0 0.5rem;
+        margin: 1rem 0;
+      }
+
       .key-btn {
         min-width: 2rem;
         height: 3rem;
@@ -1265,19 +1280,50 @@
       }
     }
 
+    /* Media queries pour les smartphones */
     @media (max-width: 480px) {
-      .key-btn {
-        min-width: 1.8rem;
-        height: 2.8rem;
-        font-size: 0.8rem;
+      /* Ajustements généraux pour petits écrans */
+      .game-interface {
+        padding: 1rem;
       }
 
+      /* Ajustements du clavier pour smartphones */
+      .keyboard {
+        margin: 0.8rem 0;
+        gap: 0.3rem;
+        padding: 0 0.3rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .keyboard-row {
+        gap: 0.2rem;
+      }
+
+      .key-btn {
+        min-width: 0; /* Supprimer la largeur minimale pour permettre une meilleure adaptation */
+        width: auto; /* Laisser la largeur s'adapter automatiquement */
+        height: 2.8rem;
+        font-size: 0.8rem;
+        padding: 0.1rem;
+        border-radius: 3px;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 0;
+        font-size: 0.7rem;
+      }
+
+      /* Autres ajustements pour smartphones */
       .power-ups-container {
         flex-wrap: wrap;
+        gap: 0.8rem;
+        margin: 1rem 0;
       }
 
       .power-up {
         width: 70px;
+        padding: 0.7rem;
       }
 
       .grid-cell {
@@ -1316,22 +1362,93 @@
       }
     }
 
+    /* Media queries pour les très petits écrans */
     @media (max-width: 360px) {
+      /* Ajustements pour les très petits écrans */
+      .game-interface {
+        padding: 0.8rem;
+      }
+
+      /* Ajustements du clavier pour très petits écrans */
+      .keyboard {
+        margin: 0.5rem 0;
+        gap: 0.2rem;
+        padding: 0 0.2rem;
+      }
+
+      .keyboard-row {
+        gap: 0.15rem;
+      }
+
+      .key-btn {
+        height: 2.5rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+      }
+
+      .key-enter, .key-delete {
+        font-size: 0.6rem;
+      }
+
+      /* Autres ajustements pour très petits écrans */
       .grid-cell {
         width: 2.5rem;
         height: 2.5rem;
         font-size: 1rem;
       }
 
-      .key-btn {
-        min-width: 1.5rem;
-        height: 2.5rem;
-        font-size: 0.7rem;
+      .power-ups-container {
+        gap: 0.5rem;
       }
 
-      .key-enter, .key-delete {
-        min-width: 3rem;
+      .power-up {
+        width: 60px;
+        padding: 0.5rem;
+      }
+
+      .power-up-icon {
+        font-size: 1.2rem;
+      }
+
+      .power-up-name {
         font-size: 0.7rem;
+      }
+    }
+
+    /* Media queries spécifiques pour les téléphones en mode portrait */
+    @media (max-width: 414px) and (orientation: portrait) {
+      /* Optimisations supplémentaires pour les téléphones en mode portrait */
+      .keyboard {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.2rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Réduire encore plus la taille des touches pour s'assurer qu'elles tiennent toutes à l'écran */
+      .key-btn {
+        height: 2.4rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+        padding: 0;
+      }
+
+      /* Ajuster l'espacement entre les rangées */
+      .keyboard-row {
+        margin-bottom: 0.2rem;
+      }
+
+      /* Réduire la taille de la grille pour laisser plus de place au clavier */
+      .word-grid {
+        margin: 1rem 0;
+      }
+
+      .grid-cell {
+        width: 2.4rem;
+        height: 2.4rem;
       }
     }
 
