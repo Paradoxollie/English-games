@@ -303,8 +303,13 @@ async function loadUsersList(searchTerm = '') {
     // Récupérer tous les utilisateurs depuis Firebase
     let users = {};
 
-    // Vérifier si la nouvelle fonction est disponible
-    if (typeof getAllRealUsers === 'function') {
+    // Vérifier si la fonction getAllPossibleUsers est disponible (priorité maximale)
+    if (typeof getAllPossibleUsers === 'function') {
+      console.log("Utilisation de getAllPossibleUsers pour récupérer les utilisateurs de toutes les sources");
+      users = await getAllPossibleUsers();
+    }
+    // Vérifier si la fonction getAllRealUsers est disponible
+    else if (typeof getAllRealUsers === 'function') {
       console.log("Utilisation de getAllRealUsers pour récupérer les utilisateurs");
       users = await getAllRealUsers();
     }
@@ -316,6 +321,22 @@ async function loadUsersList(searchTerm = '') {
       // Fallback sur les utilisateurs locaux
       console.log("Utilisation des utilisateurs locaux");
       users = getAllUsers();
+    }
+
+    // Si aucun utilisateur n'a été trouvé, essayer de récupérer les utilisateurs de toutes les collections
+    if (Object.keys(users).length === 0) {
+      console.log("Aucun utilisateur trouvé, tentative de récupération de toutes les collections...");
+
+      // Essayer d'explorer toutes les collections pour trouver des utilisateurs
+      if (typeof exploreAllCollections === 'function') {
+        await exploreAllCollections();
+      }
+
+      // Réessayer avec getAllPossibleUsers
+      if (typeof getAllPossibleUsers === 'function') {
+        console.log("Réessai avec getAllPossibleUsers");
+        users = await getAllPossibleUsers();
+      }
     }
 
     console.log("Utilisateurs récupérés:", users);
@@ -585,8 +606,13 @@ async function editUser(userId) {
           // Mettre à jour l'utilisateur dans Firebase
           let success = false;
 
-          // Vérifier si la nouvelle fonction est disponible
-          if (typeof updateRealUser === 'function') {
+          // Vérifier si la fonction updateUserInOriginalCollection est disponible (priorité maximale)
+          if (typeof updateUserInOriginalCollection === 'function') {
+            console.log("Utilisation de updateUserInOriginalCollection pour mettre à jour l'utilisateur dans sa collection d'origine");
+            success = await updateUserInOriginalCollection(userId, userData);
+          }
+          // Vérifier si la fonction updateRealUser est disponible
+          else if (typeof updateRealUser === 'function') {
             console.log("Utilisation de updateRealUser pour mettre à jour l'utilisateur");
             success = await updateRealUser(userId, userData);
 
