@@ -351,6 +351,7 @@ async function loadUsersList(searchTerm = '') {
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">XP</th>
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Pièces</th>
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Dernière connexion</th>
+        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Admin</th>
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Actions</th>
       </tr>
     `;
@@ -369,12 +370,17 @@ async function loadUsersList(searchTerm = '') {
 
       tr.innerHTML = `
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">
-          ${user.username} ${user.isAdmin ? '<span style="background-color: #e74c3c; color: white; padding: 2px 5px; border-radius: 5px; font-size: 0.7rem;"><i class="fas fa-crown"></i></span>' : ''}
+          ${user.username}
         </td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.level || 1}</td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.xp || 0}</td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.coins || 0}</td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Jamais'}</td>
+        <td style="padding: 10px; text-align: center; border-bottom: 1px solid #ddd;">
+          ${user.isAdmin ?
+            '<span style="background-color: #e74c3c; color: white; padding: 5px 8px; border-radius: 5px; font-weight: bold;"><i class="fas fa-crown"></i> OUI</span>' :
+            '<span style="background-color: #6c757d; color: white; padding: 5px 8px; border-radius: 5px;">NON</span>'}
+        </td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">
           <div class="admin-actions">
             <button class="btn btn-sm btn-primary edit-user-btn" data-userid="${user.id}" style="margin-right: 5px; padding: 3px 8px; font-size: 0.8rem;">

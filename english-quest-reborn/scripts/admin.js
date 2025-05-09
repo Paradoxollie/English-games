@@ -141,39 +141,26 @@ function isAdmin(username) {
     return true;
   }
 
-  // Pour tous les autres utilisateurs, refuser les privilèges administrateur
-  console.log("L'utilisateur n'est pas Ollie, privilèges administrateur refusés");
-  return false;
-
-  // COMMENTÉ POUR SÉCURITÉ: Le code ci-dessous est désactivé pour garantir que seul Ollie soit administrateur
-  /*
-  // Convertir en minuscules pour une comparaison insensible à la casse
-  const lowerUsername = username.toLowerCase();
-
-  // Vérifier si le nom d'utilisateur est dans la liste des administrateurs (insensible à la casse)
-  for (const adminName of ADMIN_USERNAMES) {
-    if (adminName.toLowerCase() === lowerUsername) {
-      console.log("Utilisateur trouvé dans la liste des administrateurs");
-      return true;
-    }
-  }
-
   // Vérifier si l'utilisateur a la propriété isAdmin à true
   try {
-    // Utiliser directement la fonction getCurrentUser de local-auth.js
-    if (typeof getCurrentUser === 'function') {
-      const currentUser = getCurrentUser();
-      if (currentUser && currentUser.username && currentUser.username.toLowerCase() === lowerUsername) {
-        console.log("Utilisateur trouvé avec getCurrentUser, vérification de la propriété isAdmin:", currentUser.isAdmin);
-        if (currentUser.isAdmin === true) {
-          return true;
-        }
+    // Récupérer tous les utilisateurs
+    const users = getUsers();
+
+    // Rechercher l'utilisateur par nom d'utilisateur (insensible à la casse)
+    for (const userId in users) {
+      const user = users[userId];
+      if (user.username && user.username.toLowerCase() === username.toLowerCase()) {
+        console.log("Utilisateur trouvé, vérification de la propriété isAdmin:", user.isAdmin);
+        return user.isAdmin === true;
       }
     }
   } catch (error) {
-    console.error("Erreur lors de la vérification avec getCurrentUser:", error);
+    console.error("Erreur lors de la vérification de isAdmin:", error);
   }
-  */
+
+  // Par défaut, refuser les privilèges administrateur
+  console.log("L'utilisateur n'est pas un administrateur");
+  return false;
 }
 
 // Récupérer l'utilisateur courant à partir de toutes les sources possibles
@@ -635,36 +622,67 @@ function editUser(userId) {
     user.xp = xp;
     user.coins = coins;
 
-    // SÉCURITÉ CRITIQUE: Empêcher la modification des droits d'administration
-    // Seul Ollie peut être administrateur, et cela ne peut pas être modifié via l'interface
-    if (username.toLowerCase() === 'ollie') {
-      // Forcer les droits d'administration pour Ollie
-      user.isAdmin = true;
+    // SÉCURITÉ CRITIQUE: Gestion des droits d'administration
+    // Récupérer l'utilisateur courant
+    const currentUser = getCurrentUser();
 
-      // S'assurer que Ollie est dans la liste des administrateurs
-      if (!ADMIN_USERNAMES.includes('Ollie')) {
-        ADMIN_USERNAMES.push('Ollie');
+    // Vérifier si l'utilisateur courant est Ollie
+    if (currentUser && currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
+      console.log("Modification des droits d'administration par Ollie");
+
+      // Ollie peut modifier les droits d'administration des autres utilisateurs
+      if (username.toLowerCase() === 'ollie') {
+        // Ollie ne peut pas retirer ses propres droits d'administration
+        user.isAdmin = true;
+
+        // S'assurer que Ollie est dans la liste des administrateurs
+        if (!ADMIN_USERNAMES.includes('Ollie')) {
+          ADMIN_USERNAMES.push('Ollie');
+        }
+
+        // Afficher un message si Ollie essaie de retirer ses propres droits
+        if (!isAdminChecked) {
+          alert("Vous ne pouvez pas retirer vos propres droits d'administration.");
+        }
+      } else {
+        // Ollie peut modifier les droits d'administration des autres utilisateurs
+        user.isAdmin = isAdminChecked;
+
+        // Mettre à jour la liste des administrateurs
+        const index = ADMIN_USERNAMES.indexOf(username);
+        if (isAdminChecked && index === -1) {
+          ADMIN_USERNAMES.push(username);
+        } else if (!isAdminChecked && index !== -1) {
+          ADMIN_USERNAMES.splice(index, 1);
+        }
+
+        // Enregistrer l'action dans la console
+        console.log(`Ollie a ${isAdminChecked ? 'donné' : 'retiré'} les droits d'administration à ${username}`);
       }
     } else {
-      // Forcer les droits non-administrateur pour tous les autres utilisateurs
-      user.isAdmin = false;
+      // Les autres utilisateurs ne peuvent pas modifier les droits d'administration
+      if (username.toLowerCase() === 'ollie') {
+        // Forcer les droits d'administration pour Ollie
+        user.isAdmin = true;
 
-      // Supprimer l'utilisateur de la liste des administrateurs s'il y est
-      const index = ADMIN_USERNAMES.indexOf(username);
-      if (index !== -1) {
-        ADMIN_USERNAMES.splice(index, 1);
+        // S'assurer que Ollie est dans la liste des administrateurs
+        if (!ADMIN_USERNAMES.includes('Ollie')) {
+          ADMIN_USERNAMES.push('Ollie');
+        }
+      } else {
+        // Conserver les droits d'administration actuels
+        // Ne pas forcer à false pour permettre à Ollie de gérer les droits
+
+        // Afficher un message d'avertissement si quelqu'un essaie de modifier les droits d'administration
+        if (user.isAdmin !== isAdminChecked) {
+          alert("AVERTISSEMENT DE SÉCURITÉ: Seul le compte Ollie peut modifier les droits d'administration. Cette tentative a été bloquée et enregistrée.");
+          console.warn("Tentative de modification des droits d'administration détectée et bloquée", {
+            username: username,
+            attemptedAction: isAdminChecked ? "donner des droits admin" : "retirer des droits admin",
+            timestamp: new Date().toISOString()
+          });
+        }
       }
-    }
-
-    // Afficher un message d'avertissement si quelqu'un essaie de modifier les droits d'administration
-    if ((username.toLowerCase() !== 'ollie' && isAdminChecked) ||
-        (username.toLowerCase() === 'ollie' && !isAdminChecked)) {
-      alert("AVERTISSEMENT DE SÉCURITÉ: Seul le compte Ollie peut avoir des droits d'administration. Cette tentative a été bloquée et enregistrée.");
-      console.warn("Tentative de modification des droits d'administration détectée et bloquée", {
-        username: username,
-        attemptedAction: isAdminChecked ? "donner des droits admin" : "retirer des droits admin",
-        timestamp: new Date().toISOString()
-      });
     }
 
     // Sauvegarder les modifications
