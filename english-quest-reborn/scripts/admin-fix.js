@@ -303,11 +303,18 @@ async function loadUsersList(searchTerm = '') {
     // Récupérer tous les utilisateurs depuis Firebase
     let users = {};
 
-    // Vérifier si la fonction Firebase est disponible
-    if (typeof getAllFirebaseData === 'function') {
+    // Vérifier si la nouvelle fonction est disponible
+    if (typeof getAllRealUsers === 'function') {
+      console.log("Utilisation de getAllRealUsers pour récupérer les utilisateurs");
+      users = await getAllRealUsers();
+    }
+    // Fallback sur l'ancienne fonction si disponible
+    else if (typeof getAllFirebaseData === 'function') {
+      console.log("Utilisation de getAllFirebaseData pour récupérer les utilisateurs");
       users = await getAllFirebaseData();
     } else {
       // Fallback sur les utilisateurs locaux
+      console.log("Utilisation des utilisateurs locaux");
       users = getAllUsers();
     }
 
@@ -578,10 +585,23 @@ async function editUser(userId) {
           // Mettre à jour l'utilisateur dans Firebase
           let success = false;
 
-          if (typeof updateFirebaseUser === 'function') {
+          // Vérifier si la nouvelle fonction est disponible
+          if (typeof updateRealUser === 'function') {
+            console.log("Utilisation de updateRealUser pour mettre à jour l'utilisateur");
+            success = await updateRealUser(userId, userData);
+
+            // Mettre à jour les droits d'administration séparément
+            if (success && typeof setAdminRights === 'function') {
+              await setAdminRights(userId, isAdmin);
+            }
+          }
+          // Fallback sur l'ancienne fonction si disponible
+          else if (typeof updateFirebaseUser === 'function') {
+            console.log("Utilisation de updateFirebaseUser pour mettre à jour l'utilisateur");
             success = await updateFirebaseUser(userId, userData);
           } else {
             // Fallback sur la sauvegarde locale
+            console.log("Utilisation de la sauvegarde locale pour mettre à jour l'utilisateur");
             user.username = username;
             user.level = level;
             user.xp = xp;
@@ -669,11 +689,18 @@ async function addXP(userId) {
     // Ajouter l'XP
     let success = false;
 
-    if (typeof addXPToFirebaseUser === 'function') {
-      // Utiliser la fonction Firebase
+    // Vérifier si la nouvelle fonction est disponible
+    if (typeof addXPToRealUser === 'function') {
+      console.log("Utilisation de addXPToRealUser pour ajouter de l'XP");
+      success = await addXPToRealUser(userId, xp);
+    }
+    // Fallback sur l'ancienne fonction si disponible
+    else if (typeof addXPToFirebaseUser === 'function') {
+      console.log("Utilisation de addXPToFirebaseUser pour ajouter de l'XP");
       success = await addXPToFirebaseUser(userId, xp);
     } else {
       // Fallback sur la sauvegarde locale
+      console.log("Utilisation de la sauvegarde locale pour ajouter de l'XP");
       user.xp = (user.xp || 0) + xp;
       user.level = Math.floor(Math.sqrt(user.xp / 100)) + 1;
       success = saveUsers(users);
@@ -735,11 +762,18 @@ async function addCoins(userId) {
     // Ajouter les pièces
     let success = false;
 
-    if (typeof addCoinsToFirebaseUser === 'function') {
-      // Utiliser la fonction Firebase
+    // Vérifier si la nouvelle fonction est disponible
+    if (typeof addCoinsToRealUser === 'function') {
+      console.log("Utilisation de addCoinsToRealUser pour ajouter des pièces");
+      success = await addCoinsToRealUser(userId, coins);
+    }
+    // Fallback sur l'ancienne fonction si disponible
+    else if (typeof addCoinsToFirebaseUser === 'function') {
+      console.log("Utilisation de addCoinsToFirebaseUser pour ajouter des pièces");
       success = await addCoinsToFirebaseUser(userId, coins);
     } else {
       // Fallback sur la sauvegarde locale
+      console.log("Utilisation de la sauvegarde locale pour ajouter des pièces");
       user.coins = (user.coins || 0) + coins;
       success = saveUsers(users);
     }
@@ -792,11 +826,18 @@ async function deleteUser(userId) {
     // Supprimer l'utilisateur
     let success = false;
 
-    if (typeof deleteFirebaseUser === 'function') {
-      // Utiliser la fonction Firebase
+    // Vérifier si la nouvelle fonction est disponible
+    if (typeof deleteRealUser === 'function') {
+      console.log("Utilisation de deleteRealUser pour supprimer l'utilisateur");
+      success = await deleteRealUser(userId);
+    }
+    // Fallback sur l'ancienne fonction si disponible
+    else if (typeof deleteFirebaseUser === 'function') {
+      console.log("Utilisation de deleteFirebaseUser pour supprimer l'utilisateur");
       success = await deleteFirebaseUser(userId);
     } else {
       // Fallback sur la sauvegarde locale
+      console.log("Utilisation de la sauvegarde locale pour supprimer l'utilisateur");
       delete users[userId];
       success = saveUsers(users);
     }
