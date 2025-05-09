@@ -1953,10 +1953,10 @@
         document.body.style.WebkitBackdropFilter = 'none';
         document.body.style.pointerEvents = 'auto';
 
-        // Masquer toutes les modales et overlays
-        var modals = document.querySelectorAll('.modal, .rules-modal, #rulesModal, #enigmaRulesModal');
+        // Masquer toutes les modales et overlays sauf la modale des règles
+        var modals = document.querySelectorAll('.modal, .rules-modal, #rulesModal');
         modals.forEach(function(modal) {
-          if (modal) {
+          if (modal && modal.id !== 'enigmaRulesModal') { // Ne pas affecter la nouvelle modale des règles
             modal.style.display = 'none';
             modal.style.opacity = '0';
             modal.style.visibility = 'hidden';
@@ -1996,14 +1996,14 @@
       // Exécuter également au chargement complet de la page
       window.addEventListener('load', fixPageInteraction);
 
-      // Masquer immédiatement la nouvelle modale des règles
+      // Initialiser la nouvelle modale des règles (sans la désactiver complètement)
       var enigmaRulesModal = document.getElementById('enigmaRulesModal');
       if (enigmaRulesModal) {
+        // Masquer la modale mais sans la désactiver complètement
         enigmaRulesModal.style.display = 'none';
         enigmaRulesModal.style.opacity = '0';
         enigmaRulesModal.style.visibility = 'hidden';
-        enigmaRulesModal.style.pointerEvents = 'none';
-        enigmaRulesModal.style.zIndex = '-9999';
+        // Ne pas désactiver les interactions ni mettre un z-index négatif
       }
 
       // Masquer également l'ancienne modale des règles
@@ -2020,49 +2020,120 @@
 
   <!-- Script d'initialisation de l'utilisateur -->
   <script>
-    // Fonctions pour la nouvelle modale des règles
+    // Fonctions pour la nouvelle modale des règles avec débogage
     function showEnigmaRules() {
+      console.log("Tentative d'affichage de la modale des règles");
       var modal = document.getElementById('enigmaRulesModal');
       if (modal) {
+        console.log("Modale des règles trouvée, affichage en cours");
+
+        // Réinitialiser tous les styles qui pourraient empêcher l'affichage
+        modal.removeAttribute('style');
+
+        // Appliquer les styles nécessaires pour afficher la modale
         modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.zIndex = '9999';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
         modal.style.opacity = '1';
         modal.style.visibility = 'visible';
+        modal.style.pointerEvents = 'auto';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
       }
     }
 
     function hideEnigmaRules() {
+      console.log("Tentative de masquage de la modale des règles");
       var modal = document.getElementById('enigmaRulesModal');
       if (modal) {
+        console.log("Modale des règles trouvée, masquage en cours");
         modal.style.display = 'none';
         modal.style.opacity = '0';
         modal.style.visibility = 'hidden';
+        modal.style.pointerEvents = 'none';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
       }
     }
 
     // Configurer les gestionnaires d'événements pour la nouvelle modale des règles
     document.addEventListener('DOMContentLoaded', function() {
+      console.log("Configuration des gestionnaires d'événements pour la modale des règles");
+
+      // Vérifier que la modale des règles existe
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        console.log("Modale des règles trouvée dans le DOM");
+      } else {
+        console.error("ERREUR: Modale des règles non trouvée dans le DOM");
+      }
+
       // Bouton pour afficher les règles
       var showRulesButton = document.getElementById('show-rules-button');
       if (showRulesButton) {
-        showRulesButton.addEventListener('click', showEnigmaRules);
+        console.log("Bouton des règles trouvé, ajout du gestionnaire d'événements");
+        showRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          showEnigmaRules(); // Appeler la fonction d'affichage
+        });
+      } else {
+        console.error("ERREUR: Bouton des règles non trouvé");
       }
 
       // Bouton pour afficher les règles en jeu
       var inGameRulesButton = document.getElementById('in-game-rules-button');
       if (inGameRulesButton) {
-        inGameRulesButton.addEventListener('click', showEnigmaRules);
+        console.log("Bouton des règles en jeu trouvé, ajout du gestionnaire d'événements");
+        inGameRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles en jeu");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          showEnigmaRules(); // Appeler la fonction d'affichage
+        });
       }
 
       // Boutons pour fermer les règles
       var closeEnigmaRulesButton = document.getElementById('closeEnigmaRulesButton');
       if (closeEnigmaRulesButton) {
-        closeEnigmaRulesButton.addEventListener('click', hideEnigmaRules);
+        console.log("Bouton de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton de fermeture des règles non trouvé");
       }
 
       var closeEnigmaRulesX = document.getElementById('closeEnigmaRulesX');
       if (closeEnigmaRulesX) {
-        closeEnigmaRulesX.addEventListener('click', hideEnigmaRules);
+        console.log("Bouton X de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesX.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton X de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton X de fermeture des règles non trouvé");
       }
+
+      // Ajouter un gestionnaire global pour le bouton des règles
+      document.body.addEventListener('click', function(event) {
+        if (event.target.id === 'show-rules-button' ||
+            event.target.closest('#show-rules-button') ||
+            event.target.id === 'in-game-rules-button' ||
+            event.target.closest('#in-game-rules-button')) {
+          console.log("Clic détecté sur un bouton des règles via délégation d'événements");
+          showEnigmaRules();
+        }
+      });
     });
 
     // Masquer l'overlay de chargement rapidement
