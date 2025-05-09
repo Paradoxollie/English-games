@@ -23,28 +23,58 @@ function showGenderSelectionModal() {
   }
 
   // Vérification supplémentaire basée sur l'avatar
-  if (currentUser.avatar) {
-    const head = currentUser.avatar.head;
-    const body = currentUser.avatar.body;
+  if (currentUser.avatar || currentUser.selectedSkin) {
+    // Récupérer la tête et le corps de l'avatar (compatibilité avec les deux structures)
+    const head = currentUser.avatar ? currentUser.avatar.head : currentUser.selectedSkin ? currentUser.selectedSkin.head : null;
+    const body = currentUser.avatar ? currentUser.avatar.body : currentUser.selectedSkin ? currentUser.selectedSkin.body : null;
+
+    console.log("Avatar détecté - Tête:", head, "Corps:", body);
 
     // Si l'utilisateur a déjà un avatar cohérent (tête et corps du même genre)
-    if ((head === 'default_girl' && body === 'default_girl') ||
-        (head === 'default_boy' && body === 'default_boy')) {
+    if ((head && body) &&
+        ((head.includes('girl') && body.includes('girl')) ||
+         (head.includes('boy') && body.includes('boy')) ||
+         (head.includes('bear') && body.includes('bear')))) {
 
       console.log("L'utilisateur a déjà un avatar cohérent, définition de hasSelectedGender à true");
 
       // Mettre à jour hasSelectedGender
       currentUser.hasSelectedGender = true;
 
-      // Sauvegarder les modifications
-      const users = getUsers();
-      const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
-
-      if (userId) {
-        users[userId] = currentUser;
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      // Sauvegarder les modifications dans toutes les clés possibles
+      try {
+        // Sauvegarder dans la clé 'users'
+        const users = localStorage.getItem('users');
+        if (users) {
+          const usersObj = JSON.parse(users);
+          const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
+          if (userId) {
+            usersObj[userId].hasSelectedGender = true;
+            localStorage.setItem('users', JSON.stringify(usersObj));
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lors de la sauvegarde dans 'users':", e);
       }
+
+      try {
+        // Sauvegarder dans la clé 'english_quest_users'
+        const eqUsers = localStorage.getItem('english_quest_users');
+        if (eqUsers) {
+          const eqUsersObj = JSON.parse(eqUsers);
+          const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
+          if (userId) {
+            eqUsersObj[userId].hasSelectedGender = true;
+            localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
+      }
+
+      // Mettre à jour l'utilisateur courant dans toutes les clés possibles
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
 
       return;
     }
@@ -156,22 +186,46 @@ function updateUserAvatar(gender) {
     console.log("Avatar mis à jour pour l'utilisateur");
     console.log("Préférence de genre enregistrée");
 
-    // Sauvegarder les modifications dans le localStorage
-    const users = getUsers();
-    const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
-
-    if (userId) {
-      // Mettre à jour l'utilisateur dans la liste des utilisateurs
-      users[userId] = {...currentUser};
-
-      // Sauvegarder dans le localStorage
-      localStorage.setItem('users', JSON.stringify(users));
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-      console.log("Choix de genre sauvegardé avec succès");
-    } else {
-      console.error("Impossible de trouver l'utilisateur pour sauvegarder le choix de genre");
+    // Sauvegarder les modifications dans toutes les clés possibles
+    try {
+      // Sauvegarder dans la clé 'users'
+      const users = localStorage.getItem('users');
+      if (users) {
+        const usersObj = JSON.parse(users);
+        const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
+        if (userId) {
+          // Mettre à jour l'utilisateur dans la liste des utilisateurs
+          usersObj[userId] = {...currentUser};
+          localStorage.setItem('users', JSON.stringify(usersObj));
+          console.log("Choix de genre sauvegardé dans 'users'");
+        }
+      }
+    } catch (e) {
+      console.error("Erreur lors de la sauvegarde dans 'users':", e);
     }
+
+    try {
+      // Sauvegarder dans la clé 'english_quest_users'
+      const eqUsers = localStorage.getItem('english_quest_users');
+      if (eqUsers) {
+        const eqUsersObj = JSON.parse(eqUsers);
+        const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
+        if (userId) {
+          // Mettre à jour l'utilisateur dans la liste des utilisateurs
+          eqUsersObj[userId] = {...currentUser};
+          localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
+          console.log("Choix de genre sauvegardé dans 'english_quest_users'");
+        }
+      }
+    } catch (e) {
+      console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
+    }
+
+    // Mettre à jour l'utilisateur courant dans toutes les clés possibles
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+
+    console.log("Choix de genre sauvegardé avec succès dans toutes les clés");
 
     // Mettre à jour l'affichage de l'avatar si possible
     if (typeof updateAvatarDisplay === 'function') {

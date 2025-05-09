@@ -127,8 +127,17 @@ function saveUsers(users) {
 
 // Vérifier si l'utilisateur est un administrateur
 function isAdmin(username) {
+  console.log("Vérification des privilèges administrateur pour:", username);
+
   if (!username) {
+    console.log("Nom d'utilisateur non fourni");
     return false;
+  }
+
+  // Vérification spéciale pour Ollie (toujours administrateur)
+  if (username.toLowerCase() === 'ollie') {
+    console.log("Compte Ollie détecté - Privilèges administrateur accordés automatiquement");
+    return true;
   }
 
   // Convertir en minuscules pour une comparaison insensible à la casse
@@ -137,6 +146,7 @@ function isAdmin(username) {
   // Vérifier si le nom d'utilisateur est dans la liste des administrateurs (insensible à la casse)
   for (const adminName of ADMIN_USERNAMES) {
     if (adminName.toLowerCase() === lowerUsername) {
+      console.log("Utilisateur trouvé dans la liste des administrateurs");
       return true;
     }
   }
@@ -144,9 +154,25 @@ function isAdmin(username) {
   // Vérifier si l'utilisateur a la propriété isAdmin à true
   const currentUser = getCurrentUserFromAllSources();
   if (currentUser && currentUser.username && currentUser.username.toLowerCase() === lowerUsername) {
-    return currentUser.isAdmin === true;
+    console.log("Utilisateur trouvé dans les sources, vérification de la propriété isAdmin:", currentUser.isAdmin);
+    if (currentUser.isAdmin === true) {
+      return true;
+    }
   }
 
+  // Vérifier dans toutes les sources d'utilisateurs
+  const allUsers = getAllUsersFromAllSources();
+  for (const userId in allUsers) {
+    const user = allUsers[userId];
+    if (user.username && user.username.toLowerCase() === lowerUsername) {
+      console.log("Utilisateur trouvé dans toutes les sources, vérification de la propriété isAdmin:", user.isAdmin);
+      if (user.isAdmin === true) {
+        return true;
+      }
+    }
+  }
+
+  console.log("L'utilisateur n'est pas un administrateur");
   return false;
 }
 
@@ -217,29 +243,7 @@ function getCurrentUserFromAllSources() {
   return null;
 }
 
-// Initialiser les fonctionnalités d'administration
-document.addEventListener('DOMContentLoaded', function() {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    return;
-  }
-
-  // Vérifier si l'utilisateur est un administrateur
-  if (isAdmin(currentUser.username)) {
-    console.log("Utilisateur administrateur détecté");
-
-    // Ajouter un badge d'administrateur
-    addAdminBadge();
-
-    // Ajouter l'onglet d'administration
-    addAdminTab();
-
-    // Débloquer tous les skins pour l'administrateur
-    unlockAllSkins();
-  }
-});
+// Cette initialisation a été remplacée par celle à la fin du fichier
 
 // Ajouter un badge d'administrateur
 function addAdminBadge() {
@@ -1187,54 +1191,96 @@ function createTestUser() {
 document.addEventListener('DOMContentLoaded', function() {
   console.log("Initialisation du module d'administration...");
 
-  // Vérifier si l'utilisateur est connecté en utilisant notre fonction robuste
-  const currentUser = getCurrentUserFromAllSources();
-  console.log("Utilisateur actuel:", currentUser);
+  try {
+    // Vérifier si l'utilisateur est connecté en utilisant notre fonction robuste
+    const currentUser = getCurrentUserFromAllSources();
+    console.log("Utilisateur actuel:", currentUser);
 
-  // Vérifier si l'utilisateur est un administrateur
-  const isUserAdmin = currentUser && isAdmin(currentUser.username);
-  console.log("Est-ce que l'utilisateur est un administrateur:", isUserAdmin);
+    // Vérifier si l'utilisateur est un administrateur
+    const isUserAdmin = currentUser && isAdmin(currentUser.username);
+    console.log("Est-ce que l'utilisateur est un administrateur:", isUserAdmin);
 
-  // Forcer l'accès administrateur pour Ollie
-  if (currentUser && currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
-    console.log("Utilisateur Ollie détecté, forçage des privilèges administrateur");
+    // Forcer l'accès administrateur pour Ollie
+    if (currentUser && currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
+      console.log("Utilisateur Ollie détecté, forçage des privilèges administrateur");
 
-    // Ajouter le badge d'administrateur
-    addAdminBadge();
+      // Marquer l'utilisateur comme administrateur
+      currentUser.isAdmin = true;
 
-    // Ajouter l'onglet d'administration
-    addAdminTab();
-
-    // Débloquer tous les skins pour l'administrateur
-    unlockAllSkins();
-
-    // Charger la liste des utilisateurs après un court délai
-    setTimeout(function() {
-      if (document.getElementById('admin-content')) {
-        loadUsersList();
+      // Sauvegarder les modifications dans toutes les clés possibles
+      try {
+        // Sauvegarder dans la clé 'users'
+        const users = localStorage.getItem('users');
+        if (users) {
+          const usersObj = JSON.parse(users);
+          const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
+          if (userId) {
+            usersObj[userId].isAdmin = true;
+            localStorage.setItem('users', JSON.stringify(usersObj));
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lors de la sauvegarde dans 'users':", e);
       }
-    }, 500);
-  }
-  // Vérifier si l'utilisateur est un administrateur normal
-  else if (isUserAdmin) {
-    console.log('Utilisateur administrateur détecté:', currentUser.username);
 
-    // Ajouter le badge d'administrateur
-    addAdminBadge();
-
-    // Ajouter l'onglet d'administration
-    addAdminTab();
-
-    // Débloquer tous les skins pour l'administrateur
-    unlockAllSkins();
-
-    // Charger la liste des utilisateurs après un court délai
-    setTimeout(function() {
-      if (document.getElementById('admin-content')) {
-        loadUsersList();
+      try {
+        // Sauvegarder dans la clé 'english_quest_users'
+        const eqUsers = localStorage.getItem('english_quest_users');
+        if (eqUsers) {
+          const eqUsersObj = JSON.parse(eqUsers);
+          const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
+          if (userId) {
+            eqUsersObj[userId].isAdmin = true;
+            localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
+          }
+        }
+      } catch (e) {
+        console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
       }
-    }, 500);
-  } else {
-    console.log("L'utilisateur n'est pas un administrateur ou n'est pas connecté");
+
+      // Mettre à jour l'utilisateur courant dans toutes les clés possibles
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+
+      // Ajouter le badge d'administrateur
+      addAdminBadge();
+
+      // Ajouter l'onglet d'administration
+      addAdminTab();
+
+      // Débloquer tous les skins pour l'administrateur
+      unlockAllSkins();
+
+      // Charger la liste des utilisateurs après un court délai
+      setTimeout(function() {
+        if (document.getElementById('admin-content')) {
+          loadUsersList();
+        }
+      }, 500);
+    }
+    // Vérifier si l'utilisateur est un administrateur normal
+    else if (isUserAdmin) {
+      console.log('Utilisateur administrateur détecté:', currentUser.username);
+
+      // Ajouter le badge d'administrateur
+      addAdminBadge();
+
+      // Ajouter l'onglet d'administration
+      addAdminTab();
+
+      // Débloquer tous les skins pour l'administrateur
+      unlockAllSkins();
+
+      // Charger la liste des utilisateurs après un court délai
+      setTimeout(function() {
+        if (document.getElementById('admin-content')) {
+          loadUsersList();
+        }
+      }, 500);
+    } else {
+      console.log("L'utilisateur n'est pas un administrateur ou n'est pas connecté");
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation du module d'administration:", error);
   }
 });
