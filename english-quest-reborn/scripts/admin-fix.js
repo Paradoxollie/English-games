@@ -300,32 +300,39 @@ async function loadUsersList(searchTerm = '') {
       </div>
     `;
 
-    // Récupérer tous les utilisateurs depuis Firebase
+    // Récupérer tous les utilisateurs depuis toutes les sources
     let users = {};
 
-    // Vérifier si la fonction getAllPossibleUsers est disponible (priorité maximale)
-    if (typeof getAllPossibleUsers === 'function') {
-      console.log("Utilisation de getAllPossibleUsers pour récupérer les utilisateurs de toutes les sources");
+    // Utiliser la nouvelle fonction getAllUsersFromAllSources qui combine toutes les sources
+    if (typeof getAllUsersFromAllSources === 'function') {
+      console.log("Utilisation de getAllUsersFromAllSources pour récupérer les utilisateurs de toutes les sources");
+      users = await getAllUsersFromAllSources();
+    }
+    // Fallback sur les autres fonctions si disponibles
+    else if (typeof getAllPossibleUsers === 'function') {
+      console.log("Utilisation de getAllPossibleUsers pour récupérer les utilisateurs");
       users = await getAllPossibleUsers();
     }
-    // Vérifier si la fonction getAllRealUsers est disponible
     else if (typeof getAllRealUsers === 'function') {
       console.log("Utilisation de getAllRealUsers pour récupérer les utilisateurs");
       users = await getAllRealUsers();
     }
-    // Fallback sur l'ancienne fonction si disponible
+    else if (typeof getAllAuthUsers === 'function') {
+      console.log("Utilisation de getAllAuthUsers pour récupérer les utilisateurs");
+      users = await getAllAuthUsers();
+    }
     else if (typeof getAllFirebaseData === 'function') {
       console.log("Utilisation de getAllFirebaseData pour récupérer les utilisateurs");
       users = await getAllFirebaseData();
     } else {
       // Fallback sur les utilisateurs locaux
       console.log("Utilisation des utilisateurs locaux");
-      users = getAllUsers();
+      users = getLocalUsers ? getLocalUsers() : getAllUsers();
     }
 
     // Si aucun utilisateur n'a été trouvé, essayer de récupérer les utilisateurs de toutes les collections
-    if (Object.keys(users).length === 0) {
-      console.log("Aucun utilisateur trouvé, tentative de récupération de toutes les collections...");
+    if (Object.keys(users).length === 0 || Object.keys(users).length === 1) {
+      console.log("Peu ou pas d'utilisateurs trouvés, tentative de récupération de toutes les collections...");
 
       // Essayer d'explorer toutes les collections pour trouver des utilisateurs
       if (typeof exploreAllCollections === 'function') {
@@ -336,6 +343,20 @@ async function loadUsersList(searchTerm = '') {
       if (typeof getAllPossibleUsers === 'function') {
         console.log("Réessai avec getAllPossibleUsers");
         users = await getAllPossibleUsers();
+      }
+
+      // Réessayer avec getAllAuthUsers
+      if (Object.keys(users).length <= 1 && typeof getAllAuthUsers === 'function') {
+        console.log("Réessai avec getAllAuthUsers");
+        const authUsers = await getAllAuthUsers();
+        users = { ...users, ...authUsers };
+      }
+
+      // Ajouter les utilisateurs locaux si nécessaire
+      if (Object.keys(users).length <= 1) {
+        console.log("Ajout des utilisateurs locaux");
+        const localUsers = getLocalUsers ? getLocalUsers() : getAllUsers();
+        users = { ...users, ...localUsers };
       }
     }
 

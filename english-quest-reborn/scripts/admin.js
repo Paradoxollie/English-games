@@ -141,6 +141,27 @@ function isAdmin(username) {
     return true;
   }
 
+  // Utiliser la fonction isUserAdmin si disponible
+  if (typeof isUserAdmin === 'function') {
+    try {
+      // Récupérer tous les utilisateurs
+      const users = getUsers();
+
+      // Rechercher l'utilisateur par nom d'utilisateur (insensible à la casse)
+      for (const userId in users) {
+        const user = users[userId];
+        if (user.username && user.username.toLowerCase() === username.toLowerCase()) {
+          // Vérifier avec isUserAdmin
+          const isAdminResult = isUserAdmin(user);
+          console.log("Vérification avec isUserAdmin pour", username, ":", isAdminResult);
+          return isAdminResult;
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification avec isUserAdmin:", error);
+    }
+  }
+
   // Vérifier si l'utilisateur a la propriété isAdmin à true
   try {
     // Récupérer tous les utilisateurs
@@ -150,7 +171,8 @@ function isAdmin(username) {
     for (const userId in users) {
       const user = users[userId];
       if (user.username && user.username.toLowerCase() === username.toLowerCase()) {
-        console.log("Utilisateur trouvé, vérification de la propriété isAdmin:", user.isAdmin);
+        // Si ce n'est pas Ollie, vérifier strictement la propriété isAdmin
+        console.log("Utilisateur trouvé, vérification stricte de la propriété isAdmin:", user.isAdmin);
         return user.isAdmin === true;
       }
     }
@@ -690,8 +712,8 @@ function editUser(userId) {
     saveUsers(users);
 
     // Mettre à jour l'utilisateur courant si c'est le même utilisateur
-    const currentUser = getCurrentUser();
-    if (currentUser && currentUser.username === user.username) {
+    const loggedInUser = getCurrentUser();
+    if (loggedInUser && loggedInUser.username === user.username) {
       setCurrentUser(user);
     }
 
