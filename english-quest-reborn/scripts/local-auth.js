@@ -112,6 +112,16 @@ function createUser(username, password) {
     }
   ];
 
+  // SÉCURITÉ CRITIQUE: S'assurer que les nouveaux utilisateurs ne sont jamais administrateurs
+  // Seul Ollie peut être administrateur
+  if (username.toLowerCase() === 'ollie') {
+    user.isAdmin = true;
+    console.log("Compte Ollie créé avec privilèges administrateur");
+  } else {
+    user.isAdmin = false;
+    console.log("Nouvel utilisateur créé sans privilèges administrateur");
+  }
+
   // Ajouter l'utilisateur à la liste
   const users = getUsers();
   users[user.id] = user;
