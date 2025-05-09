@@ -6,14 +6,14 @@
 // Liste des administrateurs (noms d'utilisateur)
 const ADMIN_USERNAMES = ['Ollie', 'Admin'];
 
-// Clé pour le stockage des utilisateurs dans localStorage
-const USERS_STORAGE_KEY = 'english_quest_users';
+// Utiliser la clé de stockage définie dans local-auth.js
+// Ne pas redéclarer USERS_STORAGE_KEY car elle est déjà définie dans local-auth.js
 
 // Récupérer tous les utilisateurs
 function getUsers() {
   // Utiliser la clé correcte pour récupérer les utilisateurs
-  const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
-  console.log("Récupération des utilisateurs avec la clé:", USERS_STORAGE_KEY);
+  const usersJson = localStorage.getItem('english_quest_users');
+  console.log("Récupération des utilisateurs avec la clé: english_quest_users");
   console.log("Données brutes:", usersJson);
   const users = usersJson ? JSON.parse(usersJson) : {};
   console.log("Utilisateurs récupérés:", users);
@@ -28,7 +28,7 @@ function getAllUsersFromAllSources() {
   const allUsers = {};
 
   // Récupérer les utilisateurs de la clé principale
-  const mainUsersJson = localStorage.getItem(USERS_STORAGE_KEY);
+  const mainUsersJson = localStorage.getItem('english_quest_users');
   if (mainUsersJson) {
     try {
       const mainUsers = JSON.parse(mainUsersJson);
@@ -121,8 +121,8 @@ function getAllUsersFromAllSources() {
 
 // Sauvegarder tous les utilisateurs
 function saveUsers(users) {
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-  console.log("Utilisateurs sauvegardés avec la clé:", USERS_STORAGE_KEY);
+  localStorage.setItem('english_quest_users', JSON.stringify(users));
+  console.log("Utilisateurs sauvegardés avec la clé: english_quest_users");
 }
 
 // Vérifier si l'utilisateur est un administrateur
