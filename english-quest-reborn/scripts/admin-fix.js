@@ -179,6 +179,9 @@ function addAdminTabDirectly() {
           <button id="add-test-user-btn" class="btn btn-success">
             <i class="fas fa-user-plus"></i> Ajouter un utilisateur de test
           </button>
+          <button id="force-sync-btn" class="btn btn-warning">
+            <i class="fas fa-sync"></i> Forcer la synchronisation Firebase
+          </button>
         </div>
       </div>
     `;
@@ -236,6 +239,39 @@ function addAdminTabDirectly() {
       addTestUserBtn.addEventListener('click', function() {
         createTestUser();
         setTimeout(loadUsersList, 500);
+      });
+    }
+
+    // Ajouter le gestionnaire d'événements pour le bouton de synchronisation
+    const forceSyncBtn = document.getElementById('force-sync-btn');
+    if (forceSyncBtn) {
+      forceSyncBtn.addEventListener('click', async function() {
+        try {
+          // Afficher un message de chargement
+          forceSyncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Synchronisation en cours...';
+          forceSyncBtn.disabled = true;
+
+          // Forcer la synchronisation avec Firebase
+          if (typeof forceSyncWithFirebase === 'function') {
+            await forceSyncWithFirebase();
+          } else {
+            alert("La fonction de synchronisation n'est pas disponible.");
+          }
+
+          // Recharger la liste des utilisateurs
+          await loadUsersList();
+
+          // Restaurer le bouton
+          forceSyncBtn.innerHTML = '<i class="fas fa-sync"></i> Forcer la synchronisation Firebase';
+          forceSyncBtn.disabled = false;
+        } catch (error) {
+          console.error("Erreur lors de la synchronisation avec Firebase:", error);
+          alert("Erreur lors de la synchronisation avec Firebase: " + error.message);
+
+          // Restaurer le bouton
+          forceSyncBtn.innerHTML = '<i class="fas fa-sync"></i> Forcer la synchronisation Firebase';
+          forceSyncBtn.disabled = false;
+        }
       });
     }
 
@@ -303,12 +339,16 @@ async function loadUsersList(searchTerm = '') {
     // Récupérer tous les utilisateurs depuis toutes les sources
     let users = {};
 
-    // Utiliser la nouvelle fonction getAllUsersFromAllSources qui combine toutes les sources
-    if (typeof getAllUsersFromAllSources === 'function') {
+    // Utiliser la nouvelle fonction getAllUsersComplete qui combine toutes les sources
+    if (typeof getAllUsersComplete === 'function') {
+      console.log("Utilisation de getAllUsersComplete pour récupérer les utilisateurs de toutes les sources");
+      users = await getAllUsersComplete();
+    }
+    // Fallback sur les autres fonctions si disponibles
+    else if (typeof getAllUsersFromAllSources === 'function') {
       console.log("Utilisation de getAllUsersFromAllSources pour récupérer les utilisateurs de toutes les sources");
       users = await getAllUsersFromAllSources();
     }
-    // Fallback sur les autres fonctions si disponibles
     else if (typeof getAllPossibleUsers === 'function') {
       console.log("Utilisation de getAllPossibleUsers pour récupérer les utilisateurs");
       users = await getAllPossibleUsers();
@@ -339,10 +379,18 @@ async function loadUsersList(searchTerm = '') {
         await exploreAllCollections();
       }
 
+      // Réessayer avec getAllFirebaseUsers
+      if (typeof getAllFirebaseUsers === 'function') {
+        console.log("Réessai avec getAllFirebaseUsers");
+        const firebaseUsers = await getAllFirebaseUsers();
+        users = { ...users, ...firebaseUsers };
+      }
+
       // Réessayer avec getAllPossibleUsers
-      if (typeof getAllPossibleUsers === 'function') {
+      if (Object.keys(users).length <= 1 && typeof getAllPossibleUsers === 'function') {
         console.log("Réessai avec getAllPossibleUsers");
-        users = await getAllPossibleUsers();
+        const possibleUsers = await getAllPossibleUsers();
+        users = { ...users, ...possibleUsers };
       }
 
       // Réessayer avec getAllAuthUsers
@@ -845,36 +893,64 @@ async function deleteUser(userId) {
   console.log("Suppression de l'utilisateur:", userId);
 
   try {
-    // Récupérer tous les utilisateurs depuis Firebase
+    // Récupérer tous les utilisateurs (locaux et Firebase)
     let users = {};
     let user = null;
 
-    // Vérifier si la fonction Firebase est disponible
-    if (typeof getAllFirebaseData === 'function') {
-      users = await getAllFirebaseData();
+    // Récupérer les utilisateurs locaux
+    const localUsers = getAllUsers();
+    user = localUsers[userId];
+
+    // Si l'utilisateur n'est pas trouvé localement, essayer de le récupérer depuis Firebase
+    if (!user && typeof getAllUsersComplete === 'function') {
+      users = await getAllUsersComplete();
       user = users[userId];
     } else {
-      // Fallback sur les utilisateurs locaux
-      users = getAllUsers();
-      user = users[userId];
+      users = localUsers;
     }
 
+    // Si l'utilisateur n'est toujours pas trouvé, afficher un message d'erreur
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
-      alert("Utilisateur non trouvé. Veuillez rafraîchir la liste des utilisateurs.");
-      return;
+
+      // Essayer de supprimer l'utilisateur même s'il n'est pas trouvé (pour les utilisateurs locaux)
+      if (confirm("L'utilisateur n'a pas été trouvé dans la liste principale. Voulez-vous quand même essayer de le supprimer?")) {
+        // Supprimer l'utilisateur local
+        if (typeof deleteLocalUser === 'function') {
+          const success = deleteLocalUser(userId);
+          if (success) {
+            alert("L'utilisateur a été supprimé avec succès du stockage local.");
+            await loadUsersList();
+            return;
+          }
+        } else {
+          // Fallback sur la suppression locale manuelle
+          delete localUsers[userId];
+          saveUsers(localUsers);
+          alert("L'utilisateur a été supprimé avec succès du stockage local.");
+          await loadUsersList();
+          return;
+        }
+      } else {
+        return;
+      }
     }
 
     // Demander confirmation
-    if (!confirm(`ATTENTION : Cette action est irréversible. Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.username}?`)) {
+    if (!confirm(`ATTENTION : Cette action est irréversible. Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.username || userId}?`)) {
       return;
     }
 
     // Supprimer l'utilisateur
     let success = false;
 
-    // Vérifier si la nouvelle fonction est disponible
-    if (typeof deleteRealUser === 'function') {
+    // Utiliser la fonction de suppression complète si disponible
+    if (typeof deleteUserCompletely === 'function') {
+      console.log("Utilisation de deleteUserCompletely pour supprimer l'utilisateur");
+      success = await deleteUserCompletely(userId);
+    }
+    // Vérifier si la fonction deleteRealUser est disponible
+    else if (typeof deleteRealUser === 'function') {
       console.log("Utilisation de deleteRealUser pour supprimer l'utilisateur");
       success = await deleteRealUser(userId);
     }
@@ -894,7 +970,7 @@ async function deleteUser(userId) {
       await loadUsersList();
 
       // Afficher un message de confirmation
-      alert(`L'utilisateur ${user.username} a été supprimé avec succès.`);
+      alert(`L'utilisateur ${user.username || userId} a été supprimé avec succès.`);
     } else {
       alert("Erreur lors de la suppression de l'utilisateur. Veuillez réessayer.");
     }
