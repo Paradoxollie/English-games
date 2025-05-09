@@ -1644,54 +1644,50 @@
 
   <!-- Modales -->
 
-  <!-- Modale des règles du jeu -->
-  <div class="modal rules-modal" id="rulesModal" style="display: none; opacity: 0;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Règles du jeu</h2>
-        <button class="modal-close">&times;</button>
+  <!-- Nouvelle modale des règles du jeu avec un ID différent -->
+  <div id="enigmaRulesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; opacity: 0; visibility: hidden;">
+    <div style="background-color: rgba(26, 26, 26, 0.95); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(46, 204, 113, 0.4); border: 1px solid #2ecc71; position: relative;">
+      <div style="padding: 1.2rem; border-bottom: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background-color: rgba(26, 26, 26, 0.98); z-index: 1; border-radius: 12px 12px 0 0;">
+        <h2 style="color: #2ecc71; margin: 0; font-size: 1.6rem; font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);">Règles du jeu</h2>
+        <button id="closeEnigmaRulesX" style="background: none; border: none; color: #b0bec5; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">&times;</button>
       </div>
-      <div class="modal-body">
+      <div style="padding: 1.5rem; color: #ffffff; font-family: 'Spectral', serif; line-height: 1.6;">
         <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
 
-        <h3>Objectif :</h3>
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Objectif :</h3>
         <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
 
-        <h3>Comment jouer :</h3>
-        <ul>
-          <li>Tapez un mot et appuyez sur ENTRÉE pour valider</li>
-          <li>Les lettres changeront de couleur pour vous guider :
-            <ul>
-              <li><span class="example-correct">Vert</span> : La lettre est correcte et bien placée</li>
-              <li><span class="example-present">Jaune</span> : La lettre est dans le mot mais mal placée</li>
-              <li><span class="example-absent">Gris</span> : La lettre n'est pas dans le mot</li>
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Comment jouer :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Les lettres changeront de couleur pour vous guider :
+            <ul style="margin-top: 0.5rem;">
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #2ecc71; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Vert</span> : La lettre est correcte et bien placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #f39c12; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #7f8c8d; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Gris</span> : La lettre n'est pas dans le mot</li>
             </ul>
           </li>
-          <li>Vous avez 6 essais maximum pour trouver chaque mot</li>
-          <li>Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
-          <li>Utilisez les power-ups pour vous aider :
-            <ul>
-              <li><i class="fas fa-lightbulb"></i> <strong>Indice</strong> : Révèle une lettre du mot</li>
-              <li><i class="fas fa-clock"></i> <strong>Temps</strong> : Ajoute 30 secondes au chronomètre</li>
-              <li><i class="fas fa-forward"></i> <strong>Passer</strong> : Passe au mot suivant</li>
-            </ul>
-          </li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
         </ul>
 
-        <h3>Astuces :</h3>
-        <ul>
-          <li>Commencez par des mots contenant des voyelles courantes</li>
-          <li>Faites attention aux lettres qui se répètent</li>
-          <li>Utilisez les informations des essais précédents</li>
-          <li>Enchaînez les mots corrects pour augmenter votre combo et gagner plus de points</li>
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Astuces :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Commencez par des mots contenant des voyelles courantes</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Faites attention aux lettres qui se répètent</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Utilisez les informations des essais précédents</li>
         </ul>
 
         <p>Bonne chance dans votre quête linguistique !</p>
       </div>
-      <div class="modal-footer">
-        <button class="modal-button" id="closeRulesButton">Fermer</button>
+      <div style="padding: 1.2rem; border-top: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: center; gap: 1rem; position: sticky; bottom: 0; background-color: rgba(26, 26, 26, 0.98); border-radius: 0 0 12px 12px;">
+        <button id="closeEnigmaRulesButton" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: #121212; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Exo 2', sans-serif; min-width: 120px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center;">Fermer</button>
       </div>
     </div>
+  </div>
+
+  <!-- Ancienne modale des règles (masquée et désactivée) -->
+  <div class="modal rules-modal" id="rulesModal" style="display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;">
   </div>
 
   <!-- Modale de fin de partie -->
@@ -1823,8 +1819,76 @@
   <script src="../src/js/enigma-scroll/enigma-scroll.js"></script>
   <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
 
+  <!-- Script pour la nouvelle modale des règles -->
+  <script>
+    // Script qui s'exécute immédiatement pour s'assurer que la modale des règles est masquée
+    (function() {
+      // Masquer immédiatement la nouvelle modale des règles
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
+      }
+
+      // Masquer également l'ancienne modale des règles
+      var oldRulesModal = document.getElementById('rulesModal');
+      if (oldRulesModal) {
+        oldRulesModal.style.display = 'none';
+        oldRulesModal.style.opacity = '0';
+        oldRulesModal.style.visibility = 'hidden';
+        oldRulesModal.style.pointerEvents = 'none';
+      }
+    })();
+  </script>
+
   <!-- Script d'initialisation de l'utilisateur -->
   <script>
+    // Fonctions pour la nouvelle modale des règles
+    function showEnigmaRules() {
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+      }
+    }
+
+    function hideEnigmaRules() {
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+      }
+    }
+
+    // Configurer les gestionnaires d'événements pour la nouvelle modale des règles
+    document.addEventListener('DOMContentLoaded', function() {
+      // Bouton pour afficher les règles
+      var showRulesButton = document.getElementById('show-rules-button');
+      if (showRulesButton) {
+        showRulesButton.addEventListener('click', showEnigmaRules);
+      }
+
+      // Bouton pour afficher les règles en jeu
+      var inGameRulesButton = document.getElementById('in-game-rules-button');
+      if (inGameRulesButton) {
+        inGameRulesButton.addEventListener('click', showEnigmaRules);
+      }
+
+      // Boutons pour fermer les règles
+      var closeEnigmaRulesButton = document.getElementById('closeEnigmaRulesButton');
+      if (closeEnigmaRulesButton) {
+        closeEnigmaRulesButton.addEventListener('click', hideEnigmaRules);
+      }
+
+      var closeEnigmaRulesX = document.getElementById('closeEnigmaRulesX');
+      if (closeEnigmaRulesX) {
+        closeEnigmaRulesX.addEventListener('click', hideEnigmaRules);
+      }
+    });
+
     // Masquer l'overlay de chargement rapidement
     window.addEventListener('load', function() {
       const loadingOverlay = document.getElementById('loading-overlay');
@@ -1836,6 +1900,14 @@
         setTimeout(() => {
           loadingOverlay.style.display = 'none';
         }, 500);
+      }
+
+      // S'assurer que la modale des règles est masquée
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
       }
     });
 
@@ -1855,33 +1927,22 @@
           }
         }, 500); // Réduire le délai à 500ms
 
-        // Solution robuste pour s'assurer que toutes les modales sont masquées au chargement
-        // Utiliser plusieurs méthodes pour garantir que cela fonctionne dans tous les environnements
+        // S'assurer que la nouvelle modale des règles est masquée
+        var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+        if (enigmaRulesModal) {
+          enigmaRulesModal.style.display = 'none';
+          enigmaRulesModal.style.opacity = '0';
+          enigmaRulesModal.style.visibility = 'hidden';
+        }
+
+        // Masquer également toutes les anciennes modales
         const modals = document.querySelectorAll('.modal');
-        console.log("Nombre de modales trouvées:", modals.length);
-
         modals.forEach(modal => {
-          console.log("Masquage de la modale:", modal.id);
-          // Méthode 1: Supprimer la classe show
           modal.classList.remove('show');
-
-          // Méthode 2: Définir le style directement
           modal.style.display = 'none';
           modal.style.opacity = '0';
-
-          // Méthode 3: Utiliser setAttribute pour plus de compatibilité
-          modal.setAttribute('style', 'display: none !important; opacity: 0 !important;');
+          modal.style.visibility = 'hidden';
         });
-
-        // Solution spécifique pour la modale des règles
-        const rulesModal = document.getElementById('rulesModal');
-        if (rulesModal) {
-          console.log("Masquage spécifique de la modale des règles");
-          rulesModal.classList.remove('show');
-          rulesModal.style.display = 'none';
-          rulesModal.style.opacity = '0';
-          rulesModal.setAttribute('style', 'display: none !important; opacity: 0 !important;');
-        }
 
         // Vérifier si un utilisateur est connecté dans localStorage
         const userJson = localStorage.getItem('english_quest_current_user');

@@ -255,10 +255,16 @@ const GameUI = {
   },
 
   /**
-   * Affiche la modale des règles
+   * Affiche la modale des règles (redirection vers la nouvelle modale)
    */
   showRulesModal: function() {
-    this.showModal(this.rulesModal);
+    // Rediriger vers la nouvelle fonction showEnigmaRules
+    console.log("Redirection vers showEnigmaRules");
+    if (typeof window.showEnigmaRules === 'function') {
+      window.showEnigmaRules();
+    } else {
+      console.log("La fonction showEnigmaRules n'est pas disponible");
+    }
   },
 
   /**
