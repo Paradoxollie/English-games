@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
   <meta name="theme-color" content="#121212">
-  <title>Enigma Scroll | English Quest Reborn</title>
+  <title>Enigma Scroll | English Quest</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
@@ -13,16 +13,571 @@
 
   <!-- Base styles - Ordre important pour éviter les conflits -->
   <link href="../styles/new-design.css" rel="stylesheet">
+  <link href="../src/styles/layout.css" rel="stylesheet">
   <link href="../styles/animations.css" rel="stylesheet">
   <link href="../styles/particles.css" rel="stylesheet">
   <link href="../styles/responsive.css" rel="stylesheet">
 
   <!-- Game-specific styles -->
   <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
+  <link href="../src/styles/streak-bonus.css" rel="stylesheet">
+  <link href="../src/styles/reward-notifications.css" rel="stylesheet">
+  <link href="../src/styles/connection-indicator.css" rel="stylesheet">
+  <link href="../src/styles/leaderboard.css" rel="stylesheet">
+  <link href="../src/styles/sync-indicator.css" rel="stylesheet">
 
   <!-- Styles personnalisés pour corriger l'alignement et les couleurs -->
   <style>
-    /* Redéfinition des variables CSS pour s'assurer qu'elles sont correctement appliquées */
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
+    .btn-login {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* Correction des couleurs du titre */
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Correction de la couleur du sous-titre */
+    .game-subtitle {
+      color: var(--color-secondary);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Assurer que le header est exactement comme sur les autres pages */
+    .header {
+      padding: var(--spacing-sm) 0;
+    }
+
+    /* Assurer que le container a la même largeur que sur les autres pages */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-sm);
+    }
+
+    /* Styles pour le corps du jeu */
+    .game-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Exo 2', sans-serif;
+      color: var(--color-text);
+      background: var(--color-background);
+      overflow-x: hidden;
+    }
+
+    /* Styles pour l'interface du jeu */
+    .game-universe {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background-color: var(--color-background);
+      padding-bottom: 50px;
+    }
+
+    .game-interface {
+      position: relative;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      z-index: 10;
+      text-align: center;
+    }
+
+    /* Styles pour les sections du jeu */
+    .game-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .game-sections {
+        flex-direction: row;
+      }
+
+      .main-panel {
+        flex: 2;
+      }
+
+      .leaderboard-panel {
+        flex: 1;
+      }
+    }
+
+    /* Styles pour les panneaux du jeu */
+    .game-panel {
+      background: rgba(26, 26, 26, 0.95);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-panel:hover {
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+      border-color: rgba(46, 204, 113, 0.3);
+    }
+
+    /* Styles pour les états du jeu */
+    .game-state {
+      display: none;
+      padding: 2rem;
+    }
+
+    .game-state.active {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Styles pour l'écran d'accueil */
+    .welcome-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .welcome-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Styles pour la sélection de difficulté */
+    .difficulty-selection {
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .difficulty-selection h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    .difficulty-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Styles pour les boutons */
+    .game-button {
+      position: relative;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--color-text);
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 50px;
+      outline: none;
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      border: 1px solid var(--color-primary-light);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5), inset 0 0 5px rgba(255, 255, 255, 0.2);
+      font-size: 1.3rem;
+      padding: 15px 30px;
+    }
+
+    .secondary-button {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.2rem;
+      padding: 12px 25px;
+    }
+
+    .game-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .glow-button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .glow-button:hover::before {
+      opacity: 1;
+    }
+
+    .action-icon {
+      font-size: 1.2rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Styles pour le HUD du jeu */
+    .game-hud {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      min-width: 80px;
+    }
+
+    .hud-icon {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+      color: var(--color-primary-light);
+    }
+
+    .hud-label {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour les boutons de difficulté */
+    .difficulty-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      gap: 0.7rem;
+      width: 100%;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .difficulty-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+    }
+
+    .difficulty-icon {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .difficulty-btn:hover .difficulty-icon {
+      transform: scale(1.2);
+    }
+
+    .difficulty-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .difficulty-desc {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Styles pour le clavier */
+    .keyboard {
+      margin: 2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.3rem;
+    }
+
+    .key-btn {
+      min-width: 2.5rem;
+      height: 3.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: var(--color-text);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .key-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .key-btn:active {
+      transform: translateY(1px);
+    }
+
+    .key-enter, .key-delete {
+      min-width: 4rem;
+      font-size: 0.9rem;
+    }
+
+    /* Styles pour les power-ups */
+    .power-ups-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .power-up {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 80px;
+    }
+
+    .power-up:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .power-up-icon {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+    }
+
+    .power-up-name {
+      font-size: 0.9rem;
+      color: var(--color-text);
+    }
+
+    .power-up-count {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour la grille de mots */
+    .word-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .grid-row {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .grid-cell {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .grid-cell.filled {
+      border-color: rgba(255, 255, 255, 0.3);
+      animation: cellFill 0.2s ease-in-out;
+    }
+
+    @keyframes cellFill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .grid-cell.correct {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #121212;
+      animation: correctCell 0.5s ease-in-out;
+    }
+
+    @keyframes correctCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: var(--color-primary); }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.present {
+      background-color: #f39c12;
+      border-color: #f39c12;
+      color: #121212;
+      animation: presentCell 0.5s ease-in-out;
+    }
+
+    @keyframes presentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: #f39c12; }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.absent {
+      background-color: #7f8c8d;
+      border-color: #7f8c8d;
+      color: #121212;
+      animation: absentCell 0.5s ease-in-out;
+    }
+
+    @keyframes absentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: #7f8c8d; }
+      100% { transform: rotateY(0); }
+    }
+
+    /* Styles pour les touches du clavier */
+    .key-btn.correct {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #121212;
+    }
+
+    .key-btn.present {
+      background-color: #f39c12;
+      border-color: #f39c12;
+      color: #121212;
+    }
+
+    .key-btn.absent {
+      background-color: #7f8c8d;
+      border-color: #7f8c8d;
+      color: #121212;
+    }
+
+    .key-pressed {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+    }
+
+    /* Styles pour le bouton des règles en jeu */
+    .in-game-rules-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--color-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary);
+      transform: scale(1.1);
+    }
     :root {
       /* Palette de couleurs vert, bleu et blanc */
       --color-primary: #2ecc71 !important; /* Vert */
@@ -309,14 +864,567 @@
       background-color: rgba(46, 204, 113, 0.2);
       color: white;
     }
+
+    /* Styles pour les boutons d'action */
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .game-buttons {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .rules-button {
+      background-color: transparent;
+      border: 2px solid var(--color-secondary, #3498db);
+      color: var(--color-secondary, #3498db);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .rules-button:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Bouton des règles en jeu */
+    .in-game-rules-button {
+      background: none;
+      border: none;
+      color: var(--color-secondary, #3498db);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary, #2ecc71);
+      transform: scale(1.1);
+    }
+
+    /* Styles pour les modales */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 2000; /* S'assurer que la modale est au-dessus de tout */
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background-color: rgba(26, 26, 26, 0.95);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+      border: 1px solid var(--color-primary);
+      position: relative;
+      animation: modalAppear 0.3s ease-out;
+    }
+
+    @keyframes modalAppear {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 1.2rem;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      z-index: 1;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-title {
+      color: var(--color-primary);
+      margin: 0;
+      font-size: 1.6rem;
+      font-family: 'Cinzel', serif;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      color: var(--color-primary);
+      background-color: rgba(46, 204, 113, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      color: var(--color-text);
+      font-family: 'Spectral', serif;
+      line-height: 1.6;
+    }
+
+    .modal-body h3 {
+      color: var(--color-secondary);
+      margin: 1.5rem 0 0.8rem;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1.3rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .modal-body h3::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 1.2em;
+      background-color: var(--color-secondary);
+      border-radius: 2px;
+    }
+
+    .modal-body p {
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .modal-body ul {
+      margin-bottom: 1.2rem;
+      padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+      margin-bottom: 0.7rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .modal-body li::before {
+      content: '•';
+      color: var(--color-primary);
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+    .modal-footer {
+      padding: 1.2rem;
+      border-top: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      position: sticky;
+      bottom: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .modal-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      color: #121212;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 120px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .modal-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-button.secondary {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      box-shadow: none;
+    }
+
+    .modal-button.secondary:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Styles pour les exemples de couleurs dans les règles */
+    .example-correct {
+      background-color: var(--color-primary);
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .example-present {
+      background-color: #f39c12;
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .example-absent {
+      background-color: #7f8c8d;
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* Styles pour les statistiques de fin de partie */
+    .game-over-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .game-over-stat {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rewards-section {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .rewards-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .reward {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .reward-icon {
+      font-size: 2rem;
+      color: var(--color-primary);
+    }
+
+    .reward-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    .new-high-score {
+      background: rgba(255, 193, 7, 0.2);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      color: #ffc107;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+      }
+    }
+
+    /* Styles responsifs */
+    @media (max-width: 768px) {
+      .game-sections {
+        flex-direction: column;
+      }
+
+      .difficulty-options {
+        flex-direction: column;
+      }
+
+      .game-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .game-hud {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hud-item {
+        min-width: 70px;
+      }
+
+      .key-btn {
+        min-width: 2rem;
+        height: 3rem;
+        font-size: 0.9rem;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 3.5rem;
+      }
+
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .game-over-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .key-btn {
+        min-width: 1.8rem;
+        height: 2.8rem;
+        font-size: 0.8rem;
+      }
+
+      .power-ups-container {
+        flex-wrap: wrap;
+      }
+
+      .power-up {
+        width: 70px;
+      }
+
+      .grid-cell {
+        width: 2.8rem;
+        height: 2.8rem;
+        font-size: 1.2rem;
+      }
+
+      .game-button {
+        width: 100%;
+      }
+
+      .welcome-text {
+        font-size: 1rem;
+      }
+
+      .difficulty-selection h3 {
+        font-size: 1.1rem;
+      }
+
+      .difficulty-name {
+        font-size: 1rem;
+      }
+
+      .difficulty-desc {
+        font-size: 0.8rem;
+      }
+
+      .hud-item {
+        padding: 0.5rem;
+        min-width: 60px;
+      }
+
+      .hud-value {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .grid-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+      }
+
+      .key-btn {
+        min-width: 1.5rem;
+        height: 2.5rem;
+        font-size: 0.7rem;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 3rem;
+        font-size: 0.7rem;
+      }
+    }
+
+    /* Styles pour l'overlay de chargement */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(18, 18, 18, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(46, 204, 113, 0.2);
+      border-top-color: var(--color-primary, #2ecc71);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--color-text, #ffffff);
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Styles pour les exemples de couleurs dans les règles */
+    .example-correct {
+      background-color: #2ecc71;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-present {
+      background-color: #f39c12;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-absent {
+      background-color: #7f8c8d;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* Responsive pour les modales */
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+      }
+
+      .modal-body {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .modal-body h3 {
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
-<body>
+<body class="game-body">
   <!-- Overlay de chargement -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="loading-content">
       <div class="loading-spinner"></div>
-      <p class="loading-text">Chargement des parchemins mystérieux...</p>
+      <p class="loading-text">Chargement...</p>
     </div>
   </div>
 
@@ -342,152 +1450,193 @@
     </div>
   </header>
 
-  <!-- Contenu principal -->
-  <main>
-    <div class="game-container" id="enigma-scroll-container">
-      <!-- Titre et introduction -->
-      <div class="game-intro">
-        <h1>Enigma Scroll <span class="subtitle">Les Parchemins Mystérieux</span></h1>
-        <p class="game-description">
-          Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
-          Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
-        </p>
-
-        <!-- Sélecteur de difficulté -->
-        <div class="difficulty-selector">
-          <h3>Choisissez votre difficulté</h3>
-          <div class="difficulty-options">
-            <button class="difficulty-btn" data-difficulty="beginner">
-              <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
-              <span class="difficulty-name">Débutant</span>
-              <span class="difficulty-desc">Mots de 4 lettres</span>
-            </button>
-            <button class="difficulty-btn" data-difficulty="intermediate">
-              <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
-              <span class="difficulty-name">Intermédiaire</span>
-              <span class="difficulty-desc">Mots de 5 lettres</span>
-            </button>
-            <button class="difficulty-btn" data-difficulty="advanced">
-              <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
-              <span class="difficulty-name">Avancé</span>
-              <span class="difficulty-desc">Mots de 7 lettres</span>
-            </button>
-            <button class="difficulty-btn" data-difficulty="expert">
-              <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
-              <span class="difficulty-name">Expert</span>
-              <span class="difficulty-desc">Mots de 9 lettres</span>
-            </button>
-            <button class="difficulty-btn" data-difficulty="legendary">
-              <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
-              <span class="difficulty-name">Légendaire</span>
-              <span class="difficulty-desc">Mots de 10 lettres</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Bouton de démarrage -->
-        <button id="start-game-button" class="start-button">Commencer l'aventure</button>
+  <!-- Game container -->
+  <div class="game-universe">
+    <!-- Game UI -->
+    <main class="game-interface">
+      <!-- Game header - Centered subtitle -->
+      <div class="game-header-content">
+        <h1 class="section-title text-gradient">Enigma Scroll</h1>
+        <p class="game-subtitle">Les Parchemins Mystérieux</p>
       </div>
 
-      <!-- Zone de jeu (cachée au départ) -->
-      <div id="game-area" class="game-area" style="display: none;">
-        <!-- Informations de jeu -->
-        <div class="game-info">
-          <div class="game-stat">
-            <span class="stat-icon"><i class="fas fa-scroll"></i></span>
-            <span class="stat-label">Niveau</span>
-            <span id="level-display" class="stat-value">1</span>
-          </div>
-          <div class="game-stat">
-            <span class="stat-icon"><i class="fas fa-star"></i></span>
-            <span class="stat-label">Score</span>
-            <span id="score-display" class="stat-value">0</span>
-          </div>
-          <div class="game-stat">
-            <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
-            <span class="stat-label">Temps</span>
-            <span id="time-display" class="stat-value">60</span>
-          </div>
-          <div class="game-stat">
-            <span class="stat-icon"><i class="fas fa-bolt"></i></span>
-            <span class="stat-label">Combo</span>
-            <span id="combo-display" class="stat-value">x1</span>
+      <!-- Game sections -->
+      <div class="game-sections">
+        <!-- Main game panel -->
+        <div class="game-panel main-panel">
+          <!-- Game states -->
+          <div class="game-states">
+            <!-- Game state: welcome -->
+            <div id="welcome-screen" class="game-state active">
+              <div class="welcome-content">
+                <p class="welcome-text">
+                  Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+                  Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+                </p>
+
+                <div class="difficulty-selection">
+                  <h3>Choisissez votre niveau de difficulté :</h3>
+                  <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="beginner">
+                      <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+                      <span class="difficulty-name">Débutant</span>
+                      <span class="difficulty-desc">Mots de 4 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate">
+                      <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+                      <span class="difficulty-name">Intermédiaire</span>
+                      <span class="difficulty-desc">Mots de 5 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="advanced">
+                      <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+                      <span class="difficulty-name">Avancé</span>
+                      <span class="difficulty-desc">Mots de 7 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="expert">
+                      <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+                      <span class="difficulty-name">Expert</span>
+                      <span class="difficulty-desc">Mots de 9 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="legendary">
+                      <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+                      <span class="difficulty-name">Légendaire</span>
+                      <span class="difficulty-desc">Mots de 10 lettres</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="game-buttons">
+                  <button id="start-game-button" class="game-button primary-button glow-button">
+                    <span class="button-text">Commencer l'aventure</span>
+                    <span class="action-icon">✦</span>
+                  </button>
+                  <button id="show-rules-button" class="game-button secondary-button">
+                    <span class="button-text">Règles du jeu</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game state: playing -->
+            <div id="game-area" class="game-state" style="display: none;">
+              <!-- Game HUD -->
+              <div class="game-hud">
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-scroll"></i></span>
+                  <span class="hud-label">Niveau</span>
+                  <span id="level-display" class="hud-value">1</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-star"></i></span>
+                  <span class="hud-label">Score</span>
+                  <span id="score-display" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-hourglass-half"></i></span>
+                  <span class="hud-label">Temps</span>
+                  <span id="time-display" class="hud-value">60</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-bolt"></i></span>
+                  <span class="hud-label">Combo</span>
+                  <span id="combo-display" class="hud-value">x1</span>
+                </div>
+              </div>
+
+              <!-- Grille de jeu -->
+              <div id="word-grid" class="word-grid"></div>
+
+              <!-- Clavier virtuel -->
+              <div id="keyboard" class="keyboard">
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+                </div>
+              </div>
+
+              <!-- Power-ups -->
+              <div id="power-ups-container" class="power-ups-container">
+                <div class="power-up" data-power="hint">
+                  <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+                  <div class="power-up-name">Indice</div>
+                  <div class="power-up-count" id="hint-count">3</div>
+                </div>
+                <div class="power-up" data-power="time">
+                  <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+                  <div class="power-up-name">Temps</div>
+                  <div class="power-up-count" id="time-count">2</div>
+                </div>
+                <div class="power-up" data-power="skip">
+                  <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+                  <div class="power-up-name">Passer</div>
+                  <div class="power-up-count" id="skip-count">1</div>
+                </div>
+              </div>
+
+              <!-- Bouton des règles en jeu -->
+              <button id="in-game-rules-button" class="in-game-rules-button" title="Règles du jeu">
+                <i class="fas fa-question-circle"></i>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Grille de jeu -->
-        <div id="word-grid" class="word-grid"></div>
-
-        <!-- Clavier virtuel -->
-        <div id="keyboard" class="keyboard">
-          <div class="keyboard-row">
-            <button class="key-btn">Q</button>
-            <button class="key-btn">W</button>
-            <button class="key-btn">E</button>
-            <button class="key-btn">R</button>
-            <button class="key-btn">T</button>
-            <button class="key-btn">Y</button>
-            <button class="key-btn">U</button>
-            <button class="key-btn">I</button>
-            <button class="key-btn">O</button>
-            <button class="key-btn">P</button>
+        <!-- Leaderboard panel -->
+        <div class="game-panel leaderboard-panel">
+          <div class="game-hud">
+            <h2>Meilleurs Scores</h2>
           </div>
-          <div class="keyboard-row">
-            <button class="key-btn">A</button>
-            <button class="key-btn">S</button>
-            <button class="key-btn">D</button>
-            <button class="key-btn">F</button>
-            <button class="key-btn">G</button>
-            <button class="key-btn">H</button>
-            <button class="key-btn">J</button>
-            <button class="key-btn">K</button>
-            <button class="key-btn">L</button>
-          </div>
-          <div class="keyboard-row">
-            <button class="key-btn key-enter">ENTER</button>
-            <button class="key-btn">Z</button>
-            <button class="key-btn">X</button>
-            <button class="key-btn">C</button>
-            <button class="key-btn">V</button>
-            <button class="key-btn">B</button>
-            <button class="key-btn">N</button>
-            <button class="key-btn">M</button>
-            <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
-          </div>
-        </div>
-
-        <!-- Power-ups -->
-        <div id="power-ups-container" class="power-ups-container">
-          <div class="power-up" data-power="hint">
-            <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
-            <div class="power-up-name">Indice</div>
-            <div class="power-up-count" id="hint-count">3</div>
-          </div>
-          <div class="power-up" data-power="time">
-            <div class="power-up-icon"><i class="fas fa-clock"></i></div>
-            <div class="power-up-name">Temps</div>
-            <div class="power-up-count" id="time-count">2</div>
-          </div>
-          <div class="power-up" data-power="skip">
-            <div class="power-up-icon"><i class="fas fa-forward"></i></div>
-            <div class="power-up-name">Passer</div>
-            <div class="power-up-count" id="skip-count">1</div>
+          <div id="enigma-scroll-leaderboard" class="leaderboard-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="rank-header">Rang</th>
+                  <th class="player-header">Joueur</th>
+                  <th class="score-header">Score</th>
+                  <th class="date-header">Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="4" class="loading-scores">Chargement des scores...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
-      <!-- Zone de classement -->
-      <div id="leaderboard-area" class="leaderboard-area">
-        <h2>Meilleurs Scores</h2>
-        <div class="leaderboard-tabs">
-          <button class="leaderboard-tab active" data-tab="alltime">Tous les temps</button>
-        </div>
-        <div id="enigma-scroll-leaderboard" class="leaderboard-content">
-          <div class="leaderboard-loading">Chargement des scores...</div>
-        </div>
-      </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <!-- Pas de footer -->
 
@@ -538,7 +1687,7 @@
         <p>Bonne chance dans votre quête linguistique !</p>
       </div>
       <div class="modal-footer">
-        <button class="modal-button" id="startGameFromRules">Commencer à jouer</button>
+        <button class="modal-button" id="closeRulesButton">Fermer</button>
       </div>
     </div>
   </div>
@@ -674,9 +1823,36 @@
 
   <!-- Script d'initialisation de l'utilisateur -->
   <script>
+    // Masquer l'overlay de chargement rapidement
+    window.addEventListener('load', function() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+        loadingOverlay.style.visibility = 'hidden';
+
+        // Supprimer complètement après la transition
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+        }, 500);
+      }
+    });
+
     // Vérifier si l'utilisateur est connecté au chargement de la page
     document.addEventListener('DOMContentLoaded', function() {
       try {
+        // Masquer l'overlay de chargement plus rapidement
+        setTimeout(() => {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          if (loadingOverlay) {
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.visibility = 'hidden';
+
+            setTimeout(() => {
+              loadingOverlay.style.display = 'none';
+            }, 500);
+          }
+        }, 500); // Réduire le délai à 500ms
+
         // Vérifier si un utilisateur est connecté dans localStorage
         const userJson = localStorage.getItem('english_quest_current_user');
         if (userJson) {

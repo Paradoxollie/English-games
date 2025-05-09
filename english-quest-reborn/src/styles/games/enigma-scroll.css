@@ -197,6 +197,54 @@
   width: 160px;
   position: relative;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
+  touch-action: manipulation; /* Optimise pour les interactions tactiles */
+}
+
+/* Responsive pour les petits écrans */
+@media (max-width: 768px) {
+  .difficulty-options {
+    gap: 0.8rem;
+  }
+
+  .difficulty-btn {
+    width: 130px;
+    padding: 0.8rem 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .difficulty-icon {
+    font-size: 1.5rem;
+  }
+
+  .difficulty-name {
+    font-size: 0.9rem;
+  }
+
+  .difficulty-desc {
+    font-size: 0.8rem;
+  }
+
+  .game-intro {
+    padding: 1.5rem;
+  }
+
+  .game-intro h1 {
+    font-size: 2rem;
+  }
+
+  .game-intro .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .game-description {
+    font-size: 1rem;
+    margin: 1.5rem auto;
+  }
+
+  .game-area {
+    padding: 1.5rem;
+  }
 }
 
 .difficulty-btn::before {
@@ -458,15 +506,15 @@
 }
 
 .grid-cell {
-  width: 4rem;
-  height: 4rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border: 2px solid rgba(46, 125, 50, 0.3);
   border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Cinzel', serif;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: white;
   text-transform: uppercase;
@@ -475,6 +523,24 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
+}
+
+/* Responsive pour les petits écrans */
+@media (max-width: 768px) {
+  .grid-cell {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    border-width: 1px;
+  }
+
+  .grid-row {
+    gap: 0.4rem;
+  }
+
+  .word-grid {
+    gap: 0.4rem;
+  }
 }
 
 .grid-cell::before {
@@ -566,6 +632,47 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
+  touch-action: manipulation; /* Optimise pour les interactions tactiles */
+}
+
+/* Responsive pour les petits écrans */
+@media (max-width: 768px) {
+  .key-btn {
+    min-width: 2rem;
+    height: 3rem;
+    font-size: 0.9rem;
+    border-width: 1px;
+  }
+
+  .key-enter, .key-delete {
+    min-width: 3.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .keyboard-row {
+    gap: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .power-ups-container {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .power-up {
+    width: 80px;
+    padding: 0.8rem;
+  }
+
+  .power-up-icon {
+    font-size: 1.5rem;
+  }
+
+  .power-up-count {
+    font-size: 1.2rem;
+  }
 }
 
 .key-btn::before {

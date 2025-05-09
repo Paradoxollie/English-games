@@ -11,6 +11,8 @@ const GameUI = {
   wordGrid: null,
   keyboard: null,
   startButton: null,
+  rulesButton: null,
+  inGameRulesButton: null,
   difficultyButtons: null,
 
   // Éléments d'affichage
@@ -55,6 +57,8 @@ const GameUI = {
     this.wordGrid = document.getElementById('word-grid');
     this.keyboard = document.getElementById('keyboard');
     this.startButton = document.getElementById('start-game-button');
+    this.rulesButton = document.getElementById('show-rules-button');
+    this.inGameRulesButton = document.getElementById('in-game-rules-button');
     this.difficultyButtons = document.querySelectorAll('.difficulty-btn');
 
     // Éléments d'affichage
@@ -92,6 +96,20 @@ const GameUI = {
         if (this.onStartGame) {
           this.onStartGame(this.selectedDifficulty);
         }
+      });
+    }
+
+    // Bouton des règles du jeu (menu principal)
+    if (this.rulesButton) {
+      this.rulesButton.addEventListener('click', () => {
+        this.showRulesModal();
+      });
+    }
+
+    // Bouton des règles du jeu (en jeu)
+    if (this.inGameRulesButton) {
+      this.inGameRulesButton.addEventListener('click', () => {
+        this.showRulesModal();
       });
     }
 
@@ -174,15 +192,12 @@ const GameUI = {
       });
     });
 
-    // Bouton pour démarrer le jeu depuis les règles
-    const startFromRules = document.getElementById('startGameFromRules');
-    if (startFromRules) {
-      startFromRules.addEventListener('click', () => {
+    // Bouton pour fermer les règles
+    const closeRulesButton = document.getElementById('closeRulesButton');
+    if (closeRulesButton) {
+      closeRulesButton.addEventListener('click', () => {
         this.hideModal(this.rulesModal);
-
-        if (this.onStartGame) {
-          this.onStartGame(this.selectedDifficulty);
-        }
+        // Ne lance pas le jeu, permet à l'utilisateur de choisir sa difficulté
       });
     }
 
@@ -340,13 +355,21 @@ const GameUI = {
    * Affiche l'introduction du jeu et cache la zone de jeu
    */
   showGameIntro: function() {
-    if (this.gameArea) {
-      this.gameArea.style.display = 'none';
+    // Masquer l'état de jeu actif
+    const activeState = document.querySelector('.game-state.active');
+    if (activeState) {
+      activeState.classList.remove('active');
     }
 
-    const gameIntro = document.querySelector('.game-intro');
-    if (gameIntro) {
-      gameIntro.style.display = 'block';
+    // Afficher l'écran d'accueil
+    const welcomeScreen = document.getElementById('welcome-screen');
+    if (welcomeScreen) {
+      welcomeScreen.classList.add('active');
+    }
+
+    // S'assurer que la zone de jeu est masquée
+    if (this.gameArea) {
+      this.gameArea.style.display = 'none';
     }
   },
 
@@ -354,13 +377,16 @@ const GameUI = {
    * Affiche la zone de jeu et cache l'introduction
    */
   showGameArea: function() {
-    if (this.gameArea) {
-      this.gameArea.style.display = 'block';
+    // Masquer l'état de jeu actif
+    const activeState = document.querySelector('.game-state.active');
+    if (activeState) {
+      activeState.classList.remove('active');
     }
 
-    const gameIntro = document.querySelector('.game-intro');
-    if (gameIntro) {
-      gameIntro.style.display = 'none';
+    // Afficher la zone de jeu
+    if (this.gameArea) {
+      this.gameArea.style.display = 'block';
+      this.gameArea.classList.add('active');
     }
   },
 
