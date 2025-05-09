@@ -811,7 +811,7 @@ async function deleteUser(userId) {
 }
 
 // Fonction pour débloquer tous les skins
-function unlockAllSkins() {
+async function unlockAllSkins() {
   console.log("Débloquage de tous les skins...");
 
   try {
@@ -824,6 +824,13 @@ function unlockAllSkins() {
 
     const currentUser = JSON.parse(currentUserJson);
 
+    // Vérifier si les skins sont déjà débloqués
+    if (currentUser.hasAllSkins && currentUser.skinsUnlocked) {
+      console.log("Les skins sont déjà débloqués pour cet utilisateur");
+      alert("Les skins sont déjà débloqués pour cet utilisateur.");
+      return;
+    }
+
     // Débloquer tous les skins
     currentUser.hasAllSkins = true;
     currentUser.skinsUnlocked = true;
@@ -831,23 +838,39 @@ function unlockAllSkins() {
     // Sauvegarder les modifications
     localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
 
-    // Mettre à jour l'utilisateur dans la liste des utilisateurs
-    const users = getAllUsers();
-    const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
+    // Mettre à jour l'utilisateur dans Firebase si possible
+    let success = false;
 
-    if (userId) {
-      users[userId].hasAllSkins = true;
-      users[userId].skinsUnlocked = true;
-      saveUsers(users);
+    if (typeof updateFirebaseUser === 'function' && currentUser.id) {
+      // Mettre à jour l'utilisateur dans Firebase
+      const userData = {
+        hasAllSkins: true,
+        skinsUnlocked: true
+      };
+
+      success = await updateFirebaseUser(currentUser.id, userData);
+    } else {
+      // Fallback sur la sauvegarde locale
+      const users = getAllUsers();
+      const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
+
+      if (userId) {
+        users[userId].hasAllSkins = true;
+        users[userId].skinsUnlocked = true;
+        success = saveUsers(users);
+      }
     }
 
     // Afficher un message de confirmation
-    alert("Tous les skins ont été débloqués avec succès.");
+    alert("Tous les skins ont été débloqués avec succès. La page va être rechargée pour appliquer les changements.");
 
     // Recharger la page pour appliquer les changements
-    window.location.reload();
+    setTimeout(function() {
+      window.location.reload();
+    }, 1000);
   } catch (error) {
     console.error("Erreur lors du débloquage des skins:", error);
+    alert("Erreur lors du débloquage des skins: " + error.message);
   }
 }
 
