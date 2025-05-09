@@ -127,7 +127,94 @@ function saveUsers(users) {
 
 // Vérifier si l'utilisateur est un administrateur
 function isAdmin(username) {
-  return ADMIN_USERNAMES.includes(username);
+  if (!username) {
+    return false;
+  }
+
+  // Convertir en minuscules pour une comparaison insensible à la casse
+  const lowerUsername = username.toLowerCase();
+
+  // Vérifier si le nom d'utilisateur est dans la liste des administrateurs (insensible à la casse)
+  for (const adminName of ADMIN_USERNAMES) {
+    if (adminName.toLowerCase() === lowerUsername) {
+      return true;
+    }
+  }
+
+  // Vérifier si l'utilisateur a la propriété isAdmin à true
+  const currentUser = getCurrentUserFromAllSources();
+  if (currentUser && currentUser.username && currentUser.username.toLowerCase() === lowerUsername) {
+    return currentUser.isAdmin === true;
+  }
+
+  return false;
+}
+
+// Récupérer l'utilisateur courant à partir de toutes les sources possibles
+function getCurrentUserFromAllSources() {
+  console.log("Récupération de l'utilisateur courant à partir de toutes les sources possibles");
+
+  // Essayer d'abord la clé standard
+  const currentUserJson = localStorage.getItem('english_quest_current_user');
+  if (currentUserJson) {
+    try {
+      const currentUser = JSON.parse(currentUserJson);
+      console.log("Utilisateur courant trouvé dans la clé standard:", currentUser);
+      return currentUser;
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur courant:", error);
+    }
+  }
+
+  // Essayer ensuite la clé 'userProfile'
+  const userProfileJson = localStorage.getItem('userProfile');
+  if (userProfileJson) {
+    try {
+      const userProfile = JSON.parse(userProfileJson);
+      console.log("Profil utilisateur trouvé:", userProfile);
+      return userProfile;
+    } catch (error) {
+      console.error("Erreur lors de la récupération du profil utilisateur:", error);
+    }
+  }
+
+  // Parcourir toutes les clés de localStorage pour trouver un utilisateur courant
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+
+    // Ignorer les clés déjà traitées
+    if (key === 'english_quest_current_user' || key === 'userProfile') {
+      continue;
+    }
+
+    // Vérifier si la clé contient 'current' ou 'user'
+    if (key.includes('current') || key.includes('user')) {
+      try {
+        const userData = JSON.parse(localStorage.getItem(key));
+        console.log("Données utilisateur trouvées dans la clé:", key, userData);
+
+        // Vérifier si les données contiennent un nom d'utilisateur
+        if (userData && userData.username) {
+          return userData;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données de la clé:", key, error);
+      }
+    }
+  }
+
+  // Si aucun utilisateur courant n'est trouvé, essayer de récupérer l'utilisateur 'Ollie'
+  const users = getAllUsersFromAllSources();
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.username && user.username.toLowerCase() === 'ollie') {
+      console.log("Utilisateur 'Ollie' trouvé:", user);
+      return user;
+    }
+  }
+
+  console.log("Aucun utilisateur courant trouvé");
+  return null;
 }
 
 // Initialiser les fonctionnalités d'administration
@@ -800,8 +887,8 @@ function deleteUser(userId) {
 function unlockAllSkins() {
   console.log("Débloquage de tous les skins...");
 
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
+  // Récupérer l'utilisateur courant en utilisant notre fonction robuste
+  const currentUser = getCurrentUserFromAllSources();
 
   if (!currentUser) {
     console.error("Aucun utilisateur connecté");
@@ -878,8 +965,8 @@ function unlockAllSkins() {
 
 // Réinitialiser tous les utilisateurs (sauf les administrateurs)
 function resetAllUsers() {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
 
   // Filtrer les utilisateurs pour ne garder que les administrateurs
   const adminUsers = {};
@@ -1100,11 +1187,36 @@ function createTestUser() {
 document.addEventListener('DOMContentLoaded', function() {
   console.log("Initialisation du module d'administration...");
 
-  // Vérifier si l'utilisateur est connecté
-  const currentUser = getCurrentUser();
+  // Vérifier si l'utilisateur est connecté en utilisant notre fonction robuste
+  const currentUser = getCurrentUserFromAllSources();
   console.log("Utilisateur actuel:", currentUser);
 
-  if (currentUser && isAdmin(currentUser.username)) {
+  // Vérifier si l'utilisateur est un administrateur
+  const isUserAdmin = currentUser && isAdmin(currentUser.username);
+  console.log("Est-ce que l'utilisateur est un administrateur:", isUserAdmin);
+
+  // Forcer l'accès administrateur pour Ollie
+  if (currentUser && currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
+    console.log("Utilisateur Ollie détecté, forçage des privilèges administrateur");
+
+    // Ajouter le badge d'administrateur
+    addAdminBadge();
+
+    // Ajouter l'onglet d'administration
+    addAdminTab();
+
+    // Débloquer tous les skins pour l'administrateur
+    unlockAllSkins();
+
+    // Charger la liste des utilisateurs après un court délai
+    setTimeout(function() {
+      if (document.getElementById('admin-content')) {
+        loadUsersList();
+      }
+    }, 500);
+  }
+  // Vérifier si l'utilisateur est un administrateur normal
+  else if (isUserAdmin) {
     console.log('Utilisateur administrateur détecté:', currentUser.username);
 
     // Ajouter le badge d'administrateur
@@ -1118,8 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Charger la liste des utilisateurs après un court délai
     setTimeout(function() {
-      if (document.getElementById('admin-tab-content') &&
-          document.getElementById('admin-tab-content').style.display === 'block') {
+      if (document.getElementById('admin-content')) {
         loadUsersList();
       }
     }, 500);
