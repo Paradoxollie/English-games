@@ -76,10 +76,8 @@ function initGame() {
     }
   }, 1000);
 
-  // Afficher la modale des règles au chargement
-  setTimeout(() => {
-    GameUI.showRulesModal();
-  }, 500);
+  // Ne plus afficher automatiquement la modale des règles au chargement
+  console.log('Les règles peuvent être affichées en cliquant sur le bouton "Règles du jeu"');
 }
 
 /**
@@ -596,9 +594,12 @@ function wordFound() {
   gameState.combo++;
   gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
 
-  // Ajouter du temps bonus (augmenté de 10 à 15 secondes de base)
-  const timeBonusAmount = Math.floor(15 * difficultyMultiplier);
+  // Ajouter 30 secondes de temps bonus (fixe, comme demandé)
+  const timeBonusAmount = 30;
   gameState.timeRemaining += timeBonusAmount;
+
+  // Effet visuel pour le bonus de temps
+  GameUI.showNotification(`+${timeBonusAmount} secondes !`, 'success');
 
   // Mettre à jour l'affichage
   updateDisplay();
