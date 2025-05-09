@@ -152,24 +152,35 @@ function isAdmin(username) {
   }
 
   // Vérifier si l'utilisateur a la propriété isAdmin à true
-  const currentUser = getCurrentUserFromAllSources();
-  if (currentUser && currentUser.username && currentUser.username.toLowerCase() === lowerUsername) {
-    console.log("Utilisateur trouvé dans les sources, vérification de la propriété isAdmin:", currentUser.isAdmin);
-    if (currentUser.isAdmin === true) {
-      return true;
+  try {
+    // Utiliser directement la fonction getCurrentUser de local-auth.js
+    if (typeof getCurrentUser === 'function') {
+      const currentUser = getCurrentUser();
+      if (currentUser && currentUser.username && currentUser.username.toLowerCase() === lowerUsername) {
+        console.log("Utilisateur trouvé avec getCurrentUser, vérification de la propriété isAdmin:", currentUser.isAdmin);
+        if (currentUser.isAdmin === true) {
+          return true;
+        }
+      }
     }
+  } catch (error) {
+    console.error("Erreur lors de la vérification avec getCurrentUser:", error);
   }
 
   // Vérifier dans toutes les sources d'utilisateurs
-  const allUsers = getAllUsersFromAllSources();
-  for (const userId in allUsers) {
-    const user = allUsers[userId];
-    if (user.username && user.username.toLowerCase() === lowerUsername) {
-      console.log("Utilisateur trouvé dans toutes les sources, vérification de la propriété isAdmin:", user.isAdmin);
-      if (user.isAdmin === true) {
-        return true;
+  try {
+    const allUsers = getAllUsersFromAllSources();
+    for (const userId in allUsers) {
+      const user = allUsers[userId];
+      if (user.username && user.username.toLowerCase() === lowerUsername) {
+        console.log("Utilisateur trouvé dans toutes les sources, vérification de la propriété isAdmin:", user.isAdmin);
+        if (user.isAdmin === true) {
+          return true;
+        }
       }
     }
+  } catch (error) {
+    console.error("Erreur lors de la vérification avec getAllUsersFromAllSources:", error);
   }
 
   console.log("L'utilisateur n'est pas un administrateur");
@@ -1192,55 +1203,27 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log("Initialisation du module d'administration...");
 
   try {
-    // Vérifier si l'utilisateur est connecté en utilisant notre fonction robuste
-    const currentUser = getCurrentUserFromAllSources();
+    // Utiliser directement la fonction getCurrentUser de local-auth.js
+    let currentUser = null;
+    if (typeof getCurrentUser === 'function') {
+      currentUser = getCurrentUser();
+    } else {
+      currentUser = getCurrentUserFromAllSources();
+    }
+
     console.log("Utilisateur actuel:", currentUser);
 
-    // Vérifier si l'utilisateur est un administrateur
-    const isUserAdmin = currentUser && isAdmin(currentUser.username);
-    console.log("Est-ce que l'utilisateur est un administrateur:", isUserAdmin);
+    if (!currentUser) {
+      console.log("Aucun utilisateur connecté");
+      return;
+    }
 
-    // Forcer l'accès administrateur pour Ollie
-    if (currentUser && currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
-      console.log("Utilisateur Ollie détecté, forçage des privilèges administrateur");
+    // Vérification spéciale pour Ollie
+    if (currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
+      console.log("Compte Ollie détecté, forçage des privilèges administrateur");
 
       // Marquer l'utilisateur comme administrateur
       currentUser.isAdmin = true;
-
-      // Sauvegarder les modifications dans toutes les clés possibles
-      try {
-        // Sauvegarder dans la clé 'users'
-        const users = localStorage.getItem('users');
-        if (users) {
-          const usersObj = JSON.parse(users);
-          const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
-          if (userId) {
-            usersObj[userId].isAdmin = true;
-            localStorage.setItem('users', JSON.stringify(usersObj));
-          }
-        }
-      } catch (e) {
-        console.error("Erreur lors de la sauvegarde dans 'users':", e);
-      }
-
-      try {
-        // Sauvegarder dans la clé 'english_quest_users'
-        const eqUsers = localStorage.getItem('english_quest_users');
-        if (eqUsers) {
-          const eqUsersObj = JSON.parse(eqUsers);
-          const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
-          if (userId) {
-            eqUsersObj[userId].isAdmin = true;
-            localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
-          }
-        }
-      } catch (e) {
-        console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
-      }
-
-      // Mettre à jour l'utilisateur courant dans toutes les clés possibles
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
 
       // Ajouter le badge d'administrateur
       addAdminBadge();
@@ -1257,10 +1240,13 @@ document.addEventListener('DOMContentLoaded', function() {
           loadUsersList();
         }
       }, 500);
+
+      return;
     }
-    // Vérifier si l'utilisateur est un administrateur normal
-    else if (isUserAdmin) {
-      console.log('Utilisateur administrateur détecté:', currentUser.username);
+
+    // Vérifier si l'utilisateur est un administrateur
+    if (isAdmin(currentUser.username)) {
+      console.log("Utilisateur administrateur détecté:", currentUser.username);
 
       // Ajouter le badge d'administrateur
       addAdminBadge();
@@ -1278,7 +1264,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }, 500);
     } else {
-      console.log("L'utilisateur n'est pas un administrateur ou n'est pas connecté");
+      console.log("L'utilisateur n'est pas un administrateur");
     }
   } catch (error) {
     console.error("Erreur lors de l'initialisation du module d'administration:", error);
