@@ -16,7 +16,7 @@
   <link href="../src/styles/layout.css" rel="stylesheet">
   <link href="../styles/animations.css" rel="stylesheet">
   <link href="../styles/particles.css" rel="stylesheet">
-  <link href="../styles/responsive.css" rel="stylesheet">
+  <!-- Le fichier responsive.css n'existe pas, styles responsifs inclus dans new-design.css -->
 
   <!-- Game-specific styles -->
   <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
@@ -1803,24 +1803,24 @@
   <div id="forest-mist" class="forest-mist"></div>
   <div id="floating-leaves" class="floating-leaves"></div>
 
-  <!-- Scripts -->
+  <!-- Scripts Firebase (chargement prioritaire) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-  <!-- Scripts du jeu -->
   <script src="../src/js/firebase-init.js"></script>
-  <script src="../scripts/local-auth.js"></script>
-  <script src="../src/js/auth-state.js"></script>
-  <script src="../src/js/reward-system.js"></script>
-  <script src="../src/js/admin-scores.js"></script>
-  <script src="../src/js/enigma-scroll/firebase-helpers.js"></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js"></script>
-  <script src="../src/js/enigma-scroll/word-lists.js"></script>
-  <script src="../src/js/enigma-scroll/game-effects.js"></script>
-  <script src="../src/js/enigma-scroll/game-ui.js"></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll.js"></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
+
+  <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
+  <script src="../scripts/local-auth.js" defer></script>
+  <script src="../src/js/auth-state.js" defer></script>
+  <script src="../src/js/reward-system.js" defer></script>
+  <script src="../src/js/admin-scores.js" defer></script>
+  <script src="../src/js/enigma-scroll/firebase-helpers.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js" defer></script>
+  <script src="../src/js/enigma-scroll/word-lists.js" defer></script>
+  <script src="../src/js/enigma-scroll/game-effects.js" defer></script>
+  <script src="../src/js/enigma-scroll/game-ui.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js" defer></script>
 
   <!-- Script pour corriger les problèmes d'interaction avec la page -->
   <script>
