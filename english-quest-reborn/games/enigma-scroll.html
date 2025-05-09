@@ -925,7 +925,7 @@
 
     /* Styles pour les modales */
     .modal {
-      display: none;
+      display: none !important; /* Utiliser !important pour s'assurer que le style est appliqué */
       position: fixed;
       top: 0;
       left: 0;
@@ -935,13 +935,15 @@
       z-index: 2000; /* S'assurer que la modale est au-dessus de tout */
       align-items: center;
       justify-content: center;
-      opacity: 0;
+      opacity: 0 !important; /* Utiliser !important pour s'assurer que le style est appliqué */
       transition: opacity 0.3s ease;
+      visibility: hidden; /* Ajouter visibility: hidden pour s'assurer que la modale est invisible */
     }
 
     .modal.show {
-      display: flex;
-      opacity: 1;
+      display: flex !important; /* Utiliser !important pour s'assurer que le style est appliqué */
+      opacity: 1 !important; /* Utiliser !important pour s'assurer que le style est appliqué */
+      visibility: visible !important; /* Utiliser !important pour s'assurer que le style est appliqué */
     }
 
     .modal-content {
@@ -1643,7 +1645,7 @@
   <!-- Modales -->
 
   <!-- Modale des règles du jeu -->
-  <div class="modal rules-modal" id="rulesModal">
+  <div class="modal rules-modal" id="rulesModal" style="display: none; opacity: 0;">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title">Règles du jeu</h2>
@@ -1853,11 +1855,33 @@
           }
         }, 500); // Réduire le délai à 500ms
 
-        // S'assurer que toutes les modales sont masquées au chargement
+        // Solution robuste pour s'assurer que toutes les modales sont masquées au chargement
+        // Utiliser plusieurs méthodes pour garantir que cela fonctionne dans tous les environnements
         const modals = document.querySelectorAll('.modal');
+        console.log("Nombre de modales trouvées:", modals.length);
+
         modals.forEach(modal => {
+          console.log("Masquage de la modale:", modal.id);
+          // Méthode 1: Supprimer la classe show
           modal.classList.remove('show');
+
+          // Méthode 2: Définir le style directement
+          modal.style.display = 'none';
+          modal.style.opacity = '0';
+
+          // Méthode 3: Utiliser setAttribute pour plus de compatibilité
+          modal.setAttribute('style', 'display: none !important; opacity: 0 !important;');
         });
+
+        // Solution spécifique pour la modale des règles
+        const rulesModal = document.getElementById('rulesModal');
+        if (rulesModal) {
+          console.log("Masquage spécifique de la modale des règles");
+          rulesModal.classList.remove('show');
+          rulesModal.style.display = 'none';
+          rulesModal.style.opacity = '0';
+          rulesModal.setAttribute('style', 'display: none !important; opacity: 0 !important;');
+        }
 
         // Vérifier si un utilisateur est connecté dans localStorage
         const userJson = localStorage.getItem('english_quest_current_user');

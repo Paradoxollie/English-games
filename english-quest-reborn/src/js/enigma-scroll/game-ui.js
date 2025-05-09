@@ -339,21 +339,43 @@ const GameUI = {
   },
 
   /**
-   * Affiche une modale
+   * Affiche une modale de manière robuste
    */
   showModal: function(modal) {
     if (!modal) return;
 
+    console.log("Affichage de la modale:", modal.id);
+
+    // Méthode 1: Ajouter la classe show
     modal.classList.add('show');
+
+    // Méthode 2: Définir le style directement
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+
+    // Méthode 3: Utiliser setAttribute pour plus de compatibilité
+    modal.setAttribute('style', 'display: flex !important; opacity: 1 !important; visibility: visible !important;');
   },
 
   /**
-   * Cache une modale
+   * Cache une modale de manière robuste
    */
   hideModal: function(modal) {
     if (!modal) return;
 
+    console.log("Masquage de la modale:", modal.id);
+
+    // Méthode 1: Supprimer la classe show
     modal.classList.remove('show');
+
+    // Méthode 2: Définir le style directement
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
+
+    // Méthode 3: Utiliser setAttribute pour plus de compatibilité
+    modal.setAttribute('style', 'display: none !important; opacity: 0 !important; visibility: hidden !important;');
   },
 
   /**
