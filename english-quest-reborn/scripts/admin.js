@@ -167,21 +167,8 @@ function isAdmin(username) {
     console.error("Erreur lors de la vérification avec getCurrentUser:", error);
   }
 
-  // Vérifier dans toutes les sources d'utilisateurs
-  try {
-    const allUsers = getAllUsersFromAllSources();
-    for (const userId in allUsers) {
-      const user = allUsers[userId];
-      if (user.username && user.username.toLowerCase() === lowerUsername) {
-        console.log("Utilisateur trouvé dans toutes les sources, vérification de la propriété isAdmin:", user.isAdmin);
-        if (user.isAdmin === true) {
-          return true;
-        }
-      }
-    }
-  } catch (error) {
-    console.error("Erreur lors de la vérification avec getAllUsersFromAllSources:", error);
-  }
+  // Ne pas vérifier dans toutes les sources d'utilisateurs pour éviter que tout le monde soit admin
+  // Cette partie a été supprimée car elle causait des problèmes
 
   console.log("L'utilisateur n'est pas un administrateur");
   return false;
