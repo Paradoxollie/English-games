@@ -99,6 +99,24 @@ function addAdminTabDirectly() {
     // Vérifier si l'onglet d'administration existe déjà
     if (document.querySelector('.profile-tab[data-tab="admin"]')) {
       console.log("L'onglet d'administration existe déjà");
+
+      // Activer l'onglet d'administration s'il existe déjà
+      const adminTab = document.querySelector('.profile-tab[data-tab="admin"]');
+      const adminContent = document.getElementById('admin-content');
+
+      if (adminTab && adminContent) {
+        // Retirer la classe active de tous les onglets et contenus
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+
+        // Ajouter la classe active à l'onglet d'administration
+        adminTab.classList.add('active');
+        adminContent.classList.add('active');
+
+        // Charger la liste des utilisateurs
+        loadUsersList();
+      }
+
       return;
     }
 
@@ -120,7 +138,7 @@ function addAdminTabDirectly() {
 
     // Créer l'onglet d'administration
     const adminTab = document.createElement('button');
-    adminTab.className = 'profile-tab';
+    adminTab.className = 'profile-tab active'; // Actif par défaut
     adminTab.dataset.tab = 'admin';
     adminTab.textContent = 'Administration';
 
@@ -129,7 +147,7 @@ function addAdminTabDirectly() {
 
     // Créer le contenu de l'onglet d'administration
     const adminContent = document.createElement('div');
-    adminContent.className = 'profile-tab-content';
+    adminContent.className = 'profile-tab-content active'; // Actif par défaut
     adminContent.id = 'admin-content';
 
     adminContent.innerHTML = `
@@ -158,12 +176,29 @@ function addAdminTabDirectly() {
           <button id="reset-all-users-btn" class="btn btn-danger">
             <i class="fas fa-trash-alt"></i> Réinitialiser tous les utilisateurs
           </button>
+          <button id="add-test-user-btn" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Ajouter un utilisateur de test
+          </button>
         </div>
       </div>
     `;
 
     // Ajouter le contenu au conteneur
     contentContainer.appendChild(adminContent);
+
+    // Désactiver tous les autres onglets
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+      if (tab !== adminTab) {
+        tab.classList.remove('active');
+      }
+    });
+
+    // Désactiver tous les autres contenus
+    document.querySelectorAll('.profile-tab-content').forEach(content => {
+      if (content !== adminContent) {
+        content.classList.remove('active');
+      }
+    });
 
     // Ajouter l'écouteur d'événement pour l'onglet
     adminTab.addEventListener('click', function() {
@@ -178,6 +213,47 @@ function addAdminTabDirectly() {
       // Charger la liste des utilisateurs
       loadUsersList();
     });
+
+    // Ajouter les écouteurs d'événements pour les boutons d'administration
+    const unlockAllSkinsBtn = document.getElementById('unlock-all-skins-btn');
+    if (unlockAllSkinsBtn) {
+      unlockAllSkinsBtn.addEventListener('click', function() {
+        unlockAllSkins();
+      });
+    }
+
+    const resetAllUsersBtn = document.getElementById('reset-all-users-btn');
+    if (resetAllUsersBtn) {
+      resetAllUsersBtn.addEventListener('click', function() {
+        if (confirm('ATTENTION : Cette action va supprimer tous les utilisateurs sauf les administrateurs. Êtes-vous sûr de vouloir continuer ?')) {
+          resetAllUsers();
+        }
+      });
+    }
+
+    const addTestUserBtn = document.getElementById('add-test-user-btn');
+    if (addTestUserBtn) {
+      addTestUserBtn.addEventListener('click', function() {
+        createTestUser();
+        setTimeout(loadUsersList, 500);
+      });
+    }
+
+    // Ajouter l'écouteur d'événement pour la recherche
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('user-search');
+
+    if (searchBtn && searchInput) {
+      searchBtn.addEventListener('click', function() {
+        loadUsersList(searchInput.value);
+      });
+
+      searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+          loadUsersList(searchInput.value);
+        }
+      });
+    }
 
     console.log("Onglet d'administration ajouté avec succès");
 
@@ -198,13 +274,16 @@ function addAdminTabDirectly() {
       // Ajouter le badge après le nom d'utilisateur
       usernameElement.appendChild(badge);
     }
+
+    // Charger la liste des utilisateurs
+    loadUsersList();
   } catch (error) {
     console.error("Erreur lors de l'ajout de l'onglet d'administration:", error);
   }
 }
 
 // Fonction pour charger la liste des utilisateurs
-function loadUsersList() {
+function loadUsersList(searchTerm = '') {
   console.log("Chargement de la liste des utilisateurs...");
 
   try {
@@ -218,11 +297,20 @@ function loadUsersList() {
     const users = getAllUsers();
     console.log("Utilisateurs récupérés:", users);
 
+    // Filtrer les utilisateurs si un terme de recherche est fourni
+    const filteredUsers = Object.values(users).filter(user => {
+      if (!searchTerm) {
+        return true;
+      }
+
+      return user.username && user.username.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
     // Vider le conteneur
     usersListContainer.innerHTML = '';
 
     // Si aucun utilisateur, afficher un message
-    if (Object.keys(users).length === 0) {
+    if (filteredUsers.length === 0) {
       usersListContainer.innerHTML = `
         <div class="empty-users">
           <p>Aucun utilisateur trouvé.</p>
@@ -247,6 +335,7 @@ function loadUsersList() {
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">XP</th>
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Pièces</th>
         <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Dernière connexion</th>
+        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Actions</th>
       </tr>
     `;
 
@@ -254,7 +343,7 @@ function loadUsersList() {
     const tbody = document.createElement('tbody');
 
     // Ajouter chaque utilisateur à la table
-    Object.values(users).forEach(user => {
+    filteredUsers.forEach(user => {
       const tr = document.createElement('tr');
 
       // Ajouter la classe 'admin' si l'utilisateur est un administrateur
@@ -270,6 +359,24 @@ function loadUsersList() {
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.xp || 0}</td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.coins || 0}</td>
         <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Jamais'}</td>
+        <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">
+          <div class="admin-actions">
+            <button class="btn btn-sm btn-primary edit-user-btn" data-userid="${user.id}" style="margin-right: 5px; padding: 3px 8px; font-size: 0.8rem;">
+              <i class="fas fa-edit"></i> Éditer
+            </button>
+            <button class="btn btn-sm btn-success add-xp-btn" data-userid="${user.id}" style="margin-right: 5px; padding: 3px 8px; font-size: 0.8rem;">
+              <i class="fas fa-plus"></i> XP
+            </button>
+            <button class="btn btn-sm btn-warning add-coins-btn" data-userid="${user.id}" style="margin-right: 5px; padding: 3px 8px; font-size: 0.8rem;">
+              <i class="fas fa-coins"></i> Pièces
+            </button>
+            ${!user.isAdmin ? `
+              <button class="btn btn-sm btn-danger delete-user-btn" data-userid="${user.id}" style="padding: 3px 8px; font-size: 0.8rem;">
+                <i class="fas fa-trash-alt"></i> Supprimer
+              </button>
+            ` : ''}
+          </div>
+        </td>
       `;
 
       // Ajouter la ligne à la table
@@ -282,8 +389,351 @@ function loadUsersList() {
 
     // Ajouter la table au conteneur
     usersListContainer.appendChild(table);
+
+    // Ajouter les écouteurs d'événements pour les boutons d'action
+    document.querySelectorAll('.edit-user-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.dataset.userid;
+        editUser(userId);
+      });
+    });
+
+    document.querySelectorAll('.add-xp-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.dataset.userid;
+        addXP(userId);
+      });
+    });
+
+    document.querySelectorAll('.add-coins-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.dataset.userid;
+        addCoins(userId);
+      });
+    });
+
+    document.querySelectorAll('.delete-user-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const userId = this.dataset.userid;
+        deleteUser(userId);
+      });
+    });
   } catch (error) {
     console.error("Erreur lors du chargement de la liste des utilisateurs:", error);
+  }
+}
+
+// Fonction pour éditer un utilisateur
+function editUser(userId) {
+  console.log("Édition de l'utilisateur:", userId);
+
+  try {
+    // Récupérer tous les utilisateurs
+    const users = getAllUsers();
+
+    // Récupérer l'utilisateur à éditer
+    const user = users[userId];
+    if (!user) {
+      console.error("Utilisateur non trouvé:", userId);
+      return;
+    }
+
+    // Créer le formulaire d'édition
+    const form = document.createElement('div');
+    form.className = 'edit-user-form';
+    form.style.backgroundColor = '#f8f9fa';
+    form.style.padding = '20px';
+    form.style.borderRadius = '10px';
+    form.style.marginTop = '20px';
+    form.style.marginBottom = '20px';
+
+    form.innerHTML = `
+      <h3 style="margin-top: 0;">Éditer l'utilisateur: ${user.username}</h3>
+      <div style="margin-bottom: 15px;">
+        <label for="edit-username" style="display: block; margin-bottom: 5px;">Nom d'utilisateur:</label>
+        <input type="text" id="edit-username" value="${user.username}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="edit-level" style="display: block; margin-bottom: 5px;">Niveau:</label>
+        <input type="number" id="edit-level" value="${user.level || 1}" min="1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="edit-xp" style="display: block; margin-bottom: 5px;">XP:</label>
+        <input type="number" id="edit-xp" value="${user.xp || 0}" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="edit-coins" style="display: block; margin-bottom: 5px;">Pièces:</label>
+        <input type="number" id="edit-coins" value="${user.coins || 0}" min="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+      </div>
+      <div style="margin-bottom: 15px;">
+        <label for="edit-admin" style="display: block; margin-bottom: 5px;">Administrateur:</label>
+        <input type="checkbox" id="edit-admin" ${user.isAdmin ? 'checked' : ''} style="margin-right: 5px;">
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button id="cancel-edit-btn" class="btn btn-secondary" style="margin-right: 10px; padding: 8px 15px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Annuler</button>
+        <button id="save-edit-btn" class="btn btn-primary" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Enregistrer</button>
+      </div>
+    `;
+
+    // Ajouter le formulaire avant la liste des utilisateurs
+    const usersListContainer = document.getElementById('users-list');
+    if (usersListContainer) {
+      usersListContainer.parentNode.insertBefore(form, usersListContainer);
+
+      // Masquer la liste des utilisateurs
+      usersListContainer.style.display = 'none';
+    }
+
+    // Ajouter les écouteurs d'événements pour les boutons
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener('click', function() {
+        // Supprimer le formulaire
+        form.remove();
+
+        // Afficher la liste des utilisateurs
+        if (usersListContainer) {
+          usersListContainer.style.display = 'block';
+        }
+      });
+    }
+
+    const saveEditBtn = document.getElementById('save-edit-btn');
+    if (saveEditBtn) {
+      saveEditBtn.addEventListener('click', function() {
+        // Récupérer les valeurs du formulaire
+        const username = document.getElementById('edit-username').value;
+        const level = parseInt(document.getElementById('edit-level').value);
+        const xp = parseInt(document.getElementById('edit-xp').value);
+        const coins = parseInt(document.getElementById('edit-coins').value);
+        const isAdmin = document.getElementById('edit-admin').checked;
+
+        // Mettre à jour l'utilisateur
+        user.username = username;
+        user.level = level;
+        user.xp = xp;
+        user.coins = coins;
+        user.isAdmin = isAdmin;
+
+        // Sauvegarder les modifications
+        saveUsers(users);
+
+        // Supprimer le formulaire
+        form.remove();
+
+        // Afficher la liste des utilisateurs
+        if (usersListContainer) {
+          usersListContainer.style.display = 'block';
+        }
+
+        // Recharger la liste des utilisateurs
+        loadUsersList();
+      });
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'édition de l'utilisateur:", error);
+  }
+}
+
+// Fonction pour ajouter de l'XP à un utilisateur
+function addXP(userId) {
+  console.log("Ajout d'XP à l'utilisateur:", userId);
+
+  try {
+    // Récupérer tous les utilisateurs
+    const users = getAllUsers();
+
+    // Récupérer l'utilisateur
+    const user = users[userId];
+    if (!user) {
+      console.error("Utilisateur non trouvé:", userId);
+      return;
+    }
+
+    // Demander la quantité d'XP à ajouter
+    const xpToAdd = prompt(`Combien d'XP voulez-vous ajouter à ${user.username}?`, "100");
+    if (xpToAdd === null) {
+      return;
+    }
+
+    // Convertir en nombre
+    const xp = parseInt(xpToAdd);
+    if (isNaN(xp)) {
+      alert("Veuillez entrer un nombre valide.");
+      return;
+    }
+
+    // Ajouter l'XP
+    user.xp = (user.xp || 0) + xp;
+
+    // Mettre à jour le niveau en fonction de l'XP
+    user.level = Math.floor(Math.sqrt(user.xp / 100)) + 1;
+
+    // Sauvegarder les modifications
+    saveUsers(users);
+
+    // Recharger la liste des utilisateurs
+    loadUsersList();
+
+    // Afficher un message de confirmation
+    alert(`${xp} XP ajoutés à ${user.username}. Nouveau niveau: ${user.level}`);
+  } catch (error) {
+    console.error("Erreur lors de l'ajout d'XP:", error);
+  }
+}
+
+// Fonction pour ajouter des pièces à un utilisateur
+function addCoins(userId) {
+  console.log("Ajout de pièces à l'utilisateur:", userId);
+
+  try {
+    // Récupérer tous les utilisateurs
+    const users = getAllUsers();
+
+    // Récupérer l'utilisateur
+    const user = users[userId];
+    if (!user) {
+      console.error("Utilisateur non trouvé:", userId);
+      return;
+    }
+
+    // Demander la quantité de pièces à ajouter
+    const coinsToAdd = prompt(`Combien de pièces voulez-vous ajouter à ${user.username}?`, "100");
+    if (coinsToAdd === null) {
+      return;
+    }
+
+    // Convertir en nombre
+    const coins = parseInt(coinsToAdd);
+    if (isNaN(coins)) {
+      alert("Veuillez entrer un nombre valide.");
+      return;
+    }
+
+    // Ajouter les pièces
+    user.coins = (user.coins || 0) + coins;
+
+    // Sauvegarder les modifications
+    saveUsers(users);
+
+    // Recharger la liste des utilisateurs
+    loadUsersList();
+
+    // Afficher un message de confirmation
+    alert(`${coins} pièces ajoutées à ${user.username}. Nouveau solde: ${user.coins}`);
+  } catch (error) {
+    console.error("Erreur lors de l'ajout de pièces:", error);
+  }
+}
+
+// Fonction pour supprimer un utilisateur
+function deleteUser(userId) {
+  console.log("Suppression de l'utilisateur:", userId);
+
+  try {
+    // Récupérer tous les utilisateurs
+    const users = getAllUsers();
+
+    // Récupérer l'utilisateur
+    const user = users[userId];
+    if (!user) {
+      console.error("Utilisateur non trouvé:", userId);
+      return;
+    }
+
+    // Demander confirmation
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.username}?`)) {
+      return;
+    }
+
+    // Supprimer l'utilisateur
+    delete users[userId];
+
+    // Sauvegarder les modifications
+    saveUsers(users);
+
+    // Recharger la liste des utilisateurs
+    loadUsersList();
+
+    // Afficher un message de confirmation
+    alert(`L'utilisateur ${user.username} a été supprimé.`);
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'utilisateur:", error);
+  }
+}
+
+// Fonction pour débloquer tous les skins
+function unlockAllSkins() {
+  console.log("Débloquage de tous les skins...");
+
+  try {
+    // Récupérer l'utilisateur courant
+    const currentUserJson = localStorage.getItem('english_quest_current_user');
+    if (!currentUserJson) {
+      console.error("Aucun utilisateur connecté");
+      return;
+    }
+
+    const currentUser = JSON.parse(currentUserJson);
+
+    // Débloquer tous les skins
+    currentUser.hasAllSkins = true;
+    currentUser.skinsUnlocked = true;
+
+    // Sauvegarder les modifications
+    localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+
+    // Mettre à jour l'utilisateur dans la liste des utilisateurs
+    const users = getAllUsers();
+    const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
+
+    if (userId) {
+      users[userId].hasAllSkins = true;
+      users[userId].skinsUnlocked = true;
+      saveUsers(users);
+    }
+
+    // Afficher un message de confirmation
+    alert("Tous les skins ont été débloqués avec succès.");
+
+    // Recharger la page pour appliquer les changements
+    window.location.reload();
+  } catch (error) {
+    console.error("Erreur lors du débloquage des skins:", error);
+  }
+}
+
+// Fonction pour réinitialiser tous les utilisateurs
+function resetAllUsers() {
+  console.log("Réinitialisation de tous les utilisateurs...");
+
+  try {
+    // Récupérer tous les utilisateurs
+    const users = getAllUsers();
+
+    // Créer un nouvel objet pour stocker les administrateurs
+    const admins = {};
+
+    // Parcourir tous les utilisateurs
+    for (const userId in users) {
+      const user = users[userId];
+
+      // Conserver uniquement les administrateurs
+      if (user.isAdmin) {
+        admins[userId] = user;
+      }
+    }
+
+    // Sauvegarder les modifications
+    saveUsers(admins);
+
+    // Recharger la liste des utilisateurs
+    loadUsersList();
+
+    // Afficher un message de confirmation
+    alert("Tous les utilisateurs ont été réinitialisés. Seuls les administrateurs ont été conservés.");
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation des utilisateurs:", error);
   }
 }
 
@@ -321,6 +771,26 @@ function getAllUsers() {
   } catch (error) {
     console.error("Erreur lors de la récupération de tous les utilisateurs:", error);
     return {};
+  }
+}
+
+// Fonction pour sauvegarder tous les utilisateurs
+function saveUsers(users) {
+  console.log("Sauvegarde de tous les utilisateurs...");
+
+  try {
+    // Sauvegarder dans la clé principale
+    localStorage.setItem('english_quest_users', JSON.stringify(users));
+    console.log("Utilisateurs sauvegardés dans english_quest_users");
+
+    // Sauvegarder dans l'ancienne clé pour la compatibilité
+    localStorage.setItem('users', JSON.stringify(users));
+    console.log("Utilisateurs sauvegardés dans users");
+
+    return true;
+  } catch (error) {
+    console.error("Erreur lors de la sauvegarde des utilisateurs:", error);
+    return false;
   }
 }
 
