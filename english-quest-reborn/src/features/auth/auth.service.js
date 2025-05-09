@@ -31,14 +31,14 @@ export async function initializeAuth() {
   try {
     authState.loading = true;
     notifyListeners();
-    
+
     // S'abonner aux changements d'état d'authentification
     subscribeToAuthChanges(handleAuthStateChange);
-    
+
     // Vérifier s'il y a un utilisateur déjà connecté
     const auth = getAuth();
     const currentUser = auth.currentUser;
-    
+
     if (currentUser) {
       await handleAuthStateChange(currentUser);
     } else {
@@ -51,7 +51,7 @@ export async function initializeAuth() {
         notifyListeners();
       }
     }
-    
+
     return authState;
   } catch (error) {
     console.error('Failed to initialize auth service:', error);
@@ -73,11 +73,11 @@ async function handleAuthStateChange(user) {
       // Utilisateur connecté
       authState.isAuthenticated = true;
       authState.user = user;
-      
+
       // Récupérer ou créer le profil utilisateur
       const profile = await getOrCreateUserProfile(user.uid);
       authState.profile = profile;
-      
+
       // Enregistrer l'événement de connexion
       logAnalyticsEvent('login', {
         method: user.isAnonymous ? 'anonymous' : 'custom',
@@ -89,7 +89,7 @@ async function handleAuthStateChange(user) {
       authState.user = null;
       authState.profile = null;
     }
-    
+
     authState.loading = false;
     authState.initialized = true;
     notifyListeners();
@@ -111,15 +111,16 @@ async function getOrCreateUserProfile(userId) {
   try {
     // Vérifier si le profil existe déjà
     const existingProfile = await getDocument(collections.PROFILES, userId);
-    
+
     if (existingProfile) {
       return existingProfile;
     }
-    
+
     // Créer un nouveau profil
+    const randomUsername = `Player${Math.floor(Math.random() * 10000)}`;
     const newProfile = {
       userId,
-      username: `Player${Math.floor(Math.random() * 10000)}`,
+      username: randomUsername,
       displayName: '',
       avatar: '/src/assets/images/default-avatar.png',
       level: 1,
@@ -145,19 +146,22 @@ async function getOrCreateUserProfile(userId) {
         music: true,
         language: getConfig().defaultLanguage
       },
+      // SÉCURITÉ CRITIQUE: S'assurer que les nouveaux utilisateurs ne sont jamais administrateurs
+      // Seul Ollie peut être administrateur
+      isAdmin: false, // Par défaut, aucun utilisateur n'est administrateur
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString()
     };
-    
+
     // Enregistrer le profil dans Firestore
     const savedProfile = await setDocument(collections.PROFILES, userId, newProfile);
-    
+
     // Enregistrer l'événement de création de profil
     logAnalyticsEvent('sign_up', {
       method: 'anonymous',
       user_id: userId
     });
-    
+
     return savedProfile;
   } catch (error) {
     console.error('Error getting or creating user profile:', error);
@@ -174,34 +178,48 @@ export async function createUserWithUsername(username) {
   try {
     authState.loading = true;
     notifyListeners();
-    
+
     // Vérifier si l'utilisateur est déjà connecté
     if (authState.isAuthenticated) {
       throw new Error('User already authenticated');
     }
-    
+
     // Connecter anonymement
     const user = await signInAnonymous();
-    
+
     // Créer le profil avec le nom d'utilisateur
     const profile = await getOrCreateUserProfile(user.uid);
-    
-    // Mettre à jour le nom d'utilisateur
-    await updateDocument(collections.PROFILES, user.uid, {
+
+    // Préparer les données de mise à jour
+    const updateData = {
       username,
       displayName: username
-    });
-    
+    };
+
+    // SÉCURITÉ CRITIQUE: Vérifier si c'est Ollie pour lui donner des privilèges d'administrateur
+    // Seul Ollie peut être administrateur
+    if (username.toLowerCase() === 'ollie') {
+      console.log("Compte Ollie détecté, attribution des privilèges administrateur");
+      updateData.isAdmin = true;
+    } else {
+      // S'assurer explicitement que les autres utilisateurs ne sont pas administrateurs
+      updateData.isAdmin = false;
+      console.log(`Compte ${username} créé sans privilèges administrateur`);
+    }
+
+    // Mettre à jour le profil avec les données préparées
+    await updateDocument(collections.PROFILES, user.uid, updateData);
+
     // Mettre à jour le profil local
     authState.profile = {
       ...profile,
       username,
       displayName: username
     };
-    
+
     authState.loading = false;
     notifyListeners();
-    
+
     return { user, profile: authState.profile };
   } catch (error) {
     console.error('Error creating user with username:', error);
@@ -222,22 +240,42 @@ export async function updateUserProfile(profileData) {
     if (!authState.isAuthenticated || !authState.user) {
       throw new Error('User not authenticated');
     }
-    
+
     authState.loading = true;
     notifyListeners();
-    
+
+    // Vérifier si l'utilisateur essaie de modifier les droits d'administrateur
+    const profileDataToUpdate = { ...profileData };
+
+    // SÉCURITÉ CRITIQUE: Protection contre la modification des droits d'administrateur
+    if ('isAdmin' in profileDataToUpdate) {
+      // Récupérer le profil actuel pour vérifier le nom d'utilisateur
+      const currentProfile = await getDocument(collections.PROFILES, authState.user.uid);
+
+      // Seul Ollie peut être administrateur, et on ne peut pas lui retirer ce droit
+      if (currentProfile && currentProfile.username && currentProfile.username.toLowerCase() === 'ollie') {
+        // Forcer isAdmin à true pour Ollie
+        profileDataToUpdate.isAdmin = true;
+        console.log("Protection des privilèges administrateur pour Ollie");
+      } else {
+        // Supprimer la tentative de modification des droits d'administrateur
+        delete profileDataToUpdate.isAdmin;
+        console.log("Tentative non autorisée de modification des droits d'administrateur bloquée");
+      }
+    }
+
     // Mettre à jour le profil dans Firestore
     const updatedProfile = await updateDocument(
       collections.PROFILES,
       authState.user.uid,
-      profileData
+      profileDataToUpdate
     );
-    
+
     // Mettre à jour le profil local
     authState.profile = updatedProfile;
     authState.loading = false;
     notifyListeners();
-    
+
     return updatedProfile;
   } catch (error) {
     console.error('Error updating user profile:', error);
@@ -257,12 +295,12 @@ export async function logout() {
     if (!authState.isAuthenticated) {
       return;
     }
-    
+
     authState.loading = true;
     notifyListeners();
-    
+
     await signOutUser();
-    
+
     // La mise à jour de l'état sera gérée par le listener d'authentification
   } catch (error) {
     console.error('Error logging out:', error);
@@ -296,10 +334,10 @@ export function getAuthState() {
  */
 export function subscribeToAuthState(listener) {
   authStateListeners.add(listener);
-  
+
   // Appeler immédiatement avec l'état actuel
   listener({ ...authState });
-  
+
   // Retourner une fonction pour se désabonner
   return () => {
     authStateListeners.delete(listener);
