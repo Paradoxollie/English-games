@@ -82,6 +82,11 @@ const GameUI = {
     this.setupEventListeners();
     this.setupModals();
 
+    // S'assurer que la modale des règles est masquée au démarrage
+    if (this.rulesModal) {
+      this.rulesModal.classList.remove('show');
+    }
+
     this.initialized = true;
     console.log('🖥️ Interface utilisateur initialisée');
   },

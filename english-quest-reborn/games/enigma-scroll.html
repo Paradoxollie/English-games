@@ -1853,6 +1853,12 @@
           }
         }, 500); // Réduire le délai à 500ms
 
+        // S'assurer que toutes les modales sont masquées au chargement
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+          modal.classList.remove('show');
+        });
+
         // Vérifier si un utilisateur est connecté dans localStorage
         const userJson = localStorage.getItem('english_quest_current_user');
         if (userJson) {
