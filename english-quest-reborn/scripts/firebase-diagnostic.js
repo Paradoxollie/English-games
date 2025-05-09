@@ -22,31 +22,48 @@ function checkFirebaseInitialized() {
 // Fonction pour explorer toutes les collections Firebase
 async function exploreAllCollections() {
   console.log("Exploration de toutes les collections Firebase...");
-  
+
   if (!checkFirebaseInitialized()) {
     console.error("Firebase not initialized");
     return;
   }
-  
+
   try {
-    // Récupérer toutes les collections
-    const collections = await window.db.listCollections();
-    
-    console.log("Collections trouvées:", collections.length);
-    
-    // Parcourir toutes les collections
-    for (const collection of collections) {
-      console.log(`Collection: ${collection.id}`);
-      
-      // Récupérer tous les documents de la collection
-      const snapshot = await window.db.collection(collection.id).get();
-      
-      console.log(`Documents dans ${collection.id}: ${snapshot.size}`);
-      
-      // Parcourir tous les documents
-      snapshot.forEach(doc => {
-        console.log(`Document ${doc.id} dans ${collection.id}:`, doc.data());
-      });
+    // Liste des collections connues à explorer
+    const knownCollections = [
+      'users',
+      'profiles',
+      'scores',
+      'games',
+      'courses',
+      'progress',
+      'leaderboards',
+      'battles',
+      'achievements',
+      'quests',
+      'stats',
+      'visits'
+    ];
+
+    console.log("Collections connues à explorer:", knownCollections.length);
+
+    // Parcourir toutes les collections connues
+    for (const collectionId of knownCollections) {
+      console.log(`Collection: ${collectionId}`);
+
+      try {
+        // Récupérer tous les documents de la collection
+        const snapshot = await window.db.collection(collectionId).get();
+
+        console.log(`Documents dans ${collectionId}: ${snapshot.size}`);
+
+        // Parcourir tous les documents
+        snapshot.forEach(doc => {
+          console.log(`Document ${doc.id} dans ${collectionId}:`, doc.data());
+        });
+      } catch (collectionError) {
+        console.error(`Erreur lors de l'exploration de la collection ${collectionId}:`, collectionError);
+      }
     }
   } catch (error) {
     console.error("Erreur lors de l'exploration des collections:", error);
@@ -56,18 +73,18 @@ async function exploreAllCollections() {
 // Fonction pour explorer une collection spécifique
 async function exploreCollection(collectionName) {
   console.log(`Exploration de la collection ${collectionName}...`);
-  
+
   if (!checkFirebaseInitialized()) {
     console.error("Firebase not initialized");
     return;
   }
-  
+
   try {
     // Récupérer tous les documents de la collection
     const snapshot = await window.db.collection(collectionName).get();
-    
+
     console.log(`Documents dans ${collectionName}: ${snapshot.size}`);
-    
+
     // Parcourir tous les documents
     snapshot.forEach(doc => {
       console.log(`Document ${doc.id} dans ${collectionName}:`, doc.data());
@@ -80,7 +97,7 @@ async function exploreCollection(collectionName) {
 // Fonction pour explorer toutes les collections liées aux utilisateurs
 async function exploreAllUserCollections() {
   console.log("Exploration de toutes les collections liées aux utilisateurs...");
-  
+
   // Liste des collections potentielles liées aux utilisateurs
   const userCollections = [
     'users',
@@ -117,7 +134,7 @@ async function exploreAllUserCollections() {
     'user_data_v4',
     'user_data_v5'
   ];
-  
+
   for (const collection of userCollections) {
     await exploreCollection(collection);
   }
@@ -144,7 +161,7 @@ function displayDiagnosticResults(results) {
   resultsContainer.style.right = '20px';
   resultsContainer.style.zIndex = '9999';
   resultsContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-  
+
   // Ajouter un bouton pour fermer les résultats
   const closeButton = document.createElement('button');
   closeButton.textContent = 'Fermer';
@@ -158,11 +175,11 @@ function displayDiagnosticResults(results) {
   closeButton.addEventListener('click', () => {
     resultsContainer.remove();
   });
-  
+
   // Ajouter le bouton et les résultats au conteneur
   resultsContainer.appendChild(closeButton);
   resultsContainer.appendChild(document.createTextNode(results));
-  
+
   // Ajouter le conteneur à la page
   document.body.appendChild(resultsContainer);
 }
@@ -170,31 +187,31 @@ function displayDiagnosticResults(results) {
 // Fonction pour exécuter le diagnostic complet
 async function runFullDiagnostic() {
   console.log("Exécution du diagnostic complet...");
-  
+
   // Rediriger les logs vers une variable
   const originalConsoleLog = console.log;
   const originalConsoleError = console.error;
   let logs = '';
-  
+
   console.log = function() {
     logs += Array.from(arguments).join(' ') + '\n';
     originalConsoleLog.apply(console, arguments);
   };
-  
+
   console.error = function() {
     logs += 'ERROR: ' + Array.from(arguments).join(' ') + '\n';
     originalConsoleError.apply(console, arguments);
   };
-  
+
   try {
     // Vérifier l'initialisation de Firebase
     logs += "=== VÉRIFICATION DE L'INITIALISATION DE FIREBASE ===\n";
     logs += "Firebase initialisé: " + checkFirebaseInitialized() + "\n\n";
-    
+
     // Explorer toutes les collections liées aux utilisateurs
     logs += "=== EXPLORATION DES COLLECTIONS LIÉES AUX UTILISATEURS ===\n";
     await exploreAllUserCollections();
-    
+
     // Explorer toutes les collections
     logs += "\n=== EXPLORATION DE TOUTES LES COLLECTIONS ===\n";
     await exploreAllCollections();
@@ -205,7 +222,7 @@ async function runFullDiagnostic() {
     // Restaurer les fonctions de log originales
     console.log = originalConsoleLog;
     console.error = originalConsoleError;
-    
+
     // Afficher les résultats
     displayDiagnosticResults(logs);
   }
@@ -226,9 +243,9 @@ function addDiagnosticButton() {
   button.style.borderRadius = '5px';
   button.style.cursor = 'pointer';
   button.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
-  
+
   button.addEventListener('click', runFullDiagnostic);
-  
+
   document.body.appendChild(button);
 }
 
