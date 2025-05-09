@@ -1764,8 +1764,8 @@
 
   <!-- Modales -->
 
-  <!-- Nouvelle modale des règles du jeu avec un ID différent -->
-  <div id="enigmaRulesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; opacity: 0; visibility: hidden;">
+  <!-- Nouvelle modale des règles du jeu avec un ID différent - masquée par défaut -->
+  <div id="enigmaRulesModal" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; opacity: 0 !important; visibility: hidden !important;">
     <div style="background-color: rgba(26, 26, 26, 0.95); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(46, 204, 113, 0.4); border: 1px solid #2ecc71; position: relative;">
       <div style="padding: 1.2rem; border-bottom: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background-color: rgba(26, 26, 26, 0.98); z-index: 1; border-radius: 12px 12px 0 0;">
         <h2 style="color: #2ecc71; margin: 0; font-size: 1.6rem; font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);">Règles du jeu</h2>
@@ -1939,6 +1939,21 @@
   <script src="../src/js/enigma-scroll/enigma-scroll.js" defer></script>
   <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js" defer></script>
 
+  <!-- Script pour s'assurer que la modale des règles est masquée au chargement -->
+  <script>
+    // Script qui s'exécute immédiatement pour masquer la modale des règles
+    (function() {
+      // Masquer explicitement la modale des règles
+      var rulesModal = document.getElementById('enigmaRulesModal');
+      if (rulesModal) {
+        rulesModal.style.display = 'none !important';
+        rulesModal.style.opacity = '0 !important';
+        rulesModal.style.visibility = 'hidden !important';
+        rulesModal.setAttribute('aria-hidden', 'true');
+      }
+    })();
+  </script>
+
   <!-- Script pour corriger les problèmes d'interaction avec la page -->
   <script>
     // Script qui s'exécute immédiatement pour restaurer l'interaction avec la page
@@ -2020,9 +2035,41 @@
 
   <!-- Script d'initialisation de l'utilisateur -->
   <script>
+    // Variable pour suivre si la page est complètement chargée
+    var pageFullyLoaded = false;
+
+    // Marquer la page comme complètement chargée après un délai
+    setTimeout(function() {
+      pageFullyLoaded = true;
+      console.log("Page marquée comme complètement chargée");
+    }, 2000); // Attendre 2 secondes après le chargement initial
+
     // Fonctions pour la nouvelle modale des règles avec débogage
     function showEnigmaRules() {
-      console.log("Tentative d'affichage de la modale des règles");
+      // Ne pas afficher la modale si la page n'est pas complètement chargée
+      // ou si l'appel vient du chargement initial
+      if (!pageFullyLoaded) {
+        console.log("Tentative d'affichage de la modale pendant le chargement - ignorée");
+        return;
+      }
+
+      // Vérifier si l'appel vient d'un événement utilisateur ou du chargement de la page
+      var fromUserAction = false;
+      try {
+        // Vérifier si nous sommes dans une pile d'appels d'événement utilisateur
+        fromUserAction = event instanceof Event;
+      } catch (e) {
+        // Si event n'est pas défini, c'est probablement un appel automatique
+        fromUserAction = false;
+      }
+
+      // Si ce n'est pas une action utilisateur et que la page est en cours de chargement, ne rien faire
+      if (!fromUserAction && document.readyState !== 'complete') {
+        console.log("Affichage automatique de la modale bloqué pendant le chargement");
+        return;
+      }
+
+      console.log("Tentative d'affichage de la modale des règles (action utilisateur: " + fromUserAction + ")");
       var modal = document.getElementById('enigmaRulesModal');
       if (modal) {
         console.log("Modale des règles trouvée, affichage en cours");
@@ -2079,10 +2126,26 @@
       var showRulesButton = document.getElementById('show-rules-button');
       if (showRulesButton) {
         console.log("Bouton des règles trouvé, ajout du gestionnaire d'événements");
+
+        // Supprimer tous les gestionnaires d'événements existants
+        var newButton = showRulesButton.cloneNode(true);
+        showRulesButton.parentNode.replaceChild(newButton, showRulesButton);
+        showRulesButton = newButton;
+
+        // Ajouter un nouveau gestionnaire d'événements
         showRulesButton.addEventListener('click', function(event) {
           console.log("Clic sur le bouton des règles");
           event.preventDefault(); // Empêcher le comportement par défaut
-          showEnigmaRules(); // Appeler la fonction d'affichage
+
+          // S'assurer que la page est complètement chargée
+          if (pageFullyLoaded) {
+            showEnigmaRules(); // Appeler la fonction d'affichage
+          } else {
+            console.log("Page non complètement chargée, affichage de la modale reporté");
+            // Marquer la page comme chargée et afficher la modale après un court délai
+            pageFullyLoaded = true;
+            setTimeout(showEnigmaRules, 100);
+          }
         });
       } else {
         console.error("ERREUR: Bouton des règles non trouvé");
