@@ -20,6 +20,105 @@ function getUsers() {
   return users;
 }
 
+// Récupérer les utilisateurs de toutes les sources possibles
+function getAllUsersFromAllSources() {
+  console.log("Récupération des utilisateurs de toutes les sources possibles");
+
+  // Créer un objet pour stocker tous les utilisateurs
+  const allUsers = {};
+
+  // Récupérer les utilisateurs de la clé principale
+  const mainUsersJson = localStorage.getItem(USERS_STORAGE_KEY);
+  if (mainUsersJson) {
+    try {
+      const mainUsers = JSON.parse(mainUsersJson);
+      console.log("Utilisateurs trouvés dans la clé principale:", Object.keys(mainUsers).length);
+
+      // Ajouter les utilisateurs à l'objet global
+      Object.assign(allUsers, mainUsers);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des utilisateurs de la clé principale:", error);
+    }
+  }
+
+  // Récupérer les utilisateurs de la clé 'users' (ancienne version)
+  const oldUsersJson = localStorage.getItem('users');
+  if (oldUsersJson) {
+    try {
+      const oldUsers = JSON.parse(oldUsersJson);
+      console.log("Utilisateurs trouvés dans l'ancienne clé:", Object.keys(oldUsers).length);
+
+      // Ajouter les utilisateurs à l'objet global
+      Object.assign(allUsers, oldUsers);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des utilisateurs de l'ancienne clé:", error);
+    }
+  }
+
+  // Récupérer l'utilisateur courant
+  const currentUserJson = localStorage.getItem('english_quest_current_user');
+  if (currentUserJson) {
+    try {
+      const currentUser = JSON.parse(currentUserJson);
+      console.log("Utilisateur courant trouvé:", currentUser.username);
+
+      // Ajouter l'utilisateur courant à l'objet global s'il n'existe pas déjà
+      if (currentUser.id && !allUsers[currentUser.id]) {
+        allUsers[currentUser.id] = currentUser;
+      } else if (currentUser.username) {
+        // Créer un ID pour l'utilisateur courant s'il n'en a pas
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        allUsers[userId] = currentUser;
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur courant:", error);
+    }
+  }
+
+  // Parcourir toutes les clés de localStorage pour trouver d'autres utilisateurs
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+
+    // Ignorer les clés déjà traitées
+    if (key === USERS_STORAGE_KEY || key === 'users' || key === 'english_quest_current_user') {
+      continue;
+    }
+
+    // Vérifier si la clé contient 'user' ou 'profile'
+    if (key.includes('user') || key.includes('profile')) {
+      try {
+        const userData = JSON.parse(localStorage.getItem(key));
+        console.log("Données utilisateur trouvées dans la clé:", key, userData);
+
+        // Vérifier si les données contiennent un nom d'utilisateur
+        if (userData && userData.username) {
+          // Créer un ID pour l'utilisateur s'il n'en a pas
+          const userId = userData.id || ('user_' + Math.random().toString(36).substr(2, 9));
+
+          // Vérifier si l'utilisateur existe déjà
+          let userExists = false;
+          for (const existingUserId in allUsers) {
+            if (allUsers[existingUserId].username === userData.username) {
+              userExists = true;
+              break;
+            }
+          }
+
+          // Ajouter l'utilisateur s'il n'existe pas déjà
+          if (!userExists) {
+            allUsers[userId] = userData;
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données de la clé:", key, error);
+      }
+    }
+  }
+
+  console.log("Tous les utilisateurs récupérés:", allUsers);
+  return allUsers;
+}
+
 // Sauvegarder tous les utilisateurs
 function saveUsers(users) {
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
@@ -197,12 +296,9 @@ function loadUsersList(searchTerm = '') {
     return;
   }
 
-  // Récupérer tous les utilisateurs en utilisant la bonne clé de stockage
-  const usersJson = localStorage.getItem('english_quest_users');
-  console.log("Données utilisateurs brutes:", usersJson);
-
-  const users = usersJson ? JSON.parse(usersJson) : {};
-  console.log("Utilisateurs chargés:", users);
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
+  console.log("Tous les utilisateurs récupérés:", users);
 
   // Filtrer les utilisateurs si un terme de recherche est fourni
   const filteredUsers = Object.values(users).filter(user => {
@@ -317,8 +413,8 @@ function initUserActions() {
 
 // Modifier un utilisateur
 function editUser(userId) {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
 
   // Récupérer l'utilisateur à modifier
   const user = users[userId];
@@ -478,8 +574,8 @@ function editUser(userId) {
 
 // Ajouter des pièces à un utilisateur
 function addCoins(userId, amount) {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
 
   // Récupérer l'utilisateur
   const user = users[userId];
@@ -534,8 +630,8 @@ function addCoins(userId, amount) {
 
 // Ajouter de l'XP à un utilisateur
 function addXP(userId, amount) {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
 
   // Récupérer l'utilisateur
   const user = users[userId];
@@ -670,8 +766,8 @@ function calculateRank(level) {
 
 // Supprimer un utilisateur
 function deleteUser(userId) {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs de toutes les sources possibles
+  const users = getAllUsersFromAllSources();
 
   // Récupérer l'utilisateur à supprimer
   const user = users[userId];
