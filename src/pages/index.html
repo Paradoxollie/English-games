@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Quest - Améliorez votre anglais en jouant</title>
+  <meta name="description" content="Découvrez English Quest, une plateforme ludique pour apprendre l'anglais à travers des jeux interactifs et des cours engageants.">
+  <meta name="theme-color" content="#c9aa71">
+
+  <!-- Préchargement des polices -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" as="style">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" as="style">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Spectral:wght@200;300;400;500;600;700&display=swap" as="style">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../styles/main.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="../assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://english-quest.com/">
+  <meta property="og:title" content="English Quest - Améliorez votre anglais en jouant">
+  <meta property="og:description" content="Découvrez English Quest, une plateforme ludique pour apprendre l'anglais à travers des jeux interactifs et des cours engageants.">
+  <meta property="og:image" content="../assets/images/og-image.jpg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://english-quest.com/">
+  <meta property="twitter:title" content="English Quest - Améliorez votre anglais en jouant">
+  <meta property="twitter:description" content="Découvrez English Quest, une plateforme ludique pour apprendre l'anglais à travers des jeux interactifs et des cours engageants.">
+  <meta property="twitter:image" content="../assets/images/og-image.jpg">
+</head>
+<body class="page-home">
+  <!-- Lien d'évitement pour l'accessibilité -->
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- En-tête -->
+  <header class="header">
+    <div class="container">
+      <div class="header__content">
+        <a href="index.html" class="header__logo">
+          <img src="../assets/images/logo.gif" alt="English Quest Logo" width="180" height="60">
+        </a>
+
+        <nav class="header__nav" aria-label="Navigation principale">
+          <ul class="nav__list">
+            <li class="nav__item"><a href="index.html" class="nav__link nav__link--active">Accueil</a></li>
+            <li class="nav__item"><a href="all-games.html" class="nav__link">Jeux</a></li>
+            <li class="nav__item"><a href="courses.html" class="nav__link">Cours</a></li>
+            <li class="nav__item"><a href="leaderboard.html" class="nav__link">Classement</a></li>
+            <li class="nav__item"><a href="contact.html" class="nav__link">Contact</a></li>
+          </ul>
+        </nav>
+
+        <div class="header__actions">
+          <button id="login-button" class="btn btn-outline-primary">Connexion</button>
+          <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-label="Menu">
+            <span class="mobile-menu-toggle__bar"></span>
+            <span class="mobile-menu-toggle__bar"></span>
+            <span class="mobile-menu-toggle__bar"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu mobile -->
+    <div id="mobile-menu" class="mobile-menu">
+      <nav class="mobile-menu__nav" aria-label="Navigation mobile">
+        <ul class="mobile-menu__list">
+          <li class="mobile-menu__item"><a href="index.html" class="mobile-menu__link mobile-menu__link--active">Accueil</a></li>
+          <li class="mobile-menu__item"><a href="all-games.html" class="mobile-menu__link">Jeux</a></li>
+          <li class="mobile-menu__item"><a href="courses.html" class="mobile-menu__link">Cours</a></li>
+          <li class="mobile-menu__item"><a href="leaderboard.html" class="mobile-menu__link">Classement</a></li>
+          <li class="mobile-menu__item"><a href="contact.html" class="mobile-menu__link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main id="main-content" class="main">
+    <!-- Héros -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero__content">
+          <h1 class="hero__title">Embarquez pour une aventure linguistique épique</h1>
+          <p class="hero__subtitle">Améliorez votre anglais en jouant à des jeux captivants et en suivant des cours interactifs</p>
+          <div class="hero__actions">
+            <a href="all-games.html" class="btn btn-primary btn-lg">Commencer l'aventure</a>
+            <a href="#how-it-works" class="btn btn-outline-primary btn-lg">En savoir plus</a>
+          </div>
+        </div>
+        <div class="hero__image">
+          <img
+            data-lazy="image"
+            data-src="../assets/images/hero-image.webp"
+            alt="Aventurier linguistique"
+            width="500"
+            height="400"
+            src="../assets/images/placeholder.webp"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Comment ça marche -->
+    <section id="how-it-works" class="section">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Comment ça marche</h2>
+          <p class="section__subtitle">Trois étapes simples pour maîtriser l'anglais</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__icon">🎮</div>
+            <h3 class="step__title">Jouez</h3>
+            <p class="step__description">Participez à des jeux amusants conçus pour renforcer vos compétences linguistiques tout en vous divertissant.</p>
+          </div>
+
+          <div class="step">
+            <div class="step__icon">📚</div>
+            <h3 class="step__title">Apprenez</h3>
+            <p class="step__description">Suivez des cours interactifs qui s'adaptent à votre niveau et à votre style d'apprentissage.</p>
+          </div>
+
+          <div class="step">
+            <div class="step__icon">🏆</div>
+            <h3 class="step__title">Progressez</h3>
+            <p class="step__description">Suivez vos progrès, gagnez des récompenses et montez dans le classement des aventuriers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Jeux populaires -->
+    <section class="section theme-games">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Jeux populaires</h2>
+          <p class="section__subtitle">Découvrez nos défis linguistiques les plus appréciés</p>
+        </div>
+
+        <div id="game-carousel" class="carousel">
+          <!-- Les cartes de jeu seront ajoutées dynamiquement ici -->
+        </div>
+
+        <div class="section__footer">
+          <a href="all-games.html" class="btn btn-outline-secondary">Voir tous les jeux</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cours recommandés -->
+    <section class="section theme-courses">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Cours recommandés</h2>
+          <p class="section__subtitle">Améliorez vos compétences avec nos cours interactifs</p>
+        </div>
+
+        <div id="course-carousel" class="carousel">
+          <!-- Les cartes de cours seront ajoutées dynamiquement ici -->
+        </div>
+
+        <div class="section__footer">
+          <a href="courses.html" class="btn btn-outline-tertiary">Voir tous les cours</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Témoignages -->
+    <section class="section">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title">Ce que disent nos aventuriers</h2>
+          <p class="section__subtitle">Découvrez les expériences de notre communauté</p>
+        </div>
+
+        <div class="testimonials">
+          <div class="testimonial">
+            <div class="testimonial__content">
+              <p class="testimonial__text">"Grâce à English Quest, j'ai amélioré mon anglais tout en m'amusant. Les jeux sont addictifs et les cours sont très bien structurés."</p>
+            </div>
+            <div class="testimonial__author">
+              <img
+                data-lazy="image"
+                data-src="../assets/images/testimonial-1.webp"
+                alt="Sophie"
+                class="testimonial__avatar"
+                src="../assets/images/placeholder-avatar.webp"
+              >
+              <div class="testimonial__info">
+                <h3 class="testimonial__name">Sophie</h3>
+                <p class="testimonial__role">Étudiante</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial">
+            <div class="testimonial__content">
+              <p class="testimonial__text">"Je cherchais un moyen ludique d'améliorer mon anglais professionnel. English Quest m'a permis de progresser rapidement tout en prenant du plaisir."</p>
+            </div>
+            <div class="testimonial__author">
+              <img
+                data-lazy="image"
+                data-src="../assets/images/testimonial-2.webp"
+                alt="Thomas"
+                class="testimonial__avatar"
+                src="../assets/images/placeholder-avatar.webp"
+              >
+              <div class="testimonial__info">
+                <h3 class="testimonial__name">Thomas</h3>
+                <p class="testimonial__role">Développeur</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial">
+            <div class="testimonial__content">
+              <p class="testimonial__text">"Mes enfants adorent English Quest ! C'est une façon amusante pour eux d'apprendre l'anglais sans s'en rendre compte."</p>
+            </div>
+            <div class="testimonial__author">
+              <img
+                data-lazy="image"
+                data-src="../assets/images/testimonial-3.webp"
+                alt="Marie"
+                class="testimonial__avatar"
+                src="../assets/images/placeholder-avatar.webp"
+              >
+              <div class="testimonial__info">
+                <h3 class="testimonial__name">Marie</h3>
+                <p class="testimonial__role">Parent</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Appel à l'action -->
+    <section class="cta">
+      <div class="container">
+        <div class="cta__content">
+          <h2 class="cta__title">Prêt à commencer votre aventure linguistique ?</h2>
+          <p class="cta__text">Rejoignez des milliers d'aventuriers qui améliorent leur anglais tout en s'amusant.</p>
+          <a href="all-games.html" class="btn btn-quest btn-lg">Commencer l'aventure</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pied de page -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <div class="footer__brand">
+          <a href="index.html" class="footer__logo">
+            <img src="../assets/images/logo-footer.gif" alt="English Quest Logo" width="150" height="50">
+          </a>
+          <p class="footer__tagline">Apprendre l'anglais n'a jamais été aussi amusant</p>
+        </div>
+
+        <div class="footer__links">
+          <div class="footer__column">
+            <h3 class="footer__title">Navigation</h3>
+            <ul class="footer__list">
+              <li><a href="index.html" class="footer__link">Accueil</a></li>
+              <li><a href="all-games.html" class="footer__link">Jeux</a></li>
+              <li><a href="courses.html" class="footer__link">Cours</a></li>
+              <li><a href="leaderboard.html" class="footer__link">Classement</a></li>
+              <li><a href="contact.html" class="footer__link">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="footer__column">
+            <h3 class="footer__title">Légal</h3>
+            <ul class="footer__list">
+              <li><a href="terms.html" class="footer__link">Conditions d'utilisation</a></li>
+              <li><a href="privacy.html" class="footer__link">Politique de confidentialité</a></li>
+              <li><a href="cookies.html" class="footer__link">Politique de cookies</a></li>
+            </ul>
+          </div>
+
+          <div class="footer__column">
+            <h3 class="footer__title">Suivez-nous</h3>
+            <ul class="footer__social">
+              <li><a href="#" class="footer__social-link" aria-label="Facebook">Facebook</a></li>
+              <li><a href="#" class="footer__social-link" aria-label="Twitter">Twitter</a></li>
+              <li><a href="#" class="footer__social-link" aria-label="Instagram">Instagram</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copyright">&copy; 2023 English Quest. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="../js/main.js"></script>
+</body>
+</html>

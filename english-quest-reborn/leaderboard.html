@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classement - English Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/new-design.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+      <button class="menu-toggle">☰</button>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link active">Classement</a></li>
+        </ul>
+      </nav>
+      <div class="user-menu">
+        <a href="auth.html" class="btn-login">Connexion</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">
+        <span class="text-gradient">CLASSEMENT MONDIAL</span>
+      </h1>
+      <p class="hero-subtitle">Découvrez les meilleurs joueurs d'English Quest et leur progression</p>
+    </div>
+  </section>
+
+  <!-- Leaderboard Section -->
+  <section class="section" style="background-color: #1a1a1a; padding-top: 5rem; padding-bottom: 5rem; opacity: 1 !important; visibility: visible !important; display: block !important;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title text-gradient">Classement des joueurs</h2>
+        <p class="section-subtitle">Les meilleurs aventuriers d'English Quest</p>
+      </div>
+
+      <div class="leaderboard-tabs">
+        <button class="leaderboard-tab active" data-tab="global">Classement global</button>
+        <button class="leaderboard-tab" data-tab="xp">Par XP</button>
+        <button class="leaderboard-tab" data-tab="games">Par jeux</button>
+      </div>
+
+      <div class="leaderboard-content">
+        <div class="leaderboard-podium">
+          <div class="podium-item podium-second">
+            <div class="podium-avatar">
+              <img src="assets/avatars/default_avatar.png" alt="Avatar du joueur">
+              <div class="podium-rank">2</div>
+            </div>
+            <div class="podium-info">
+              <h3 class="podium-name">Aventurier</h3>
+              <div class="podium-score">
+                <span class="score-value">1250</span>
+                <span class="score-label">points</span>
+              </div>
+              <div class="podium-level">Niveau 8</div>
+            </div>
+          </div>
+          
+          <div class="podium-item podium-first">
+            <div class="podium-avatar">
+              <img src="assets/avatars/default_avatar.png" alt="Avatar du joueur">
+              <div class="podium-rank">1</div>
+            </div>
+            <div class="podium-info">
+              <h3 class="podium-name">Champion</h3>
+              <div class="podium-score">
+                <span class="score-value">1500</span>
+                <span class="score-label">points</span>
+              </div>
+              <div class="podium-level">Niveau 10</div>
+            </div>
+          </div>
+          
+          <div class="podium-item podium-third">
+            <div class="podium-avatar">
+              <img src="assets/avatars/default_avatar.png" alt="Avatar du joueur">
+              <div class="podium-rank">3</div>
+            </div>
+            <div class="podium-info">
+              <h3 class="podium-name">Explorateur</h3>
+              <div class="podium-score">
+                <span class="score-value">1100</span>
+                <span class="score-label">points</span>
+              </div>
+              <div class="podium-level">Niveau 7</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="leaderboard-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Rang</th>
+                <th>Joueur</th>
+                <th>Niveau</th>
+                <th>XP</th>
+                <th>Jeux joués</th>
+                <th>Victoires</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-data">
+              <!-- Les données seront chargées dynamiquement -->
+              <tr>
+                <td>4</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 4</span>
+                  </div>
+                </td>
+                <td>6</td>
+                <td>950</td>
+                <td>42</td>
+                <td>18</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 5</span>
+                  </div>
+                </td>
+                <td>5</td>
+                <td>820</td>
+                <td>38</td>
+                <td>15</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 6</span>
+                  </div>
+                </td>
+                <td>5</td>
+                <td>780</td>
+                <td>35</td>
+                <td>12</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 7</span>
+                  </div>
+                </td>
+                <td>4</td>
+                <td>650</td>
+                <td>30</td>
+                <td>10</td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 8</span>
+                  </div>
+                </td>
+                <td>4</td>
+                <td>620</td>
+                <td>28</td>
+                <td>9</td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 9</span>
+                  </div>
+                </td>
+                <td>3</td>
+                <td>580</td>
+                <td>25</td>
+                <td>8</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>
+                  <div class="player-info">
+                    <img src="assets/avatars/default_avatar.png" alt="Avatar" class="player-avatar">
+                    <span class="player-name">Joueur 10</span>
+                  </div>
+                </td>
+                <td>3</td>
+                <td>520</td>
+                <td>22</td>
+                <td>7</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="container">
+      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-discord"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
+            <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
+            <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
+            <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
+            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Contact</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Support</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Nous contacter</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+        <p>&copy; 2023 English Quest - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script src="scripts/local-auth.js"></script>
+  <script src="scripts/debug.js"></script>
+  <script>
+    // Script pour gérer les onglets du classement
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.leaderboard-tab');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Supprimer la classe active de tous les onglets
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Ajouter la classe active à l'onglet cliqué
+          this.classList.add('active');
+          
+          // Récupérer le type de classement
+          const tabType = this.dataset.tab;
+          
+          // Charger les données correspondantes (à implémenter)
+          loadLeaderboardData(tabType);
+        });
+      });
+      
+      // Fonction pour charger les données du classement
+      function loadLeaderboardData(type) {
+        console.log(`Chargement des données du classement: ${type}`);
+        // Cette fonction sera implémentée ultérieurement pour charger les données réelles
+      }
+    });
+  </script>
+  
+  <style>
+    /* Styles pour le classement */
+    .leaderboard-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+    
+    .leaderboard-tab {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--color-surface-variant);
+      border: none;
+      border-radius: 0.5rem;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .leaderboard-tab.active {
+      background-color: var(--color-primary);
+      color: var(--color-text-on-primary);
+    }
+    
+    .leaderboard-podium {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: 3rem;
+      gap: 1rem;
+    }
+    
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--color-surface-variant);
+      border-radius: 1rem;
+      padding: 1rem;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    
+    .podium-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .podium-first {
+      height: 280px;
+      z-index: 3;
+    }
+    
+    .podium-second {
+      height: 240px;
+      z-index: 2;
+    }
+    
+    .podium-third {
+      height: 200px;
+      z-index: 1;
+    }
+    
+    .podium-avatar {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    
+    .podium-avatar img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--color-primary);
+    }
+    
+    .podium-rank {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+      color: var(--color-text-on-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+    
+    .podium-first .podium-rank {
+      background-color: gold;
+      color: #333;
+    }
+    
+    .podium-second .podium-rank {
+      background-color: silver;
+      color: #333;
+    }
+    
+    .podium-third .podium-rank {
+      background-color: #cd7f32; /* bronze */
+      color: #fff;
+    }
+    
+    .podium-info {
+      text-align: center;
+    }
+    
+    .podium-name {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-text-primary);
+    }
+    
+    .podium-score {
+      margin-bottom: 0.5rem;
+    }
+    
+    .score-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+    
+    .score-label {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .podium-level {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .leaderboard-table {
+      width: 100%;
+      overflow-x: auto;
+    }
+    
+    .leaderboard-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .leaderboard-table th {
+      background-color: var(--color-surface-variant);
+      color: var(--color-text-primary);
+      padding: 1rem;
+      text-align: left;
+    }
+    
+    .leaderboard-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-text-secondary);
+    }
+    
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .player-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    
+    .player-name {
+      color: var(--color-text-primary);
+    }
+  </style>
+</body>
+</html>

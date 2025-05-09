@@ -1,0 +1,175 @@
+/* Styles pour le composant de carrousel */
+
+.carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: var(--spacing-xl);
+  padding: 0 var(--spacing-lg);
+}
+
+/* Track */
+.carousel__track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+}
+
+.carousel--dragging .carousel__track {
+  transition: none;
+  cursor: grabbing;
+}
+
+/* Slides */
+.carousel__slide {
+  flex-shrink: 0;
+  padding: var(--spacing-sm);
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* Flèches */
+.carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-primary);
+  border-radius: 50%;
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1;
+  transition: all var(--transition-normal);
+}
+
+.carousel__arrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--color-primary-light);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel__arrow:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 170, 113, 0.3);
+}
+
+.carousel__arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel__arrow--prev {
+  left: 10px;
+}
+
+.carousel__arrow--next {
+  right: 10px;
+}
+
+.carousel__arrow-icon {
+  display: block;
+  line-height: 1;
+}
+
+/* Points */
+.carousel__dots {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-md);
+}
+
+.carousel__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(201, 170, 113, 0.3);
+  border: none;
+  margin: 0 var(--spacing-xs);
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.carousel__dot:hover {
+  background-color: rgba(201, 170, 113, 0.5);
+}
+
+.carousel__dot:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 170, 113, 0.3);
+}
+
+.carousel__dot--active {
+  background-color: var(--color-primary);
+  transform: scale(1.2);
+}
+
+/* Variantes thématiques */
+.theme-games .carousel__arrow {
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+}
+
+.theme-games .carousel__arrow:hover {
+  color: var(--color-secondary-light);
+}
+
+.theme-games .carousel__dot {
+  background-color: rgba(113, 169, 201, 0.3);
+}
+
+.theme-games .carousel__dot:hover {
+  background-color: rgba(113, 169, 201, 0.5);
+}
+
+.theme-games .carousel__dot--active {
+  background-color: var(--color-secondary);
+}
+
+.theme-courses .carousel__arrow {
+  border-color: var(--color-tertiary);
+  color: var(--color-tertiary);
+}
+
+.theme-courses .carousel__arrow:hover {
+  color: var(--color-tertiary-light);
+}
+
+.theme-courses .carousel__dot {
+  background-color: rgba(113, 201, 154, 0.3);
+}
+
+.theme-courses .carousel__dot:hover {
+  background-color: rgba(113, 201, 154, 0.5);
+}
+
+.theme-courses .carousel__dot--active {
+  background-color: var(--color-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carousel {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .carousel__arrow {
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-lg);
+  }
+  
+  .carousel__arrow--prev {
+    left: 5px;
+  }
+  
+  .carousel__arrow--next {
+    right: 5px;
+  }
+}

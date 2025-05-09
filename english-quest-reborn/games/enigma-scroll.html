@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
+  <meta name="theme-color" content="#121212">
+  <title>Enigma Scroll | English Quest Reborn</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Base styles - Ordre important pour éviter les conflits -->
+  <link href="../styles/new-design.css" rel="stylesheet">
+  <link href="../styles/animations.css" rel="stylesheet">
+  <link href="../styles/particles.css" rel="stylesheet">
+  <link href="../styles/responsive.css" rel="stylesheet">
+
+  <!-- Game-specific styles -->
+  <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
+
+  <!-- Styles personnalisés pour corriger l'alignement et les couleurs -->
+  <style>
+    /* Redéfinition des variables CSS pour s'assurer qu'elles sont correctement appliquées */
+    :root {
+      /* Palette de couleurs vert, bleu et blanc */
+      --color-primary: #2ecc71 !important; /* Vert */
+      --color-primary-dark: #27ae60 !important;
+      --color-primary-light: #58d68d !important;
+
+      --color-secondary: #3498db !important; /* Bleu */
+      --color-secondary-dark: #2980b9 !important;
+      --color-secondary-light: #5dade2 !important;
+
+      --color-tertiary: #ffffff !important; /* Blanc */
+      --color-tertiary-dark: #f5f5f5 !important;
+      --color-tertiary-light: #ffffff !important;
+
+      --color-accent: #3498db !important; /* Bleu comme accent également */
+      --color-accent-dark: #2980b9 !important;
+      --color-accent-light: #5dade2 !important;
+
+      --color-background: #121212 !important;
+      --color-surface: #1a1a1a !important;
+      --color-surface-light: #252525 !important;
+
+      --color-text: #ffffff !important;
+      --color-text-secondary: #b0bec5 !important;
+    }
+
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
+    .btn-login {
+      min-width: 80px;
+      text-align: center;
+      background-color: transparent !important;
+      border: 2px solid #2ecc71 !important;
+      color: #2ecc71 !important;
+    }
+
+    .btn-login:hover {
+      background-color: #2ecc71 !important;
+      color: #121212 !important;
+    }
+
+    /* Correction des couleurs du titre */
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, #2ecc71, #3498db) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      font-weight: 900 !important;
+      font-size: 2.5rem !important;
+      margin-bottom: 1rem !important;
+    }
+
+    /* Correction de la couleur du sous-titre */
+    .game-subtitle {
+      color: #3498db !important;
+      font-size: 1.2rem !important;
+      margin-bottom: 2rem !important;
+    }
+
+    /* Assurer que le container a la même largeur que sur les autres pages */
+    .container {
+      width: 90% !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      padding: 0 var(--spacing-sm) !important;
+    }
+
+    /* Styles pour le header exactement comme sur index.html */
+    .header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      background-color: rgba(18, 18, 18, 0.9) !important;
+      backdrop-filter: blur(10px) !important;
+      z-index: 1000 !important;
+      padding: var(--spacing-sm) 0 !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
+    }
+
+    .header-container {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+
+    .logo {
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.8rem !important;
+      font-weight: 700 !important;
+      color: #2ecc71 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .logo span {
+      color: #ffffff !important;
+    }
+
+    .nav {
+      display: none !important;
+    }
+
+    .nav-list {
+      display: flex !important;
+      gap: var(--spacing-md) !important;
+    }
+
+    .nav-link {
+      font-weight: 500 !important;
+      position: relative !important;
+      padding: var(--spacing-xs) 0 !important;
+      transition: color 0.3s ease !important;
+      color: #ffffff !important;
+    }
+
+    .nav-link::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 0 !important;
+      height: 2px !important;
+      background-color: #2ecc71 !important;
+      transition: width 0.3s ease !important;
+    }
+
+    .nav-link:hover {
+      color: #2ecc71 !important;
+    }
+
+    .nav-link:hover::after {
+      width: 100% !important;
+    }
+
+    .nav-link.active {
+      color: #2ecc71 !important;
+    }
+
+    .nav-link.active::after {
+      width: 100% !important;
+    }
+
+    .user-menu {
+      display: flex !important;
+      align-items: center !important;
+      gap: var(--spacing-sm) !important;
+    }
+
+    .menu-toggle {
+      display: block !important;
+      background: none !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-size: 1.5rem !important;
+      cursor: pointer !important;
+    }
+
+    @media (min-width: 768px) {
+      .nav {
+        display: block !important;
+      }
+
+      .menu-toggle {
+        display: none !important;
+      }
+    }
+
+    /* Styles pour le leaderboard */
+    .leaderboard-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background-color: rgba(18, 18, 18, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-title {
+      color: var(--color-primary, #2ecc71);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+    }
+
+    .leaderboard-content {
+      width: 100%;
+    }
+
+    .leaderboard-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      color: var(--text-light);
+      font-family: 'Spectral', serif;
+    }
+
+    .leaderboard-table th {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.5);
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-table td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .leaderboard-table tr:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    .leaderboard-table .rank-gold {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    .leaderboard-table .rank-silver {
+      background-color: rgba(192, 192, 192, 0.1);
+    }
+
+    .leaderboard-table .rank-bronze {
+      background-color: rgba(205, 127, 50, 0.1);
+    }
+
+    .current-player {
+      background-color: rgba(46, 204, 113, 0.15) !important;
+    }
+
+    .rank-cell {
+      font-weight: 600;
+      text-align: center;
+      width: 60px;
+    }
+
+    .player-cell {
+      font-weight: 500;
+    }
+
+    .score-cell {
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+      text-align: right;
+    }
+
+    .date-cell {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    .local-scores-button-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .game-button.secondary-button {
+      background-color: rgba(10, 14, 20, 0.8);
+      border: 1px solid var(--color-primary, #2ecc71);
+      color: var(--text-light);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .game-button.secondary-button:hover {
+      background-color: rgba(46, 204, 113, 0.2);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Overlay de chargement -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Chargement des parchemins mystérieux...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html" class="nav-link">Accueil</a></li>
+          <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+          <li><a href="../courses.html" class="nav-link">Cours</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu">
+        <a href="../auth.html" class="btn-login">Connexion</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main>
+    <div class="game-container" id="enigma-scroll-container">
+      <!-- Titre et introduction -->
+      <div class="game-intro">
+        <h1>Enigma Scroll <span class="subtitle">Les Parchemins Mystérieux</span></h1>
+        <p class="game-description">
+          Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+          Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+        </p>
+
+        <!-- Sélecteur de difficulté -->
+        <div class="difficulty-selector">
+          <h3>Choisissez votre difficulté</h3>
+          <div class="difficulty-options">
+            <button class="difficulty-btn" data-difficulty="beginner">
+              <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+              <span class="difficulty-name">Débutant</span>
+              <span class="difficulty-desc">Mots de 4 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="intermediate">
+              <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+              <span class="difficulty-name">Intermédiaire</span>
+              <span class="difficulty-desc">Mots de 5 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="advanced">
+              <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+              <span class="difficulty-name">Avancé</span>
+              <span class="difficulty-desc">Mots de 7 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="expert">
+              <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+              <span class="difficulty-name">Expert</span>
+              <span class="difficulty-desc">Mots de 9 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="legendary">
+              <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+              <span class="difficulty-name">Légendaire</span>
+              <span class="difficulty-desc">Mots de 10 lettres</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bouton de démarrage -->
+        <button id="start-game-button" class="start-button">Commencer l'aventure</button>
+      </div>
+
+      <!-- Zone de jeu (cachée au départ) -->
+      <div id="game-area" class="game-area" style="display: none;">
+        <!-- Informations de jeu -->
+        <div class="game-info">
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-scroll"></i></span>
+            <span class="stat-label">Niveau</span>
+            <span id="level-display" class="stat-value">1</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-star"></i></span>
+            <span class="stat-label">Score</span>
+            <span id="score-display" class="stat-value">0</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
+            <span class="stat-label">Temps</span>
+            <span id="time-display" class="stat-value">60</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-bolt"></i></span>
+            <span class="stat-label">Combo</span>
+            <span id="combo-display" class="stat-value">x1</span>
+          </div>
+        </div>
+
+        <!-- Grille de jeu -->
+        <div id="word-grid" class="word-grid"></div>
+
+        <!-- Clavier virtuel -->
+        <div id="keyboard" class="keyboard">
+          <div class="keyboard-row">
+            <button class="key-btn">Q</button>
+            <button class="key-btn">W</button>
+            <button class="key-btn">E</button>
+            <button class="key-btn">R</button>
+            <button class="key-btn">T</button>
+            <button class="key-btn">Y</button>
+            <button class="key-btn">U</button>
+            <button class="key-btn">I</button>
+            <button class="key-btn">O</button>
+            <button class="key-btn">P</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key-btn">A</button>
+            <button class="key-btn">S</button>
+            <button class="key-btn">D</button>
+            <button class="key-btn">F</button>
+            <button class="key-btn">G</button>
+            <button class="key-btn">H</button>
+            <button class="key-btn">J</button>
+            <button class="key-btn">K</button>
+            <button class="key-btn">L</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key-btn key-enter">ENTER</button>
+            <button class="key-btn">Z</button>
+            <button class="key-btn">X</button>
+            <button class="key-btn">C</button>
+            <button class="key-btn">V</button>
+            <button class="key-btn">B</button>
+            <button class="key-btn">N</button>
+            <button class="key-btn">M</button>
+            <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+          </div>
+        </div>
+
+        <!-- Power-ups -->
+        <div id="power-ups-container" class="power-ups-container">
+          <div class="power-up" data-power="hint">
+            <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="power-up-name">Indice</div>
+            <div class="power-up-count" id="hint-count">3</div>
+          </div>
+          <div class="power-up" data-power="time">
+            <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+            <div class="power-up-name">Temps</div>
+            <div class="power-up-count" id="time-count">2</div>
+          </div>
+          <div class="power-up" data-power="skip">
+            <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+            <div class="power-up-name">Passer</div>
+            <div class="power-up-count" id="skip-count">1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone de classement -->
+      <div id="leaderboard-area" class="leaderboard-area">
+        <h2>Meilleurs Scores</h2>
+        <div class="leaderboard-tabs">
+          <button class="leaderboard-tab active" data-tab="alltime">Tous les temps</button>
+        </div>
+        <div id="enigma-scroll-leaderboard" class="leaderboard-content">
+          <div class="leaderboard-loading">Chargement des scores...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Pas de footer -->
+
+  <!-- Modales -->
+
+  <!-- Modale des règles du jeu -->
+  <div class="modal rules-modal" id="rulesModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Règles du jeu</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
+
+        <h3>Objectif :</h3>
+        <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
+
+        <h3>Comment jouer :</h3>
+        <ul>
+          <li>Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li>Les lettres changeront de couleur pour vous guider :
+            <ul>
+              <li><span class="example-correct">Vert</span> : La lettre est correcte et bien placée</li>
+              <li><span class="example-present">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li><span class="example-absent">Gris</span> : La lettre n'est pas dans le mot</li>
+            </ul>
+          </li>
+          <li>Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li>Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
+          <li>Utilisez les power-ups pour vous aider :
+            <ul>
+              <li><i class="fas fa-lightbulb"></i> <strong>Indice</strong> : Révèle une lettre du mot</li>
+              <li><i class="fas fa-clock"></i> <strong>Temps</strong> : Ajoute 30 secondes au chronomètre</li>
+              <li><i class="fas fa-forward"></i> <strong>Passer</strong> : Passe au mot suivant</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>Astuces :</h3>
+        <ul>
+          <li>Commencez par des mots contenant des voyelles courantes</li>
+          <li>Faites attention aux lettres qui se répètent</li>
+          <li>Utilisez les informations des essais précédents</li>
+          <li>Enchaînez les mots corrects pour augmenter votre combo et gagner plus de points</li>
+        </ul>
+
+        <p>Bonne chance dans votre quête linguistique !</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="startGameFromRules">Commencer à jouer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de fin de partie -->
+  <div class="modal game-over-modal" id="gameOverModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Partie terminée</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="game-over-stats">
+          <div class="game-over-stat">
+            <span class="stat-label">Score final</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Mots trouvés</span>
+            <span id="words-found" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Combo maximum</span>
+            <span id="max-combo" class="stat-value">x1</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Temps total</span>
+            <span id="total-time" class="stat-value">0s</span>
+          </div>
+        </div>
+
+        <div class="rewards-section">
+          <h3>Récompenses</h3>
+          <div class="rewards-container">
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-coins"></i></div>
+              <div class="reward-value" id="coins-reward">+0</div>
+            </div>
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-star"></i></div>
+              <div class="reward-value" id="xp-reward">+0 XP</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-high-score" class="new-high-score" style="display: none;">
+          <i class="fas fa-trophy"></i> Nouveau record personnel !
+        </div>
+
+        <div id="last-word-container" class="last-word-container" style="display: none;">
+          <p>Le dernier mot était : <span id="last-word" class="revealed-word">WORD</span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="playAgainButton">Rejouer</button>
+        <button class="modal-button secondary" id="backToMenuButton">Menu principal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de mot trouvé -->
+  <div class="modal word-found-modal" id="wordFoundModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Mot trouvé !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Le mot était : <span id="revealed-word" class="revealed-word">WORD</span></p>
+        <p class="word-definition" id="word-definition">Définition du mot...</p>
+
+        <div class="word-stats">
+          <div class="word-stat">
+            <span class="stat-label">Points gagnés</span>
+            <span id="points-earned" class="stat-value">+100</span>
+          </div>
+          <div class="word-stat">
+            <span class="stat-label">Temps restant</span>
+            <span id="time-bonus" class="stat-value">+10s</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="nextWordButton">Mot suivant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'événement spécial -->
+  <div class="modal event-modal" id="eventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Événement spécial !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="event-description" class="event-description">
+          Description de l'événement...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="acceptEventButton">Accepter</button>
+        <button class="modal-button secondary" id="declineEventButton">Décliner</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Effets visuels -->
+  <div id="particles-container" class="particles-container"></div>
+  <div id="forest-mist" class="forest-mist"></div>
+  <div id="floating-leaves" class="floating-leaves"></div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <!-- Scripts du jeu -->
+  <script src="../src/js/firebase-init.js"></script>
+  <script src="../scripts/local-auth.js"></script>
+  <script src="../src/js/auth-state.js"></script>
+  <script src="../src/js/reward-system.js"></script>
+  <script src="../src/js/admin-scores.js"></script>
+  <script src="../src/js/enigma-scroll/firebase-helpers.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js"></script>
+  <script src="../src/js/enigma-scroll/word-lists.js"></script>
+  <script src="../src/js/enigma-scroll/game-effects.js"></script>
+  <script src="../src/js/enigma-scroll/game-ui.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
+
+  <!-- Script d'initialisation de l'utilisateur -->
+  <script>
+    // Vérifier si l'utilisateur est connecté au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Vérifier si un utilisateur est connecté dans localStorage
+        const userJson = localStorage.getItem('english_quest_current_user');
+        if (userJson) {
+          const user = JSON.parse(userJson);
+
+          if (user && user.username) {
+            console.log("Utilisateur connecté au jeu");
+
+            // Mettre à jour l'interface utilisateur
+            if (typeof window.updateUI === 'function') {
+              window.updateUI();
+            }
+
+            // Ne pas mettre à jour le texte du bouton de connexion
+            // Garder "Profil" comme sur les autres pages
+          }
+        } else {
+          console.log("Aucun utilisateur connecté");
+        }
+
+        // Initialiser le menu mobile
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navList = document.querySelector('.nav-list');
+
+        if (menuToggle && navList) {
+          menuToggle.addEventListener('click', function() {
+            navList.classList.toggle('active');
+          });
+        }
+
+        // Le leaderboard est déjà initialisé dans enigma-scroll.js
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'utilisateur:", error);
+      }
+    });
+  </script>
+</body>
+</html>

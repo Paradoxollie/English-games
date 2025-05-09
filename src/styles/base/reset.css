@@ -1,0 +1,182 @@
+/* 
+ * Reset CSS moderne et accessible
+ * Basé sur normalize.css avec des améliorations pour l'accessibilité
+ */
+
+/* Box sizing universel */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Suppression des marges par défaut */
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Amélioration de la lisibilité du texte */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+/* Réduction des animations pour les utilisateurs qui préfèrent moins de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Styles de base du body */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Amélioration de l'accessibilité des images */
+img,
+picture,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* Amélioration de l'accessibilité des formulaires */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Amélioration de l'accessibilité des liens */
+a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.15em;
+  color: inherit;
+}
+
+/* Amélioration de l'accessibilité du focus */
+:focus {
+  outline: 3px solid var(--focus-color, #71a9c9);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-color, #71a9c9);
+  outline-offset: 2px;
+}
+
+/* Amélioration de l'accessibilité des listes */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Classe utilitaire pour masquer visuellement du contenu tout en le gardant accessible aux lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Classe pour le lien d'évitement */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--quest-blue, #71a9c9);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Amélioration de l'accessibilité des tableaux */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  text-align: left;
+}
+
+/* Amélioration de l'accessibilité des boutons */
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Amélioration de l'accessibilité des champs de formulaire */
+input,
+textarea {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+}
+
+/* Amélioration de l'accessibilité des légendes de formulaire */
+legend {
+  padding: 0;
+}
+
+/* Amélioration de l'accessibilité des éléments interactifs */
+[role="button"],
+button,
+input,
+select,
+textarea {
+  cursor: pointer;
+}
+
+/* Amélioration de l'accessibilité des éléments désactivés */
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}

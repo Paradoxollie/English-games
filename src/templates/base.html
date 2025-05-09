@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{pageDescription}}">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Balises Open Graph pour le partage social -->
+    <meta property="og:title" content="{{pageTitle}} | English Quest">
+    <meta property="og:description" content="{{pageDescription}}">
+    <meta property="og:image" content="{{pageImage}}">
+    <meta property="og:url" content="{{pageUrl}}">
+    <meta property="og:type" content="website">
+    
+    <title>{{pageTitle}} | English Quest</title>
+    
+    <!-- Skip link pour l'accessibilité -->
+    <a href="#main-content" class="skip-link">Passer au contenu principal</a>
+    
+    <!-- Preload des ressources critiques -->
+    <link rel="preload" href="/assets/fonts/cinzel-v19-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/medievalsharp-v24-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/images/logo.webp" as="image" type="image/webp">
+    <link rel="preload" href="/src/styles/critical.css" as="style">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+    
+    <!-- Styles critiques inlinés pour un chargement rapide -->
+    <style>
+        /* Styles critiques pour le premier rendu */
+        :root {
+            --quest-gold: #c9aa71;
+            --quest-blue: #71a9c9;
+            --quest-dark: #0f172a;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--quest-blue);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            transition: top 0.3s;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cinzel', serif;
+            background-color: var(--quest-dark);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--quest-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--quest-gold);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- Styles principaux (chargés de manière asynchrone) -->
+    <link rel="stylesheet" href="/src/styles/main.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="/src/styles/main.css"></noscript>
+    
+    <!-- Polyfills pour la compatibilité des navigateurs -->
+    <script>
+        // Détection des fonctionnalités et chargement conditionnel des polyfills
+        if (!('IntersectionObserver' in window)) {
+            document.write('<script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver"><\/script>');
+        }
+    </script>
+</head>
+<body class="{{pageTheme}}" data-page="{{pageName}}">
+    <!-- Overlay de chargement -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner" aria-label="Chargement en cours"></div>
+    </div>
+
+    <!-- Header avec navigation améliorée -->
+    <header class="site-header" role="banner" aria-label="En-tête du site">
+        <div class="container">
+            <div class="logo-container">
+                <a href="/" aria-label="Accueil English Quest">
+                    <img src="/assets/images/logo.webp" 
+                         alt="Logo English Quest" 
+                         width="200" 
+                         height="120" 
+                         loading="eager" 
+                         decoding="async">
+                </a>
+            </div>
+            
+            <nav class="main-nav" role="navigation" aria-label="Navigation principale">
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-expanded="false" aria-controls="main-menu" aria-label="Ouvrir le menu">
+                    <span class="menu-icon"></span>
+                    <span class="sr-only">Menu</span>
+                </button>
+                
+                <ul id="main-menu" class="nav-list">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link {{#if isHome}}active{{/if}}" {{#if isHome}}aria-current="page"{{/if}}>
+                            <span class="nav-icon home-icon" aria-hidden="true"></span>
+                            <span>Accueil</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/games" class="nav-link {{#if isGames}}active{{/if}}" {{#if isGames}}aria-current="page"{{/if}}>
+                            <span class="nav-icon games-icon" aria-hidden="true"></span>
+                            <span>Jeux</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/courses" class="nav-link {{#if isCourses}}active{{/if}}" {{#if isCourses}}aria-current="page"{{/if}}>
+                            <span class="nav-icon courses-icon" aria-hidden="true"></span>
+                            <span>Cours</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/leaderboard" class="nav-link {{#if isLeaderboard}}active{{/if}}" {{#if isLeaderboard}}aria-current="page"{{/if}}>
+                            <span class="nav-icon leaderboard-icon" aria-hidden="true"></span>
+                            <span>Classement</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/contact" class="nav-link {{#if isContact}}active{{/if}}" {{#if isContact}}aria-current="page"{{/if}}>
+                            <span class="nav-icon contact-icon" aria-hidden="true"></span>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                    <li class="nav-item user-nav-item">
+                        <a href="/profile" class="nav-link {{#if isProfile}}active{{/if}}" {{#if isProfile}}aria-current="page"{{/if}}>
+                            <span class="nav-icon profile-icon" aria-hidden="true"></span>
+                            <span>Profil</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main id="main-content" class="site-main" role="main">
+        {{content}}
+    </main>
+
+    <!-- Footer amélioré -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h2 class="footer-heading">À propos</h2>
+                    <p>English Quest est dédié à rendre l'apprentissage de l'anglais amusant et efficace grâce à des jeux interactifs.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h2 class="footer-heading">Liens rapides</h2>
+                    <ul class="footer-links">
+                        <li><a href="/games" class="footer-link">Tous les jeux</a></li>
+                        <li><a href="/courses" class="footer-link">Cours</a></li>
+                        <li><a href="/leaderboard" class="footer-link">Classement</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h2 class="footer-heading">Statistiques</h2>
+                    <div class="visitor-counter">
+                        <div id="visitor-count" aria-live="polite">
+                            <span class="loading-text">Chargement des statistiques...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h2 class="footer-heading">Accessibilité</h2>
+                    <div class="accessibility-controls">
+                        <button id="contrast-toggle" class="a11y-button" aria-pressed="false">
+                            Contraste élevé
+                        </button>
+                        <button id="font-size-increase" class="a11y-button">
+                            Augmenter la taille du texte
+                        </button>
+                        <button id="reduced-motion-toggle" class="a11y-button" aria-pressed="false">
+                            Réduire les animations
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2024 - English Quest - Pierre Marienne - Tous droits réservés</p>
+                <div class="footer-legal">
+                    <a href="/privacy" class="legal-link">Politique de confidentialité</a>
+                    <a href="/terms" class="legal-link">Conditions d'utilisation</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="/src/js/core/app.js"></script>
+    
+    <!-- Script pour masquer l'overlay de chargement -->
+    <script>
+        window.addEventListener('load', function() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

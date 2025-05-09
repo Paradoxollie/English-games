@@ -1,0 +1,91 @@
+/**
+ * English Quest Reborn - Styles principaux
+ * Système de design moderne pour une application de jeu compétitif
+ */
+
+/* Variables et configuration */
+@import 'variables';
+@import 'mixins';
+@import 'animations';
+
+/* Base */
+@import 'reset';
+@import 'typography';
+@import 'layout';
+@import 'utilities';
+
+/* Composants */
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/forms';
+@import 'components/modals';
+@import 'components/navigation';
+@import 'components/loaders';
+@import 'components/badges';
+@import 'components/tooltips';
+@import 'components/notifications';
+@import 'components/progress';
+@import 'components/tables';
+@import 'components/avatars';
+@import 'components/tabs';
+@import 'components/dropdowns';
+@import 'components/carousel';
+
+/* Thèmes */
+@import 'themes/medieval';
+@import 'themes/dark';
+@import 'themes/light';
+@import 'themes/fantasy';
+@import 'themes/cyberpunk';
+
+/* Pages */
+@import 'pages/home';
+@import 'pages/games';
+@import 'pages/courses';
+@import 'pages/profile';
+@import 'pages/leaderboard';
+@import 'pages/battle';
+@import 'pages/auth';
+
+/* Écrans spéciaux */
+@import 'special/loading-screen';
+@import 'special/error-screen';
+@import 'special/achievement-popup';
+@import 'special/level-up';
+@import 'special/battle-arena';
+
+/* Responsive */
+@import 'responsive';
+
+/* Accessibilité */
+@import 'accessibility';
+
+/* Animations et effets spéciaux */
+@import 'effects/particles';
+@import 'effects/glow';
+@import 'effects/parallax';
+@import 'effects/3d';
+
+/* Utilitaires */
+@import 'print';
+@import 'debug';
+
+/* Styles spécifiques aux jeux */
+@import 'games/common';
+@import 'games/speed-verb-challenge';
+@import 'games/word-memory-game';
+@import 'games/memory-matrix';
+@import 'games/lost-in-migration';
+@import 'games/brew-your-words';
+@import 'games/enigma-scroll';
+@import 'games/whisper-trials';
+@import 'games/word-bubbles';
+@import 'games/echoes-of-lexicon';
+
+/* Styles spécifiques aux cours */
+@import 'courses/common';
+@import 'courses/conditional';
+@import 'courses/superlative';
+@import 'courses/comparative';
+@import 'courses/for-and-since';
+@import 'courses/modals';

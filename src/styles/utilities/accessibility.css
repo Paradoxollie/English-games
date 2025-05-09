@@ -1,0 +1,210 @@
+/* Styles pour l'accessibilité */
+
+/* Masquer visuellement mais garder accessible pour les lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Masquer visuellement mais garder accessible pour les lecteurs d'écran et le focus */
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Lien d'évitement pour l'accessibilité */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Améliorer la visibilité du focus pour les éléments interactifs */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(201, 170, 113, 0.25);
+}
+
+/* Améliorer le contraste pour le texte */
+.high-contrast {
+  color: white !important;
+  background-color: black !important;
+  border-color: white !important;
+}
+
+/* Augmenter la taille du texte */
+.text-zoom {
+  font-size: 120% !important;
+}
+
+/* Réduire les animations */
+.reduce-motion * {
+  animation-duration: 0.001s !important;
+  transition-duration: 0.001s !important;
+}
+
+/* Améliorer la lisibilité */
+.readable-text {
+  line-height: 1.8 !important;
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.1em !important;
+}
+
+/* Améliorer la visibilité des liens */
+.visible-links a {
+  text-decoration: underline !important;
+  color: var(--color-primary) !important;
+}
+
+.visible-links a:hover,
+.visible-links a:focus {
+  text-decoration: none !important;
+  background-color: var(--color-primary) !important;
+  color: var(--color-bg-dark) !important;
+}
+
+/* Améliorer la visibilité des boutons */
+.visible-buttons button,
+.visible-buttons .btn {
+  border: 2px solid currentColor !important;
+  font-weight: bold !important;
+}
+
+/* Améliorer la visibilité des formulaires */
+.visible-forms label {
+  font-weight: bold !important;
+  margin-bottom: 0.5em !important;
+}
+
+.visible-forms input,
+.visible-forms select,
+.visible-forms textarea {
+  border: 2px solid #000 !important;
+  padding: 0.5em !important;
+}
+
+/* Améliorer la visibilité des tableaux */
+.visible-tables table {
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+}
+
+.visible-tables th,
+.visible-tables td {
+  border: 1px solid #000 !important;
+  padding: 0.5em !important;
+}
+
+.visible-tables th {
+  background-color: #eee !important;
+  font-weight: bold !important;
+}
+
+/* Améliorer la visibilité des listes */
+.visible-lists ul,
+.visible-lists ol {
+  padding-left: 2em !important;
+}
+
+.visible-lists li {
+  margin-bottom: 0.5em !important;
+}
+
+.visible-lists ul li {
+  list-style-type: disc !important;
+}
+
+.visible-lists ol li {
+  list-style-type: decimal !important;
+}
+
+/* Attributs ARIA */
+[aria-hidden="true"] {
+  display: none !important;
+}
+
+[aria-disabled="true"] {
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+}
+
+/* Variantes thématiques */
+.theme-games :focus-visible,
+.theme-games a:focus-visible,
+.theme-games button:focus-visible,
+.theme-games input:focus-visible,
+.theme-games select:focus-visible,
+.theme-games textarea:focus-visible {
+  outline-color: var(--color-secondary);
+  box-shadow: 0 0 0 4px rgba(113, 169, 201, 0.25);
+}
+
+.theme-games .skip-link {
+  background: var(--color-secondary);
+}
+
+.theme-games .visible-links a {
+  color: var(--color-secondary) !important;
+}
+
+.theme-games .visible-links a:hover,
+.theme-games .visible-links a:focus {
+  background-color: var(--color-secondary) !important;
+}
+
+.theme-courses :focus-visible,
+.theme-courses a:focus-visible,
+.theme-courses button:focus-visible,
+.theme-courses input:focus-visible,
+.theme-courses select:focus-visible,
+.theme-courses textarea:focus-visible {
+  outline-color: var(--color-tertiary);
+  box-shadow: 0 0 0 4px rgba(113, 201, 154, 0.25);
+}
+
+.theme-courses .skip-link {
+  background: var(--color-tertiary);
+}
+
+.theme-courses .visible-links a {
+  color: var(--color-tertiary) !important;
+}
+
+.theme-courses .visible-links a:hover,
+.theme-courses .visible-links a:focus {
+  background-color: var(--color-tertiary) !important;
+}

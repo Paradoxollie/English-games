@@ -1,0 +1,1096 @@
+/* ===== ENIGMA SCROLL - STYLES PRINCIPAUX ===== */
+/* Thème MMORPG pour le jeu Enigma Scroll */
+
+/* ===== VARIABLES ET FONDATIONS ===== */
+:root {
+  /* Palette de couleurs principale - Utilisation des variables globales du site */
+  --enigma-dark: var(--color-background, #121212);        /* Fond très sombre */
+  --enigma-medium: var(--color-surface, #1a1a1a);      /* Fond des éléments */
+  --enigma-light: var(--color-surface-light, #252525);       /* Éléments plus clairs */
+
+  /* Couleurs d'accent - Utilisation des variables globales du site */
+  --enigma-primary: var(--color-primary, #2ecc71);     /* Vert - couleur principale */
+  --enigma-secondary: var(--color-secondary, #3498db);   /* Bleu - couleur secondaire */
+  --enigma-tertiary: var(--color-accent, #3498db);    /* Bleu - couleur tertiaire */
+
+  /* Couleurs fonctionnelles */
+  --enigma-correct: var(--color-easy, #2ecc71);     /* Vert - lettre correcte */
+  --enigma-present: var(--color-warning, #f59e0b);     /* Jaune - lettre présente */
+  --enigma-absent: var(--color-text-secondary, #b0bec5);      /* Gris - lettre absente */
+
+  /* Couleurs de texte */
+  --text-light: var(--color-text-secondary, #b0bec5);         /* Texte secondaire */
+  --text-white: var(--color-text, #ffffff);         /* Texte blanc */
+  --text-green: var(--color-primary-light, #58d68d);         /* Texte vert vif */
+
+  /* Variables RGB pour les effets de transparence */
+  --color-primary-rgb: 46, 204, 113;  /* RGB pour #2ecc71 */
+  --color-secondary-rgb: 52, 152, 219;  /* RGB pour #3498db */
+  --color-accent-rgb: 52, 152, 219;  /* RGB pour #3498db */
+
+  /* Effets de lueur */
+  --glow-green: rgba(var(--color-primary-rgb), 0.6);
+  --glow-purple: rgba(var(--color-secondary-rgb), 0.6);
+  --glow-blue: rgba(var(--color-accent-rgb), 0.6);
+
+  /* Définir explicitement les variables pour le header */
+  --header-bg-color: rgba(18, 18, 18, 0.9);
+  --header-border-color: var(--color-primary, #2ecc71);
+  --header-text-color: var(--color-text, #ffffff);
+  --header-link-hover-color: var(--color-primary, #2ecc71);
+  --header-link-active-color: var(--color-primary, #2ecc71);
+}
+
+/* ===== STYLES DE BASE ===== */
+body.enigma-scroll-page {
+  background-color: var(--enigma-dark);
+  background-image: url('../../assets/images/background.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text-light);
+  font-family: 'Spectral', serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ET NAVIGATION ===== */
+.game-header {
+  background-color: var(--header-bg-color);
+  border-bottom: 1px solid var(--header-border-color);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.logo-container img {
+  height: 60px;
+  width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo-container img:hover {
+  transform: scale(1.05);
+}
+
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--header-text-color);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--header-link-hover-color);
+  background-color: rgba(var(--color-primary-rgb, 46, 204, 113), 0.2);
+}
+
+.nav-link.active {
+  color: var(--header-link-active-color);
+  border-bottom: 2px solid var(--header-link-active-color);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+}
+
+/* ===== CONTENEUR PRINCIPAL DU JEU ===== */
+.game-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+/* ===== INTRODUCTION DU JEU ===== */
+.game-intro {
+  background-color: rgba(10, 14, 20, 0.9);
+  border: 2px solid var(--enigma-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+}
+
+.game-intro h1 {
+  font-family: 'MedievalSharp', fantasy;
+  font-size: 2.5rem;
+  color: var(--text-white);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px var(--glow-green);
+}
+
+.game-intro .subtitle {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--enigma-primary);
+  font-family: 'Cinzel', serif;
+  margin-top: 0.5rem;
+}
+
+.game-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* ===== SÉLECTEUR DE DIFFICULTÉ ===== */
+.difficulty-selector {
+  margin: 2rem 0;
+}
+
+.difficulty-selector h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--text-white);
+}
+
+.difficulty-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.difficulty-btn {
+  background-color: var(--enigma-light);
+  border: 1px solid var(--enigma-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 150px;
+}
+
+.difficulty-btn:hover {
+  background-color: var(--enigma-medium);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+}
+
+.difficulty-btn.active {
+  background-color: var(--enigma-primary);
+  color: var(--text-white);
+}
+
+.difficulty-icon {
+  font-size: 1.5rem;
+  color: var(--enigma-primary);
+}
+
+.difficulty-btn.active .difficulty-icon {
+  color: var(--text-white);
+}
+
+.difficulty-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.difficulty-desc {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ===== BOUTON DE DÉMARRAGE ===== */
+.start-button {
+  background: linear-gradient(135deg, var(--enigma-primary) 0%, #388e3c 50%, var(--enigma-primary) 100%);
+  color: var(--text-white);
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  margin-top: 1rem;
+}
+
+.start-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #43a047 50%, #388e3c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.start-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== ZONE DE JEU ===== */
+.game-area {
+  background-color: rgba(10, 14, 20, 0.9);
+  border: 2px solid var(--enigma-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+}
+
+/* Informations de jeu */
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  background-color: var(--enigma-light);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.game-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stat-icon {
+  font-size: 1.2rem;
+  color: var(--enigma-primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+/* Grille de mots */
+.word-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.grid-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.grid-cell {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 2px solid var(--enigma-light);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-white);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  background-color: var(--enigma-medium);
+}
+
+.grid-cell.filled {
+  border-color: var(--enigma-tertiary);
+  animation: cell-pop 0.2s ease-in-out;
+}
+
+.grid-cell.correct {
+  background-color: var(--enigma-correct);
+  border-color: var(--enigma-correct);
+}
+
+.grid-cell.present {
+  background-color: var(--enigma-present);
+  border-color: var(--enigma-present);
+}
+
+.grid-cell.absent {
+  background-color: var(--enigma-absent);
+  border-color: var(--enigma-absent);
+}
+
+.grid-cell.hint {
+  background-color: var(--enigma-tertiary);
+  border-color: var(--enigma-tertiary);
+  animation: hint-pulse 2s infinite;
+}
+
+/* Clavier virtuel */
+.keyboard {
+  margin: 2rem 0;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.key-btn {
+  min-width: 2.5rem;
+  height: 3.5rem;
+  background-color: var(--enigma-light);
+  border: 1px solid var(--enigma-medium);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.key-btn:hover {
+  background-color: var(--enigma-medium);
+  transform: translateY(-2px);
+}
+
+.key-btn:active {
+  transform: translateY(0);
+}
+
+.key-enter, .key-delete {
+  min-width: 4rem;
+  font-size: 0.9rem;
+}
+
+.key-btn.correct {
+  background-color: var(--enigma-correct);
+  border-color: var(--enigma-correct);
+}
+
+.key-btn.present {
+  background-color: var(--enigma-present);
+  border-color: var(--enigma-present);
+}
+
+.key-btn.absent {
+  background-color: var(--enigma-absent);
+  border-color: var(--enigma-absent);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Power-ups */
+.power-ups-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.power-up {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--enigma-light);
+  width: 80px;
+}
+
+.power-up:hover {
+  background-color: var(--enigma-medium);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.power-up-icon {
+  font-size: 1.5rem;
+  color: var(--enigma-primary);
+}
+
+.power-up[data-power="hint"] .power-up-icon {
+  color: var(--enigma-tertiary);
+}
+
+.power-up[data-power="time"] .power-up-icon {
+  color: var(--enigma-secondary);
+}
+
+.power-up[data-power="skip"] .power-up-icon {
+  color: #f44336;
+}
+
+.power-up-name {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.power-up-count {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+/* ===== ZONE DE CLASSEMENT ===== */
+.leaderboard-area {
+  background-color: rgba(10, 14, 20, 0.9);
+  border: 2px solid var(--enigma-tertiary);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(21, 101, 192, 0.3);
+}
+
+.leaderboard-area h2 {
+  font-family: 'MedievalSharp', fantasy;
+  font-size: 1.8rem;
+  color: var(--text-white);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-shadow: 0 0 10px var(--glow-blue);
+}
+
+.leaderboard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.leaderboard-tab {
+  background-color: var(--enigma-light);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-tab:hover {
+  background-color: var(--enigma-medium);
+  color: var(--text-white);
+}
+
+.leaderboard-tab.active {
+  background-color: var(--enigma-tertiary);
+  color: var(--text-white);
+}
+
+.leaderboard-content {
+  background-color: var(--enigma-light);
+  border-radius: 8px;
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.leaderboard-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--enigma-medium);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-entry:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-entry:hover {
+  background-color: var(--enigma-medium);
+}
+
+.leaderboard-rank {
+  width: 40px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--enigma-tertiary);
+  text-align: center;
+}
+
+.leaderboard-user {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.leaderboard-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--enigma-tertiary);
+}
+
+.leaderboard-name {
+  font-family: 'Spectral', serif;
+  font-size: 1rem;
+  color: var(--text-white);
+}
+
+.leaderboard-score {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--enigma-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+/* ===== MODALES ===== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.leaderboard-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.leaderboard-tab {
+  background-color: var(--enigma-light);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-tab:hover {
+  background-color: var(--enigma-medium);
+  color: var(--text-white);
+}
+
+.leaderboard-tab.active {
+  background-color: var(--enigma-tertiary);
+  color: var(--text-white);
+}
+
+.leaderboard-content {
+  background-color: var(--enigma-light);
+  border-radius: 8px;
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.leaderboard-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--enigma-medium);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-entry:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-entry:hover {
+  background-color: var(--enigma-medium);
+}
+
+.leaderboard-rank {
+  width: 40px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--enigma-tertiary);
+  text-align: center;
+}
+
+.leaderboard-user {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.leaderboard-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--enigma-tertiary);
+}
+
+.leaderboard-name {
+  font-family: 'Spectral', serif;
+  font-size: 1rem;
+  color: var(--text-white);
+}
+
+.leaderboard-score {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--enigma-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+/* ===== MODALES ===== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: var(--enigma-medium);
+  border: 2px solid var(--enigma-primary);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 30px rgba(46, 125, 50, 0.5);
+  animation: modal-appear 0.5s ease;
+}
+
+.modal-header {
+  background-color: var(--enigma-light);
+  padding: 1rem;
+  border-bottom: 1px solid var(--enigma-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-family: 'MedievalSharp', fantasy;
+  font-size: 1.5rem;
+  color: var(--text-white);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-white);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  color: var(--text-light);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--enigma-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-button {
+  background: linear-gradient(135deg, var(--enigma-primary) 0%, #388e3c 50%, var(--enigma-primary) 100%);
+  color: var(--text-white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.8rem 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-button:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #43a047 50%, #388e3c 100%);
+  transform: translateY(-2px);
+}
+
+.modal-button.secondary {
+  background: linear-gradient(135deg, var(--enigma-light) 0%, var(--enigma-medium) 50%, var(--enigma-light) 100%);
+  border: 1px solid var(--enigma-primary);
+}
+
+.modal-button.secondary:hover {
+  background: linear-gradient(135deg, var(--enigma-medium) 0%, var(--enigma-light) 50%, var(--enigma-medium) 100%);
+}
+
+/* Styles spécifiques pour la modale des règles */
+.example-correct {
+  background-color: var(--enigma-correct);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.example-present {
+  background-color: var(--enigma-present);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.example-absent {
+  background-color: var(--enigma-absent);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Styles pour la modale de fin de partie */
+.game-over-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.game-over-stat {
+  background-color: var(--enigma-light);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rewards-section {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.rewards-section h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  color: var(--text-white);
+  margin-bottom: 1rem;
+}
+
+.rewards-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reward-icon {
+  font-size: 1.5rem;
+  color: #ffc107;
+}
+
+.reward-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-white);
+}
+
+.new-high-score {
+  background-color: rgba(255, 193, 7, 0.2);
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  color: #ffc107;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+/* Styles pour la modale de mot trouvé */
+.revealed-word {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--enigma-primary);
+  display: block;
+  text-align: center;
+  margin: 1rem 0;
+  letter-spacing: 2px;
+}
+
+.word-definition {
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--enigma-light);
+  border-radius: 8px;
+  border-left: 3px solid var(--enigma-primary);
+}
+
+.word-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes cell-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes hint-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(21, 101, 192, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(21, 101, 192, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(21, 101, 192, 0);
+  }
+}
+
+@keyframes modal-appear {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* ===== EFFETS VISUELS ===== */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.forest-mist {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at bottom, rgba(46, 125, 50, 0.1) 0%, rgba(10, 14, 20, 0) 70%);
+  pointer-events: none;
+  z-index: -2;
+  animation: mist-move 20s infinite alternate;
+}
+
+.floating-leaves {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes mist-move {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .game-intro h1 {
+    font-size: 2rem;
+  }
+
+  .game-intro .subtitle {
+    font-size: 1.2rem;
+  }
+
+  .difficulty-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .difficulty-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .game-info {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .game-stat {
+    flex: 1 0 40%;
+  }
+
+  .grid-cell {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.2rem;
+  }
+
+  .key-btn {
+    min-width: 2rem;
+    height: 3rem;
+    font-size: 0.9rem;
+  }
+
+  .power-ups-container {
+    flex-wrap: wrap;
+  }
+
+  .power-up {
+    flex: 1 0 30%;
+  }
+
+  .game-over-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-intro h1 {
+    font-size: 1.8rem;
+  }
+
+  .grid-cell {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .key-btn {
+    min-width: 1.8rem;
+    height: 2.8rem;
+    font-size: 0.8rem;
+  }
+
+  .key-enter, .key-delete {
+    min-width: 3rem;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+}

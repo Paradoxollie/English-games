@@ -1,0 +1,177 @@
+/* Thème sombre */
+
+:root {
+  /* Couleurs de fond */
+  --color-bg-dark: #0f172a;
+  --color-bg-medium: #1e293b;
+  --color-bg-light: #334155;
+  
+  /* Couleurs de texte */
+  --color-text-light: #f8fafc;
+  --color-text-medium: #cbd5e1;
+  --color-text-dark: #64748b;
+}
+
+/* Styles spécifiques au thème sombre */
+body {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-light);
+}
+
+/* Ajustements pour les composants dans le thème sombre */
+.card,
+.panel,
+.modal__container {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-color: var(--color-primary);
+}
+
+.header {
+  background-color: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.footer {
+  background-color: var(--color-bg-dark);
+}
+
+/* Ajustements pour les formulaires dans le thème sombre */
+.form-control,
+.form-select {
+  background-color: var(--color-bg-light);
+  border-color: var(--color-bg-medium);
+  color: var(--color-text-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--color-bg-medium);
+  border-color: var(--color-primary);
+}
+
+.form-control::placeholder {
+  color: var(--color-text-dark);
+}
+
+/* Ajustements pour les boutons dans le thème sombre */
+.btn-outline-primary {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: rgba(201, 170, 113, 0.1);
+  color: var(--color-primary-light);
+}
+
+.btn-outline-secondary {
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.btn-outline-secondary:hover {
+  background-color: rgba(113, 169, 201, 0.1);
+  color: var(--color-secondary-light);
+}
+
+/* Ajustements pour les tableaux dans le thème sombre */
+table {
+  color: var(--color-text-light);
+}
+
+th {
+  background-color: var(--color-bg-medium);
+}
+
+tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Ajustements pour les liens dans le thème sombre */
+a {
+  color: var(--color-primary);
+}
+
+a:hover {
+  color: var(--color-primary-light);
+}
+
+/* Ajustements pour les ombres dans le thème sombre */
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Ajustements pour les bordures dans le thème sombre */
+.border {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Ajustements pour les éléments de navigation dans le thème sombre */
+.nav__link {
+  color: var(--color-text-medium);
+}
+
+.nav__link:hover {
+  color: var(--color-text-light);
+}
+
+.nav__link--active {
+  color: var(--color-primary);
+}
+
+/* Ajustements pour les modals dans le thème sombre */
+.modal__overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Ajustements pour les cartes de jeu dans le thème sombre */
+.game-card,
+.course-card {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Ajustements pour les panneaux dans le thème sombre */
+.panel::before,
+.game-panel::before,
+.course-panel::before {
+  opacity: 0.7;
+}
+
+/* Ajustements pour les formulaires de recherche dans le thème sombre */
+.search-form .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(201, 170, 113, 0.3);
+}
+
+.search-form .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Ajustements pour les témoignages dans le thème sombre */
+.testimonial {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Ajustements pour les étapes dans le thème sombre */
+.step {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Ajustements pour le CTA dans le thème sombre */
+.cta {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(15, 23, 42, 0.9)), url('../assets/images/cta-background.webp');
+}
+
+/* Ajustements pour le focus dans le thème sombre */
+:focus-visible {
+  outline-color: var(--color-primary);
+}

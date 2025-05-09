@@ -1,0 +1,136 @@
+/* Main CSS file - English Quest */
+
+/* Base styles */
+@import 'base/variables.css';
+@import 'base/reset.css';
+@import 'base/typography.css';
+
+/* Layout */
+@import 'layout/grid.css';
+@import 'layout/header.css';
+@import 'layout/footer.css';
+@import 'layout/navigation.css';
+
+/* Components */
+@import 'components/buttons.css';
+@import 'components/cards.css';
+@import 'components/forms.css';
+@import 'components/modals.css';
+@import 'components/carousel.css';
+@import 'components/panels.css';
+@import 'components/auth-modal.css';
+@import 'components/leaderboard.css';
+@import 'components/user-account.css';
+
+/* Pages */
+@import 'pages/home.css';
+@import 'pages/games.css';
+@import 'pages/courses.css';
+@import 'pages/leaderboard.css';
+@import 'pages/contact.css';
+
+/* Themes */
+@import 'themes/dark.css';
+
+/* Utilities */
+@import 'utilities/animations.css';
+@import 'utilities/accessibility.css';
+
+/* Base body styles */
+body {
+  font-family: var(--font-text);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-light);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: url('/assets/images/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Main content */
+main {
+  flex: 1;
+  padding-top: 80px; /* Adjust based on header height */
+  padding-bottom: var(--spacing-xl);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Section spacing */
+.section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.section__header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.section__title {
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-3xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+  position: relative;
+  display: inline-block;
+  text-shadow: 0 0 15px rgba(201, 170, 113, 0.4);
+}
+
+.section__title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  transform: translateX(-50%);
+}
+
+.section__subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-medium);
+  font-style: italic;
+}
+
+/* Background overlay for better text readability */
+.bg-overlay {
+  position: relative;
+}
+
+.bg-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .section__title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section__subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  .section {
+    margin-bottom: var(--spacing-xl);
+  }
+}

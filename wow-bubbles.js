@@ -690,7 +690,7 @@ function spawnOrb() {
     orb.style.top = '0px';
     
     // Ajouter une animation d'entrée
-    orb.style.animation = `orbEnter 0.5s ease-out, rotate ${5 + Math.random() * 5}s linear infinite, pulse ${2 + Math.random() * 2}s infinite alternate`;
+    orb.style.animation = `orbEnter 0.5s ease-out, rotate ${5 + Math.random() * 5}s linear infinite`;
     
     // Ajouter la lettre à l'orbe
     const letterSpan = document.createElement('span');

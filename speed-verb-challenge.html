@@ -14,32 +14,33 @@
     <meta name="description" content="Speed Verb Challenge - Maîtrisez les verbes irréguliers anglais dans cette expérience RPG immersive">
     <meta name="theme-color" content="#0f172a">
     <title>Speed Verb Challenge | English Quest</title>
-    
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=MedievalSharp&display=swap" rel="stylesheet">
-    
+
     <!-- Base styles -->
     <link href="./dist/output.css" rel="stylesheet">
     <link href="./src/styles/layout.css" rel="stylesheet">
-    
+
     <!-- Game-specific styles -->
     <link href="./src/styles/speed-verb-challenge.css" rel="stylesheet">
     <link href="./src/styles/button-fix.css" rel="stylesheet">
     <link href="./src/styles/mmorpg-enhanced.css" rel="stylesheet">
-    
+    <link href="./src/styles/games/challenge-notifications.css" rel="stylesheet">
+
     <!-- Three.js -->
     <script async src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    
+
     <!-- Script de correction de la navigation -->
     <script src="src/js/navigation-fix.js" defer></script>
-    
+
     <!-- Nouvel ajout: CSS pour les effets avancés -->
     <style>
         /* Variables pour la hauteur de la vue sur mobile */
         :root {
             --vh: 1vh;
         }
-        
+
         /* Style pour le corps de la page */
         body.game-body {
             margin: 0;
@@ -48,7 +49,7 @@
             background-color: #020617; /* Fond très sombre */
             overflow-x: hidden;
         }
-        
+
         /* Utiliser la hauteur de la vue personnalisée pour les conteneurs principaux */
         .game-universe {
             position: relative;
@@ -60,7 +61,7 @@
             padding-bottom: 50px; /* Espace supplémentaire en bas */
             padding-top: 60px; /* Espace pour la barre de navigation */
         }
-        
+
         /* Effets de particules améliorés */
         .magic-particles {
             position: fixed;
@@ -71,7 +72,7 @@
             pointer-events: none;
             z-index: -5;
         }
-        
+
         /* Effet de brume magique */
         .magic-fog {
             position: fixed;
@@ -79,7 +80,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: 
+            background:
                 radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.02) 0%, transparent 70%),
                 radial-gradient(ellipse at 80% 80%, rgba(59, 130, 246, 0.02) 0%, transparent 70%);
             filter: blur(8px);
@@ -87,7 +88,7 @@
             z-index: -6;
             animation: fogMovement 30s infinite alternate ease-in-out;
         }
-        
+
         /* Runes flottantes améliorées */
         .arcane-runes {
             position: fixed;
@@ -98,7 +99,7 @@
             z-index: -4;
             pointer-events: none;
         }
-        
+
         .rune {
             position: absolute;
             font-family: 'MedievalSharp', cursive;
@@ -107,25 +108,25 @@
             text-shadow: 0 0 10px var(--primary-glow);
             animation: runeFloat 15s infinite ease-in-out;
         }
-        
+
         @keyframes runeFloat {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
             10% { opacity: 0.7; }
             90% { opacity: 0.7; }
             100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
         }
-        
+
         /* Effet de profondeur pour les cartes */
         .depth-card {
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
         }
-        
+
         /* Suppression de l'effet de mouvement au survol */
         .depth-card:hover {
             transform: none;
         }
-        
+
         /* Effet de portail amélioré */
         .enhanced-portal {
             position: fixed;
@@ -141,23 +142,23 @@
             opacity: 0;
             pointer-events: none;
         }
-        
+
         .enhanced-portal.active {
             animation: portalOpen 2s forwards ease-out;
         }
-        
+
         @keyframes portalOpen {
             0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
             50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
         }
-        
+
         /* Effet de lumière pour les boutons */
         .glow-button {
             position: relative;
             overflow: hidden;
         }
-        
+
         .glow-button::after {
             content: '';
             position: absolute;
@@ -169,11 +170,11 @@
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         .glow-button:hover::after {
             opacity: 1;
         }
-        
+
         /* Style pour les bonus cumulatifs */
         .cumulative-bonus {
             font-size: 0.85em;
@@ -183,16 +184,16 @@
             margin-left: 4px;
             text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
         }
-        
+
         .power-item {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .power-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         /* Styles pour l'option de seconde chance */
         .second-chance-option {
             position: fixed;
@@ -205,14 +206,14 @@
             padding: 2rem;
             text-align: center;
             z-index: 1000;
-            box-shadow: 
+            box-shadow:
                 0 0 30px rgba(255, 215, 0, 0.5),
                 inset 0 0 15px rgba(255, 215, 0, 0.3);
             animation: secondChanceAppear 0.5s ease-out forwards;
             max-width: 90%;
             width: 400px;
         }
-        
+
         .second-chance-title {
             font-size: 1.8rem;
             color: rgba(255, 215, 0, 0.9);
@@ -221,49 +222,49 @@
             font-family: 'MedievalSharp', cursive;
             letter-spacing: 2px;
         }
-        
+
         .second-chance-icon {
             margin-right: 10px;
             font-size: 1.5rem;
             animation: pulseIcon 2s infinite ease-in-out;
             display: inline-block;
         }
-        
+
         .second-chance-desc {
             font-size: 1.2rem;
             color: var(--text-light);
             margin: 1.5rem 0;
         }
-        
+
         .second-chance-actions {
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin-top: 1.5rem;
         }
-        
+
         @keyframes secondChanceAppear {
             0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
             70% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
-        
+
         @keyframes pulseIcon {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
         }
-        
+
         /* Effet de lueur pour la seconde chance */
         .second-chance-glow {
             animation: secondChanceGlow 1s ease-out;
         }
-        
+
         @keyframes secondChanceGlow {
             0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
             50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.7); }
             100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0); }
         }
-        
+
         /* Style pour le compteur spécial de secondes chances */
         .special-hud-item {
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2));
@@ -271,17 +272,17 @@
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
             animation: specialItemPulse 2s infinite ease-in-out;
         }
-        
+
         @keyframes specialItemPulse {
             0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
             50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
         }
-        
+
         /* Animation pour nouvelle seconde chance */
         .new-chance {
             animation: newChanceAnimation 2s ease-out;
         }
-        
+
         @keyframes newChanceAnimation {
             0% { transform: scale(1); }
             25% { transform: scale(1.2); }
@@ -289,9 +290,9 @@
             75% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
-        
+
         /* Améliorations pour la visibilité sur mobile et PC */
-        
+
         /* Augmenter la taille des boutons sur mobile */
         @media (max-width: 768px) {
             .game-button {
@@ -300,7 +301,7 @@
                 min-height: 60px;
                 margin-bottom: 15px;
             }
-            
+
             /* Améliorer la visibilité des inputs */
             .verb-input {
                 font-size: 1.2rem;
@@ -308,101 +309,101 @@
                 margin-bottom: 15px;
                 border-width: 2px;
             }
-            
+
             /* Augmenter l'espacement pour éviter les clics accidentels */
             .verb-actions {
                 gap: 15px;
                 margin-top: 20px;
             }
-            
+
             /* Améliorer la visibilité du HUD */
             .hud-item {
                 padding: 10px;
             }
-            
+
             .hud-value {
                 font-size: 1.6rem;
             }
-            
+
             /* Rendre la seconde chance plus visible sur mobile */
             .second-chance-option {
                 width: 90%;
                 padding: 20px;
             }
-            
+
             .second-chance-actions {
                 flex-direction: column;
             }
-            
+
             .second-chance-actions button {
                 width: 100%;
             }
         }
-        
+
         /* Améliorations pour les très petits écrans */
         @media (max-width: 480px) {
             .verb-display {
                 font-size: 1.8rem !important;
                 padding: 10px 0;
             }
-            
+
             .verb-translation {
                 font-size: 1.2rem;
                 margin-bottom: 15px;
             }
-            
+
             .input-group label {
                 font-size: 1rem;
                 margin-bottom: 5px;
             }
-            
+
             /* Réduire la taille des notifications pour qu'elles ne prennent pas tout l'écran */
             .level-up-notification {
                 width: 85%;
                 padding: 15px;
             }
-            
+
             .level-up-title {
                 font-size: 1.5rem;
             }
-            
+
             .level-up-level {
                 font-size: 2.5rem;
             }
-            
+
             /* Améliorer la visibilité du feedback */
             .feedback-message {
                 font-size: 1.1rem;
                 padding: 10px;
             }
         }
-        
+
         /* Améliorations pour les grands écrans */
         @media (min-width: 1200px) {
             .game-sections {
                 gap: 2rem;
             }
-            
+
             .game-panel {
                 padding: 2rem;
             }
-            
+
             /* Améliorer la lisibilité */
             .verb-display {
                 font-size: 3rem;
             }
-            
+
             .verb-input {
                 font-size: 1.2rem;
             }
-            
+
             /* Rendre les boutons plus visibles */
             .game-button {
                 padding: 15px 25px;
                 font-size: 1.1rem;
             }
         }
-        
+
         /* Correction spécifique pour le leaderboard */
         .leaderboard-container {
             display: block;
@@ -411,7 +412,7 @@
             padding-top: 1rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .leaderboard-scroll {
             height: auto;
             max-height: 400px;
@@ -419,13 +420,13 @@
             -webkit-overflow-scrolling: touch;
             padding: 0.5rem;
         }
-        
+
         .leaderboard-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 8px;
         }
-        
+
         .leaderboard-table thead th {
             padding: 0.75rem 0.5rem;
             text-align: left;
@@ -436,7 +437,7 @@
             letter-spacing: 1px;
             text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
         }
-        
+
         .leaderboard-table tbody tr {
             background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -444,19 +445,19 @@
             border-radius: 6px;
             border-left: 3px solid transparent;
         }
-        
+
         .leaderboard-table tbody tr:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border-left: 3px solid rgba(59, 130, 246, 0.5);
         }
-        
+
         .leaderboard-table td {
             padding: 0.75rem 0.5rem;
             color: #e5e7eb;
             font-family: 'Cinzel', serif;
         }
-        
+
         .leaderboard-table .rank-cell {
             font-weight: bold;
             color: #3b82f6;
@@ -464,65 +465,65 @@
             width: 60px;
             text-align: center;
         }
-        
+
         .leaderboard-table .player-cell {
             font-weight: 600;
             color: #93c5fd;
         }
-        
+
         .leaderboard-table .score-cell {
             font-weight: 600;
             color: #dbeafe;
         }
-        
+
         .leaderboard-table .date-cell {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
             font-style: italic;
         }
-        
+
         /* Top 3 styles */
         .leaderboard-table tbody tr:nth-child(1) {
             background: linear-gradient(to right, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
             border-left: 3px solid gold;
         }
-        
+
         .leaderboard-table tbody tr:nth-child(2) {
             background: linear-gradient(to right, rgba(192, 192, 192, 0.1), rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.1));
             border-left: 3px solid silver;
         }
-        
+
         .leaderboard-table tbody tr:nth-child(3) {
             background: linear-gradient(to right, rgba(205, 127, 50, 0.1), rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.1));
             border-left: 3px solid #cd7f32;
         }
-        
+
         .loading-row td {
             text-align: center;
             padding: 2rem 0;
             color: #3b82f6;
         }
-        
+
         .loading-text {
             font-family: 'MedievalSharp', cursive;
             font-style: italic;
             display: inline-block;
             position: relative;
         }
-        
+
         .loading-dots {
             display: inline-block;
             width: 20px;
             animation: loadingDots 1.5s infinite;
         }
-        
+
         @keyframes loadingDots {
             0% { content: "."; }
             33% { content: ".."; }
             66% { content: "..."; }
             100% { content: ""; }
         }
-        
+
         /* Correction pour les panneaux de jeu */
         .game-panel {
             margin-bottom: 2rem;
@@ -530,26 +531,26 @@
             max-height: none !important;
             overflow: visible !important;
         }
-        
+
         .panel-content {
             height: auto !important;
             max-height: none !important;
             overflow: visible !important;
         }
-        
+
         /* Correction pour la section des règles */
         .rules-panel {
             height: auto !important;
             max-height: none !important;
             overflow: visible !important;
         }
-        
+
         .quest-scroll {
             max-height: 300px !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
         }
-        
+
         /* Styles pour la modale */
         .modal {
             display: none;
@@ -566,19 +567,19 @@
             visibility: hidden;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-        
+
         .modal.show {
             display: flex !important;
             opacity: 1 !important;
             visibility: visible !important;
         }
-        
+
         .modal.persistent {
             display: flex !important;
             opacity: 1 !important;
             visibility: visible !important;
         }
-        
+
         .modal-content {
             background: linear-gradient(135deg, #172039 0%, #0c111e 100%);
             color: #e5e7eb;
@@ -594,12 +595,12 @@
             pointer-events: auto;
             padding: 0;
         }
-        
+
         @keyframes modalGlow {
             0% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3), 0 0 50px rgba(0, 0, 0, 0.5); }
             100% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.5), 0 0 60px rgba(0, 0, 0, 0.6); }
         }
-        
+
         .modal-header {
             background: linear-gradient(to right, #172039, #1e293b);
             padding: 1.5rem;
@@ -610,7 +611,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-title {
             font-family: 'MedievalSharp', cursive;
             font-size: 1.8rem;
@@ -620,7 +621,7 @@
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
             letter-spacing: 1px;
         }
-        
+
         .modal-close {
             position: absolute;
             right: 1rem;
@@ -639,13 +640,13 @@
             border-radius: 50%;
             background-color: rgba(59, 130, 246, 0.1);
         }
-        
+
         .modal-close:hover {
             background-color: rgba(59, 130, 246, 0.2);
             transform: scale(1.1);
             color: #93c5fd;
         }
-        
+
         .modal-body {
             padding: 1.5rem;
             font-family: 'Cinzel', serif;
@@ -653,7 +654,7 @@
             line-height: 1.6;
             color: #d1d5db;
         }
-        
+
         .modal-body h3 {
             font-family: 'MedievalSharp', cursive;
             color: #93c5fd;
@@ -663,18 +664,18 @@
             border-bottom: 1px solid rgba(59, 130, 246, 0.3);
             padding-bottom: 0.5rem;
         }
-        
+
         .modal-body ul {
             padding-left: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .modal-body li {
             margin-bottom: 0.5rem;
             position: relative;
             padding-left: 0.5rem;
         }
-        
+
         .modal-body li::before {
             content: "•";
             color: #3b82f6;
@@ -683,12 +684,12 @@
             top: 0;
             font-size: 1.2rem;
         }
-        
+
         .modal-body strong {
             color: #93c5fd;
             font-weight: 600;
         }
-        
+
         /* Styles spécifiques pour la modale enrichie */
         .modal-body .drop-cap {
             font-size: 2.5em;
@@ -698,23 +699,23 @@
             color: #3b82f6;
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
         }
-        
+
         .modal-body .highlight-text {
             color: #93c5fd;
             font-weight: 600;
             text-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
         }
-        
+
         .modal-body .warning-text {
             color: #f87171;
             font-weight: 600;
         }
-        
+
         .modal-body .rules-list {
             list-style: none;
             padding: 0;
         }
-        
+
         .modal-body .rule-item {
             display: flex;
             margin-bottom: 1.5rem;
@@ -723,22 +724,22 @@
             padding: 1rem;
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
-        
+
         .modal-body .rule-icon {
             font-size: 1.8rem;
             margin-right: 1rem;
             align-self: flex-start;
             display: inline-block;
         }
-        
+
         .modal-body .animated-icon {
             animation: pulse 2s infinite ease-in-out;
         }
-        
+
         .modal-body .rule-content {
             flex: 1;
         }
-        
+
         .modal-body .rule-title {
             font-family: 'MedievalSharp', cursive;
             color: #3b82f6;
@@ -746,13 +747,13 @@
             margin-bottom: 0.5rem;
             font-size: 1.3rem;
         }
-        
+
         .modal-body .sub-rules {
             list-style: none;
             padding-left: 0;
             margin-top: 0.5rem;
         }
-        
+
         .modal-body .sub-rules li {
             padding: 0.5rem;
             margin-bottom: 0.5rem;
@@ -760,37 +761,37 @@
             border-radius: 4px;
             border-left: 3px solid rgba(59, 130, 246, 0.3);
         }
-        
+
         .modal-body .sub-rules li::before {
             content: none;
         }
-        
+
         .modal-body .path-text {
             font-weight: 600;
             color: #3b82f6;
             display: block;
             margin-bottom: 0.2rem;
         }
-        
+
         .modal-body .path-description {
             display: block;
             font-size: 0.9em;
             margin-bottom: 0.2rem;
         }
-        
+
         .modal-body .path-reward {
             font-size: 0.85em;
             color: #93c5fd;
             font-style: italic;
         }
-        
+
         .modal-body .special-powers {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1rem;
             margin-top: 1.5rem;
         }
-        
+
         .modal-body .power-item {
             background: rgba(59, 130, 246, 0.05);
             border-radius: 8px;
@@ -802,29 +803,29 @@
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .modal-body .power-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             background: rgba(59, 130, 246, 0.1);
         }
-        
+
         .modal-body .power-icon {
             font-size: 1.8rem;
             margin-bottom: 0.5rem;
             animation: pulse 3s infinite ease-in-out;
         }
-        
+
         .modal-body .power-name {
             font-weight: 600;
             color: #3b82f6;
             margin-bottom: 0.3rem;
         }
-        
+
         .modal-body .power-desc {
             font-size: 0.9em;
         }
-        
+
         .modal-body .cumulative-bonus {
             font-size: 0.85em;
             color: rgba(255, 255, 255, 0.8);
@@ -833,14 +834,14 @@
             margin-left: 4px;
             text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
         }
-        
+
         .modal-footer {
             padding: 1.5rem;
             border-top: 1px solid rgba(59, 130, 246, 0.3);
             text-align: center;
             border-radius: 0 0 15px 15px;
         }
-        
+
         /* Bouton d'aide flottant */
         .help-button {
             position: fixed;
@@ -861,18 +862,18 @@
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
             transition: all 0.3s ease;
         }
-        
+
         .help-button:hover {
             transform: scale(1.1);
             box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
             border-color: #93c5fd;
         }
-        
+
         .help-icon {
             font-size: 2rem;
             animation: pulse 2s infinite ease-in-out;
         }
-        
+
         @media (max-width: 600px) {
             .help-button {
                 width: 50px;
@@ -880,21 +881,21 @@
                 bottom: 20px;
                 right: 20px;
             }
-            
+
             .help-icon {
                 font-size: 1.5rem;
             }
-            
+
             .modal-content {
                 width: 95%;
             }
-            
+
             .modal-body {
                 padding: 1rem;
                 font-size: 1rem;
             }
         }
-        
+
         .game-over-actions {
             display: flex;
             gap: 1rem;
@@ -902,14 +903,14 @@
             justify-content: center;
             margin-bottom: 2rem;
         }
-        
+
         /* Styles pour les scores récents */
         .recent-scores {
             border-top: 1px solid rgba(59, 130, 246, 0.3);
             padding-top: 1.5rem;
             margin-top: 1rem;
         }
-        
+
         .recent-scores-title {
             font-family: 'MedievalSharp', cursive;
             font-size: 1.2rem;
@@ -917,13 +918,13 @@
             margin-bottom: 1rem;
             text-align: center;
         }
-        
+
         .recent-scores-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .recent-scores-list li {
             background: rgba(59, 130, 246, 0.05);
             margin-bottom: 0.75rem;
@@ -935,18 +936,18 @@
             justify-content: space-between;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .recent-scores-list li:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             border-left: 3px solid rgba(59, 130, 246, 0.7);
         }
-        
+
         .recent-scores-list .score-info {
             font-weight: 600;
             color: #93c5fd;
         }
-        
+
         .recent-scores-list .score-details {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
@@ -954,11 +955,11 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .recent-scores-list .score-date {
             font-style: italic;
         }
-        
+
         .loading-recent-scores {
             text-align: center;
             color: #3b82f6;
@@ -966,7 +967,7 @@
             font-style: italic;
             padding: 1rem;
         }
-        
+
         /* Mise à jour de la structure de la section de jeu */
         .game-sections {
             display: flex;
@@ -976,13 +977,13 @@
             margin: 0 auto;
             padding: 0 1rem;
         }
-        
+
         .gameplay-panel {
             width: 100%;
             margin: 0 auto;
             max-width: 900px;
         }
-        
+
         /* Ajustements pour l'écran de fin de jeu */
         .results-container {
             background: linear-gradient(135deg, rgba(23, 32, 57, 0.8), rgba(12, 17, 30, 0.9));
@@ -994,7 +995,7 @@
             box-shadow: 0 0 30px rgba(59, 130, 246, 0.2), inset 0 0 15px rgba(59, 130, 246, 0.1);
             margin-top: 1.5rem;
         }
-        
+
         /* Ajout d'un onglet pour basculer entre les scores récents et le leaderboard */
         .score-tabs {
             display: flex;
@@ -1002,7 +1003,7 @@
             margin-top: 2rem;
             margin-bottom: 1rem;
         }
-        
+
         .score-tab {
             padding: 0.75rem 1.5rem;
             font-family: 'MedievalSharp', cursive;
@@ -1014,33 +1015,33 @@
             transition: all 0.3s ease;
             font-size: 1.1rem;
         }
-        
+
         .score-tab.active {
             color: #3b82f6;
             border-bottom: 3px solid #3b82f6;
             font-weight: bold;
         }
-        
+
         .score-tab:hover:not(.active) {
             color: #60a5fa;
             border-bottom: 3px solid rgba(59, 130, 246, 0.3);
         }
-        
+
         .score-content {
             display: none;
             margin-top: 1rem;
         }
-        
+
         .score-content.active {
             display: block;
             animation: fadeIn 0.5s ease;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         /* Nouvelle barre de navigation inspirée de Word Bubbles */
         .game-nav {
             position: fixed;
@@ -1054,7 +1055,7 @@
             backdrop-filter: blur(5px);
             border-bottom: 1px solid rgba(59, 130, 246, 0.3);
         }
-        
+
         .game-nav-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -1063,20 +1064,20 @@
             justify-content: space-between;
             padding: 0 1.5rem;
         }
-        
+
         .game-nav-logo {
             display: flex;
             align-items: center;
             text-decoration: none;
         }
-        
+
         .game-nav-logo img {
             width: 40px;
             height: 40px;
             margin-right: 0.5rem;
             filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
         }
-        
+
         .game-nav-title {
             font-family: 'MedievalSharp', cursive;
             color: #3b82f6;
@@ -1084,13 +1085,13 @@
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
             margin: 0;
         }
-        
+
         .game-nav-links {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .game-nav-link {
             color: #d1d5db;
             text-decoration: none;
@@ -1102,12 +1103,12 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .game-nav-link:hover, .game-nav-link.active {
             color: #3b82f6;
             background: rgba(59, 130, 246, 0.1);
         }
-        
+
         .game-nav-link::after {
             content: '';
             position: absolute;
@@ -1119,16 +1120,16 @@
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
-        
+
         .game-nav-link:hover::after, .game-nav-link.active::after {
             width: 80%;
         }
-        
+
         .game-nav-link.active {
             font-weight: 600;
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
         }
-        
+
         .game-nav-home-btn {
             display: flex;
             align-items: center;
@@ -1143,34 +1144,34 @@
             font-size: 1.1rem;
             margin-right: 0.5rem;
         }
-        
+
         .game-nav-home-btn:hover {
             background: rgba(59, 130, 246, 0.2);
             transform: scale(1.1);
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
         }
-        
+
         /* Ajustement du contenu du jeu pour la barre de navigation fixe */
         .game-universe {
             padding-top: 60px; /* Espace pour la barre de navigation */
         }
-        
+
         /* Styles responsives */
         @media (max-width: 600px) {
             .game-nav-title {
                 font-size: 1rem;
             }
-            
+
             .game-nav-links {
                 gap: 0.2rem;
             }
-            
+
             .game-nav-link {
                 padding: 0.5rem 0.5rem;
                 font-size: 0.8rem;
             }
         }
-        
+
         /* Styles pour la nouvelle barre de navigation style Word Bubbles */
         .game-header {
             width: 100%;
@@ -1181,7 +1182,7 @@
             position: relative;
             z-index: 10;
         }
-        
+
         .header-content {
             width: 100%;
             max-width: 1200px;
@@ -1190,19 +1191,19 @@
             justify-content: space-between;
             padding: 0 20px;
         }
-        
+
         .logo-container {
             display: flex;
             align-items: center;
         }
-        
+
         .logo {
             height: 50px;
             width: auto;
             margin-right: 15px;
             filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
         }
-        
+
         .main-nav {
             display: flex;
             gap: 5px;
@@ -1212,7 +1213,7 @@
             border: 1px solid #3b82f6;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        
+
         .nav-link {
             font-family: 'Cinzel', serif;
             font-size: 1rem;
@@ -1228,7 +1229,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .nav-link::after {
             content: '';
             position: absolute;
@@ -1240,18 +1241,18 @@
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
-        
+
         .nav-link:hover::after,
         .nav-link.active::after {
             width: 80%;
         }
-        
+
         .nav-link:hover,
         .nav-link.active {
             color: #3b82f6;
             background: rgba(59, 130, 246, 0.1);
         }
-        
+
         .nav-icon {
             width: 18px;
             height: 18px;
@@ -1261,69 +1262,69 @@
             filter: brightness(0) invert(1);
             transition: all 0.3s ease;
         }
-        
+
         .nav-link:hover .nav-icon,
         .nav-link.active .nav-icon {
             filter: brightness(0) saturate(100%) invert(50%) sepia(70%) saturate(5000%) hue-rotate(200deg) brightness(100%) contrast(101%);
         }
-        
+
         .home-icon {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" fill="currentColor"/></svg>');
         }
-        
+
         .games-icon {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21,6H3C1.9,6 1,6.9 1,8V16C1,17.1 1.9,18 3,18H21C22.1,18 23,17.1 23,16V8C23,6.9 22.1,6 21,6M11,13H8V16H6V13H3V11H6V8H8V11H11M15.5,15C14.67,15 14,14.33 14,13.5C14,12.67 14.67,12 15.5,12C16.33,12 17,12.67 17,13.5C17,14.33 16.33,15 15.5,15M19.5,12C18.67,12 18,11.33 18,10.5C18,9.67 18.67,9 19.5,9C20.33,9 21,9.67 21,10.5C21,11.33 20.33,12 19.5,12Z" fill="currentColor"/></svg>');
         }
-        
+
         .courses-icon {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z M11,7H13V9H11V7M11,11H13V17H11V11Z" fill="currentColor"/></svg>');
         }
-        
+
         .leaderboard-icon {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.5,21H2V9H7.5M14,21H8.5V5H14M22,21H15V3H22V21Z" fill="currentColor"/></svg>');
         }
-        
+
         .contact-icon {
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z" fill="currentColor"/></svg>');
         }
-        
+
         /* Adapter l'interface principal du jeu */
         .game-interface {
             margin-top: 0;
             padding-top: 20px;
         }
-        
+
         /* Ajustements pour mobile */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             .main-nav {
                 overflow-x: auto;
                 padding: 5px 10px;
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .nav-link {
                 font-size: 0.9rem;
                 padding: 6px 10px;
             }
-            
+
             .logo {
                 height: 40px;
             }
         }
-        
+
         /* Styles pour le sous-titre du jeu */
         .game-header-content {
             text-align: center;
             width: 100%;
             margin-bottom: 2rem;
         }
-        
+
         .game-subtitle {
             font-family: 'Cinzel', serif;
             color: #e5e7eb;
@@ -1332,7 +1333,7 @@
             text-align: center;
             letter-spacing: 1px;
         }
-        
+
         .magic-text {
             color: #3b82f6;
             text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
@@ -1379,13 +1380,13 @@
         <div class="magic-particles" id="particles-js"></div>
         <div class="arcane-runes" id="arcane-runes"></div>
         <div class="enhanced-portal" id="enhanced-portal"></div>
-        
+
         <!-- Fond 3D -->
         <div id="bg-scene"></div>
-        
+
         <!-- Floating runes -->
         <div class="floating-runes"></div>
-        
+
         <!-- Game UI -->
         <main class="game-interface">
             <!-- Game header - Sous-titre centré -->
@@ -1401,7 +1402,7 @@
                         <!-- Game state: start -->
                         <div id="game-start" class="game-state active">
                             <h2 class="panel-title">Préparez Vos Incantations</h2>
-                            
+
                             <div class="difficulty-selection">
                                 <h3>Sélectionnez votre voie arcanique :</h3>
                                 <div class="difficulty-options">
@@ -1414,7 +1415,7 @@
                                             <span class="difficulty-rune">ᚠ</span>
                                         </span>
                                     </label>
-                                    
+
                                     <label class="difficulty-option">
                                         <input type="radio" name="difficulty" value="2">
                                         <span class="option-content">
@@ -1424,7 +1425,7 @@
                                             <span class="difficulty-rune">ᚦ</span>
                                         </span>
                                     </label>
-                                    
+
                                     <label class="difficulty-option">
                                         <input type="radio" name="difficulty" value="3">
                                         <span class="option-content">
@@ -1436,14 +1437,14 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <button id="start-game-btn" class="game-button primary-button glow-button">
                                 <span class="button-glow"></span>
                                 <span class="button-text">Débuter l'Épreuve</span>
                                 <span class="button-runes">ᚱᚢᚾᛖᛋ</span>
                             </button>
                         </div>
-                        
+
                         <!-- Game state: playing -->
                         <div id="game-playing" class="game-state">
                             <!-- HUD -->
@@ -1452,29 +1453,29 @@
                                     <div class="hud-label">Niveau</div>
                                     <div id="player-level" class="hud-value">1</div>
                                 </div>
-                                
+
                                 <div class="hud-item">
                                     <div class="hud-label">Essence</div>
                                     <div id="player-score" class="hud-value">0</div>
                                 </div>
-                                
+
                                 <div class="hud-item">
                                     <div class="hud-label">Temps</div>
                                     <div id="time-left" class="hud-value">90</div>
                                 </div>
-                                
+
                                 <div class="hud-item">
                                     <div class="hud-label">Multiplicateur</div>
                                     <div id="combo-multiplier" class="hud-value">x1.0</div>
                                 </div>
-                                
+
                                 <!-- Nouveau compteur de secondes chances -->
                                 <div id="second-chance-counter" class="hud-item special-hud-item" style="display: none;">
                                     <div class="hud-label">Secondes Chances</div>
                                     <div id="second-chance-count" class="hud-value">0</div>
                                 </div>
                             </div>
-                            
+
                             <!-- XP Bar -->
                             <div class="xp-bar-container">
                                 <div class="xp-bar-label">Énergie Arcanique</div>
@@ -1482,7 +1483,7 @@
                                     <div id="xp-progress" class="xp-bar-fill"></div>
                                 </div>
                             </div>
-                            
+
                             <!-- Verb challenge -->
                             <div class="verb-challenge">
                                 <div class="verb-card">
@@ -1495,14 +1496,14 @@
                                     <div id="verb-form-inputs" class="verb-inputs">
                                         <!-- Inputs will be generated based on difficulty -->
                                     </div>
-                                    
+
                                     <!-- Verb actions -->
                                     <div class="verb-actions">
                                         <button id="check-answer-btn" class="game-button action-button glow-button">
                                             <span class="button-text">Lancer le Sort</span>
                                             <span class="action-icon">✦</span>
                                         </button>
-                                        
+
                                         <button id="skip-verb-btn" class="game-button secondary-button glow-button">
                                             <span class="button-text">Bannir</span>
                                             <span class="action-icon">✧</span>
@@ -1510,21 +1511,21 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Feedback message -->
                             <div id="feedback-message" class="feedback-message"></div>
                         </div>
-                        
+
                         <!-- Game state: game over -->
                         <div id="game-over" class="game-state">
                             <h2 class="panel-title">Énergie Arcanique Épuisée</h2>
-                            
+
                             <div class="results-container">
                                 <div class="final-score">
                                     <div class="score-label">Essence Collectée</div>
                                     <div id="final-score-value" class="score-value">0</div>
                                 </div>
-                                
+
                                 <div class="stats-container">
                                     <div class="stat-item">
                                         <div class="stat-label">Niveau Atteint</div>
@@ -1535,7 +1536,7 @@
                                         <div class="stat-label">Sorts Lancés</div>
                                         <div id="verbs-completed" class="stat-value">0</div>
                                     </div>
-                                    
+
                                     <div class="stat-item">
                                         <div class="stat-label">Meilleur Combo</div>
                                         <div id="highest-combo" class="stat-value">x1.0</div>
@@ -1552,25 +1553,25 @@
                                         <span class="button-glow"></span>
                                         <span class="button-text">Inscrire mon score</span>
                                     </button>
-                                    
+
                                     <button id="play-again-btn" class="game-button secondary-button glow-button">
                                         <span class="button-text">Nouveau Rituel</span>
                                     </button>
                                 </div>
-                                
+
                                 <!-- Onglets pour les scores récents et le leaderboard -->
                                 <div class="score-tabs">
                                     <button class="score-tab active" data-tab="recent">Mes scores récents</button>
                                     <button class="score-tab" data-tab="leaderboard">Légendes Arcaniques</button>
                                 </div>
-                                
+
                                 <!-- Contenu des onglets -->
                                 <div id="recent-scores-content" class="score-content active">
                                     <ul id="recent-scores-list" class="recent-scores-list">
                                         <li class="loading-recent-scores">Chargement de vos scores récents...</li>
                                     </ul>
                                 </div>
-                                
+
                                 <div id="leaderboard-content" class="score-content">
                                     <div class="leaderboard-scroll">
                                         <table class="leaderboard-table">
@@ -1597,16 +1598,16 @@
                 </section>
             </div>
         </main>
-        
+
         <!-- 3D Floating Objects -->
         <div id="floating-objects-container"></div>
-        
+
         <!-- Achievement notifications -->
         <div id="achievements-container"></div>
-        
+
         <!-- Particle effects container -->
         <div id="particles-container"></div>
-        
+
         <!-- Magic portal effect -->
         <div id="magic-portal"></div>
     </div>
@@ -1634,7 +1635,7 @@
         function createFloatingRunes() {
             const runeContainer = document.getElementById('arcane-runes');
             const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛞ', 'ᛟ'];
-            
+
             for (let i = 0; i < 20; i++) {
                 const rune = document.createElement('div');
                 rune.className = 'rune';
@@ -1646,7 +1647,7 @@
                 runeContainer.appendChild(rune);
             }
         }
-        
+
         // Initialiser les particules
         function initParticles() {
             particlesJS('particles-js', {
@@ -1755,33 +1756,33 @@
                 "retina_detect": true
             });
         }
-        
+
         // Ajouter des effets 3D aux cartes
         function enhance3DCards() {
             const cards = document.querySelectorAll('.depth-card');
-            
+
             // Désactivation de l'effet de mouvement au survol de la souris
             // Les cartes restent statiques pour une meilleure expérience utilisateur
             cards.forEach(card => {
                 // Suppression des écouteurs d'événements qui causent le mouvement
                 card.removeEventListener('mousemove', null);
                 card.removeEventListener('mouseleave', null);
-                
+
                 // Réinitialisation de la transformation pour s'assurer qu'il n'y a pas d'effet résiduel
                 card.style.transform = 'none';
             });
         }
-        
+
         // Initialiser les effets visuels améliorés
         document.addEventListener('DOMContentLoaded', function() {
             createFloatingRunes();
             initParticles();
             enhance3DCards();
-            
+
             // Ajouter des écouteurs d'événements pour les effets spéciaux
             const startButton = document.getElementById('start-game-btn');
             const portal = document.getElementById('enhanced-portal');
-            
+
             if (startButton && portal) {
                 startButton.addEventListener('click', function() {
                     portal.classList.add('active');
@@ -1792,10 +1793,10 @@
             }
         });
     </script>
-    
+
     <!-- Script pour les effets améliorés -->
     <script src="src/js/enhanced-effects.js"></script>
-    
+
     <!-- Script pour améliorer le défilement sur mobile -->
     <script>
         // Améliorer le défilement sur mobile
@@ -1809,13 +1810,13 @@
                         this.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 300);
                 });
-                
+
                 // Ajouter un padding supplémentaire pour les inputs sur mobile
                 if (window.innerWidth <= 768) {
                     input.style.fontSize = '16px'; // Empêcher le zoom automatique sur iOS
                 }
             });
-            
+
             // Empêcher le zoom sur double-tap pour les boutons
             const buttons = document.querySelectorAll('button');
             buttons.forEach(button => {
@@ -1827,24 +1828,24 @@
                     }, 10);
                 }, { passive: false });
             });
-            
+
             // Améliorer le défilement des panneaux de jeu
             const gamePanel = document.querySelector('.game-panel');
             if (gamePanel && window.innerWidth <= 768) {
                 gamePanel.style.overflowY = 'auto';
                 gamePanel.style.webkitOverflowScrolling = 'touch'; // Défilement fluide sur iOS
             }
-            
+
             // Ajuster la hauteur de la vue sur mobile pour éviter les problèmes avec la barre d'adresse
             function adjustViewportHeight() {
                 const vh = window.innerHeight * 0.01;
                 document.documentElement.style.setProperty('--vh', `${vh}px`);
             }
-            
+
             // Appeler la fonction au chargement et au redimensionnement
             adjustViewportHeight();
             window.addEventListener('resize', adjustViewportHeight);
-            
+
             // Afficher la modale des règles après un court délai pour s'assurer que tout est chargé
             setTimeout(function() {
                 const rulesModal = document.getElementById('rulesModal');
@@ -1871,10 +1872,10 @@
             </div>
             <div class="modal-body">
                 <p><span class="drop-cap">B</span>rave lanceur de sorts, vous vous tenez devant l'<span class="highlight-text">Épreuve des Verbes</span>, un défi ancestral qui a mis à l'épreuve les plus dignes linguistes arcanes depuis des éons.</p>
-                
+
                 <h3>Votre Mission</h3>
                 <p>Conjuguez correctement les sorts de verbes qui apparaissent depuis le portail arcanique. Chaque incantation correcte renforce vos pouvoirs magiques et vous rapporte des points d'essence.</p>
-                
+
                 <h3>Les Règles</h3>
                 <ul class="rules-list">
                     <li class="rule-item">
@@ -1884,7 +1885,7 @@
                             <p>Votre magie ne dure que <span class="highlight-text">90 secondes</span>. Utilisez-les sagement.</p>
                         </div>
                     </li>
-                    
+
                     <li class="rule-item">
                         <span class="rule-icon animated-icon">🎯</span>
                         <div class="rule-content">
@@ -1909,7 +1910,7 @@
                             </ul>
                         </div>
                     </li>
-                    
+
                     <li class="rule-item">
                         <span class="rule-icon animated-icon">🔄</span>
                         <div class="rule-content">
@@ -1918,7 +1919,7 @@
                         </div>
                     </li>
                 </ul>
-                
+
                 <h3>Comment jouer</h3>
                 <ul>
                     <li>Un verbe à l'infinitif s'affiche au centre</li>
@@ -1926,11 +1927,11 @@
                     <li>Utilisez TAB pour passer d'un champ à l'autre</li>
                     <li>Validez avec ENTRÉE pour passer au verbe suivant</li>
                 </ul>
-                
+
                 <h3>Récompenses</h3>
                 <p>Enchaînez les sorts corrects pour construire des <span class="highlight-text">combos arcaniques</span> ! Chaque incantation correcte consécutive amplifie votre multiplicateur d'essence.</p>
                 <p>Montez en niveau pour prolonger votre temps et débloquer des <span class="highlight-text">capacités spéciales</span> !</p>
-                
+
                 <div class="special-powers">
                     <div class="power-item">
                         <div class="power-icon">🔮</div>
@@ -1969,7 +1970,7 @@
     <button id="help-button" class="help-button" onclick="const rulesModal = document.getElementById('rulesModal'); rulesModal.classList.add('show'); rulesModal.style.display = 'flex'; rulesModal.style.opacity = '1'; rulesModal.style.visibility = 'visible'; rulesModal.style.zIndex = '9999';">
         <span class="help-icon">?</span>
     </button>
-    
+
     <!-- Script final pour garantir l'affichage de la modale -->
     <script>
         // Afficher la modale des règles avec un délai pour s'assurer que tout est bien chargé
@@ -1985,7 +1986,7 @@
                     rulesModal.style.zIndex = '9999';
                 }
             }, 1000);
-            
+
             // Gestion des onglets de scores
             document.querySelectorAll('.score-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
@@ -1993,20 +1994,20 @@
                     document.querySelectorAll('.score-tab').forEach(t => t.classList.remove('active'));
                     // Ajouter la classe active à l'onglet cliqué
                     this.classList.add('active');
-                    
+
                     // Cacher tous les contenus d'onglet
                     document.querySelectorAll('.score-content').forEach(content => content.classList.remove('active'));
                     // Afficher le contenu correspondant à l'onglet
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId + '-scores-content').classList.add('active');
-                    
+
                     // Si l'onglet leaderboard est activé, forcer le rechargement du tableau des scores
                     if (tabId === 'leaderboard' && typeof loadTopScores === 'function') {
                         loadTopScores();
                     }
                 });
             });
-            
+
             // Observer les changements d'affichage de l'écran de fin de jeu
             const gameOverObserver = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
@@ -2027,14 +2028,14 @@
                     }
                 });
             });
-            
+
             const gameOver = document.getElementById('game-over');
             if (gameOver) {
                 gameOverObserver.observe(gameOver, { attributes: true });
             }
         };
     </script>
-    
+
     <!-- Ajout d'un script de secours pour le chargement des top scores -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2043,19 +2044,19 @@
                 window.loadTopScores = function() {
                     console.log("Chargement des meilleurs scores...");
                     const leaderboardBody = document.getElementById('leaderboard-body');
-                    
+
                     if (!leaderboardBody) {
                         console.error("Le tableau des scores n'a pas été trouvé");
                         return;
                     }
-                    
+
                     // Afficher un message de chargement
                     leaderboardBody.innerHTML = '<tr class="loading-row"><td colspan="4"><span class="loading-text">Invocation des archives ancestrales<span class="loading-dots">...</span></span></td></tr>';
-                    
+
                     // Vérifier si Firebase est disponible
                     if (typeof firebase !== 'undefined' && firebase.firestore) {
                         const db = firebase.firestore();
-                        
+
                         db.collection("speed-verb-scores")
                             .orderBy("score", "desc")
                             .limit(10)
@@ -2065,14 +2066,14 @@
                                     leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Aucun score trouvé. Soyez le premier à inscrire votre nom !</td></tr>';
                                     return;
                                 }
-                                
+
                                 let html = '';
                                 let rank = 1;
-                                
+
                                 querySnapshot.forEach((doc) => {
                                     const data = doc.data();
                                     const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Date inconnue';
-                                    
+
                                     html += `
                                     <tr>
                                         <td class="rank-cell">${rank}</td>
@@ -2083,7 +2084,7 @@
                                     `;
                                     rank++;
                                 });
-                                
+
                                 leaderboardBody.innerHTML = html;
                             })
                             .catch((error) => {
@@ -2096,7 +2097,7 @@
                     }
                 };
             }
-            
+
             // Surveiller l'état du jeu
             const checkGameOver = setInterval(function() {
                 const gameOver = document.getElementById('game-over');
