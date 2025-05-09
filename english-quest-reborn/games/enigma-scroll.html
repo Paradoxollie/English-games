@@ -923,27 +923,30 @@
       transform: scale(1.1);
     }
 
-    /* Styles pour les modales */
+    /* Styles pour les modales - complètement désactivés */
     .modal {
-      display: none !important; /* Utiliser !important pour s'assurer que le style est appliqué */
+      display: none !important;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
-      z-index: 2000; /* S'assurer que la modale est au-dessus de tout */
+      z-index: -9999 !important; /* Mettre un z-index négatif pour s'assurer qu'il est en dessous de tout */
       align-items: center;
       justify-content: center;
-      opacity: 0 !important; /* Utiliser !important pour s'assurer que le style est appliqué */
-      transition: opacity 0.3s ease;
-      visibility: hidden; /* Ajouter visibility: hidden pour s'assurer que la modale est invisible */
+      opacity: 0 !important;
+      transition: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important; /* Empêcher toute interaction */
     }
 
     .modal.show {
-      display: flex !important; /* Utiliser !important pour s'assurer que le style est appliqué */
-      opacity: 1 !important; /* Utiliser !important pour s'assurer que le style est appliqué */
-      visibility: visible !important; /* Utiliser !important pour s'assurer que le style est appliqué */
+      display: none !important; /* Forcer à rester caché même avec la classe show */
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      z-index: -9999 !important;
     }
 
     .modal-content {
@@ -1819,16 +1822,71 @@
   <script src="../src/js/enigma-scroll/enigma-scroll.js"></script>
   <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
 
-  <!-- Script pour la nouvelle modale des règles -->
+  <!-- Script pour corriger les problèmes d'interaction avec la page -->
   <script>
-    // Script qui s'exécute immédiatement pour s'assurer que la modale des règles est masquée
+    // Script qui s'exécute immédiatement pour restaurer l'interaction avec la page
     (function() {
+      // Fonction pour supprimer complètement tous les effets de modale
+      function fixPageInteraction() {
+        console.log("Correction de l'interaction avec la page");
+
+        // Supprimer tout effet de flou sur le body ou les conteneurs principaux
+        document.body.style.filter = 'none';
+        document.body.style.backdropFilter = 'none';
+        document.body.style.WebkitBackdropFilter = 'none';
+        document.body.style.pointerEvents = 'auto';
+
+        // Masquer toutes les modales et overlays
+        var modals = document.querySelectorAll('.modal, .rules-modal, #rulesModal, #enigmaRulesModal');
+        modals.forEach(function(modal) {
+          if (modal) {
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            modal.style.pointerEvents = 'none';
+            modal.style.zIndex = '-9999';
+            modal.classList.remove('show');
+
+            // Supprimer complètement la modale du DOM si nécessaire
+            // modal.parentNode.removeChild(modal);
+          }
+        });
+
+        // Supprimer tout overlay potentiel
+        var overlays = document.querySelectorAll('.modal-backdrop, .overlay');
+        overlays.forEach(function(overlay) {
+          if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            overlay.style.pointerEvents = 'none';
+            overlay.style.zIndex = '-9999';
+
+            // Supprimer complètement l'overlay du DOM si nécessaire
+            // overlay.parentNode.removeChild(overlay);
+          }
+        });
+      }
+
+      // Exécuter immédiatement
+      fixPageInteraction();
+
+      // Exécuter à nouveau après un court délai pour s'assurer que tout est bien corrigé
+      setTimeout(fixPageInteraction, 100);
+      setTimeout(fixPageInteraction, 500);
+      setTimeout(fixPageInteraction, 1000);
+
+      // Exécuter également au chargement complet de la page
+      window.addEventListener('load', fixPageInteraction);
+
       // Masquer immédiatement la nouvelle modale des règles
       var enigmaRulesModal = document.getElementById('enigmaRulesModal');
       if (enigmaRulesModal) {
         enigmaRulesModal.style.display = 'none';
         enigmaRulesModal.style.opacity = '0';
         enigmaRulesModal.style.visibility = 'hidden';
+        enigmaRulesModal.style.pointerEvents = 'none';
+        enigmaRulesModal.style.zIndex = '-9999';
       }
 
       // Masquer également l'ancienne modale des règles
@@ -1838,6 +1896,7 @@
         oldRulesModal.style.opacity = '0';
         oldRulesModal.style.visibility = 'hidden';
         oldRulesModal.style.pointerEvents = 'none';
+        oldRulesModal.style.zIndex = '-9999';
       }
     })();
   </script>

@@ -255,11 +255,24 @@ const GameUI = {
   },
 
   /**
-   * Affiche la modale des règles (redirection vers la nouvelle modale)
+   * Affiche la modale des règles (désactivée pour éviter les problèmes)
    */
   showRulesModal: function() {
-    // Rediriger vers la nouvelle fonction showEnigmaRules
-    console.log("Redirection vers showEnigmaRules");
+    // Ne rien faire au chargement de la page
+    if (document.readyState !== 'complete') {
+      console.log("Tentative d'affichage de la modale des règles pendant le chargement - ignorée");
+      return;
+    }
+
+    // Vérifier si l'appel vient du chargement initial de la page
+    var stackTrace = new Error().stack || '';
+    if (stackTrace.includes('DOMContentLoaded') || stackTrace.includes('onload')) {
+      console.log("Tentative d'affichage automatique de la modale des règles - ignorée");
+      return;
+    }
+
+    // Uniquement si l'utilisateur a explicitement cliqué sur un bouton
+    console.log("Affichage de la modale des règles via showEnigmaRules (clic utilisateur)");
     if (typeof window.showEnigmaRules === 'function') {
       window.showEnigmaRules();
     } else {
