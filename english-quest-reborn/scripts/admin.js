@@ -6,6 +6,26 @@
 // Liste des administrateurs (noms d'utilisateur)
 const ADMIN_USERNAMES = ['Ollie', 'Admin'];
 
+// Clé pour le stockage des utilisateurs dans localStorage
+const USERS_STORAGE_KEY = 'english_quest_users';
+
+// Récupérer tous les utilisateurs
+function getUsers() {
+  // Utiliser la clé correcte pour récupérer les utilisateurs
+  const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
+  console.log("Récupération des utilisateurs avec la clé:", USERS_STORAGE_KEY);
+  console.log("Données brutes:", usersJson);
+  const users = usersJson ? JSON.parse(usersJson) : {};
+  console.log("Utilisateurs récupérés:", users);
+  return users;
+}
+
+// Sauvegarder tous les utilisateurs
+function saveUsers(users) {
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  console.log("Utilisateurs sauvegardés avec la clé:", USERS_STORAGE_KEY);
+}
+
 // Vérifier si l'utilisateur est un administrateur
 function isAdmin(username) {
   return ADMIN_USERNAMES.includes(username);
@@ -169,14 +189,20 @@ function initAdminTools() {
 
 // Charger la liste des utilisateurs
 function loadUsersList(searchTerm = '') {
+  console.log("Chargement de la liste des utilisateurs...");
   const usersListContainer = document.getElementById('users-list');
 
   if (!usersListContainer) {
+    console.error("Conteneur de liste d'utilisateurs non trouvé");
     return;
   }
 
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
+  // Récupérer tous les utilisateurs en utilisant la bonne clé de stockage
+  const usersJson = localStorage.getItem('english_quest_users');
+  console.log("Données utilisateurs brutes:", usersJson);
+
+  const users = usersJson ? JSON.parse(usersJson) : {};
+  console.log("Utilisateurs chargés:", users);
 
   // Filtrer les utilisateurs si un terme de recherche est fourni
   const filteredUsers = Object.values(users).filter(user => {
@@ -187,16 +213,30 @@ function loadUsersList(searchTerm = '') {
     return user.username.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  console.log("Utilisateurs filtrés:", filteredUsers);
+
   // Vider le conteneur
   usersListContainer.innerHTML = '';
 
-  // Si aucun utilisateur, afficher un message
+  // Si aucun utilisateur, afficher un message détaillé
   if (filteredUsers.length === 0) {
     usersListContainer.innerHTML = `
       <div class="empty-users">
         <p>Aucun utilisateur trouvé.</p>
+        <p class="debug-info">Vérifiez la console pour plus d'informations.</p>
+        <button id="create-test-user" class="btn btn-primary">Créer un utilisateur de test</button>
       </div>
     `;
+
+    // Ajouter un écouteur d'événement pour le bouton de création d'utilisateur de test
+    const createTestUserBtn = document.getElementById('create-test-user');
+    if (createTestUserBtn) {
+      createTestUserBtn.addEventListener('click', function() {
+        createTestUser();
+        loadUsersList(); // Recharger la liste après la création
+      });
+    }
+
     return;
   }
 
@@ -920,4 +960,74 @@ document.addEventListener('DOMContentLoaded', function() {
   `;
 
   document.head.appendChild(style);
+});
+
+// Créer un utilisateur de test pour le débogage
+function createTestUser() {
+  console.log("Création d'un utilisateur de test...");
+
+  // Récupérer les utilisateurs existants
+  const users = getUsers();
+
+  // Créer un utilisateur de test
+  const testUser = {
+    username: "TestUser" + Math.floor(Math.random() * 1000),
+    xp: 100,
+    level: 1,
+    gold: 500,
+    coins: 500,
+    inventory: {
+      heads: ["default-boy", "default-girl"],
+      bodies: ["default-boy", "default-boy"]
+    },
+    selectedSkin: {
+      head: "default-boy",
+      body: "default-boy"
+    },
+    registrationDate: new Date().toISOString(),
+    lastLogin: new Date().toISOString()
+  };
+
+  // Ajouter l'utilisateur à la liste
+  users[testUser.username] = testUser;
+
+  // Sauvegarder les utilisateurs
+  saveUsers(users);
+
+  console.log("Utilisateur de test créé:", testUser);
+  alert("Utilisateur de test créé: " + testUser.username);
+
+  return testUser;
+}
+
+// Initialiser le module d'administration
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("Initialisation du module d'administration...");
+
+  // Vérifier si l'utilisateur est connecté
+  const currentUser = getCurrentUser();
+  console.log("Utilisateur actuel:", currentUser);
+
+  if (currentUser && isAdmin(currentUser.username)) {
+    console.log('Utilisateur administrateur détecté:', currentUser.username);
+
+    // Ajouter le badge d'administrateur
+    addAdminBadge();
+
+    // Ajouter l'onglet d'administration
+    addAdminTab();
+
+    // Débloquer tous les skins pour l'administrateur
+    unlockAllSkins();
+
+    // Charger la liste des utilisateurs après un court délai
+    setTimeout(function() {
+      if (document.getElementById('admin-tab-content') &&
+          document.getElementById('admin-tab-content').style.display === 'block') {
+        loadUsersList();
+      }
+    }, 500);
+  } else {
+    console.log("L'utilisateur n'est pas un administrateur ou n'est pas connecté");
+  }
 });
