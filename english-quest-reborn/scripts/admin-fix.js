@@ -827,7 +827,7 @@ async function unlockAllSkins() {
     // Vérifier si les skins sont déjà débloqués
     if (currentUser.hasAllSkins && currentUser.skinsUnlocked) {
       console.log("Les skins sont déjà débloqués pour cet utilisateur");
-      alert("Les skins sont déjà débloqués pour cet utilisateur.");
+      console.log("Aucune action nécessaire");
       return;
     }
 
@@ -861,16 +861,14 @@ async function unlockAllSkins() {
       }
     }
 
-    // Afficher un message de confirmation
-    alert("Tous les skins ont été débloqués avec succès. La page va être rechargée pour appliquer les changements.");
+    console.log("Tous les skins ont été débloqués avec succès");
 
-    // Recharger la page pour appliquer les changements
-    setTimeout(function() {
-      window.location.reload();
-    }, 1000);
+    // Mettre à jour l'interface utilisateur sans recharger la page
+    if (typeof updateAvatarCatalog === 'function') {
+      updateAvatarCatalog();
+    }
   } catch (error) {
     console.error("Erreur lors du débloquage des skins:", error);
-    alert("Erreur lors du débloquage des skins: " + error.message);
   }
 }
 
