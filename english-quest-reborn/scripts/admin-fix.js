@@ -79,6 +79,7 @@ function forceOllieAdmin() {
         }
       }
 
+      console.log("Privilèges administrateur forcés avec succès pour Ollie");
       return true;
     } else {
       console.log("L'utilisateur courant n'est pas Ollie");
@@ -323,6 +324,9 @@ function getAllUsers() {
   }
 }
 
+// Variable pour suivre si l'onglet d'administration a déjà été ajouté
+let adminTabAdded = false;
+
 // Ajouter un bouton de débogage pour forcer les privilèges administrateur
 document.addEventListener('DOMContentLoaded', function() {
   console.log("Initialisation du script admin-fix.js...");
@@ -349,37 +353,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Ajouter l'écouteur d'événement
     debugButton.addEventListener('click', function() {
-      if (forceOllieAdmin()) {
-        // Ajouter l'onglet d'administration directement
-        addAdminTabDirectly();
-
-        // Recharger la page après un court délai
-        setTimeout(function() {
-          window.location.reload();
-        }, 1000);
-      }
+      forceOllieAdmin();
+      // Ajouter l'onglet d'administration directement sans recharger la page
+      addAdminTabDirectly();
     });
 
     // Ajouter le bouton au document
     document.body.appendChild(debugButton);
 
-    // Exécuter automatiquement la fonction si l'utilisateur est Ollie
-    setTimeout(function() {
-      if (forceOllieAdmin()) {
+    // Vérifier si l'onglet d'administration existe déjà
+    if (!document.querySelector('.profile-tab[data-tab="admin"]')) {
+      // Exécuter automatiquement la fonction si l'utilisateur est Ollie
+      setTimeout(function() {
+        forceOllieAdmin();
         // Ajouter l'onglet d'administration directement
         addAdminTabDirectly();
-      }
-    }, 1000);
+      }, 1000);
+    }
   }
 });
 
-// Exécuter la fonction immédiatement
-if (forceOllieAdmin()) {
+// Exécuter la fonction une seule fois au chargement initial
+if (!adminTabAdded) {
+  adminTabAdded = true;
+
+  // Forcer les privilèges administrateur sans recharger la page
+  forceOllieAdmin();
+
   // Attendre que le DOM soit chargé
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addAdminTabDirectly);
+    document.addEventListener('DOMContentLoaded', function() {
+      // Vérifier si l'onglet d'administration existe déjà
+      if (!document.querySelector('.profile-tab[data-tab="admin"]')) {
+        addAdminTabDirectly();
+      }
+    });
   } else {
     // Le DOM est déjà chargé
-    setTimeout(addAdminTabDirectly, 500);
+    // Vérifier si l'onglet d'administration existe déjà
+    if (!document.querySelector('.profile-tab[data-tab="admin"]')) {
+      setTimeout(addAdminTabDirectly, 500);
+    }
   }
 }
