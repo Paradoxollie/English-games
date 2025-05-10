@@ -1,0 +1,116 @@
+/* Styles pour les événements de jeu */
+
+/* Notification d'événement */
+.event-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.event-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.event-notification.bonus {
+    border: 3px solid #2ecc71;
+}
+
+.event-notification.challenge {
+    border: 3px solid #e74c3c;
+}
+
+.event-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+}
+
+.event-content {
+    color: #fff;
+}
+
+.event-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.event-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: #ccc;
+}
+
+/* Timer d'événement */
+.event-timer {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 900;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.event-timer .time-left {
+    margin-left: 10px;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* Animation de pulsation pour les événements */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.event-timer {
+    animation: pulse 1s infinite;
+}
+
+/* Styles spécifiques pour les différents types d'événements */
+.double-points-active .score-display {
+    color: #2ecc71 !important;
+    animation: pulse 1s infinite;
+}
+
+.combo-boost-active .combo-display {
+    color: #3498db !important;
+    animation: pulse 1s infinite;
+}
+
+.time-pressure-active .time-display {
+    color: #e74c3c !important;
+    animation: pulse 1s infinite;
+}
+
+.verb-rush-active .verb-display {
+    color: #f39c12 !important;
+    animation: pulse 1s infinite;
+}

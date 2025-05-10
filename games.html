@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeux - English Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/new-design.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+      <button class="menu-toggle">☰</button>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link active">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+      <div class="user-menu">
+        <a href="auth.html" class="btn-login">Connexion</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">
+        <span class="text-gradient">JEUX ÉDUCATIFS</span>
+      </h1>
+      <p class="hero-subtitle">Améliorez votre anglais en vous amusant avec nos jeux interactifs</p>
+    </div>
+  </section>
+
+  <!-- Games Section -->
+  <section class="section" style="background-color: #1a1a1a; padding-top: 5rem; padding-bottom: 5rem; opacity: 1 !important; visibility: visible !important; display: block !important;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title text-gradient">Tous nos jeux</h2>
+        <p class="section-subtitle">Choisissez parmi notre collection de jeux éducatifs pour améliorer votre anglais</p>
+      </div>
+
+      <div class="games-grid" style="opacity: 1 !important; visibility: visible !important; display: grid !important;">
+        <!-- Featured Game -->
+        <div class="featured-game">
+          <div class="featured-game-image">
+            <img src="assets/icons/speed-challenge.webp" alt="Speed Verb Challenge" onerror="this.onerror=null; console.log('Erreur de chargement de l\'image: ' + this.src);">
+            <div class="game-difficulty difficulty-legendary">Légendaire</div>
+          </div>
+          <div class="featured-game-content">
+            <span class="featured-badge">Jeu Vedette</span>
+            <h3 class="featured-game-title">Speed Verb Challenge</h3>
+            <p class="featured-game-description">Testez votre connaissance des verbes irréguliers anglais dans une course contre la montre. Répondez rapidement et avec précision pour grimper dans le classement mondial.</p>
+            <div class="featured-game-tags">
+              <span class="game-tag">Verbes</span>
+              <span class="game-tag">Rapidité</span>
+              <span class="game-tag">Grammaire</span>
+              <span class="game-tag">Compétitif</span>
+            </div>
+            <div class="featured-game-footer">
+              <a href="games/speed-verb-challenge.html" class="btn-play" style="background-color: var(--color-primary);">Jouer maintenant <i class="fas fa-play"></i></a>
+              <div class="game-stats">
+                <div class="game-stat">
+                  <i class="fas fa-users game-stat-icon" style="color: var(--color-primary);"></i>
+                  <span>1.2K joueurs</span>
+                </div>
+                <div class="game-stat">
+                  <i class="fas fa-star game-stat-icon" style="color: var(--color-primary);"></i>
+                  <span>4.8/5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Cards -->
+        <div class="game-card">
+          <div class="game-image">
+            <img src="assets/icons/word-memory-game.webp" alt="Word Memory Game">
+            <div class="game-difficulty difficulty-intermediate">Intermédiaire</div>
+          </div>
+          <div class="game-content">
+            <h3 class="game-title">Word Memory Game</h3>
+            <p class="game-description">Entraînez votre mémoire en associant des paires de mots anglais et leurs significations.</p>
+            <div class="game-tags">
+              <span class="game-tag">Vocabulaire</span>
+              <span class="game-tag">Mémoire</span>
+            </div>
+            <div class="game-footer">
+              <a href="games/word-memory-game.html" class="btn-play" style="background-color: var(--color-primary);">Jouer <i class="fas fa-play"></i></a>
+              <div class="game-stats">
+                <div class="game-stat">
+                  <i class="fas fa-users game-stat-icon" style="color: var(--color-primary);"></i>
+                  <span>950</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-image">
+            <img src="assets/icons/matrix-game.webp" alt="Memory Matrix">
+            <div class="game-difficulty difficulty-hard">Difficile</div>
+          </div>
+          <div class="game-content">
+            <h3 class="game-title">Memory Matrix</h3>
+            <p class="game-description">Mémorisez des motifs complexes et testez votre mémoire spatiale tout en apprenant de nouveaux mots.</p>
+            <div class="game-tags">
+              <span class="game-tag">Mémoire</span>
+              <span class="game-tag">Concentration</span>
+            </div>
+            <div class="game-footer">
+              <a href="games/memory-matrix.html" class="btn-play" style="background-color: var(--color-primary);">Jouer <i class="fas fa-play"></i></a>
+              <div class="game-stats">
+                <div class="game-stat">
+                  <i class="fas fa-users game-stat-icon" style="color: var(--color-primary);"></i>
+                  <span>820</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="container">
+      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-discord"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
+            <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
+            <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
+            <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
+            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Contact</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Support</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Nous contacter</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+        <p>&copy; 2023 English Quest - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script src="scripts/local-auth.js"></script>
+  <script src="scripts/debug.js"></script>
+</body>
+</html>

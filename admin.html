@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - English Quest</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/admin.css">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="new-index.html">
+                    <img src="assets/images/logo.svg" alt="English Quest Logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="new-index.html">Accueil</a></li>
+                    <li><a href="games.html">Jeux</a></li>
+                    <li><a href="courses.html">Cours</a></li>
+                    <li><a href="gallery.html">Galerie</a></li>
+                    <li><a href="profile.html">Profil</a></li>
+                    <li class="active"><a href="admin.html">Admin</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <div class="user-info">
+                    <span class="username">Non connecté</span>
+                    <div class="user-avatar">
+                        <img src="assets/images/avatars/default_boy.svg" alt="Avatar">
+                    </div>
+                </div>
+                <div class="user-dropdown">
+                    <a href="profile.html">Mon profil</a>
+                    <a href="#" id="logout-button">Déconnexion</a>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero admin-hero">
+            <div class="container">
+                <h1>Panneau d'administration</h1>
+                <p>Gérez les utilisateurs, les scores et les statistiques du site</p>
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <div class="container">
+                <div class="admin-access-denied hidden">
+                    <h2>Accès refusé</h2>
+                    <p>Vous n'avez pas les droits d'administrateur nécessaires pour accéder à cette page.</p>
+                    <a href="new-index.html" class="btn btn-primary">Retour à l'accueil</a>
+                </div>
+
+                <div class="admin-content">
+                    <div class="admin-tabs">
+                        <button class="tab-button active" data-tab="users">Utilisateurs</button>
+                        <button class="tab-button" data-tab="scores">Scores</button>
+                        <button class="tab-button" data-tab="stats">Statistiques</button>
+                        <button class="tab-button" data-tab="tools">Outils</button>
+                    </div>
+
+                    <div class="tab-content active" id="users-tab">
+                        <div class="admin-controls">
+                            <div class="search-box">
+                                <input type="text" id="user-search" placeholder="Rechercher un utilisateur...">
+                                <button id="user-search-button">Rechercher</button>
+                            </div>
+                            <div class="filter-options">
+                                <label>
+                                    <input type="checkbox" id="show-admins-only">
+                                    Administrateurs uniquement
+                                </label>
+                            </div>
+                            <div class="refresh-button">
+                                <button id="refresh-users-button" class="btn btn-secondary">Actualiser</button>
+                            </div>
+                        </div>
+
+                        <div class="users-table-container">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom d'utilisateur</th>
+                                        <th>Niveau</th>
+                                        <th>XP</th>
+                                        <th>Pièces</th>
+                                        <th>Admin</th>
+                                        <th>Dernière connexion</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <!-- Les utilisateurs seront ajoutés ici dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="loading-indicator" id="users-loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des utilisateurs...</p>
+                        </div>
+
+                        <div class="error-message" id="users-error">
+                            <p>Une erreur s'est produite lors du chargement des utilisateurs.</p>
+                            <button class="btn btn-secondary" id="retry-users-button">Réessayer</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="scores-tab">
+                        <div class="admin-controls">
+                            <div class="game-selector">
+                                <label for="game-select">Jeu:</label>
+                                <select id="game-select">
+                                    <option value="speed_verb_challenge">Speed Verb Challenge</option>
+                                    <option value="enigma_scroll">Enigma Scroll</option>
+                                </select>
+                            </div>
+                            <div class="search-box">
+                                <input type="text" id="score-search" placeholder="Rechercher un joueur...">
+                                <button id="score-search-button">Rechercher</button>
+                            </div>
+                            <div class="refresh-button">
+                                <button id="refresh-scores-button" class="btn btn-secondary">Actualiser</button>
+                            </div>
+                        </div>
+
+                        <div class="scores-table-container">
+                            <table class="scores-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Joueur</th>
+                                        <th>Score</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scores-table-body">
+                                    <!-- Les scores seront ajoutés ici dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="loading-indicator" id="scores-loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des scores...</p>
+                        </div>
+
+                        <div class="error-message" id="scores-error">
+                            <p>Une erreur s'est produite lors du chargement des scores.</p>
+                            <button class="btn btn-secondary" id="retry-scores-button">Réessayer</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="stats-tab">
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <h3>Utilisateurs</h3>
+                                <div class="stat-value" id="user-count">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Scores enregistrés</h3>
+                                <div class="stat-value" id="score-count">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>XP totale</h3>
+                                <div class="stat-value" id="total-xp">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Pièces totales</h3>
+                                <div class="stat-value" id="total-coins">0</div>
+                            </div>
+                        </div>
+
+                        <div class="refresh-button">
+                            <button id="refresh-stats-button" class="btn btn-secondary">Actualiser</button>
+                        </div>
+
+                        <div class="loading-indicator" id="stats-loading">
+                            <div class="spinner"></div>
+                            <p>Chargement des statistiques...</p>
+                        </div>
+
+                        <div class="error-message" id="stats-error">
+                            <p>Une erreur s'est produite lors du chargement des statistiques.</p>
+                            <button class="btn btn-secondary" id="retry-stats-button">Réessayer</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="tools-tab">
+                        <div class="admin-tools">
+                            <div class="tool-card">
+                                <h3>Migration des données</h3>
+                                <p>Migrer les données des anciennes collections vers les nouvelles.</p>
+                                <button id="migrate-data-button" class="btn btn-primary">Lancer la migration</button>
+                            </div>
+                            <div class="tool-card">
+                                <h3>Vérification des données</h3>
+                                <p>Vérifier et corriger les incohérences dans les données utilisateur.</p>
+                                <button id="check-data-button" class="btn btn-primary">Vérifier les données</button>
+                            </div>
+                            <div class="tool-card">
+                                <h3>Réinitialisation des droits d'administrateur</h3>
+                                <p>S'assurer que seul Ollie a des droits d'administrateur.</p>
+                                <button id="reset-admin-rights-button" class="btn btn-danger">Réinitialiser</button>
+                            </div>
+                        </div>
+
+                        <div class="tool-result" id="tool-result">
+                            <h3>Résultat</h3>
+                            <pre id="tool-result-content"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/images/logo.svg" alt="English Quest Logo">
+                </div>
+                <div class="footer-links">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="new-index.html">Accueil</a></li>
+                        <li><a href="games.html">Jeux</a></li>
+                        <li><a href="courses.html">Cours</a></li>
+                        <li><a href="gallery.html">Galerie</a></li>
+                        <li><a href="profile.html">Profil</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Contact</h3>
+                    <p>Pour toute question ou suggestion, n'hésitez pas à nous contacter.</p>
+                    <a href="contact.html" class="btn btn-secondary">Contact</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 English Quest. Tous droits réservés.</p>
+                <div class="footer-legal">
+                    <a href="privacy.html">Politique de confidentialité</a>
+                    <a href="terms.html">Conditions d'utilisation</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal" id="edit-user-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Modifier l'utilisateur</h2>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label for="edit-username">Nom d'utilisateur</label>
+                    <input type="text" id="edit-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-level">Niveau</label>
+                    <input type="number" id="edit-level" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-xp">XP</label>
+                    <input type="number" id="edit-xp" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-coins">Pièces</label>
+                    <input type="number" id="edit-coins" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-admin">Administrateur</label>
+                    <input type="checkbox" id="edit-admin">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <button type="button" class="btn btn-secondary close-modal-button">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="delete-user-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Supprimer l'utilisateur</h2>
+            <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
+            <form id="delete-user-form">
+                <input type="hidden" id="delete-user-id">
+                <div class="user-info-display">
+                    <p><strong>Nom d'utilisateur:</strong> <span id="delete-username"></span></p>
+                    <p><strong>Niveau:</strong> <span id="delete-level"></span></p>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                    <button type="button" class="btn btn-secondary close-modal-button">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="delete-score-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Supprimer le score</h2>
+            <p>Êtes-vous sûr de vouloir supprimer ce score ? Cette action est irréversible.</p>
+            <form id="delete-score-form">
+                <input type="hidden" id="delete-score-id">
+                <div class="score-info-display">
+                    <p><strong>Joueur:</strong> <span id="delete-score-username"></span></p>
+                    <p><strong>Score:</strong> <span id="delete-score-value"></span></p>
+                    <p><strong>Date:</strong> <span id="delete-score-date"></span></p>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                    <button type="button" class="btn btn-secondary close-modal-button">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="src/js/firebase-config.js"></script>
+    <script type="module" src="src/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
+  <meta name="theme-color" content="#121212">
+  <title>Enigma Scroll | English Quest</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Base styles - Ordre important pour éviter les conflits -->
+  <link href="../styles/new-design.css" rel="stylesheet">
+  <link href="../src/styles/layout.css" rel="stylesheet">
+  <link href="../styles/animations.css" rel="stylesheet">
+  <link href="../styles/particles.css" rel="stylesheet">
+  <!-- Le fichier responsive.css n'existe pas, styles responsifs inclus dans new-design.css -->
+
+  <!-- Game-specific styles -->
+  <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
+  <link href="../src/styles/streak-bonus.css" rel="stylesheet">
+  <link href="../src/styles/reward-notifications.css" rel="stylesheet">
+  <link href="../src/styles/connection-indicator.css" rel="stylesheet">
+  <link href="../src/styles/leaderboard.css" rel="stylesheet">
+  <link href="../src/styles/sync-indicator.css" rel="stylesheet">
+
+  <!-- Styles personnalisés pour corriger l'alignement et les couleurs -->
+  <style>
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
+    .btn-login {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* Correction des couleurs du titre */
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Correction de la couleur du sous-titre */
+    .game-subtitle {
+      color: var(--color-secondary);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Assurer que le header est exactement comme sur les autres pages */
+    .header {
+      padding: var(--spacing-sm) 0;
+    }
+
+    /* Assurer que le container a la même largeur que sur les autres pages */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-sm);
+    }
+
+    /* Styles pour le corps du jeu */
+    .game-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Exo 2', sans-serif;
+      color: var(--color-text);
+      background: var(--color-background);
+      overflow-x: hidden;
+    }
+
+    /* Styles pour l'interface du jeu */
+    .game-universe {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background-color: var(--color-background);
+      padding-bottom: 50px;
+    }
+
+    .game-interface {
+      position: relative;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      z-index: 10;
+      text-align: center;
+    }
+
+    /* Styles pour les sections du jeu */
+    .game-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .game-sections {
+        flex-direction: row;
+      }
+
+      .main-panel {
+        flex: 2;
+      }
+
+      .leaderboard-panel {
+        flex: 1;
+      }
+    }
+
+    /* Styles pour les panneaux du jeu */
+    .game-panel {
+      background: rgba(26, 26, 26, 0.95);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-panel:hover {
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+      border-color: rgba(46, 204, 113, 0.3);
+    }
+
+    /* Styles pour les états du jeu */
+    .game-state {
+      display: none;
+      padding: 2rem;
+    }
+
+    .game-state.active {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Styles pour l'écran d'accueil */
+    .welcome-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .welcome-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Styles pour la sélection de difficulté */
+    .difficulty-selection {
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .difficulty-selection h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    .difficulty-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Styles pour les boutons */
+    .game-button {
+      position: relative;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--color-text);
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 50px;
+      outline: none;
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      border: 1px solid var(--color-primary-light);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5), inset 0 0 5px rgba(255, 255, 255, 0.2);
+      font-size: 1.3rem;
+      padding: 15px 30px;
+    }
+
+    .secondary-button {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.2rem;
+      padding: 12px 25px;
+    }
+
+    .game-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .glow-button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .glow-button:hover::before {
+      opacity: 1;
+    }
+
+    .action-icon {
+      font-size: 1.2rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Styles pour le HUD du jeu */
+    .game-hud {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      min-width: 80px;
+    }
+
+    .hud-icon {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+      color: var(--color-primary-light);
+    }
+
+    .hud-label {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour les boutons de difficulté */
+    .difficulty-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      gap: 0.7rem;
+      width: 100%;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .difficulty-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+    }
+
+    .difficulty-icon {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .difficulty-btn:hover .difficulty-icon {
+      transform: scale(1.2);
+    }
+
+    .difficulty-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .difficulty-desc {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Styles pour le clavier */
+    .keyboard {
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%; /* Assurer que le clavier prend toute la largeur disponible */
+      padding: 0 0.5rem; /* Ajouter un peu de padding sur les côtés */
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.25rem; /* Réduire légèrement l'espace entre les touches */
+      width: 100%; /* Assurer que chaque rangée prend toute la largeur */
+    }
+
+    .key-btn {
+      flex: 1; /* Faire en sorte que les touches s'adaptent à l'espace disponible */
+      min-width: 2.2rem; /* Réduire légèrement la largeur minimale */
+      height: 3.2rem; /* Réduire légèrement la hauteur */
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: var(--color-text);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; /* Supprimer tout padding par défaut */
+      margin: 0; /* Supprimer tout margin par défaut */
+      touch-action: manipulation; /* Améliorer la réactivité tactile */
+    }
+
+    .key-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .key-btn:active {
+      transform: translateY(1px);
+    }
+
+    .key-enter, .key-delete {
+      min-width: 3.5rem; /* Réduire la largeur minimale */
+      font-size: 0.85rem; /* Réduire légèrement la taille de police */
+      flex: 1.5; /* Donner un peu plus d'espace aux touches spéciales */
+    }
+
+    /* Styles pour les power-ups */
+    .power-ups-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .power-up {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 80px;
+    }
+
+    .power-up:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .power-up-icon {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+    }
+
+    .power-up-name {
+      font-size: 0.9rem;
+      color: var(--color-text);
+    }
+
+    .power-up-count {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour la grille de mots */
+    .word-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .grid-row {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .grid-cell {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .grid-cell.filled {
+      border-color: rgba(255, 255, 255, 0.3);
+      animation: cellFill 0.2s ease-in-out;
+    }
+
+    @keyframes cellFill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .grid-cell.correct {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #121212;
+      animation: correctCell 0.5s ease-in-out;
+    }
+
+    @keyframes correctCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: var(--color-primary); }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.present {
+      background-color: #f39c12;
+      border-color: #f39c12;
+      color: #121212;
+      animation: presentCell 0.5s ease-in-out;
+    }
+
+    @keyframes presentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: #f39c12; }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.absent {
+      background-color: #7f8c8d;
+      border-color: #7f8c8d;
+      color: #121212;
+      animation: absentCell 0.5s ease-in-out;
+    }
+
+    @keyframes absentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: #7f8c8d; }
+      100% { transform: rotateY(0); }
+    }
+
+    /* Styles pour les touches du clavier */
+    .key-btn.correct {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #121212;
+    }
+
+    .key-btn.present {
+      background-color: #f39c12;
+      border-color: #f39c12;
+      color: #121212;
+    }
+
+    .key-btn.absent {
+      background-color: #7f8c8d;
+      border-color: #7f8c8d;
+      color: #121212;
+    }
+
+    .key-pressed {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+    }
+
+    /* Styles pour le bouton des règles en jeu */
+    .in-game-rules-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--color-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary);
+      transform: scale(1.1);
+    }
+    :root {
+      /* Palette de couleurs vert, bleu et blanc */
+      --color-primary: #2ecc71 !important; /* Vert */
+      --color-primary-dark: #27ae60 !important;
+      --color-primary-light: #58d68d !important;
+
+      --color-secondary: #3498db !important; /* Bleu */
+      --color-secondary-dark: #2980b9 !important;
+      --color-secondary-light: #5dade2 !important;
+
+      --color-tertiary: #ffffff !important; /* Blanc */
+      --color-tertiary-dark: #f5f5f5 !important;
+      --color-tertiary-light: #ffffff !important;
+
+      --color-accent: #3498db !important; /* Bleu comme accent également */
+      --color-accent-dark: #2980b9 !important;
+      --color-accent-light: #5dade2 !important;
+
+      --color-background: #121212 !important;
+      --color-surface: #1a1a1a !important;
+      --color-surface-light: #252525 !important;
+
+      --color-text: #ffffff !important;
+      --color-text-secondary: #b0bec5 !important;
+    }
+
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
+    .btn-login {
+      min-width: 80px;
+      text-align: center;
+      background-color: transparent !important;
+      border: 2px solid #2ecc71 !important;
+      color: #2ecc71 !important;
+    }
+
+    .btn-login:hover {
+      background-color: #2ecc71 !important;
+      color: #121212 !important;
+    }
+
+    /* Correction des couleurs du titre */
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, #2ecc71, #3498db) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      font-weight: 900 !important;
+      font-size: 2.5rem !important;
+      margin-bottom: 1rem !important;
+    }
+
+    /* Correction de la couleur du sous-titre */
+    .game-subtitle {
+      color: #3498db !important;
+      font-size: 1.2rem !important;
+      margin-bottom: 2rem !important;
+    }
+
+    /* Assurer que le container a la même largeur que sur les autres pages */
+    .container {
+      width: 90% !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      padding: 0 var(--spacing-sm) !important;
+    }
+
+    /* Styles pour le header exactement comme sur index.html */
+    .header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      background-color: rgba(18, 18, 18, 0.9) !important;
+      backdrop-filter: blur(10px) !important;
+      z-index: 1000 !important;
+      padding: var(--spacing-sm) 0 !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
+    }
+
+    .header-container {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+
+    .logo {
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.8rem !important;
+      font-weight: 700 !important;
+      color: #2ecc71 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .logo span {
+      color: #ffffff !important;
+    }
+
+    .nav {
+      display: none !important;
+    }
+
+    .nav-list {
+      display: flex !important;
+      gap: var(--spacing-md) !important;
+    }
+
+    .nav-link {
+      font-weight: 500 !important;
+      position: relative !important;
+      padding: var(--spacing-xs) 0 !important;
+      transition: color 0.3s ease !important;
+      color: #ffffff !important;
+    }
+
+    .nav-link::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 0 !important;
+      height: 2px !important;
+      background-color: #2ecc71 !important;
+      transition: width 0.3s ease !important;
+    }
+
+    .nav-link:hover {
+      color: #2ecc71 !important;
+    }
+
+    .nav-link:hover::after {
+      width: 100% !important;
+    }
+
+    .nav-link.active {
+      color: #2ecc71 !important;
+    }
+
+    .nav-link.active::after {
+      width: 100% !important;
+    }
+
+    .user-menu {
+      display: flex !important;
+      align-items: center !important;
+      gap: var(--spacing-sm) !important;
+    }
+
+    .menu-toggle {
+      display: block !important;
+      background: none !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-size: 1.5rem !important;
+      cursor: pointer !important;
+    }
+
+    @media (min-width: 768px) {
+      .nav {
+        display: block !important;
+      }
+
+      .menu-toggle {
+        display: none !important;
+      }
+    }
+
+    /* Styles pour le leaderboard */
+    .leaderboard-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background-color: rgba(18, 18, 18, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-title {
+      color: var(--color-primary, #2ecc71);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+    }
+
+    .leaderboard-content {
+      width: 100%;
+    }
+
+    .leaderboard-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      color: var(--text-light);
+      font-family: 'Spectral', serif;
+    }
+
+    .leaderboard-table th {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.5);
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-table td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .leaderboard-table tr:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    .leaderboard-table .rank-gold {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    .leaderboard-table .rank-silver {
+      background-color: rgba(192, 192, 192, 0.1);
+    }
+
+    .leaderboard-table .rank-bronze {
+      background-color: rgba(205, 127, 50, 0.1);
+    }
+
+    .current-player {
+      background-color: rgba(46, 204, 113, 0.15) !important;
+    }
+
+    .rank-cell {
+      font-weight: 600;
+      text-align: center;
+      width: 60px;
+    }
+
+    .player-cell {
+      font-weight: 500;
+    }
+
+    .score-cell {
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+      text-align: right;
+    }
+
+    .date-cell {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    .local-scores-button-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .game-button.secondary-button {
+      background-color: rgba(10, 14, 20, 0.8);
+      border: 1px solid var(--color-primary, #2ecc71);
+      color: var(--text-light);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .game-button.secondary-button:hover {
+      background-color: rgba(46, 204, 113, 0.2);
+      color: white;
+    }
+
+    /* Styles pour les boutons d'action */
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .game-buttons {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .rules-button {
+      background-color: transparent;
+      border: 2px solid var(--color-secondary, #3498db);
+      color: var(--color-secondary, #3498db);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .rules-button:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Bouton des règles en jeu */
+    .in-game-rules-button {
+      background: none;
+      border: none;
+      color: var(--color-secondary, #3498db);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary, #2ecc71);
+      transform: scale(1.1);
+    }
+
+    /* Styles pour les modales - complètement désactivés */
+    .modal {
+      display: none !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: -9999 !important; /* Mettre un z-index négatif pour s'assurer qu'il est en dessous de tout */
+      align-items: center;
+      justify-content: center;
+      opacity: 0 !important;
+      transition: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important; /* Empêcher toute interaction */
+    }
+
+    .modal.show {
+      display: none !important; /* Forcer à rester caché même avec la classe show */
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      z-index: -9999 !important;
+    }
+
+    .modal-content {
+      background-color: rgba(26, 26, 26, 0.95);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+      border: 1px solid var(--color-primary);
+      position: relative;
+      animation: modalAppear 0.3s ease-out;
+    }
+
+    @keyframes modalAppear {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 1.2rem;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      z-index: 1;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-title {
+      color: var(--color-primary);
+      margin: 0;
+      font-size: 1.6rem;
+      font-family: 'Cinzel', serif;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      color: var(--color-primary);
+      background-color: rgba(46, 204, 113, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      color: var(--color-text);
+      font-family: 'Spectral', serif;
+      line-height: 1.6;
+    }
+
+    .modal-body h3 {
+      color: var(--color-secondary);
+      margin: 1.5rem 0 0.8rem;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1.3rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .modal-body h3::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 1.2em;
+      background-color: var(--color-secondary);
+      border-radius: 2px;
+    }
+
+    .modal-body p {
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .modal-body ul {
+      margin-bottom: 1.2rem;
+      padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+      margin-bottom: 0.7rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .modal-body li::before {
+      content: '•';
+      color: var(--color-primary);
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+    .modal-footer {
+      padding: 1.2rem;
+      border-top: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      position: sticky;
+      bottom: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .modal-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      color: #121212;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 120px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .modal-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-button.secondary {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      box-shadow: none;
+    }
+
+    .modal-button.secondary:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Styles pour les exemples de couleurs dans les règles */
+    .example-correct {
+      background-color: var(--color-primary);
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .example-present {
+      background-color: #f39c12;
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .example-absent {
+      background-color: #7f8c8d;
+      color: #121212;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* Styles pour les statistiques de fin de partie */
+    .game-over-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .game-over-stat {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rewards-section {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .rewards-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .reward {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .reward-icon {
+      font-size: 2rem;
+      color: var(--color-primary);
+    }
+
+    .reward-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    .new-high-score {
+      background: rgba(255, 193, 7, 0.2);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      color: #ffc107;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+      }
+    }
+
+    /* Styles responsifs */
+    /* Media queries pour les tablettes et petits écrans */
+    @media (max-width: 768px) {
+      .game-sections {
+        flex-direction: column;
+      }
+
+      .difficulty-options {
+        flex-direction: column;
+      }
+
+      .game-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .game-hud {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hud-item {
+        min-width: 70px;
+      }
+
+      /* Ajustements du clavier pour tablettes */
+      .keyboard {
+        padding: 0 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .key-btn {
+        min-width: 2rem;
+        height: 3rem;
+        font-size: 0.9rem;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 3.5rem;
+      }
+
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .game-over-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Media queries pour les smartphones */
+    @media (max-width: 480px) {
+      /* Ajustements généraux pour petits écrans */
+      .game-interface {
+        padding: 1rem;
+      }
+
+      /* Ajustements du clavier pour smartphones */
+      .keyboard {
+        margin: 0.8rem 0;
+        gap: 0.3rem;
+        padding: 0 0.3rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .keyboard-row {
+        gap: 0.2rem;
+      }
+
+      .key-btn {
+        min-width: 0; /* Supprimer la largeur minimale pour permettre une meilleure adaptation */
+        width: auto; /* Laisser la largeur s'adapter automatiquement */
+        height: 2.8rem;
+        font-size: 0.8rem;
+        padding: 0.1rem;
+        border-radius: 3px;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 0;
+        font-size: 0.7rem;
+      }
+
+      /* Autres ajustements pour smartphones */
+      .power-ups-container {
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin: 1rem 0;
+      }
+
+      .power-up {
+        width: 70px;
+        padding: 0.7rem;
+      }
+
+      .grid-cell {
+        width: 2.8rem;
+        height: 2.8rem;
+        font-size: 1.2rem;
+      }
+
+      .game-button {
+        width: 100%;
+      }
+
+      .welcome-text {
+        font-size: 1rem;
+      }
+
+      .difficulty-selection h3 {
+        font-size: 1.1rem;
+      }
+
+      .difficulty-name {
+        font-size: 1rem;
+      }
+
+      .difficulty-desc {
+        font-size: 0.8rem;
+      }
+
+      .hud-item {
+        padding: 0.5rem;
+        min-width: 60px;
+      }
+
+      .hud-value {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Media queries pour les très petits écrans */
+    @media (max-width: 360px) {
+      /* Ajustements pour les très petits écrans */
+      .game-interface {
+        padding: 0.8rem;
+      }
+
+      /* Ajustements du clavier pour très petits écrans */
+      .keyboard {
+        margin: 0.5rem 0;
+        gap: 0.2rem;
+        padding: 0 0.2rem;
+      }
+
+      .keyboard-row {
+        gap: 0.15rem;
+      }
+
+      .key-btn {
+        height: 2.5rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+      }
+
+      .key-enter, .key-delete {
+        font-size: 0.6rem;
+      }
+
+      /* Autres ajustements pour très petits écrans */
+      .grid-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+      }
+
+      .power-ups-container {
+        gap: 0.5rem;
+      }
+
+      .power-up {
+        width: 60px;
+        padding: 0.5rem;
+      }
+
+      .power-up-icon {
+        font-size: 1.2rem;
+      }
+
+      .power-up-name {
+        font-size: 0.7rem;
+      }
+    }
+
+    /* Media queries spécifiques pour les téléphones en mode portrait */
+    @media (max-width: 414px) and (orientation: portrait) {
+      /* Optimisations supplémentaires pour les téléphones en mode portrait */
+      .keyboard {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.2rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Réduire encore plus la taille des touches pour s'assurer qu'elles tiennent toutes à l'écran */
+      .key-btn {
+        height: 2.4rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+        padding: 0;
+      }
+
+      /* Ajuster l'espacement entre les rangées */
+      .keyboard-row {
+        margin-bottom: 0.2rem;
+      }
+
+      /* Réduire la taille de la grille pour laisser plus de place au clavier */
+      .word-grid {
+        margin: 1rem 0;
+      }
+
+      .grid-cell {
+        width: 2.4rem;
+        height: 2.4rem;
+      }
+    }
+
+    /* Styles pour l'overlay de chargement */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(18, 18, 18, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(46, 204, 113, 0.2);
+      border-top-color: var(--color-primary, #2ecc71);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--color-text, #ffffff);
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Styles pour les exemples de couleurs dans les règles */
+    .example-correct {
+      background-color: #2ecc71;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-present {
+      background-color: #f39c12;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-absent {
+      background-color: #7f8c8d;
+      color: #121212;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* Responsive pour les modales */
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+      }
+
+      .modal-body {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .modal-body h3 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body class="game-body">
+  <!-- Overlay de chargement -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Chargement...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html" class="nav-link">Accueil</a></li>
+          <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+          <li><a href="../courses.html" class="nav-link">Cours</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu">
+        <a href="../auth.html" class="btn-login">Connexion</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Game container -->
+  <div class="game-universe">
+    <!-- Game UI -->
+    <main class="game-interface">
+      <!-- Game header - Centered subtitle -->
+      <div class="game-header-content">
+        <h1 class="section-title text-gradient">Enigma Scroll</h1>
+        <p class="game-subtitle">Les Parchemins Mystérieux</p>
+      </div>
+
+      <!-- Game sections -->
+      <div class="game-sections">
+        <!-- Main game panel -->
+        <div class="game-panel main-panel">
+          <!-- Game states -->
+          <div class="game-states">
+            <!-- Game state: welcome -->
+            <div id="welcome-screen" class="game-state active">
+              <div class="welcome-content">
+                <p class="welcome-text">
+                  Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+                  Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+                </p>
+
+                <div class="difficulty-selection">
+                  <h3>Choisissez votre niveau de difficulté :</h3>
+                  <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="beginner">
+                      <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+                      <span class="difficulty-name">Débutant</span>
+                      <span class="difficulty-desc">Mots de 4 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate">
+                      <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+                      <span class="difficulty-name">Intermédiaire</span>
+                      <span class="difficulty-desc">Mots de 5 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="advanced">
+                      <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+                      <span class="difficulty-name">Avancé</span>
+                      <span class="difficulty-desc">Mots de 7 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="expert">
+                      <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+                      <span class="difficulty-name">Expert</span>
+                      <span class="difficulty-desc">Mots de 9 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="legendary">
+                      <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+                      <span class="difficulty-name">Légendaire</span>
+                      <span class="difficulty-desc">Mots de 10 lettres</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="game-buttons">
+                  <button id="start-game-button" class="game-button primary-button glow-button">
+                    <span class="button-text">Commencer l'aventure</span>
+                    <span class="action-icon">✦</span>
+                  </button>
+                  <button id="show-rules-button" class="game-button secondary-button">
+                    <span class="button-text">Règles du jeu</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game state: playing -->
+            <div id="game-area" class="game-state" style="display: none;">
+              <!-- Game HUD -->
+              <div class="game-hud">
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-scroll"></i></span>
+                  <span class="hud-label">Niveau</span>
+                  <span id="level-display" class="hud-value">1</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-star"></i></span>
+                  <span class="hud-label">Score</span>
+                  <span id="score-display" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-hourglass-half"></i></span>
+                  <span class="hud-label">Temps</span>
+                  <span id="time-display" class="hud-value">60</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-bolt"></i></span>
+                  <span class="hud-label">Combo</span>
+                  <span id="combo-display" class="hud-value">x1</span>
+                </div>
+              </div>
+
+              <!-- Grille de jeu -->
+              <div id="word-grid" class="word-grid"></div>
+
+              <!-- Clavier virtuel -->
+              <div id="keyboard" class="keyboard">
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+                </div>
+              </div>
+
+              <!-- Power-ups -->
+              <div id="power-ups-container" class="power-ups-container">
+                <div class="power-up" data-power="hint">
+                  <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+                  <div class="power-up-name">Indice</div>
+                  <div class="power-up-count" id="hint-count">3</div>
+                </div>
+                <div class="power-up" data-power="time">
+                  <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+                  <div class="power-up-name">Temps</div>
+                  <div class="power-up-count" id="time-count">2</div>
+                </div>
+                <div class="power-up" data-power="skip">
+                  <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+                  <div class="power-up-name">Passer</div>
+                  <div class="power-up-count" id="skip-count">1</div>
+                </div>
+              </div>
+
+              <!-- Bouton des règles en jeu -->
+              <button id="in-game-rules-button" class="in-game-rules-button" title="Règles du jeu">
+                <i class="fas fa-question-circle"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard panel -->
+        <div class="game-panel leaderboard-panel">
+          <div class="game-hud">
+            <h2>Meilleurs Scores</h2>
+          </div>
+          <div id="enigma-scroll-leaderboard" class="leaderboard-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="rank-header">Rang</th>
+                  <th class="player-header">Joueur</th>
+                  <th class="score-header">Score</th>
+                  <th class="date-header">Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="4" class="loading-scores">Chargement des scores...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pas de footer -->
+
+  <!-- Modales -->
+
+  <!-- Nouvelle modale des règles du jeu avec un ID différent - masquée par défaut -->
+  <div id="enigmaRulesModal" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; opacity: 0 !important; visibility: hidden !important;">
+    <div style="background-color: rgba(26, 26, 26, 0.95); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(46, 204, 113, 0.4); border: 1px solid #2ecc71; position: relative;">
+      <div style="padding: 1.2rem; border-bottom: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background-color: rgba(26, 26, 26, 0.98); z-index: 1; border-radius: 12px 12px 0 0;">
+        <h2 style="color: #2ecc71; margin: 0; font-size: 1.6rem; font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);">Règles du jeu</h2>
+        <button id="closeEnigmaRulesX" style="background: none; border: none; color: #b0bec5; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">&times;</button>
+      </div>
+      <div style="padding: 1.5rem; color: #ffffff; font-family: 'Spectral', serif; line-height: 1.6;">
+        <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Objectif :</h3>
+        <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Comment jouer :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Les lettres changeront de couleur pour vous guider :
+            <ul style="margin-top: 0.5rem;">
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #2ecc71; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Vert</span> : La lettre est correcte et bien placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #f39c12; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #7f8c8d; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Gris</span> : La lettre n'est pas dans le mot</li>
+            </ul>
+          </li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
+        </ul>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Astuces :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Commencez par des mots contenant des voyelles courantes</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Faites attention aux lettres qui se répètent</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Utilisez les informations des essais précédents</li>
+        </ul>
+
+        <p>Bonne chance dans votre quête linguistique !</p>
+      </div>
+      <div style="padding: 1.2rem; border-top: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: center; gap: 1rem; position: sticky; bottom: 0; background-color: rgba(26, 26, 26, 0.98); border-radius: 0 0 12px 12px;">
+        <button id="closeEnigmaRulesButton" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: #121212; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Exo 2', sans-serif; min-width: 120px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center;">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ancienne modale des règles (masquée et désactivée) -->
+  <div class="modal rules-modal" id="rulesModal" style="display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;">
+  </div>
+
+  <!-- Modale de fin de partie -->
+  <div class="modal game-over-modal" id="gameOverModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Partie terminée</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="game-over-stats">
+          <div class="game-over-stat">
+            <span class="stat-label">Score final</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Mots trouvés</span>
+            <span id="words-found" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Combo maximum</span>
+            <span id="max-combo" class="stat-value">x1</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Temps total</span>
+            <span id="total-time" class="stat-value">0s</span>
+          </div>
+        </div>
+
+        <div class="rewards-section">
+          <h3>Récompenses</h3>
+          <div class="rewards-container">
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-coins"></i></div>
+              <div class="reward-value" id="coins-reward">+0</div>
+            </div>
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-star"></i></div>
+              <div class="reward-value" id="xp-reward">+0 XP</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-high-score" class="new-high-score" style="display: none;">
+          <i class="fas fa-trophy"></i> Nouveau record personnel !
+        </div>
+
+        <div id="last-word-container" class="last-word-container" style="display: none;">
+          <p>Le dernier mot était : <span id="last-word" class="revealed-word">WORD</span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="playAgainButton">Rejouer</button>
+        <button class="modal-button secondary" id="backToMenuButton">Menu principal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de mot trouvé -->
+  <div class="modal word-found-modal" id="wordFoundModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Mot trouvé !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Le mot était : <span id="revealed-word" class="revealed-word">WORD</span></p>
+        <p class="word-definition" id="word-definition">Définition du mot...</p>
+
+        <div class="word-stats">
+          <div class="word-stat">
+            <span class="stat-label">Points gagnés</span>
+            <span id="points-earned" class="stat-value">+100</span>
+          </div>
+          <div class="word-stat">
+            <span class="stat-label">Bonus de temps</span>
+            <span id="time-bonus" class="stat-value" style="color: #2ecc71; font-weight: bold;">+30s</span>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 1rem; color: #2ecc71; font-weight: bold;">
+          <i class="fas fa-clock"></i> +30 secondes à chaque mot trouvé !
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="nextWordButton">Mot suivant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'événement spécial -->
+  <div class="modal event-modal" id="eventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Événement spécial !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="event-description" class="event-description">
+          Description de l'événement...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="acceptEventButton">Accepter</button>
+        <button class="modal-button secondary" id="declineEventButton">Décliner</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Effets visuels -->
+  <div id="particles-container" class="particles-container"></div>
+  <div id="forest-mist" class="forest-mist"></div>
+  <div id="floating-leaves" class="floating-leaves"></div>
+
+  <!-- Scripts Firebase (chargement prioritaire) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="../src/js/firebase-init.js"></script>
+
+  <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
+  <script src="../scripts/local-auth.js" defer></script>
+  <script src="../src/js/auth-state.js" defer></script>
+  <script src="../src/js/reward-system.js" defer></script>
+  <script src="../src/js/admin-scores.js" defer></script>
+  <script src="../src/js/enigma-scroll/firebase-helpers.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js" defer></script>
+  <script src="../src/js/enigma-scroll/word-lists.js" defer></script>
+  <script src="../src/js/enigma-scroll/game-effects.js" defer></script>
+  <script src="../src/js/enigma-scroll/game-ui.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll.js" defer></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js" defer></script>
+
+  <!-- Script pour s'assurer que la modale des règles est masquée au chargement -->
+  <script>
+    // Script qui s'exécute immédiatement pour masquer la modale des règles
+    (function() {
+      // Masquer explicitement la modale des règles
+      var rulesModal = document.getElementById('enigmaRulesModal');
+      if (rulesModal) {
+        rulesModal.style.display = 'none !important';
+        rulesModal.style.opacity = '0 !important';
+        rulesModal.style.visibility = 'hidden !important';
+        rulesModal.setAttribute('aria-hidden', 'true');
+      }
+    })();
+  </script>
+
+  <!-- Script pour corriger les problèmes d'interaction avec la page -->
+  <script>
+    // Script qui s'exécute immédiatement pour restaurer l'interaction avec la page
+    (function() {
+      // Fonction pour supprimer complètement tous les effets de modale
+      function fixPageInteraction() {
+        console.log("Correction de l'interaction avec la page");
+
+        // Supprimer tout effet de flou sur le body ou les conteneurs principaux
+        document.body.style.filter = 'none';
+        document.body.style.backdropFilter = 'none';
+        document.body.style.WebkitBackdropFilter = 'none';
+        document.body.style.pointerEvents = 'auto';
+
+        // Masquer toutes les modales et overlays sauf la modale des règles
+        var modals = document.querySelectorAll('.modal, .rules-modal, #rulesModal');
+        modals.forEach(function(modal) {
+          if (modal && modal.id !== 'enigmaRulesModal') { // Ne pas affecter la nouvelle modale des règles
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            modal.style.pointerEvents = 'none';
+            modal.style.zIndex = '-9999';
+            modal.classList.remove('show');
+
+            // Supprimer complètement la modale du DOM si nécessaire
+            // modal.parentNode.removeChild(modal);
+          }
+        });
+
+        // Supprimer tout overlay potentiel
+        var overlays = document.querySelectorAll('.modal-backdrop, .overlay');
+        overlays.forEach(function(overlay) {
+          if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            overlay.style.pointerEvents = 'none';
+            overlay.style.zIndex = '-9999';
+
+            // Supprimer complètement l'overlay du DOM si nécessaire
+            // overlay.parentNode.removeChild(overlay);
+          }
+        });
+      }
+
+      // Exécuter immédiatement
+      fixPageInteraction();
+
+      // Exécuter à nouveau après un court délai pour s'assurer que tout est bien corrigé
+      setTimeout(fixPageInteraction, 100);
+      setTimeout(fixPageInteraction, 500);
+      setTimeout(fixPageInteraction, 1000);
+
+      // Exécuter également au chargement complet de la page
+      window.addEventListener('load', fixPageInteraction);
+
+      // Initialiser la nouvelle modale des règles (sans la désactiver complètement)
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        // Masquer la modale mais sans la désactiver complètement
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
+        // Ne pas désactiver les interactions ni mettre un z-index négatif
+      }
+
+      // Masquer également l'ancienne modale des règles
+      var oldRulesModal = document.getElementById('rulesModal');
+      if (oldRulesModal) {
+        oldRulesModal.style.display = 'none';
+        oldRulesModal.style.opacity = '0';
+        oldRulesModal.style.visibility = 'hidden';
+        oldRulesModal.style.pointerEvents = 'none';
+        oldRulesModal.style.zIndex = '-9999';
+      }
+    })();
+  </script>
+
+  <!-- Script d'initialisation de l'utilisateur -->
+  <script>
+    // Variable pour suivre si la page est complètement chargée
+    var pageFullyLoaded = false;
+
+    // Marquer la page comme complètement chargée après un délai
+    setTimeout(function() {
+      pageFullyLoaded = true;
+      console.log("Page marquée comme complètement chargée");
+    }, 2000); // Attendre 2 secondes après le chargement initial
+
+    // Fonctions pour la nouvelle modale des règles avec débogage
+    function showEnigmaRules() {
+      // Ne pas afficher la modale si la page n'est pas complètement chargée
+      // ou si l'appel vient du chargement initial
+      if (!pageFullyLoaded) {
+        console.log("Tentative d'affichage de la modale pendant le chargement - ignorée");
+        return;
+      }
+
+      // Vérifier si l'appel vient d'un événement utilisateur ou du chargement de la page
+      var fromUserAction = false;
+      try {
+        // Vérifier si nous sommes dans une pile d'appels d'événement utilisateur
+        fromUserAction = event instanceof Event;
+      } catch (e) {
+        // Si event n'est pas défini, c'est probablement un appel automatique
+        fromUserAction = false;
+      }
+
+      // Si ce n'est pas une action utilisateur et que la page est en cours de chargement, ne rien faire
+      if (!fromUserAction && document.readyState !== 'complete') {
+        console.log("Affichage automatique de la modale bloqué pendant le chargement");
+        return;
+      }
+
+      console.log("Tentative d'affichage de la modale des règles (action utilisateur: " + fromUserAction + ")");
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        console.log("Modale des règles trouvée, affichage en cours");
+
+        // Réinitialiser tous les styles qui pourraient empêcher l'affichage
+        modal.removeAttribute('style');
+
+        // Appliquer les styles nécessaires pour afficher la modale
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.zIndex = '9999';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        modal.style.pointerEvents = 'auto';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
+      }
+    }
+
+    function hideEnigmaRules() {
+      console.log("Tentative de masquage de la modale des règles");
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        console.log("Modale des règles trouvée, masquage en cours");
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        modal.style.pointerEvents = 'none';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
+      }
+    }
+
+    // Configurer les gestionnaires d'événements pour la nouvelle modale des règles
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("Configuration des gestionnaires d'événements pour la modale des règles");
+
+      // Vérifier que la modale des règles existe
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        console.log("Modale des règles trouvée dans le DOM");
+      } else {
+        console.error("ERREUR: Modale des règles non trouvée dans le DOM");
+      }
+
+      // Bouton pour afficher les règles
+      var showRulesButton = document.getElementById('show-rules-button');
+      if (showRulesButton) {
+        console.log("Bouton des règles trouvé, ajout du gestionnaire d'événements");
+
+        // Supprimer tous les gestionnaires d'événements existants
+        var newButton = showRulesButton.cloneNode(true);
+        showRulesButton.parentNode.replaceChild(newButton, showRulesButton);
+        showRulesButton = newButton;
+
+        // Ajouter un nouveau gestionnaire d'événements
+        showRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+
+          // S'assurer que la page est complètement chargée
+          if (pageFullyLoaded) {
+            showEnigmaRules(); // Appeler la fonction d'affichage
+          } else {
+            console.log("Page non complètement chargée, affichage de la modale reporté");
+            // Marquer la page comme chargée et afficher la modale après un court délai
+            pageFullyLoaded = true;
+            setTimeout(showEnigmaRules, 100);
+          }
+        });
+      } else {
+        console.error("ERREUR: Bouton des règles non trouvé");
+      }
+
+      // Bouton pour afficher les règles en jeu
+      var inGameRulesButton = document.getElementById('in-game-rules-button');
+      if (inGameRulesButton) {
+        console.log("Bouton des règles en jeu trouvé, ajout du gestionnaire d'événements");
+        inGameRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles en jeu");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          showEnigmaRules(); // Appeler la fonction d'affichage
+        });
+      }
+
+      // Boutons pour fermer les règles
+      var closeEnigmaRulesButton = document.getElementById('closeEnigmaRulesButton');
+      if (closeEnigmaRulesButton) {
+        console.log("Bouton de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton de fermeture des règles non trouvé");
+      }
+
+      var closeEnigmaRulesX = document.getElementById('closeEnigmaRulesX');
+      if (closeEnigmaRulesX) {
+        console.log("Bouton X de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesX.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton X de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton X de fermeture des règles non trouvé");
+      }
+
+      // Ajouter un gestionnaire global pour le bouton des règles
+      document.body.addEventListener('click', function(event) {
+        if (event.target.id === 'show-rules-button' ||
+            event.target.closest('#show-rules-button') ||
+            event.target.id === 'in-game-rules-button' ||
+            event.target.closest('#in-game-rules-button')) {
+          console.log("Clic détecté sur un bouton des règles via délégation d'événements");
+          showEnigmaRules();
+        }
+      });
+    });
+
+    // Masquer l'overlay de chargement rapidement
+    window.addEventListener('load', function() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+        loadingOverlay.style.visibility = 'hidden';
+
+        // Supprimer complètement après la transition
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+        }, 500);
+      }
+
+      // S'assurer que la modale des règles est masquée
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
+      }
+    });
+
+    // Vérifier si l'utilisateur est connecté au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Masquer l'overlay de chargement plus rapidement
+        setTimeout(() => {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          if (loadingOverlay) {
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.visibility = 'hidden';
+
+            setTimeout(() => {
+              loadingOverlay.style.display = 'none';
+            }, 500);
+          }
+        }, 500); // Réduire le délai à 500ms
+
+        // S'assurer que la nouvelle modale des règles est masquée
+        var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+        if (enigmaRulesModal) {
+          enigmaRulesModal.style.display = 'none';
+          enigmaRulesModal.style.opacity = '0';
+          enigmaRulesModal.style.visibility = 'hidden';
+        }
+
+        // Masquer également toutes les anciennes modales
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+          modal.classList.remove('show');
+          modal.style.display = 'none';
+          modal.style.opacity = '0';
+          modal.style.visibility = 'hidden';
+        });
+
+        // Vérifier si un utilisateur est connecté dans localStorage
+        const userJson = localStorage.getItem('english_quest_current_user');
+        if (userJson) {
+          const user = JSON.parse(userJson);
+
+          if (user && user.username) {
+            console.log("Utilisateur connecté au jeu");
+
+            // Mettre à jour l'interface utilisateur
+            if (typeof window.updateUI === 'function') {
+              window.updateUI();
+            }
+
+            // Ne pas mettre à jour le texte du bouton de connexion
+            // Garder "Profil" comme sur les autres pages
+          }
+        } else {
+          console.log("Aucun utilisateur connecté");
+        }
+
+        // Initialiser le menu mobile
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navList = document.querySelector('.nav-list');
+
+        if (menuToggle && navList) {
+          menuToggle.addEventListener('click', function() {
+            navList.classList.toggle('active');
+          });
+        }
+
+        // Le leaderboard est déjà initialisé dans enigma-scroll.js
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'utilisateur:", error);
+      }
+    });
+  </script>
+</body>
+</html>

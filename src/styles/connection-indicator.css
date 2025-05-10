@@ -1,0 +1,70 @@
+/* Styles pour l'indicateur de connexion */
+
+#connection-indicator {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#connection-indicator.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#connection-indicator .indicator-icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+#connection-indicator .indicator-text {
+    font-family: 'Exo 2', sans-serif;
+}
+
+#connection-indicator.online {
+    background-color: rgba(0, 128, 0, 0.8);
+    border-left: 3px solid #00ff00;
+}
+
+#connection-indicator.offline {
+    background-color: rgba(128, 0, 0, 0.8);
+    border-left: 3px solid #ff0000;
+}
+
+/* Animation de pulsation pour le mode hors ligne */
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+
+#connection-indicator.offline.show {
+    animation: pulse 1.5s infinite;
+}
+
+/* Styles pour les appareils mobiles */
+@media (max-width: 768px) {
+    #connection-indicator {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    #connection-indicator .indicator-icon {
+        font-size: 14px;
+    }
+}

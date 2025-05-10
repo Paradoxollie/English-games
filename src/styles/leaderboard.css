@@ -1,0 +1,231 @@
+/* Styles pour le leaderboard */
+
+/* Leaderboard */
+.leaderboard-panel {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.leaderboard-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 10px;
+    position: relative;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-table th {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #4CAF50;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.leaderboard-table .rank-cell {
+    width: 10%;
+    text-align: center;
+}
+
+.leaderboard-table .player-cell {
+    width: 40%;
+}
+
+.leaderboard-table .score-cell {
+    width: 20%;
+    text-align: center;
+    font-weight: bold;
+}
+
+.leaderboard-table .date-cell {
+    width: 30%;
+    text-align: right;
+    color: #aaa;
+}
+
+.leaderboard-table .rank-gold {
+    background-color: rgba(255, 215, 0, 0.1);
+}
+
+.leaderboard-table .rank-silver {
+    background-color: rgba(192, 192, 192, 0.1);
+}
+
+.leaderboard-table .rank-bronze {
+    background-color: rgba(205, 127, 50, 0.1);
+}
+
+.leaderboard-table .recent-score {
+    animation: highlight-row 2s infinite alternate;
+}
+
+/* Style pour le score de démonstration */
+.leaderboard-table .demo-score {
+    border-left: 3px solid #4CAF50;
+}
+
+/* Style pour le joueur actuel */
+.leaderboard-table .current-player {
+    background-color: rgba(76, 175, 80, 0.15);
+    border-left: 3px solid #4CAF50;
+}
+
+.leaderboard-table .current-player .player-cell {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+/* Badge hors ligne */
+.offline-badge {
+    display: inline-block;
+    background-color: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-weight: normal;
+}
+
+/* Statut de synchronisation */
+.sync-status {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
+.sync-status.synced {
+    background-color: rgba(0, 128, 0, 0.3);
+    color: #00ff00;
+}
+
+.sync-status.failed {
+    background-color: rgba(128, 0, 0, 0.3);
+    color: #ff0000;
+}
+
+.sync-status.pending {
+    background-color: rgba(255, 165, 0, 0.3);
+    color: #ffa500;
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes highlight-row {
+    from { background-color: rgba(76, 175, 80, 0.05); }
+    to { background-color: rgba(76, 175, 80, 0.2); }
+}
+
+.loading-scores {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Titre du leaderboard local */
+.leaderboard-title-row {
+    background-color: rgba(0, 0, 100, 0.3);
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Message d'information hors ligne */
+.offline-info-row {
+    background-color: rgba(255, 165, 0, 0.1);
+}
+
+.offline-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    color: #ffa500;
+    font-size: 0.9em;
+}
+
+.offline-icon {
+    margin-right: 10px;
+    animation: rotate 2s linear infinite;
+}
+
+/* Arrêter l'animation pour le mode hors ligne permanent */
+.permanent-offline .offline-icon {
+    animation: none;
+}
+
+/* Style pour le bouton de réinitialisation du mode hors ligne */
+.reset-offline-button {
+    background-color: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+    border: 1px solid #ffa500;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: all 0.3s ease;
+}
+
+.reset-offline-button:hover {
+    background-color: rgba(255, 165, 0, 0.4);
+}
+
+/* Style pour le message d'information en mode hors ligne permanent */
+.permanent-offline .offline-info {
+    color: #ff4500;
+    background-color: rgba(255, 69, 0, 0.1);
+    border-radius: 4px;
+    padding: 10px;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Bouton pour basculer entre les scores */
+.local-scores-button-container {
+    margin-top: 15px;
+    text-align: center;
+}
+
+#toggle-local-scores {
+    font-size: 0.9em;
+    padding: 8px 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+#toggle-local-scores:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+#toggle-local-scores.showing-local {
+    background-color: rgba(0, 100, 0, 0.5);
+}

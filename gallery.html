@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galerie des Avatars - English Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/new-design.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/gallery.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+      <button class="menu-toggle">☰</button>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link active">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+      <div class="user-menu">
+        <a href="profile.html" class="btn-login">Mon Profil</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Hero Section -->
+  <section class="profile-hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+    <div class="container">
+      <div class="profile-header gallery-header">
+        <div class="gallery-title">
+          <h1 class="text-gradient">GALERIE DES AVATARS</h1>
+          <p class="gallery-subtitle">Découvrez les avatars de tous les joueurs d'English Quest</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section class="profile-content">
+    <div class="container">
+      <div class="profile-section">
+        <h2 class="section-title">Explorateurs d'English Quest</h2>
+        <p class="section-subtitle">Découvrez les avatars personnalisés de notre communauté et suivez leur progression</p>
+
+        <div class="gallery-controls">
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Rechercher un joueur...">
+            <button id="search-button"><i class="fas fa-search"></i></button>
+          </div>
+          <div class="filter-options">
+            <select id="sort-select">
+              <option value="recent">Plus récents</option>
+              <option value="level">Niveau (décroissant)</option>
+              <option value="alphabetical">Alphabétique</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="gallery-grid" id="avatars-gallery">
+          <!-- Les avatars seront générés dynamiquement ici -->
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Chargement des avatars...</p>
+          </div>
+        </div>
+
+        <div class="gallery-pagination">
+          <button id="prev-page" class="btn btn-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+          <span id="page-indicator">Page 1</span>
+          <button id="next-page" class="btn btn-secondary">Suivant <i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Avatar Modal -->
+  <div id="avatar-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-username">Nom du joueur</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-avatar-container">
+          <div class="avatar-display large">
+            <div class="avatar-background"></div>
+            <div class="avatar-body"></div>
+            <div class="avatar-head"></div>
+            <div class="avatar-accessory"></div>
+            <div class="avatar-level">1</div>
+          </div>
+        </div>
+        <div class="modal-user-info">
+          <div class="user-stats">
+            <div class="stat">
+              <i class="fas fa-trophy"></i>
+              <span>Niveau: <strong id="modal-level">1</strong></span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-star"></i>
+              <span>XP: <strong id="modal-xp">0</strong></span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-gamepad"></i>
+              <span>Jeux complétés: <strong id="modal-games">0</strong></span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-book"></i>
+              <span>Cours complétés: <strong id="modal-courses">0</strong></span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-calendar-alt"></i>
+              <span>Dernière connexion: <strong id="modal-last-login">01/05/2025</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="container">
+      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+        <div class="footer-brand">
+          <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-discord"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
+            <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
+            <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
+            <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
+            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Contact</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Support</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Nous contacter</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+        <p>&copy; 2023 English Quest - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script src="scripts/local-auth.js"></script>
+  <script src="scripts/gallery.js"></script>
+  <script src="scripts/debug.js"></script>
+</body>
+</html>

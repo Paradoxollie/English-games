@@ -1,0 +1,101 @@
+/* Styles pour les bonus de streak */
+
+/* Animation pour l'effet de bonus de streak */
+@keyframes streakBonusAppear {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+/* Animation pour l'effet de flash */
+@keyframes flashEffect {
+    0% { opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0; }
+}
+
+/* Classe pour l'effet de bonus de streak */
+.streak-bonus-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffcc00;
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 20px 40px;
+    border-radius: 10px;
+    z-index: 1000;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px #ff6600;
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+    border: 2px solid #ff6600;
+}
+
+.streak-bonus-effect.show {
+    animation: streakBonusAppear 2s ease-out forwards;
+}
+
+/* Classe pour l'effet de flash */
+.flash-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ffcc00;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flash-effect.show {
+    animation: flashEffect 0.4s ease-out forwards;
+}
+
+/* Styles pour les compteurs de streak */
+.streak-counter {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.streak-counter .streak-icon {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+.streak-counter .streak-value {
+    color: #ffcc00;
+}
+
+/* Animation de pulsation pour les streaks élevés */
+@keyframes streakPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.streak-counter.high-streak {
+    animation: streakPulse 1s infinite;
+    background-color: rgba(255, 102, 0, 0.7);
+}
+
+.streak-counter.very-high-streak {
+    animation: streakPulse 0.7s infinite;
+    background-color: rgba(255, 0, 0, 0.7);
+}

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Speed Verb Challenge - Maîtrisez les verbes irréguliers anglais dans cette expérience RPG immersive">
+    <meta name="theme-color" content="#121212">
+    <title>Speed Verb Challenge | English Quest</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Base styles -->
+    <link href="../styles/new-design.css" rel="stylesheet">
+    <link href="../src/styles/layout.css" rel="stylesheet">
+
+    <!-- Game-specific styles -->
+    <link href="../src/styles/games/speed-verb-challenge.css" rel="stylesheet">
+    <link href="../src/styles/games/speed-verb-animations.css" rel="stylesheet">
+    <link href="../src/styles/games/game-events.css" rel="stylesheet">
+    <link href="../src/styles/streak-bonus.css" rel="stylesheet">
+    <link href="../src/styles/reward-notifications.css" rel="stylesheet">
+    <link href="../src/styles/connection-indicator.css" rel="stylesheet">
+    <link href="../src/styles/leaderboard.css" rel="stylesheet">
+    <link href="../src/styles/sync-indicator.css" rel="stylesheet">
+
+    <!-- Styles personnalisés pour corriger l'alignement -->
+    <style>
+        /* Ajout d'un espace pour compenser le header fixe */
+        body {
+            padding-top: 80px;
+        }
+
+        /* Assurer que le bouton de profil a la même taille sur toutes les pages */
+        .btn-login {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Correction des couleurs du titre */
+        .section-title.text-gradient {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 900;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Correction de la couleur du sous-titre */
+        .game-subtitle {
+            color: var(--color-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Assurer que le header est exactement comme sur les autres pages */
+        .header {
+            padding: var(--spacing-sm) 0;
+        }
+
+        /* Assurer que le container a la même largeur que sur les autres pages */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm);
+        }
+    </style>
+</head>
+<body class="game-body">
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../index.html" class="nav-link">Accueil</a></li>
+                    <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+                    <li><a href="../courses.html" class="nav-link">Cours</a></li>
+                    <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+                    <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-menu">
+                <a href="../profile.html" class="btn-login">Profil</a>
+                <button class="menu-toggle">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game container -->
+    <div class="game-universe">
+        <!-- Game UI -->
+        <main class="game-interface">
+            <!-- Game header - Centered subtitle -->
+            <div class="game-header-content">
+                <h1 class="section-title text-gradient">Speed Verb Challenge</h1>
+                <p class="game-subtitle">Maîtrisez les verbes irréguliers anglais</p>
+            </div>
+
+            <!-- Game sections -->
+            <div class="game-sections">
+                <!-- Main game panel -->
+                <div class="game-panel main-panel">
+                    <!-- Game states -->
+                    <div class="game-states">
+                        <!-- Game state: welcome -->
+                        <div id="welcome-screen" class="game-state active">
+                            <div class="welcome-content">
+                                <h2 class="panel-title">Bienvenue, Apprenti Linguiste</h2>
+                                <p class="welcome-text">
+                                    Préparez-vous à tester votre connaissance des verbes irréguliers anglais dans une course contre la montre.
+                                    Chaque verbe correctement lancé vous rapportera des points et de l'expérience.
+                                </p>
+
+                                <div class="difficulty-selection">
+                                    <h3>Choisissez votre niveau de difficulté :</h3>
+                                    <div class="difficulty-options">
+                                        <label class="difficulty-option">
+                                            <input type="radio" name="difficulty" value="1" checked>
+                                            <span class="difficulty-label">Novice</span>
+                                            <span class="difficulty-desc">Seulement le prétérit</span>
+                                        </label>
+
+                                        <label class="difficulty-option">
+                                            <input type="radio" name="difficulty" value="2">
+                                            <span class="difficulty-label">Adepte</span>
+                                            <span class="difficulty-desc">Prétérit et participe passé</span>
+                                        </label>
+
+                                        <label class="difficulty-option">
+                                            <input type="radio" name="difficulty" value="3">
+                                            <span class="difficulty-label">Maître</span>
+                                            <span class="difficulty-desc">Prétérit, participe passé et traduction</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button id="start-game-btn" class="game-button primary-button glow-button">
+                                    <span class="button-text">Commencer le Rituel</span>
+                                    <span class="action-icon">✦</span>
+                                </button>
+
+                                <button id="show-rules-btn" class="game-button secondary-button">
+                                    <span class="button-text">Règles du Jeu</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Game state: playing -->
+                        <div id="playing" class="game-state">
+                            <!-- Game HUD -->
+                            <div class="game-hud">
+                                <div class="hud-item">
+                                    <span class="hud-icon score-icon"></span>
+                                    <span class="hud-label">Score</span>
+                                    <span id="player-score" class="hud-value">0</span>
+                                </div>
+
+                                <div class="hud-item">
+                                    <span class="hud-icon time-icon"></span>
+                                    <span class="hud-label">Temps</span>
+                                    <span id="time-left" class="hud-value">90</span>
+                                </div>
+
+                                <div class="hud-item">
+                                    <span class="hud-icon level-icon"></span>
+                                    <span class="hud-label">Niveau</span>
+                                    <span id="player-level" class="hud-value">1</span>
+                                </div>
+
+                                <div class="hud-item">
+                                    <span class="hud-icon combo-icon"></span>
+                                    <span class="hud-label">Combo</span>
+                                    <span id="combo-multiplier" class="hud-value">x1.0</span>
+                                </div>
+                            </div>
+
+                            <!-- XP Progress -->
+                            <div class="xp-progress-container">
+                                <div id="xp-progress" class="xp-progress-bar" style="width: 0%"></div>
+                            </div>
+
+                            <!-- Verb challenge -->
+                            <div class="verb-challenge">
+                                <div class="verb-card">
+                                    <div class="verb-info">
+                                        <div class="verb-prompt">Lancez le sort de :</div>
+                                        <div id="current-verb" class="verb-display floating-verb">begin</div>
+                                        <div id="verb-translation" class="verb-translation">(commencer)</div>
+                                    </div>
+
+                                    <div id="verb-form-inputs" class="verb-inputs">
+                                        <!-- Inputs will be generated based on difficulty -->
+                                    </div>
+
+                                    <!-- Verb actions -->
+                                    <div class="verb-actions">
+                                        <button id="check-answer-btn" class="game-button action-button glow-button">
+                                            <span class="button-text">Lancer le Sort</span>
+                                            <span class="action-icon">✦</span>
+                                        </button>
+
+                                        <button id="skip-verb-btn" class="game-button secondary-button glow-button">
+                                            <span class="button-text">Bannir</span>
+                                            <span class="action-icon">✧</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feedback message -->
+                            <div id="feedback-message" class="feedback-message"></div>
+                        </div>
+
+                        <!-- Game state: game over -->
+                        <div id="game-over" class="game-state">
+                            <h2 class="panel-title">Énergie Arcanique Épuisée</h2>
+                            <p class="game-over-text">Votre rituel est terminé. Voici vos résultats :</p>
+
+                            <div class="results-container">
+                                <div class="final-score">
+                                    <div class="score-label">Score Final</div>
+                                    <div id="final-score-value" class="score-value">0</div>
+                                </div>
+
+                                <div class="stats-container">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Niveau Atteint</div>
+                                        <div id="final-level" class="stat-value">1</div>
+                                    </div>
+
+                                    <div class="stat-item">
+                                        <div class="stat-label">Verbes Complétés</div>
+                                        <div id="verbs-completed" class="stat-value">0</div>
+                                    </div>
+
+                                    <div class="stat-item">
+                                        <div class="stat-label">Combo Maximum</div>
+                                        <div id="highest-combo" class="stat-value">x1.0</div>
+                                    </div>
+                                </div>
+
+                                <div class="game-over-actions">
+                                    <button id="save-score-btn" class="game-button primary-button glow-button">
+                                        <span class="button-glow"></span>
+                                        <span class="button-text">Inscrire mon score</span>
+                                    </button>
+
+                                    <button id="play-again-btn" class="game-button secondary-button glow-button">
+                                        <span class="button-text">Nouveau Rituel</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Current verb answers -->
+                            <div class="current-verb-answers">
+                                <h3>Réponses pour le dernier verbe :</h3>
+                                <div id="current-verb-answer" class="verb-answer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard panel -->
+                <div class="game-panel leaderboard-panel">
+                    <div class="game-hud">
+                        <h2>Meilleurs Scores</h2>
+                    </div>
+                    <div id="speed-verb-leaderboard" class="leaderboard-container">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="rank-header">Rang</th>
+                                    <th class="player-header">Joueur</th>
+                                    <th class="score-header">Score</th>
+                                    <th class="date-header">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr>
+                                    <td colspan="4" class="loading-scores">Invocation des archives ancestrales...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Rules modal -->
+    <div id="rules-modal" class="game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Règles du Jeu</h2>
+                <button id="close-rules-btn" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Bienvenue dans <strong>Speed Verb Challenge</strong>, une épreuve de maîtrise des verbes irréguliers anglais !</p>
+
+                <h3>Objectif</h3>
+                <p>Complétez correctement autant de verbes irréguliers que possible avant la fin du temps imparti.</p>
+
+                <h3>Comment jouer</h3>
+                <ul>
+                    <li>Un verbe à l'infinitif s'affiche à l'écran</li>
+                    <li>Entrez les formes demandées selon le niveau de difficulté choisi</li>
+                    <li>Cliquez sur "Lancer le Sort" pour valider votre réponse</li>
+                    <li>Si vous ne connaissez pas un verbe, cliquez sur "Bannir" pour passer au suivant</li>
+                </ul>
+
+                <h3>Niveaux de difficulté</h3>
+                <ul>
+                    <li><strong>Novice :</strong> Seulement le prétérit (1 point par verbe)</li>
+                    <li><strong>Adepte :</strong> Prétérit et participe passé (2 points par verbe)</li>
+                    <li><strong>Maître :</strong> Prétérit, participe passé et traduction (3 points par verbe)</li>
+                </ul>
+
+                <h3>Système de combo</h3>
+                <p>Chaque réponse correcte consécutive augmente votre multiplicateur de combo de 10%, vous permettant de gagner plus de points !</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <!-- Game scripts -->
+    <script src="../src/js/firebase-init.js"></script>
+    <script src="../scripts/local-auth.js"></script>
+    <script src="../src/js/auth-state.js"></script>
+    <script src="../src/js/verb-data.js"></script>
+    <script src="../src/js/game-effects-simple.js"></script>
+    <script src="../src/js/reward-system.js"></script>
+    <script src="../src/js/speed-verb-leaderboard.js"></script>
+    <script src="../src/js/games/speed-verb-challenge.js"></script>
+
+    <!-- Script d'administration des scores -->
+    <script src="../src/js/admin-scores.js"></script>
+
+    <!-- Script d'initialisation de l'utilisateur -->
+    <script>
+        // Vérifier si l'utilisateur est connecté au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Vérifier si un utilisateur est connecté dans localStorage
+                const userJson = localStorage.getItem('english_quest_current_user');
+                if (userJson) {
+                    const user = JSON.parse(userJson);
+
+                    if (user && user.username) {
+                        console.log("Utilisateur connecté au jeu");
+
+                        // Mettre à jour l'interface utilisateur
+                        if (typeof window.updateUI === 'function') {
+                            window.updateUI();
+                        }
+
+                        // Ne pas mettre à jour le texte du bouton de connexion
+                        // Garder "Profil" comme sur les autres pages
+                    }
+                } else {
+                    console.log("Aucun utilisateur connecté");
+                }
+
+                // Initialiser le menu mobile
+                const menuToggle = document.querySelector('.menu-toggle');
+                const navList = document.querySelector('.nav-list');
+
+                if (menuToggle && navList) {
+                    menuToggle.addEventListener('click', function() {
+                        navList.classList.toggle('active');
+                    });
+                }
+            } catch (error) {
+                console.error("Erreur lors de la vérification de l'utilisateur:", error);
+            }
+        });
+    </script>
+</body>
+</html>

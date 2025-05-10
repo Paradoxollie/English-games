@@ -1,0 +1,105 @@
+/* Styles pour les notifications de mini-défis */
+
+.challenge-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 128, 0, 0.7);
+    border: 2px solid #00ff00;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+}
+
+.challenge-notification.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.challenge-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.challenge-icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.challenge-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #00ff00;
+}
+
+.challenge-content {
+    margin-bottom: 10px;
+}
+
+.challenge-description {
+    font-size: 16px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.challenge-reward {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 128, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.reward-icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.reward-text {
+    font-size: 14px;
+    color: #ffcc00;
+}
+
+/* Styles pour l'événement timer */
+.event-timer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 20px;
+    z-index: 999;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    border: 1px solid #00ff00;
+}
+
+.event-timer .time-left {
+    margin-left: 8px;
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+/* Animation pour les notifications d'événements */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.event-notification {
+    animation: pulse 2s infinite;
+}

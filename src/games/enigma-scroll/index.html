@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
+  <title>Enigma Scroll | English Quest Reborn</title>
+
+  <!-- Styles globaux du site -->
+  <link rel="stylesheet" href="../../../styles/new-design.css">
+
+  <!-- Styles communs -->
+  <link rel="stylesheet" href="../../shared/styles/main.css">
+  <link rel="stylesheet" href="../../shared/styles/games/common.css">
+
+  <!-- Styles spécifiques au jeu -->
+  <link rel="stylesheet" href="./enigma-scroll.css">
+
+  <!-- Polices -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+
+  <!-- Icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="game-page enigma-scroll-page">
+  <!-- Overlay de chargement -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Chargement des parchemins mystérieux...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="game-header">
+    <div class="header-content">
+      <div class="logo-container">
+        <a href="../../index.html">
+          <img src="../../assets/images/logo.webp" alt="English Quest Logo" class="logo">
+        </a>
+      </div>
+      <nav class="main-nav">
+        <a href="../../index.html" class="nav-link">
+          <span class="nav-icon home-icon"></span>
+          Accueil
+        </a>
+        <a href="../../games.html" class="nav-link active">
+          <span class="nav-icon games-icon"></span>
+          Jeux
+        </a>
+        <a href="../../courses.html" class="nav-link">
+          <span class="nav-icon courses-icon"></span>
+          Cours
+        </a>
+        <a href="../../leaderboard.html" class="nav-link">
+          <span class="nav-icon leaderboard-icon"></span>
+          Classement
+        </a>
+        <a href="../../profile.html" class="nav-link">
+          <span class="nav-icon profile-icon"></span>
+          Profil
+        </a>
+      </nav>
+
+      <!-- Menu utilisateur -->
+      <div class="user-menu">
+        <div class="user-profile">
+          <span id="user-name">Invité</span>
+          <div class="user-avatar">
+            <img id="user-avatar" src="../../assets/images/avatars/default.webp" alt="Avatar">
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main>
+    <div class="game-container" id="enigma-scroll-container">
+      <!-- Titre et introduction -->
+      <div class="game-intro">
+        <h1>Enigma Scroll <span class="subtitle">Les Parchemins Mystérieux</span></h1>
+        <p class="game-description">
+          Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+          Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+        </p>
+
+        <!-- Sélecteur de difficulté -->
+        <div class="difficulty-selector">
+          <h3>Choisissez votre difficulté</h3>
+          <div class="difficulty-options">
+            <button class="difficulty-btn" data-difficulty="beginner">
+              <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+              <span class="difficulty-name">Débutant</span>
+              <span class="difficulty-desc">Mots de 4 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="intermediate">
+              <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+              <span class="difficulty-name">Intermédiaire</span>
+              <span class="difficulty-desc">Mots de 5 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="advanced">
+              <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+              <span class="difficulty-name">Avancé</span>
+              <span class="difficulty-desc">Mots de 7 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="expert">
+              <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+              <span class="difficulty-name">Expert</span>
+              <span class="difficulty-desc">Mots de 9 lettres</span>
+            </button>
+            <button class="difficulty-btn" data-difficulty="legendary">
+              <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+              <span class="difficulty-name">Légendaire</span>
+              <span class="difficulty-desc">Mots de 10 lettres</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bouton de démarrage -->
+        <button id="start-game-button" class="start-button">Commencer l'aventure</button>
+      </div>
+
+      <!-- Zone de jeu (cachée au départ) -->
+      <div id="game-area" class="game-area" style="display: none;">
+        <!-- Informations de jeu -->
+        <div class="game-info">
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-scroll"></i></span>
+            <span class="stat-label">Niveau</span>
+            <span id="level-display" class="stat-value">1</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-star"></i></span>
+            <span class="stat-label">Score</span>
+            <span id="score-display" class="stat-value">0</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
+            <span class="stat-label">Temps</span>
+            <span id="time-display" class="stat-value">60</span>
+          </div>
+          <div class="game-stat">
+            <span class="stat-icon"><i class="fas fa-bolt"></i></span>
+            <span class="stat-label">Combo</span>
+            <span id="combo-display" class="stat-value">x1</span>
+          </div>
+        </div>
+
+        <!-- Grille de jeu -->
+        <div id="word-grid" class="word-grid"></div>
+
+        <!-- Clavier virtuel -->
+        <div id="keyboard" class="keyboard">
+          <div class="keyboard-row">
+            <button class="key-btn">Q</button>
+            <button class="key-btn">W</button>
+            <button class="key-btn">E</button>
+            <button class="key-btn">R</button>
+            <button class="key-btn">T</button>
+            <button class="key-btn">Y</button>
+            <button class="key-btn">U</button>
+            <button class="key-btn">I</button>
+            <button class="key-btn">O</button>
+            <button class="key-btn">P</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key-btn">A</button>
+            <button class="key-btn">S</button>
+            <button class="key-btn">D</button>
+            <button class="key-btn">F</button>
+            <button class="key-btn">G</button>
+            <button class="key-btn">H</button>
+            <button class="key-btn">J</button>
+            <button class="key-btn">K</button>
+            <button class="key-btn">L</button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key-btn key-enter">ENTER</button>
+            <button class="key-btn">Z</button>
+            <button class="key-btn">X</button>
+            <button class="key-btn">C</button>
+            <button class="key-btn">V</button>
+            <button class="key-btn">B</button>
+            <button class="key-btn">N</button>
+            <button class="key-btn">M</button>
+            <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+          </div>
+        </div>
+
+        <!-- Power-ups -->
+        <div id="power-ups-container" class="power-ups-container">
+          <div class="power-up" data-power="hint">
+            <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="power-up-name">Indice</div>
+            <div class="power-up-count" id="hint-count">3</div>
+          </div>
+          <div class="power-up" data-power="time">
+            <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+            <div class="power-up-name">Temps</div>
+            <div class="power-up-count" id="time-count">2</div>
+          </div>
+          <div class="power-up" data-power="skip">
+            <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+            <div class="power-up-name">Passer</div>
+            <div class="power-up-count" id="skip-count">1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zone de classement -->
+      <div id="leaderboard-area" class="leaderboard-area">
+        <h2>Meilleurs Scores</h2>
+        <div class="leaderboard-tabs">
+          <button class="leaderboard-tab active" data-tab="daily">Aujourd'hui</button>
+          <button class="leaderboard-tab" data-tab="weekly">Cette semaine</button>
+          <button class="leaderboard-tab" data-tab="alltime">Tous les temps</button>
+        </div>
+        <div id="leaderboard-content" class="leaderboard-content">
+          <div class="leaderboard-loading">Chargement des scores...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="game-footer">
+    <div class="footer-content">
+      <p>&copy; 2024 English Quest Reborn</p>
+      <div class="footer-links">
+        <a href="../../privacy.html">Confidentialité</a>
+        <a href="../../terms.html">Conditions d'utilisation</a>
+        <a href="../../contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modales -->
+
+  <!-- Modale des règles du jeu -->
+  <div class="modal rules-modal" id="rulesModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Règles du jeu</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
+
+        <h3>Objectif :</h3>
+        <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
+
+        <h3>Comment jouer :</h3>
+        <ul>
+          <li>Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li>Les lettres changeront de couleur pour vous guider :
+            <ul>
+              <li><span class="example-correct">Vert</span> : La lettre est correcte et bien placée</li>
+              <li><span class="example-present">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li><span class="example-absent">Gris</span> : La lettre n'est pas dans le mot</li>
+            </ul>
+          </li>
+          <li>Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li>Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
+          <li>Utilisez les power-ups pour vous aider :
+            <ul>
+              <li><i class="fas fa-lightbulb"></i> <strong>Indice</strong> : Révèle une lettre du mot</li>
+              <li><i class="fas fa-clock"></i> <strong>Temps</strong> : Ajoute 30 secondes au chronomètre</li>
+              <li><i class="fas fa-forward"></i> <strong>Passer</strong> : Passe au mot suivant</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>Astuces :</h3>
+        <ul>
+          <li>Commencez par des mots contenant des voyelles courantes</li>
+          <li>Faites attention aux lettres qui se répètent</li>
+          <li>Utilisez les informations des essais précédents</li>
+          <li>Enchaînez les mots corrects pour augmenter votre combo et gagner plus de points</li>
+        </ul>
+
+        <p>Bonne chance dans votre quête linguistique !</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="startGameFromRules">Commencer à jouer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de fin de partie -->
+  <div class="modal game-over-modal" id="gameOverModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Partie terminée</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="game-over-stats">
+          <div class="game-over-stat">
+            <span class="stat-label">Score final</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Mots trouvés</span>
+            <span id="words-found" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Combo maximum</span>
+            <span id="max-combo" class="stat-value">x1</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Temps total</span>
+            <span id="total-time" class="stat-value">0s</span>
+          </div>
+        </div>
+
+        <div class="rewards-section">
+          <h3>Récompenses</h3>
+          <div class="rewards-container">
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-coins"></i></div>
+              <div class="reward-value" id="coins-reward">+0</div>
+            </div>
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-star"></i></div>
+              <div class="reward-value" id="xp-reward">+0 XP</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-high-score" class="new-high-score" style="display: none;">
+          <i class="fas fa-trophy"></i> Nouveau record personnel !
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="playAgainButton">Rejouer</button>
+        <button class="modal-button secondary" id="backToMenuButton">Menu principal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de mot trouvé -->
+  <div class="modal word-found-modal" id="wordFoundModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Mot trouvé !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Le mot était : <span id="revealed-word" class="revealed-word">WORD</span></p>
+        <p class="word-definition" id="word-definition">Définition du mot...</p>
+
+        <div class="word-stats">
+          <div class="word-stat">
+            <span class="stat-label">Points gagnés</span>
+            <span id="points-earned" class="stat-value">+100</span>
+          </div>
+          <div class="word-stat">
+            <span class="stat-label">Temps restant</span>
+            <span id="time-bonus" class="stat-value">+10s</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="nextWordButton">Mot suivant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'événement spécial -->
+  <div class="modal event-modal" id="eventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Événement spécial !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="event-description" class="event-description">
+          Description de l'événement...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="acceptEventButton">Accepter</button>
+        <button class="modal-button secondary" id="declineEventButton">Décliner</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-container">
+    <h2 class="leaderboard-title">Classement</h2>
+    <div id="enigma-scroll-leaderboard" class="leaderboard-content">
+      <!-- Le contenu du leaderboard sera chargé dynamiquement -->
+      <div class="leaderboard-loading">Chargement des scores...</div>
+    </div>
+  </div>
+
+  <!-- Effets visuels -->
+  <div id="particles-container" class="particles-container"></div>
+  <div id="forest-mist" class="forest-mist"></div>
+  <div id="floating-leaves" class="floating-leaves"></div>
+
+  <!-- Scripts Firebase -->
+  <script src="../../shared/js/firebase-app.js"></script>
+  <script src="../../shared/js/firebase-firestore.js"></script>
+  <script src="../../shared/js/firebase-auth.js"></script>
+  <script src="../../shared/js/firebase-database.js"></script>
+  <script src="../../core/config/firebase.config.js"></script>
+
+  <!-- Initialisation Firebase -->
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+      authDomain: "english-games-41017.firebaseapp.com",
+      projectId: "english-games-41017",
+      storageBucket: "english-games-41017.appspot.com",
+      messagingSenderId: "452279652544",
+      appId: "1:452279652544:web:916f93e0ab29183e739d25",
+      measurementId: "G-RMCQTMKDVP",
+      databaseURL: "https://english-games-41017-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    // Initialiser Firebase s'il n'est pas déjà initialisé
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      console.log("Firebase initialisé avec succès dans Enigma Scroll");
+    }
+  </script>
+
+  <!-- Services et utilitaires -->
+  <script src="../../core/services/auth.service.js"></script>
+  <script src="../../core/services/user.service.js"></script>
+  <script src="../../core/services/leaderboard.service.js"></script>
+  <script src="../../js/firebase-connection-state.js"></script>
+
+  <!-- Scripts Firebase pour le jeu -->
+  <script src="../../js/enigma-scroll/firebase-helpers.js"></script>
+  <script src="../../js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
+
+  <!-- Scripts du jeu -->
+  <script src="./word-lists.js"></script>
+  <script src="./game-effects.js"></script>
+  <script src="./game-ui.js"></script>
+  <script src="./enigma-scroll.js"></script>
+</body>
+</html>
