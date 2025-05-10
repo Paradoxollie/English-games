@@ -150,6 +150,18 @@ const elements = {
 function initGame() {
     console.log("Initialisation du jeu Speed Verb Challenge");
 
+    // Détecter si l'appareil est mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    // Ajouter une classe au body pour les styles spécifiques au mobile
+    if (isMobile) {
+        document.body.classList.add('is-mobile-device');
+        console.log("Appareil mobile détecté, optimisations appliquées");
+
+        // Optimisations pour mobile
+        optimizeForMobile();
+    }
+
     // Vérifier l'état de connexion de l'utilisateur
     try {
         getPlayerName();
@@ -185,9 +197,12 @@ function initGame() {
         };
     }
 
-    // Initialiser les effets visuels
+    // Initialiser les effets visuels (réduits sur mobile)
     if (window.GameEffects) {
         gameEffects = new GameEffects();
+        if (isMobile) {
+            gameEffects.reduceEffects(); // Réduire les effets sur mobile si la méthode existe
+        }
         console.log("Effets visuels initialisés");
     }
 
@@ -201,6 +216,51 @@ function initGame() {
     protectGameState();
 
     console.log("Jeu initialisé avec succès");
+}
+
+/**
+ * Optimisations pour les appareils mobiles
+ */
+function optimizeForMobile() {
+    // Ajuster la mise en page pour les appareils mobiles
+    const gameInterface = document.querySelector('.game-interface');
+    if (gameInterface) {
+        gameInterface.style.padding = '0.5rem';
+    }
+
+    // Optimiser les champs de saisie pour mobile
+    document.querySelectorAll('.verb-input').forEach(input => {
+        // Désactiver l'auto-correction et l'auto-capitalisation
+        input.setAttribute('autocorrect', 'off');
+        input.setAttribute('autocapitalize', 'none');
+        input.setAttribute('spellcheck', 'false');
+
+        // Augmenter la taille des champs pour faciliter la saisie
+        input.style.fontSize = '1.1rem';
+        input.style.height = '44px';
+    });
+
+    // Optimiser les boutons pour le toucher
+    document.querySelectorAll('.game-button').forEach(button => {
+        button.style.minHeight = '50px';
+        button.style.padding = '0.75rem 1rem';
+    });
+
+    // Optimiser le clavier virtuel
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            // Faire défiler pour que le champ soit visible au-dessus du clavier
+            setTimeout(() => {
+                e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+    });
+
+    // Optimiser le défilement
+    document.querySelectorAll('.game-panel').forEach(panel => {
+        panel.style.overflowY = 'auto';
+        panel.style.webkitOverflowScrolling = 'touch';
+    });
 }
 
 /**
@@ -247,41 +307,103 @@ function protectGameState() {
  * Ajoute les écouteurs d'événements aux éléments du jeu
  */
 function addEventListeners() {
+    // Détecter si l'appareil est mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    // Options pour les écouteurs d'événements tactiles
+    const touchOptions = { passive: true };
+
     // Bouton de démarrage
     if (elements.startGameBtn) {
         elements.startGameBtn.addEventListener('click', startGame);
+        if (isMobile) {
+            elements.startGameBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.startGameBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     // Bouton de vérification de réponse
     if (elements.checkAnswerBtn) {
         elements.checkAnswerBtn.addEventListener('click', checkAnswer);
+        if (isMobile) {
+            elements.checkAnswerBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.checkAnswerBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     // Bouton pour passer un verbe
     if (elements.skipVerbBtn) {
         elements.skipVerbBtn.addEventListener('click', skipVerb);
+        if (isMobile) {
+            elements.skipVerbBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.skipVerbBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     // Bouton pour sauvegarder le score
     if (elements.saveScoreBtn) {
         elements.saveScoreBtn.addEventListener('click', saveScore);
+        if (isMobile) {
+            elements.saveScoreBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.saveScoreBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     // Bouton pour rejouer
     if (elements.playAgainBtn) {
         elements.playAgainBtn.addEventListener('click', resetGame);
+        if (isMobile) {
+            elements.playAgainBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.playAgainBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     // Boutons pour les règles
     if (elements.showRulesBtn) {
         elements.showRulesBtn.addEventListener('click', showRules);
+        if (isMobile) {
+            elements.showRulesBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.showRulesBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
     if (elements.closeRulesBtn) {
         elements.closeRulesBtn.addEventListener('click', hideRules);
+        if (isMobile) {
+            elements.closeRulesBtn.addEventListener('touchstart', function() {
+                this.classList.add('button-touch');
+            }, touchOptions);
+            elements.closeRulesBtn.addEventListener('touchend', function() {
+                this.classList.remove('button-touch');
+            }, touchOptions);
+        }
     }
 
-    // Écouteur pour la touche Entrée
+    // Écouteur pour la touche Entrée (pour les appareils avec clavier)
     document.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
             const activeState = Object.keys(elements.gameStates).find(
@@ -324,6 +446,41 @@ function addEventListeners() {
             console.log(`Difficulté changée: ${difficulty}`);
         });
     });
+
+    // Optimisations pour les appareils mobiles
+    if (isMobile) {
+        // Ajouter un gestionnaire pour le bouton "Terminé" sur le clavier virtuel
+        document.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter' && document.activeElement.classList.contains('verb-input')) {
+                // Fermer le clavier en retirant le focus
+                document.activeElement.blur();
+                // Vérifier la réponse
+                checkAnswer();
+            }
+        });
+
+        // Améliorer la navigation entre les champs de saisie
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab' && document.activeElement.classList.contains('verb-input')) {
+                const inputs = Array.from(document.querySelectorAll('.verb-input'));
+                const currentIndex = inputs.indexOf(document.activeElement);
+
+                if (currentIndex !== -1) {
+                    // Empêcher le comportement par défaut de Tab
+                    e.preventDefault();
+
+                    // Calculer l'index du prochain champ
+                    const nextIndex = e.shiftKey ?
+                        (currentIndex - 1 + inputs.length) % inputs.length :
+                        (currentIndex + 1) % inputs.length;
+
+                    // Donner le focus au prochain champ
+                    inputs[nextIndex].focus();
+                    inputs[nextIndex].select();
+                }
+            }
+        });
+    }
 }
 
 /**

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Firebase - English Quest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #4ecca3;
+        }
+        .result {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        button {
+            background-color: #4ecca3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #3dbb92;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de connexion Firebase</h1>
+    <p>Cette page teste la connexion à Firebase et affiche les informations de configuration.</p>
+    
+    <button id="test-connection">Tester la connexion</button>
+    <button id="test-auth">Tester l'authentification</button>
+    <button id="test-firestore">Tester Firestore</button>
+    
+    <div class="result" id="result">
+        <p>Cliquez sur un bouton pour tester la connexion...</p>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Éléments DOM
+        const resultElement = document.getElementById('result');
+        const testConnectionButton = document.getElementById('test-connection');
+        const testAuthButton = document.getElementById('test-auth');
+        const testFirestoreButton = document.getElementById('test-firestore');
+
+        // Tester la connexion
+        testConnectionButton.addEventListener('click', () => {
+            try {
+                resultElement.innerHTML = `
+                    <h2 class="success">Connexion réussie!</h2>
+                    <p>Firebase a été initialisé avec succès.</p>
+                    <h3>Configuration:</h3>
+                    <pre>${JSON.stringify(firebaseConfig, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultElement.innerHTML = `
+                    <h2 class="error">Erreur de connexion</h2>
+                    <p>${error.message}</p>
+                `;
+            }
+        });
+
+        // Tester l'authentification
+        testAuthButton.addEventListener('click', async () => {
+            try {
+                resultElement.innerHTML = `<p>Tentative de connexion anonyme...</p>`;
+                
+                // Connexion anonyme
+                await signInAnonymously(auth);
+                
+                // Écouter les changements d'état d'authentification
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        resultElement.innerHTML = `
+                            <h2 class="success">Authentification réussie!</h2>
+                            <p>Utilisateur connecté: ${user.uid}</p>
+                            <pre>${JSON.stringify(user, null, 2)}</pre>
+                        `;
+                    } else {
+                        resultElement.innerHTML = `
+                            <h2 class="error">Non connecté</h2>
+                            <p>Aucun utilisateur n'est connecté.</p>
+                        `;
+                    }
+                });
+            } catch (error) {
+                resultElement.innerHTML = `
+                    <h2 class="error">Erreur d'authentification</h2>
+                    <p>${error.message}</p>
+                `;
+            }
+        });
+
+        // Tester Firestore
+        testFirestoreButton.addEventListener('click', async () => {
+            try {
+                resultElement.innerHTML = `<p>Récupération des collections...</p>`;
+                
+                // Récupérer les utilisateurs
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const usersCount = usersSnapshot.size;
+                
+                // Récupérer les profils
+                const profilesSnapshot = await getDocs(collection(db, 'profiles'));
+                const profilesCount = profilesSnapshot.size;
+                
+                // Récupérer les scores
+                const scoresSnapshot = await getDocs(collection(db, 'game_scores'));
+                const scoresCount = scoresSnapshot.size;
+                
+                resultElement.innerHTML = `
+                    <h2 class="success">Firestore connecté!</h2>
+                    <p>Collections trouvées:</p>
+                    <ul>
+                        <li>users: ${usersCount} documents</li>
+                        <li>profiles: ${profilesCount} documents</li>
+                        <li>game_scores: ${scoresCount} documents</li>
+                    </ul>
+                `;
+            } catch (error) {
+                resultElement.innerHTML = `
+                    <h2 class="error">Erreur Firestore</h2>
+                    <p>${error.message}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

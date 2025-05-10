@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - English Quest</title>
+    <link rel="stylesheet" href="src/styles/main.css">
+    <link rel="stylesheet" href="src/styles/login.css">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="new-index.html">
+                    <img src="assets/images/logo.png" alt="English Quest Logo">
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="new-index.html">Accueil</a></li>
+                    <li><a href="games.html">Jeux</a></li>
+                    <li><a href="courses.html">Cours</a></li>
+                    <li><a href="gallery.html">Galerie</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero login-hero">
+            <div class="container">
+                <h1>Bienvenue sur English Quest</h1>
+                <p>Connectez-vous ou créez un compte pour commencer votre aventure</p>
+            </div>
+        </section>
+
+        <section class="login-section">
+            <div class="container">
+                <div class="login-container">
+                    <div class="login-tabs">
+                        <button class="tab-button active" id="login-tab">Connexion</button>
+                        <button class="tab-button" id="register-tab">Inscription</button>
+                    </div>
+
+                    <div class="tab-content active" id="login-content">
+                        <form id="login-form">
+                            <div class="form-message">
+                                <p>Connectez-vous avec votre nom d'utilisateur pour continuer votre aventure.</p>
+                            </div>
+                            <div class="form-error" id="login-error"></div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="login-button">Se connecter</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-content" id="register-content">
+                        <form id="register-form">
+                            <div class="form-message">
+                                <p>Créez un compte pour commencer votre aventure.</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="register-username">Nom d'utilisateur</label>
+                                <input type="text" id="register-username" required>
+                            </div>
+                            <div class="form-error" id="register-error"></div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="register-button">S'inscrire</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="login-info">
+                        <h3>Pourquoi s'inscrire ?</h3>
+                        <ul>
+                            <li>Suivez votre progression en anglais</li>
+                            <li>Débloquez des avatars et des skins uniques</li>
+                            <li>Participez aux classements des meilleurs joueurs</li>
+                            <li>Accédez à tous les jeux et cours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/images/logo.png" alt="English Quest Logo">
+                </div>
+                <div class="footer-links">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="new-index.html">Accueil</a></li>
+                        <li><a href="games.html">Jeux</a></li>
+                        <li><a href="courses.html">Cours</a></li>
+                        <li><a href="gallery.html">Galerie</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>Contact</h3>
+                    <p>Pour toute question ou suggestion, n'hésitez pas à nous contacter.</p>
+                    <a href="contact.html" class="btn btn-secondary">Contact</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 English Quest. Tous droits réservés.</p>
+                <div class="footer-legal">
+                    <a href="privacy.html">Politique de confidentialité</a>
+                    <a href="terms.html">Conditions d'utilisation</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="src/js/firebase-config.js"></script>
+    <script type="module" src="src/js/login.js"></script>
+</body>
+</html>

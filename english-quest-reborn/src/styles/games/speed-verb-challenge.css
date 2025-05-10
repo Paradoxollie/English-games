@@ -924,53 +924,164 @@
     100% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.5), 0 0 60px rgba(0, 0, 0, 0.6); }
 }
 
+/* Styles pour les appareils tactiles */
+.game-button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
+}
+
+/* Effet de toucher pour les boutons */
+.button-touch {
+    transform: translateY(2px) !important;
+    opacity: 0.9;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+/* Styles spécifiques pour les appareils mobiles */
+.is-mobile-device .game-button {
+    min-height: 50px;
+    padding: 0.75rem 1rem;
+}
+
+.is-mobile-device .verb-input {
+    height: 44px;
+    font-size: 1.1rem;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
-    .game-interface {
-        padding: 1rem;
+    body {
+        padding-top: 60px; /* Réduire l'espace pour le header fixe */
     }
 
-    .game-title {
-        font-size: 2.5rem;
+    .game-interface {
+        padding: 0.5rem;
+    }
+
+    .game-header-content {
+        margin-bottom: 1rem;
+    }
+
+    .section-title.text-gradient {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
     }
 
     .game-subtitle {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
     }
 
     .panel-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Ajustements pour le HUD */
+    .game-hud {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .hud-item {
+        min-width: 70px;
+        padding: 0.5rem;
+    }
+
+    .hud-value {
+        font-size: 1.2rem;
+    }
+
+    /* Ajustements pour le verbe */
+    .verb-card {
+        padding: 1rem;
     }
 
     .verb-display {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        margin: 0.5rem auto;
     }
 
+    .verb-translation {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .verb-input {
+        padding: 0.75rem;
+        font-size: 1rem;
+        height: 44px; /* Hauteur minimale pour une bonne zone de toucher */
+    }
+
+    /* Ajustements pour les boutons */
     .verb-actions {
         flex-direction: column;
         align-items: center;
+        gap: 0.75rem;
     }
 
     .verb-actions .game-button {
         width: 100%;
         max-width: 300px;
+        min-height: 50px;
+        padding: 0.75rem 1rem;
     }
 
+    /* Ajustements pour l'écran de fin */
     .score-value {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
 
     .stats-container {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 
     .game-over-actions {
         flex-direction: column;
         align-items: center;
+        gap: 0.75rem;
     }
 
     .game-over-actions .game-button {
         width: 100%;
         max-width: 300px;
+        min-height: 50px;
+    }
+
+    /* Ajustements pour le leaderboard */
+    .leaderboard-panel {
+        margin-top: 1.5rem;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .date-header, .date-cell {
+        display: none; /* Masquer la colonne de date sur mobile */
+    }
+
+    /* Ajustements pour le modal */
+    .modal-content {
+        width: 95%;
+        max-height: 80vh;
+    }
+
+    .modal-header {
+        padding: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-body h3 {
+        font-size: 1.2rem;
+        margin: 1rem 0 0.5rem;
     }
 }

@@ -5,20 +5,28 @@
 
 // Attendre que le DOM soit chargé
 document.addEventListener('DOMContentLoaded', function() {
-  // Désactivation des animations qui pourraient causer des problèmes
-  // initAnimations();
+  // Détecter si l'appareil est mobile
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
   // Initialiser le menu mobile
   initMobileMenu();
 
-  // Désactivation des effets de survol qui pourraient causer des problèmes
-  // initHoverEffects();
-
-  // Désactivation du chargement de progression qui pourrait causer des problèmes
-  // simulateProgress();
-
   // Garantir que les cartes de jeu restent visibles
   ensureCardsVisibility();
+
+  // Initialiser les animations seulement sur les appareils non mobiles
+  if (!isMobile) {
+    // Animations légères même sur desktop
+    initLightAnimations();
+  } else {
+    // Optimisations spécifiques pour mobile
+    optimizeForMobile();
+  }
+
+  // Ajouter une classe au body pour les styles spécifiques au mobile
+  if (isMobile) {
+    document.body.classList.add('is-mobile');
+  }
 });
 
 // Fonction pour garantir que les cartes de jeu restent visibles
@@ -84,8 +92,17 @@ function initAnimations() {
 function initMobileMenu() {
   const menuToggle = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.nav');
+  const navList = document.querySelector('.nav-list');
 
   if (menuToggle && nav) {
+    // Initialiser l'état du menu
+    if (window.innerWidth < 768) {
+      nav.style.display = 'none';
+      nav.style.opacity = '0';
+      nav.style.transform = 'translateY(-10px)';
+    }
+
+    // Gérer le clic sur le bouton du menu
     menuToggle.addEventListener('click', function() {
       nav.classList.toggle('active');
 
@@ -101,6 +118,36 @@ function initMobileMenu() {
         setTimeout(() => {
           nav.style.display = 'none';
         }, 300);
+      }
+    });
+
+    // Fermer le menu lorsqu'un lien est cliqué
+    if (navList) {
+      const navLinks = navList.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth < 768) {
+            nav.classList.remove('active');
+            nav.style.opacity = '0';
+            nav.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+              nav.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    }
+
+    // Ajuster le menu lors du redimensionnement de la fenêtre
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 768) {
+        nav.style.display = 'block';
+        nav.style.opacity = '1';
+        nav.style.transform = 'translateY(0)';
+      } else if (!nav.classList.contains('active')) {
+        nav.style.display = 'none';
+        nav.style.opacity = '0';
+        nav.style.transform = 'translateY(-10px)';
       }
     });
   }
@@ -215,6 +262,68 @@ function simulateProgress() {
 }
 
 /**
+ * Initialise des animations légères adaptées à tous les appareils
+ */
+function initLightAnimations() {
+  // Ajouter les styles d'animation au document
+  addAnimationStyles();
+
+  // Animer les éléments principaux avec des animations légères
+  const heroTitle = document.querySelector('.hero-title');
+  const heroSubtitle = document.querySelector('.hero-subtitle');
+  const heroButtons = document.querySelector('.hero-buttons');
+
+  if (heroTitle) fadeIn(heroTitle, 800, 0);
+  if (heroSubtitle) fadeIn(heroSubtitle, 800, 200);
+  if (heroButtons) fadeIn(heroButtons, 800, 400);
+
+  // Utiliser IntersectionObserver pour les animations au défilement
+  // avec des animations légères
+  animateOnScroll('.section-title', 'fadeIn');
+  animateOnScroll('.featured-game', 'fadeIn');
+}
+
+/**
+ * Optimisations spécifiques pour les appareils mobiles
+ */
+function optimizeForMobile() {
+  // Désactiver les animations complexes
+  document.querySelectorAll('.pulse, .glow').forEach(el => {
+    el.classList.remove('pulse', 'glow');
+  });
+
+  // Rendre tous les éléments visibles immédiatement
+  document.querySelectorAll('.fade-in, .fade-in-up').forEach(el => {
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+    el.classList.remove('fade-in', 'fade-in-up');
+  });
+
+  // Optimiser les images
+  document.querySelectorAll('img').forEach(img => {
+    // Ajouter loading="lazy" pour le chargement différé
+    img.loading = 'lazy';
+
+    // S'assurer que les images sont visibles
+    img.style.opacity = '1';
+    img.style.visibility = 'visible';
+  });
+
+  // Réduire les effets de parallaxe et d'ombre
+  document.querySelectorAll('[style*="box-shadow"]').forEach(el => {
+    // Simplifier les ombres
+    if (el.style.boxShadow) {
+      el.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+    }
+  });
+
+  // Optimiser les écouteurs d'événements tactiles
+  document.querySelectorAll('a, button, .btn, .game-card').forEach(el => {
+    el.addEventListener('touchstart', function() {}, { passive: true });
+  });
+}
+
+/**
  * Animations CSS
  */
 // Fade In
@@ -304,6 +413,24 @@ function addAnimationStyles() {
   for (const key in animations) {
     styles += animations[key].keyframes + '\n' + animations[key].cssRule + '\n';
   }
+
+  // Ajouter des styles spécifiques pour mobile
+  styles += `
+    .is-mobile .game-card:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .is-mobile .btn:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .is-mobile .featured-game-image,
+    .is-mobile .game-image {
+      height: 180px !important;
+    }
+  `;
 
   styleSheet.textContent = styles;
   document.head.appendChild(styleSheet);
