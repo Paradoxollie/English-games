@@ -5,12 +5,6 @@
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import {
-    getAuth,
-    signInAnonymously,
-    signOut,
-    onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import {
     getFirestore,
     doc,
     getDoc,
@@ -37,7 +31,6 @@ const firebaseConfig = {
 
 // Initialisation de Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Collections Firestore
@@ -67,36 +60,8 @@ export function initAuth() {
     }
 
     authState.initialized = true;
-
-    // Écouter les changements d'état d'authentification
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            try {
-                // Récupérer le profil utilisateur depuis Firestore
-                const userDoc = await getDoc(doc(db, COLLECTIONS.USERS, user.uid));
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    authState.isAuthenticated = true;
-                    authState.user = user;
-                    authState.profile = {
-                        ...userData,
-                        id: user.uid
-                    };
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération du profil:', error);
-                authState.error = error;
-            }
-        } else {
-            authState.isAuthenticated = false;
-            authState.user = null;
-            authState.profile = null;
-        }
-        
-        authState.loading = false;
-        dispatchAuthEvent();
-    });
+    authState.loading = false;
+    dispatchAuthEvent();
 
     return authState;
 }
@@ -104,10 +69,10 @@ export function initAuth() {
 /**
  * Crée un nouveau profil utilisateur
  */
-async function createUserProfile(user, username) {
+async function createUserProfile(username, password) {
     const userProfile = {
-        id: user.uid,
         username: username,
+        password: password, // Note: Dans un environnement de production, il faudrait hasher le mot de passe
         createdAt: serverTimestamp(),
         lastLogin: serverTimestamp(),
         level: 1,
@@ -142,8 +107,18 @@ async function createUserProfile(user, username) {
         }
     };
 
-    await setDoc(doc(db, COLLECTIONS.USERS, user.uid), userProfile);
-    authState.profile = userProfile;
+    const userRef = doc(collection(db, COLLECTIONS.USERS));
+    await setDoc(userRef, userProfile);
+    
+    authState.isAuthenticated = true;
+    authState.user = { uid: userRef.id };
+    authState.profile = { ...userProfile, id: userRef.id };
+    
+    // Stocker l'ID utilisateur dans le localStorage
+    localStorage.setItem('userId', userRef.id);
+    
+    dispatchAuthEvent();
+    return userRef.id;
 }
 
 /**
@@ -167,14 +142,9 @@ export async function register(username, password) {
             throw new Error('Ce nom d\'utilisateur est déjà pris');
         }
 
-        // Créer un utilisateur anonyme
-        const userCredential = await signInAnonymously(auth);
-        const user = userCredential.user;
-
         // Créer le profil utilisateur dans Firestore
-        await createUserProfile(user, username);
-
-        return user;
+        const userId = await createUserProfile(username, password);
+        return userId;
     } catch (error) {
         console.error('Erreur d\'inscription:', error);
         throw error;
@@ -195,16 +165,29 @@ export async function login(username, password) {
             throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
         }
 
-        // Créer un utilisateur anonyme
-        const userCredential = await signInAnonymously(auth);
-        const user = userCredential.user;
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+
+        // Vérifier le mot de passe
+        if (userData.password !== password) {
+            throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
+        }
 
         // Mettre à jour la date de dernière connexion
-        await updateDoc(doc(db, COLLECTIONS.USERS, user.uid), {
+        await updateDoc(doc(db, COLLECTIONS.USERS, userDoc.id), {
             lastLogin: serverTimestamp()
         });
 
-        return user;
+        // Mettre à jour l'état d'authentification
+        authState.isAuthenticated = true;
+        authState.user = { uid: userDoc.id };
+        authState.profile = { ...userData, id: userDoc.id };
+
+        // Stocker l'ID utilisateur dans le localStorage
+        localStorage.setItem('userId', userDoc.id);
+
+        dispatchAuthEvent();
+        return userDoc.id;
     } catch (error) {
         console.error('Erreur de connexion:', error);
         throw error;
@@ -216,7 +199,11 @@ export async function login(username, password) {
  */
 export async function logout() {
     try {
-        await signOut(auth);
+        authState.isAuthenticated = false;
+        authState.user = null;
+        authState.profile = null;
+        localStorage.removeItem('userId');
+        dispatchAuthEvent();
         window.location.href = 'index.html';
     } catch (error) {
         console.error('Erreur de déconnexion:', error);
@@ -249,7 +236,6 @@ function dispatchAuthEvent() {
 
 // Exporter les fonctions et objets
 export {
-    auth,
     db,
     COLLECTIONS
 };

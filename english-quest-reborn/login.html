@@ -3,186 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - English Quest</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Connexion - English Quest Reborn</title>
     <link rel="stylesheet" href="styles/new-design.css">
-    <link rel="stylesheet" href="styles/animations.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         .auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(18, 18, 18, 0.95), rgba(30, 30, 30, 0.9));
-            padding: 2rem;
-        }
-
-        .auth-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            padding: 2rem;
-            width: 100%;
             max-width: 400px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .auth-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-subtitle {
-            color: var(--color-text-secondary);
-            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--color-text-primary);
         }
 
         .form-group {
             margin-bottom: 1.5rem;
         }
 
-        .form-label {
+        .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: var(--color-text-primary);
-            font-weight: 500;
         }
 
-        .form-input {
+        .form-group input {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background: var(--color-background);
             color: var(--color-text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
         }
 
-        .form-input:focus {
+        .form-group input:focus {
             outline: none;
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
         }
 
-        .form-error {
-            color: #e74c3c;
+        .error-message {
+            color: var(--color-danger);
             font-size: 0.875rem;
             margin-top: 0.5rem;
             display: none;
         }
 
-        .form-error.show {
+        .error-message.show {
             display: block;
         }
 
-        .auth-footer {
-            text-align: center;
-            margin-top: 2rem;
-            color: var(--color-text-secondary);
-        }
-
-        .auth-link {
-            color: var(--color-primary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .auth-link:hover {
-            color: var(--color-secondary);
-        }
-
-        .btn-auth {
+        .auth-button {
             width: 100%;
             padding: 0.75rem;
-            border: none;
-            border-radius: 0.5rem;
             background: var(--color-primary);
             color: white;
-            font-size: 1rem;
-            font-weight: 600;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: background-color 0.2s;
         }
 
-        .btn-auth:hover {
+        .auth-button:hover {
             background: var(--color-secondary);
-            transform: translateY(-2px);
         }
 
-        .btn-auth:disabled {
-            background: var(--color-text-secondary);
+        .auth-button:disabled {
+            background: var(--color-border);
             cursor: not-allowed;
-            transform: none;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
         }
 
         .loading-spinner {
             display: none;
             width: 20px;
             height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--color-primary);
             border-radius: 50%;
-            border-top-color: white;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading .loading-spinner {
-            display: inline-block;
-        }
-
-        .loading .btn-text {
-            display: none;
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h1 class="auth-title">Connexion</h1>
-                <p class="auth-subtitle">Bienvenue sur English Quest</p>
+        <h1 class="auth-title">Connexion</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error-message" id="usernameError"></div>
             </div>
-
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="username" class="form-label">Nom d'utilisateur</label>
-                    <input type="text" id="username" name="username" class="form-input" required>
-                    <div class="form-error" id="usernameError"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password" class="form-label">Mot de passe</label>
-                    <input type="password" id="password" name="password" class="form-input" required>
-                    <div class="form-error" id="passwordError"></div>
-                </div>
-
-                <button type="submit" class="btn-auth" id="loginButton">
-                    <span class="loading-spinner"></span>
-                    <span class="btn-text">Se connecter</span>
-                </button>
-            </form>
-
-            <div class="auth-footer">
-                <p>Pas encore de compte ? <a href="register.html" class="auth-link">S'inscrire</a></p>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError"></div>
             </div>
+            <button type="submit" class="auth-button" id="loginButton">
+                <span id="buttonText">Se connecter</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+            </button>
+        </form>
+        <div class="auth-links">
+            <p>Pas encore de compte ? <a href="register.html">S'inscrire</a></p>
+            <p><a href="index.html">Retour à l'accueil</a></p>
         </div>
     </div>
 
@@ -192,66 +139,61 @@
         // Initialiser le service d'authentification
         initAuth();
 
-        const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
         const usernameError = document.getElementById('usernameError');
         const passwordError = document.getElementById('passwordError');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-        loginForm.addEventListener('submit', async (e) => {
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function hideError(element) {
+            element.textContent = '';
+            element.classList.remove('show');
+        }
+
+        function setLoading(isLoading) {
+            loginButton.disabled = isLoading;
+            buttonText.style.display = isLoading ? 'none' : 'inline';
+            loadingSpinner.style.display = isLoading ? 'block' : 'none';
+        }
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
+            
             // Réinitialiser les erreurs
-            usernameError.textContent = '';
-            usernameError.classList.remove('show');
-            passwordError.textContent = '';
-            passwordError.classList.remove('show');
-
-            // Récupérer les valeurs
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            hideError(usernameError);
+            hideError(passwordError);
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
 
             // Validation basique
-            let hasError = false;
-
             if (!username) {
-                usernameError.textContent = 'Le nom d\'utilisateur est requis';
-                usernameError.classList.add('show');
-                hasError = true;
+                showError(usernameError, 'Le nom d\'utilisateur est requis');
+                return;
             }
 
             if (!password) {
-                passwordError.textContent = 'Le mot de passe est requis';
-                passwordError.classList.add('show');
-                hasError = true;
+                showError(passwordError, 'Le mot de passe est requis');
+                return;
             }
 
-            if (hasError) return;
-
             try {
-                // Désactiver le bouton et afficher le spinner
-                loginButton.disabled = true;
-                loginButton.classList.add('loading');
-
-                // Tenter la connexion
+                setLoading(true);
                 await login(username, password);
-
-                // Rediriger vers la page d'accueil
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error('Erreur de connexion:', error);
-
-                // Afficher l'erreur appropriée
-                if (error.message === 'Nom d\'utilisateur ou mot de passe incorrect') {
-                    usernameError.textContent = 'Nom d\'utilisateur ou mot de passe incorrect';
-                    usernameError.classList.add('show');
-                } else {
-                    usernameError.textContent = 'Une erreur est survenue. Veuillez réessayer.';
-                    usernameError.classList.add('show');
-                }
+                showError(passwordError, 'Nom d\'utilisateur ou mot de passe incorrect');
             } finally {
-                // Réactiver le bouton et masquer le spinner
-                loginButton.disabled = false;
-                loginButton.classList.remove('loading');
+                setLoading(false);
             }
         });
     </script>
