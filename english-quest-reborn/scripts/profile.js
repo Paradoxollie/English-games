@@ -3,6 +3,10 @@
  * Gère la page de profil utilisateur
  */
 
+// Centralisation Firebase v9+ modulaire
+import { app, auth, db } from '../src/js/firebase-config.js';
+import { updateUserInFirestore } from '../src/core/services/user.service.js';
+
 // Données de l'utilisateur
 let userData = null;
 
@@ -492,46 +496,19 @@ function initAccountActions() {
 }
 
 // Sauvegarder les données de l'utilisateur
-function saveUserData() {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
-
-  // Trouver l'ID de l'utilisateur actuel
-  const userId = Object.keys(users).find(id => users[id].username === userData.username);
-
-  if (userId) {
-    // S'assurer que les données importantes sont préservées
-    userData.coins = userData.coins || 0;
-    userData.xp = userData.xp || 0;
-    userData.level = userData.level || 1;
-
-    // Mettre à jour les données de l'utilisateur
-    users[userId] = userData;
-
-    // Sauvegarder les modifications
-    saveUsers(users);
-
-    // Mettre à jour l'utilisateur courant
-    setCurrentUser(userData);
-
-    // Mettre à jour l'affichage de l'avatar si la fonction existe
-    if (typeof updateAvatarDisplay === 'function') {
-      updateAvatarDisplay();
-    }
-
-    // Mettre à jour également le profil local pour la compatibilité
-    const profile = {
-      coins: userData.coins,
-      xp: userData.xp,
-      level: userData.level,
-      username: userData.username
-    };
-
-    localStorage.setItem('userProfile', JSON.stringify(profile));
-
-    console.log("Données utilisateur sauvegardées avec succès pour:", userData.username);
-  } else {
-    console.error("Impossible de trouver l'utilisateur dans la liste des utilisateurs");
+async function saveUserData() {
+  if (!userData || !userData.username) {
+    console.error("Impossible de sauvegarder : utilisateur non défini");
+    return;
+  }
+  try {
+    // Mettre à jour dans Firestore
+    await updateUserInFirestore(userData.username, userData);
+    // Mettre à jour la session locale
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    console.log("Données utilisateur sauvegardées avec succès dans Firestore pour:", userData.username);
+  } catch (error) {
+    console.error("Erreur lors de la sauvegarde des données utilisateur dans Firestore:", error);
   }
 }
 

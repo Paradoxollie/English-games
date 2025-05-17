@@ -5,52 +5,17 @@
 
 console.log("Loading leaderboard.js");
 
-// Reference to the Firestore database
-let db;
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { firebaseConfig } from './firebase-config.js';
 
-// Initialize Firebase and Firestore
-function initFirebase() {
-    console.log("Initializing Firebase from leaderboard.js");
-    
-    // First check if db is already available globally
-    if (window.db) {
-        console.log("Using globally available db reference");
-        db = window.db;
-        return true;
-    }
-    
-    // Check if Firebase is already initialized
-    if (typeof firebase !== 'undefined') {
-        try {
-            if (!firebase.apps.length) {
-                if (typeof firebaseConfig !== 'undefined') {
-                    firebase.initializeApp(firebaseConfig);
-                    console.log("Firebase initialized with config");
-                } else {
-                    console.error("Firebase config not found!");
-                    return false;
-                }
-            } else {
-                console.log("Firebase already initialized");
-            }
-            
-            db = firebase.firestore();
-            window.db = db; // Make it globally available
-            console.log("Firestore reference created");
-            return true;
-        } catch (error) {
-            console.error("Error initializing Firebase:", error);
-            return false;
-        }
-    } else {
-        console.error("Firebase SDK not loaded!");
-        return false;
-    }
-}
+// Initialiser Firebase et Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Save player score to the leaderboard
 function saveScore(gameType, playerName, score) {
-    if (!db && !initFirebase()) {
+    if (!db) {
         console.error("Failed to initialize Firebase for saving score");
         return Promise.reject("Firebase initialization failed");
     }
@@ -65,7 +30,7 @@ function saveScore(gameType, playerName, score) {
     
     try {
         // Create a timestamp for sorting
-        const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        const timestamp = db.collection(gameType).doc().ref.serverTimestamp();
         
         // IMPORTANT: Use the original collection name directly
         return db.collection(gameType)
@@ -90,7 +55,7 @@ function saveScore(gameType, playerName, score) {
 
 // Get top scores for a specific game type
 function getTopScores(gameType, limit = 10) {
-    if (!db && !initFirebase()) {
+    if (!db) {
         console.error("Failed to initialize Firebase for getting scores");
         return Promise.reject("Firebase initialization failed");
     }

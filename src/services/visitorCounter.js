@@ -1,5 +1,5 @@
 import { db } from '../config/firebase';
-import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 
 class VisitorCounter {
     constructor() {

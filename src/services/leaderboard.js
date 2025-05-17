@@ -1,5 +1,5 @@
 import { db } from '../config/firebase-config';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { trackEvent } from './analytics';
 
 class LeaderboardService {

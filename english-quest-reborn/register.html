@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - English Quest</title>
+    <title>Inscription - English Quest</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -157,11 +157,11 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1 class="auth-title">Connexion</h1>
-                <p class="auth-subtitle">Bienvenue sur English Quest</p>
+                <h1 class="auth-title">Inscription</h1>
+                <p class="auth-subtitle">Rejoignez l'aventure English Quest</p>
             </div>
 
-            <form id="loginForm" class="auth-form">
+            <form id="registerForm" class="auth-form">
                 <div class="form-group">
                     <label for="username" class="form-label">Nom d'utilisateur</label>
                     <input type="text" id="username" name="username" class="form-input" required>
@@ -174,30 +174,37 @@
                     <div class="form-error" id="passwordError"></div>
                 </div>
 
-                <button type="submit" class="btn-auth" id="loginButton">
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required>
+                    <div class="form-error" id="confirmPasswordError"></div>
+                </div>
+
+                <button type="submit" class="btn-auth" id="registerButton">
                     <span class="loading-spinner"></span>
-                    <span class="btn-text">Se connecter</span>
+                    <span class="btn-text">S'inscrire</span>
                 </button>
             </form>
 
             <div class="auth-footer">
-                <p>Pas encore de compte ? <a href="register.html" class="auth-link">S'inscrire</a></p>
+                <p>Déjà un compte ? <a href="login.html" class="auth-link">Se connecter</a></p>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { login, initAuth } from './src/js/services/auth.service.js';
+        import { register, initAuth } from './src/js/services/auth.service.js';
 
         // Initialiser le service d'authentification
         initAuth();
 
-        const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
+        const registerForm = document.getElementById('registerForm');
+        const registerButton = document.getElementById('registerButton');
         const usernameError = document.getElementById('usernameError');
         const passwordError = document.getElementById('passwordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError');
 
-        loginForm.addEventListener('submit', async (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             // Réinitialiser les erreurs
@@ -205,10 +212,13 @@
             usernameError.classList.remove('show');
             passwordError.textContent = '';
             passwordError.classList.remove('show');
+            confirmPasswordError.textContent = '';
+            confirmPasswordError.classList.remove('show');
 
             // Récupérer les valeurs
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
             // Validation basique
             let hasError = false;
@@ -223,26 +233,36 @@
                 passwordError.textContent = 'Le mot de passe est requis';
                 passwordError.classList.add('show');
                 hasError = true;
+            } else if (password.length < 6) {
+                passwordError.textContent = 'Le mot de passe doit contenir au moins 6 caractères';
+                passwordError.classList.add('show');
+                hasError = true;
+            }
+
+            if (password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Les mots de passe ne correspondent pas';
+                confirmPasswordError.classList.add('show');
+                hasError = true;
             }
 
             if (hasError) return;
 
             try {
                 // Désactiver le bouton et afficher le spinner
-                loginButton.disabled = true;
-                loginButton.classList.add('loading');
+                registerButton.disabled = true;
+                registerButton.classList.add('loading');
 
-                // Tenter la connexion
-                await login(username, password);
+                // Tenter l'inscription
+                await register(username, password);
 
                 // Rediriger vers la page d'accueil
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('Erreur de connexion:', error);
+                console.error('Erreur d\'inscription:', error);
 
                 // Afficher l'erreur appropriée
-                if (error.message === 'Nom d\'utilisateur ou mot de passe incorrect') {
-                    usernameError.textContent = 'Nom d\'utilisateur ou mot de passe incorrect';
+                if (error.message === 'Ce nom d\'utilisateur est déjà pris') {
+                    usernameError.textContent = 'Ce nom d\'utilisateur est déjà pris';
                     usernameError.classList.add('show');
                 } else {
                     usernameError.textContent = 'Une erreur est survenue. Veuillez réessayer.';
@@ -250,10 +270,10 @@
                 }
             } finally {
                 // Réactiver le bouton et masquer le spinner
-                loginButton.disabled = false;
-                loginButton.classList.remove('loading');
+                registerButton.disabled = false;
+                registerButton.classList.remove('loading');
             }
         });
     </script>
 </body>
-</html>
+</html> 

@@ -3,47 +3,48 @@
  * @description Configuration centralisée de Firebase
  */
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
+
 // Configuration Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
-    authDomain: "english-games-41017.firebaseapp.com",
-    projectId: "english-games-41017",
-    storageBucket: "english-games-41017.appspot.com",
-    messagingSenderId: "452279652544",
-    appId: "1:452279652544:web:916f93e0ab29183e739d25",
+    apiKey: "AIzaSyBXBZb_JnN_MxRub9QgH9FsZyUz_ZLFSxs",
+    authDomain: "english-quest.firebaseapp.com",
+    projectId: "english-quest",
+    storageBucket: "english-quest.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef1234567890",
     measurementId: "G-RMCQTMKDVP"
 };
 
 // Initialize Firebase
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-    const analytics = firebase.analytics();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const analytics = getAnalytics(app);
 
-    // Rendre disponible globalement
-    window.db = db;
-    window.analytics = analytics;
+// Rendre disponible globalement
+window.db = db;
+window.analytics = analytics;
 
-    // Configuration de Firestore
-    db.settings({
-        cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-        merge: true
+// Configuration de Firestore
+db.settings({
+    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+    merge: true
+});
+
+db.enablePersistence()
+    .catch((err) => {
+        if (err.code == 'failed-precondition') {
+            console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+        } else if (err.code == 'unimplemented') {
+            console.warn('The current browser does not support persistence.');
+        }
     });
 
-    db.enablePersistence()
-        .catch((err) => {
-            if (err.code == 'failed-precondition') {
-                console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-            } else if (err.code == 'unimplemented') {
-                console.warn('The current browser does not support persistence.');
-            }
-        });
-
-} catch (error) {
-    console.error('Error initializing Firebase:', error);
-}
+export { app, auth, db, analytics, firebaseConfig };
 
 // Documentation des exports
 /**

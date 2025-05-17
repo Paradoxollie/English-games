@@ -3,14 +3,11 @@
  * Gère la connexion et l'inscription des utilisateurs
  */
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { firebaseConfig } from './firebase-config.js';
-import { initializeUserService, createUserInFirestore, getUserFromFirestore, isUsernameAvailable } from '../core/services/user.service.js';
+import { db } from '../config/firebase-config.js';
+import { collection, query, where, getDocs, setDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { initializeUserService } from '../core/services/user.service.js';
 
-// Initialiser Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+console.log('Initialisation de la page de connexion...');
 
 // Éléments DOM
 const loginForm = document.getElementById('login-form');
@@ -28,66 +25,22 @@ const registerButton = document.getElementById('register-button');
  * Initialise la page de connexion
  */
 async function initLoginPage() {
-  // Initialiser le service utilisateur
-  await initializeUserService();
-  
-  // Écouter les changements d'état d'authentification
-  onAuthStateChanged(auth, handleAuthStateChange);
-  
-  // Ajouter les écouteurs d'événements
-  addEventListeners();
-}
-
-/**
- * Gère les changements d'état d'authentification
- * @param {Object} user - Utilisateur Firebase
- */
-function handleAuthStateChange(user) {
-  if (user) {
-    // Vérifier si l'utilisateur a un profil
-    checkUserProfile(user.uid);
-  }
-}
-
-/**
- * Vérifie si l'utilisateur a un profil
- * @param {string} userId - ID de l'utilisateur
- */
-async function checkUserProfile(userId) {
   try {
-    const userProfile = await getUserFromFirestore(userId);
-    
-    if (userProfile) {
-      // Rediriger vers la page d'accueil
-      window.location.href = 'new-index.html';
-    } else {
-      // Afficher le formulaire d'inscription
-      showRegisterForm();
-    }
+    await initializeUserService();
+    addEventListeners();
+    console.log('Connexion/inscription par pseudo + mot de passe prête.');
   } catch (error) {
-    console.error('Erreur lors de la vérification du profil utilisateur:', error);
-    showError(loginError, 'Une erreur s\'est produite. Veuillez réessayer.');
+    console.error('Erreur lors de l\'initialisation de la page:', error);
   }
 }
 
-/**
- * Ajoute les écouteurs d'événements
- */
 function addEventListeners() {
-  // Onglets
   loginTab.addEventListener('click', showLoginForm);
   registerTab.addEventListener('click', showRegisterForm);
-  
-  // Formulaire de connexion
   loginForm.addEventListener('submit', handleLogin);
-  
-  // Formulaire d'inscription
   registerForm.addEventListener('submit', handleRegister);
 }
 
-/**
- * Affiche le formulaire de connexion
- */
 function showLoginForm() {
   loginTab.classList.add('active');
   registerTab.classList.remove('active');
@@ -95,9 +48,6 @@ function showLoginForm() {
   registerContent.classList.remove('active');
 }
 
-/**
- * Affiche le formulaire d'inscription
- */
 function showRegisterForm() {
   loginTab.classList.remove('active');
   registerTab.classList.add('active');
@@ -105,106 +55,104 @@ function showRegisterForm() {
   registerContent.classList.add('active');
 }
 
-/**
- * Gère la connexion
- * @param {Event} event - Événement de soumission
- */
-async function handleLogin(event) {
-  event.preventDefault();
-  
-  try {
-    // Masquer les erreurs
-    hideError(loginError);
-    
-    // Désactiver le bouton
-    loginButton.disabled = true;
-    loginButton.textContent = 'Connexion en cours...';
-    
-    // Connexion anonyme
-    await signInAnonymously(auth);
-  } catch (error) {
-    console.error('Erreur lors de la connexion:', error);
-    showError(loginError, 'Une erreur s\'est produite lors de la connexion. Veuillez réessayer.');
-    
-    // Réactiver le bouton
-    loginButton.disabled = false;
-    loginButton.textContent = 'Se connecter';
-  }
-}
-
-/**
- * Gère l'inscription
- * @param {Event} event - Événement de soumission
- */
-async function handleRegister(event) {
-  event.preventDefault();
-  
-  try {
-    // Masquer les erreurs
-    hideError(registerError);
-    
-    // Récupérer les données du formulaire
-    const username = document.getElementById('register-username').value.trim();
-    
-    // Valider les données
-    if (!username) {
-      showError(registerError, 'Veuillez entrer un nom d\'utilisateur.');
-      return;
-    }
-    
-    // Vérifier si le nom d'utilisateur est disponible
-    const isAvailable = await isUsernameAvailable(username);
-    
-    if (!isAvailable) {
-      showError(registerError, 'Ce nom d\'utilisateur est déjà pris. Veuillez en choisir un autre.');
-      return;
-    }
-    
-    // Désactiver le bouton
-    registerButton.disabled = true;
-    registerButton.textContent = 'Inscription en cours...';
-    
-    // Récupérer l'utilisateur courant
-    const user = auth.currentUser;
-    
-    if (!user) {
-      // Connexion anonyme si l'utilisateur n'est pas connecté
-      await signInAnonymously(auth);
-    }
-    
-    // Créer le profil utilisateur
-    await createUserInFirestore(auth.currentUser.uid, username);
-    
-    // Rediriger vers la page d'accueil
-    window.location.href = 'new-index.html';
-  } catch (error) {
-    console.error('Erreur lors de l\'inscription:', error);
-    showError(registerError, 'Une erreur s\'est produite lors de l\'inscription. Veuillez réessayer.');
-    
-    // Réactiver le bouton
-    registerButton.disabled = false;
-    registerButton.textContent = 'S\'inscrire';
-  }
-}
-
-/**
- * Affiche une erreur
- * @param {HTMLElement} element - Élément d'erreur
- * @param {string} message - Message d'erreur
- */
 function showError(element, message) {
   element.textContent = message;
   element.style.display = 'block';
 }
 
-/**
- * Masque une erreur
- * @param {HTMLElement} element - Élément d'erreur
- */
 function hideError(element) {
   element.textContent = '';
   element.style.display = 'none';
 }
 
-// Initialiser la page de connexion
+// Connexion par pseudo + mot de passe
+async function handleLogin(event) {
+  event.preventDefault();
+  hideError(loginError);
+  loginButton.disabled = true;
+  loginButton.textContent = 'Connexion en cours...';
+
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  try {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('username', '==', username));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      showError(loginError, 'Nom d\'utilisateur ou mot de passe incorrect.');
+      loginButton.disabled = false;
+      loginButton.textContent = 'Se connecter';
+      return;
+    }
+
+    let userData;
+    querySnapshot.forEach(docSnap => {
+      userData = docSnap.data();
+      userData.userId = docSnap.id;
+    });
+
+    if (!userData || userData.password !== password) {
+      showError(loginError, 'Nom d\'utilisateur ou mot de passe incorrect.');
+      loginButton.disabled = false;
+      loginButton.textContent = 'Se connecter';
+      return;
+    }
+
+    // Connexion réussie
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error('Erreur lors de la connexion :', error);
+    showError(loginError, 'Erreur lors de la connexion. Veuillez réessayer.');
+    loginButton.disabled = false;
+    loginButton.textContent = 'Se connecter';
+  }
+}
+
+// Inscription par pseudo + mot de passe
+async function handleRegister(event) {
+  event.preventDefault();
+  hideError(registerError);
+  registerButton.disabled = true;
+  registerButton.textContent = 'Inscription en cours...';
+
+  const username = document.getElementById('register-username').value.trim();
+  const password = document.getElementById('register-password').value;
+
+  try {
+    // Vérifier que le pseudo n'existe pas déjà
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('username', '==', username));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      showError(registerError, 'Ce nom d\'utilisateur est déjà pris.');
+      registerButton.disabled = false;
+      registerButton.textContent = 'S\'inscrire';
+      return;
+    }
+
+    // Créer le nouvel utilisateur
+    const newUser = {
+      username,
+      password, // Pour la prod, il faudrait hasher le mot de passe !
+      isAdmin: false,
+      level: 1,
+      xp: 0,
+      // ... autres champs par défaut si besoin
+    };
+
+    await setDoc(doc(db, 'users', username), newUser);
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error('Erreur lors de l\'inscription :', error);
+    showError(registerError, 'Erreur lors de l\'inscription. Veuillez réessayer.');
+    registerButton.disabled = false;
+    registerButton.textContent = 'S\'inscrire';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', initLoginPage);

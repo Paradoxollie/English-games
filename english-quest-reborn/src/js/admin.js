@@ -3,15 +3,9 @@
  * Gère l'affichage et la gestion des utilisateurs, des scores et des statistiques
  */
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { db } from '../config/firebase-config.js';
+import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit, startAfter, Timestamp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-import { firebaseConfig } from './firebase-config.js';
-
-// Initialiser Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 // Importer les services
 import { initializeUserService, getCurrentUser, isCurrentUserAdmin } from '../core/services/user.service.js';
@@ -71,6 +65,35 @@ const scoreCount = document.getElementById('score-count');
 const totalXp = document.getElementById('total-xp');
 const totalCoins = document.getElementById('total-coins');
 
+// État de l'application
+const state = {
+    currentUser: null,
+    isAdmin: false,
+    users: [],
+    scores: [],
+    stats: {
+        userCount: 0,
+        scoreCount: 0,
+        totalXp: 0,
+        totalCoins: 0
+    },
+    lastVisibleUser: null,
+    lastVisibleScore: null,
+    pageSize: 20
+};
+
+// Vérification stricte du rôle admin dès le chargement
+currentUser = JSON.parse(localStorage.getItem('currentUser'));
+if (!currentUser || !currentUser.isAdmin) {
+  if (adminAccessDenied) adminAccessDenied.classList.remove('hidden');
+  if (adminContent) adminContent.classList.add('hidden');
+  window.location.href = 'login.html';
+} else {
+  if (adminAccessDenied) adminAccessDenied.classList.add('hidden');
+  if (adminContent) adminContent.classList.remove('hidden');
+  initAdminPage();
+}
+
 /**
  * Initialise la page d'administration
  */
@@ -78,74 +101,8 @@ async function initAdminPage() {
   // Initialiser le service utilisateur
   await initializeUserService();
   
-  // Écouter les changements d'état d'authentification
-  onAuthStateChanged(auth, handleAuthStateChange);
-  
   // Ajouter les écouteurs d'événements
   addEventListeners();
-}
-
-/**
- * Gère les changements d'état d'authentification
- * @param {Object} user - Utilisateur Firebase
- */
-async function handleAuthStateChange(user) {
-  if (user) {
-    // Récupérer l'utilisateur courant
-    currentUser = getCurrentUser();
-    
-    if (currentUser) {
-      // Vérifier si l'utilisateur est administrateur
-      isAdmin = isCurrentUserAdmin();
-      
-      // Mettre à jour l'interface utilisateur
-      updateUserInterface();
-      
-      // Charger les données initiales
-      if (isAdmin) {
-        loadUsers();
-        loadScores();
-        loadStats();
-      }
-    } else {
-      // Rediriger vers la page de connexion
-      window.location.href = 'login.html';
-    }
-  } else {
-    // Rediriger vers la page de connexion
-    window.location.href = 'login.html';
-  }
-}
-
-/**
- * Met à jour l'interface utilisateur en fonction des droits d'administration
- */
-function updateUserInterface() {
-  // Mettre à jour les informations utilisateur
-  const username = document.querySelector('.username');
-  const userAvatar = document.querySelector('.user-avatar img');
-  
-  if (currentUser) {
-    username.textContent = currentUser.username;
-    
-    // Mettre à jour l'avatar
-    if (currentUser.inventory && currentUser.inventory.skins) {
-      const headSkin = currentUser.inventory.skins.head[0] || 'default_boy';
-      userAvatar.src = `assets/images/avatars/${headSkin}.png`;
-    }
-  } else {
-    username.textContent = 'Non connecté';
-    userAvatar.src = 'assets/images/avatars/default_boy.png';
-  }
-  
-  // Afficher ou masquer le panneau d'administration
-  if (isAdmin) {
-    adminAccessDenied.classList.add('hidden');
-    adminContent.classList.remove('hidden');
-  } else {
-    adminAccessDenied.classList.remove('hidden');
-    adminContent.classList.add('hidden');
-  }
 }
 
 /**
@@ -343,7 +300,7 @@ function addEventListeners() {
   logoutButton.addEventListener('click', async (event) => {
     event.preventDefault();
     try {
-      await signOut(auth);
+      localStorage.removeItem('currentUser');
       window.location.href = 'login.html';
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
@@ -701,6 +658,3 @@ async function handleDeleteScoreSubmit(event) {
     alert(`Erreur: ${error.message}`);
   }
 }
-
-// Initialiser la page d'administration
-document.addEventListener('DOMContentLoaded', initAdminPage);

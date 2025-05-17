@@ -1,16 +1,23 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Règles temporaires pour le développement - À RESTREINDRE AVANT LA PRODUCTION
+    match /{document=**} {
+      allow read, write: if true;
+    }
+
+    /* Règles spécifiques à activer plus tard
     // Règles pour les visites
     match /visits/{document=**} {
-      allow read: true;
-      allow write: if true; // À restreindre plus tard avec authentification
+      allow read: if true;
+      allow write: if true;
     }
-    
-    // Règles pour les scores
-    match /{game}_scores/{document} {
-      allow read: true;
-      allow write: if true; // À restreindre plus tard avec authentification
+
+    // Règles pour les scores - Notez la syntaxe correcte pour les collections avec des caractères spéciaux
+    match /game_scores/{document} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
+    */
   }
-} 
+}

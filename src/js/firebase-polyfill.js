@@ -1,3 +1,6 @@
+// ATTENTION : Ce fichier est un polyfill/mock pour Firebase, à utiliser UNIQUEMENT en développement local.
+// Ne pas inclure ce fichier dans la page admin ou en production !
+
 /**
  * Firebase Polyfill for Speed Verb Challenge
  * This provides a mock implementation when Firebase isn't available

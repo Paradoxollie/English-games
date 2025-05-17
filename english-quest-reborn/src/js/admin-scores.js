@@ -3,6 +3,9 @@
  * Permet à l'administrateur de gérer les scores des joueurs
  */
 
+import firebaseService from '../core/services/firebase.service.js';
+import { collection, getDocs, orderBy, query, limit, doc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
 const AdminScores = {
     // Propriétés
     isAdmin: false,
@@ -335,30 +338,16 @@ const AdminScores = {
      */
     loadOnlineScores() {
         const container = document.getElementById('admin-online-scores');
-
-        if (!container) {
-            return;
-        }
-
-        // Vérifier si Firebase est disponible
-        if (typeof firebase === 'undefined' || !firebase.firestore) {
-            container.innerHTML = '<div class="error">Firebase n\'est pas disponible</div>';
-            return;
-        }
-
-        // Récupérer les scores depuis Firebase
-        firebase.firestore().collection('speed_verb_scores')
-            .orderBy('score', 'desc')
-            .limit(20)
-            .get()
+        if (!container) return;
+        // Charger les scores depuis Firestore v9+
+        const q = query(collection(db, 'speed_verb_scores'), orderBy('score', 'desc'), limit(20));
+        getDocs(q)
             .then((querySnapshot) => {
                 if (querySnapshot.empty) {
                     container.innerHTML = '<div class="empty">Aucun score en ligne trouvé</div>';
                     return;
                 }
-
                 let html = '';
-
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Date inconnue';
@@ -392,15 +381,13 @@ const AdminScores = {
                         </div>
                     `;
                 });
-
                 container.innerHTML = html;
 
                 // Ajouter les écouteurs d'événements
                 this.addScoreEventListeners('online');
             })
             .catch((error) => {
-                console.error("Erreur lors du chargement des scores en ligne:", error);
-                container.innerHTML = `<div class="error">Erreur: ${error.message}</div>`;
+                container.innerHTML = `<div class="error">Erreur lors du chargement des scores: ${error.message}</div>`;
             });
     },
 
@@ -495,84 +482,59 @@ const AdminScores = {
      * Édite un score en ligne
      * @param {string} id - L'ID du document Firebase
      */
-    editOnlineScore(id) {
-        // Vérifier si Firebase est disponible
-        if (typeof firebase === 'undefined' || !firebase.firestore) {
-            alert("Firebase n'est pas disponible");
-            return;
-        }
-
-        // Récupérer le score depuis Firebase
-        firebase.firestore().collection('speed_verb_scores').doc(id).get()
-            .then((doc) => {
-                if (!doc.exists) {
-                    alert("Score non trouvé");
-                    return;
-                }
-
-                const data = doc.data();
-
-                // Créer le formulaire d'édition
-                const scoreItem = document.querySelector(`.admin-score-item[data-id="${id}"][data-type="online"]`);
-
-                if (!scoreItem) {
-                    return;
-                }
-
-                // Vérifier si le formulaire existe déjà
-                if (scoreItem.querySelector('.admin-edit-form')) {
-                    return;
-                }
-
-                const form = document.createElement('div');
-                form.className = 'admin-edit-form';
-                form.innerHTML = `
-                    <div class="admin-form-group">
-                        <label for="edit-name-${id}">Nom du joueur</label>
-                        <input type="text" id="edit-name-${id}" value="${data.playerName || ''}">
-                    </div>
-                    <div class="admin-form-group">
-                        <label for="edit-score-${id}">Score</label>
-                        <input type="number" id="edit-score-${id}" value="${data.score || 0}">
-                    </div>
-                    <div class="admin-form-actions">
-                        <button class="admin-button cancel-edit" data-id="${id}" data-type="online">Annuler</button>
-                        <button class="admin-button save-edit" data-id="${id}" data-type="online">Enregistrer</button>
-                    </div>
-                `;
-
-                // Ajouter le formulaire
-                scoreItem.appendChild(form);
-
-                // Ajouter les écouteurs d'événements
-                form.querySelector('.cancel-edit').addEventListener('click', () => {
-                    form.remove();
-                });
-
-                form.querySelector('.save-edit').addEventListener('click', () => {
-                    const newName = document.getElementById(`edit-name-${id}`).value;
-                    const newScore = parseInt(document.getElementById(`edit-score-${id}`).value);
-
-                    // Mettre à jour le score
-                    firebase.firestore().collection('speed_verb_scores').doc(id).update({
+    async editOnlineScore(id) {
+        // Récupérer le score depuis Firestore v9+
+        try {
+            const scoreDoc = await getDoc(doc(db, 'speed_verb_scores', id));
+            if (!scoreDoc.exists()) {
+                alert("Score non trouvé");
+                return;
+            }
+            const data = scoreDoc.data();
+            // Créer le formulaire d'édition
+            const scoreItem = document.querySelector(`.admin-score-item[data-id="${id}"][data-type="online"]`);
+            if (!scoreItem) return;
+            if (scoreItem.querySelector('.admin-edit-form')) return;
+            const form = document.createElement('div');
+            form.className = 'admin-edit-form';
+            form.innerHTML = `
+                <div class="admin-form-group">
+                    <label for="edit-name-${id}">Nom du joueur</label>
+                    <input type="text" id="edit-name-${id}" value="${data.playerName || ''}">
+                </div>
+                <div class="admin-form-group">
+                    <label for="edit-score-${id}">Score</label>
+                    <input type="number" id="edit-score-${id}" value="${data.score || 0}">
+                </div>
+                <div class="admin-form-actions">
+                    <button class="admin-button cancel-edit" data-id="${id}" data-type="online">Annuler</button>
+                    <button class="admin-button save-edit" data-id="${id}" data-type="online">Enregistrer</button>
+                </div>
+            `;
+            scoreItem.appendChild(form);
+            form.querySelector('.cancel-edit').addEventListener('click', () => {
+                form.remove();
+            });
+            form.querySelector('.save-edit').addEventListener('click', async () => {
+                const newName = document.getElementById(`edit-name-${id}`).value;
+                const newScore = parseInt(document.getElementById(`edit-score-${id}`).value);
+                try {
+                    await updateDoc(doc(db, 'speed_verb_scores', id), {
                         playerName: newName,
                         score: newScore
-                    })
-                    .then(() => {
-                        alert("Score mis à jour avec succès");
-                        form.remove();
-                        this.loadOnlineScores();
-                    })
-                    .catch((error) => {
-                        console.error("Erreur lors de la mise à jour du score:", error);
-                        alert(`Erreur: ${error.message}`);
                     });
-                });
-            })
-            .catch((error) => {
-                console.error("Erreur lors de la récupération du score:", error);
-                alert(`Erreur: ${error.message}`);
+                    alert("Score mis à jour avec succès");
+                    form.remove();
+                    this.loadOnlineScores();
+                } catch (error) {
+                    console.error("Erreur lors de la mise à jour du score:", error);
+                    alert(`Erreur: ${error.message}`);
+                }
             });
+        } catch (error) {
+            console.error("Erreur lors de la récupération du score:", error);
+            alert(`Erreur: ${error.message}`);
+        }
     },
 
     /**
@@ -653,28 +615,19 @@ const AdminScores = {
      * Supprime un score en ligne
      * @param {string} id - L'ID du document Firebase
      */
-    deleteOnlineScore(id) {
-        // Vérifier si Firebase est disponible
-        if (typeof firebase === 'undefined' || !firebase.firestore) {
-            alert("Firebase n'est pas disponible");
-            return;
-        }
-
+    async deleteOnlineScore(id) {
         // Demander confirmation
         if (!confirm("Êtes-vous sûr de vouloir supprimer ce score ?")) {
             return;
         }
-
-        // Supprimer le score
-        firebase.firestore().collection('speed_verb_scores').doc(id).delete()
-            .then(() => {
-                alert("Score supprimé avec succès");
-                this.loadOnlineScores();
-            })
-            .catch((error) => {
-                console.error("Erreur lors de la suppression du score:", error);
-                alert(`Erreur: ${error.message}`);
-            });
+        try {
+            await deleteDoc(doc(db, 'speed_verb_scores', id));
+            alert("Score supprimé avec succès");
+            this.loadOnlineScores();
+        } catch (error) {
+            console.error("Erreur lors de la suppression du score:", error);
+            alert(`Erreur: ${error.message}`);
+        }
     },
 
     /**

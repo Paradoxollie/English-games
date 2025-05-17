@@ -9,11 +9,18 @@ import GameService from '../services/game-service.js';
 import ThemeManager from '../utils/theme-manager.js';
 import NavigationManager from '../utils/navigation-manager.js';
 import PerformanceMonitor from '../utils/performance-monitor.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
 
 class App {
   constructor() {
     // Firebase
     this.firebase = null;
+    this.auth = null;
+    this.db = null;
+    this.analytics = null;
 
     // Services
     this.authService = null;
@@ -68,27 +75,19 @@ class App {
    */
   async initFirebase() {
     try {
-      // Importer Firebase de manière dynamique
-      const firebaseApp = await import('firebase/app');
-      const firebaseAuth = await import('firebase/auth');
-      const firebaseFirestore = await import('firebase/firestore');
-      const firebaseAnalytics = await import('firebase/analytics');
-
       // Importer la configuration Firebase
       const { firebaseConfig } = await import('../firebase-config.js');
 
       // Initialiser Firebase
-      this.firebase = firebaseApp.initializeApp(firebaseConfig);
-
-      // Initialiser Analytics en mode développement
-      // this.analytics = firebaseAnalytics.getAnalytics(this.firebase);
+      this.firebase = initializeApp(firebaseConfig);
+      this.auth = getAuth(this.firebase);
+      this.db = getFirestore(this.firebase);
+      this.analytics = getAnalytics(this.firebase);
 
       console.log('Firebase initialisé avec succès.');
-
       return this.firebase;
     } catch (error) {
       console.error('Erreur lors de l\'initialisation de Firebase:', error);
-
       // Créer un objet Firebase factice pour le développement
       this.firebase = {
         auth: () => ({

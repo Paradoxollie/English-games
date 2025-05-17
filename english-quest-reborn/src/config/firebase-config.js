@@ -1,11 +1,12 @@
-// Configuration Firebase sécurisée
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
     authDomain: "english-games-41017.firebaseapp.com",
+    databaseURL: "https://english-games-41017-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "english-games-41017",
     storageBucket: "english-games-41017.appspot.com",
     messagingSenderId: "452279652544",
@@ -13,10 +14,10 @@ const firebaseConfig = {
     measurementId: "G-RMCQTMKDVP"
 };
 
-// Initialisation unique
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
-// Export des instances
-export { app, db, analytics }; 
+export { app, auth, db, analytics, firebaseConfig }; 
