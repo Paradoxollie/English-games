@@ -96,65 +96,83 @@ export function initAuth() {
  * Crée un nouveau profil utilisateur
  */
 async function createUserProfile(username, password) {
-    const userProfile = {
-        username: username,
-        password: password, // Note: Dans un environnement de production, il faudrait hasher le mot de passe
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp(),
-        level: 1,
-        xp: 0,
-        coins: 100,
-        isAdmin: false,
-        avatar: {
-            head: 'default_boy',
-            body: 'default_boy',
-            accessory: 'none',
-            background: 'default'
-        },
-        skins: {
-            head: ['default_boy'],
-            body: ['default_boy'],
-            accessory: ['none'],
-            background: ['default']
-        },
-        stats: {
-            gamesPlayed: 0,
-            gamesWon: 0,
-            coursesCompleted: 0,
-            totalScore: 0,
-            timeSpent: 0
-        },
-        settings: {
-            theme: 'dark',
-            notifications: true,
-            sound: true,
-            music: true,
-            language: 'fr'
+    try {
+        // Vérifier si le nom d'utilisateur est déjà pris
+        const available = await isUsernameAvailable(username);
+        if (!available) {
+            throw { code: 'username-taken', message: 'Ce nom d\'utilisateur est déjà pris' };
         }
-    };
 
-    const userRef = doc(collection(db, COLLECTIONS.USERS));
-    await setDoc(userRef, userProfile);
-    
-    authState.isAuthenticated = true;
-    authState.user = { uid: userRef.id };
-    authState.profile = { ...userProfile, id: userRef.id };
-    
-    // Stocker l'ID utilisateur dans le localStorage
-    localStorage.setItem('userId', userRef.id);
-    
-    dispatchAuthEvent();
-    return userRef.id;
+        const userProfile = {
+            username: username,
+            password: password, // Note: Dans un environnement de production, il faudrait hasher le mot de passe
+            createdAt: serverTimestamp(),
+            lastLogin: serverTimestamp(),
+            level: 1,
+            xp: 0,
+            coins: 100,
+            isAdmin: false,
+            avatar: {
+                head: 'default_boy',
+                body: 'default_boy',
+                accessory: 'none',
+                background: 'default'
+            },
+            skins: {
+                head: ['default_boy'],
+                body: ['default_boy'],
+                accessory: ['none'],
+                background: ['default']
+            },
+            stats: {
+                gamesPlayed: 0,
+                gamesWon: 0,
+                coursesCompleted: 0,
+                totalScore: 0,
+                timeSpent: 0
+            },
+            settings: {
+                theme: 'dark',
+                notifications: true,
+                sound: true,
+                music: true,
+                language: 'fr'
+            }
+        };
+
+        // Créer un nouveau document utilisateur avec un ID généré
+        const userRef = doc(collection(db, COLLECTIONS.USERS));
+        await setDoc(userRef, userProfile);
+        
+        // Mettre à jour l'état d'authentification
+        authState.isAuthenticated = true;
+        authState.user = { uid: userRef.id };
+        authState.profile = { ...userProfile, id: userRef.id };
+        
+        // Stocker l'ID utilisateur dans le localStorage
+        localStorage.setItem('userId', userRef.id);
+        
+        dispatchAuthEvent();
+        return userRef.id;
+    } catch (error) {
+        console.error('Erreur lors de la création du profil:', error);
+        throw error;
+    }
 }
 
 /**
  * Vérifie si un nom d'utilisateur est disponible
  */
 async function isUsernameAvailable(username) {
-    const usersRef = collection(db, COLLECTIONS.USERS);
-    const q = query(usersRef, where("username", "==", username));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.empty;
+    try {
+        const usersRef = collection(db, COLLECTIONS.USERS);
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.empty;
+    } catch (error) {
+        console.error('Erreur lors de la vérification du nom d\'utilisateur:', error);
+        throw error;
+    }
 }
 
 /**
@@ -162,10 +180,12 @@ async function isUsernameAvailable(username) {
  */
 export async function register(username, password) {
     try {
-        // Vérifier si le nom d'utilisateur est disponible
-        const available = await isUsernameAvailable(username);
-        if (!available) {
-            throw new Error('Ce nom d\'utilisateur est déjà pris');
+        // Validation des données
+        if (!username || username.length < 3) {
+            throw { code: 'invalid-username', message: 'Le nom d\'utilisateur doit contenir au moins 3 caractères' };
+        }
+        if (!password || password.length < 6) {
+            throw { code: 'invalid-password', message: 'Le mot de passe doit contenir au moins 6 caractères' };
         }
 
         // Créer le profil utilisateur dans Firestore
@@ -188,7 +208,7 @@ export async function login(username, password) {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
+            throw { code: 'user-not-found', message: 'Nom d\'utilisateur ou mot de passe incorrect' };
         }
 
         const userDoc = querySnapshot.docs[0];
@@ -196,10 +216,10 @@ export async function login(username, password) {
 
         // Vérifier le mot de passe
         if (userData.password !== password) {
-            throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
+            throw { code: 'wrong-password', message: 'Nom d\'utilisateur ou mot de passe incorrect' };
         }
 
-        // Mettre à jour la date de dernière connexion
+        // Mettre à jour la dernière connexion
         await updateDoc(doc(db, COLLECTIONS.USERS, userDoc.id), {
             lastLogin: serverTimestamp()
         });
@@ -208,10 +228,10 @@ export async function login(username, password) {
         authState.isAuthenticated = true;
         authState.user = { uid: userDoc.id };
         authState.profile = { ...userData, id: userDoc.id };
-
+        
         // Stocker l'ID utilisateur dans le localStorage
         localStorage.setItem('userId', userDoc.id);
-
+        
         dispatchAuthEvent();
         return userDoc.id;
     } catch (error) {
@@ -225,14 +245,17 @@ export async function login(username, password) {
  */
 export async function logout() {
     try {
+        // Réinitialiser l'état d'authentification
         authState.isAuthenticated = false;
         authState.user = null;
         authState.profile = null;
+        
+        // Supprimer l'ID utilisateur du localStorage
         localStorage.removeItem('userId');
+        
         dispatchAuthEvent();
-        window.location.href = 'index.html';
     } catch (error) {
-        console.error('Erreur de déconnexion:', error);
+        console.error('Erreur lors de la déconnexion:', error);
         throw error;
     }
 }
@@ -245,7 +268,7 @@ export function getAuthState() {
 }
 
 /**
- * Ajoute un écouteur d'événements d'authentification
+ * Ajoute un écouteur pour les changements d'état d'authentification
  */
 export function onAuthStateChange(listener) {
     authStateListeners.add(listener);
@@ -253,7 +276,7 @@ export function onAuthStateChange(listener) {
 }
 
 /**
- * Déclenche l'événement d'authentification
+ * Notifie tous les écouteurs d'un changement d'état
  */
 function dispatchAuthEvent() {
     const state = { ...authState };
