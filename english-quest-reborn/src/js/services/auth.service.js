@@ -59,10 +59,36 @@ export function initAuth() {
         return authState;
     }
 
-    authState.initialized = true;
-    authState.loading = false;
-    dispatchAuthEvent();
+    // Vérifier si un utilisateur est déjà connecté
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+        // Récupérer les informations de l'utilisateur
+        getDoc(doc(db, COLLECTIONS.USERS, userId))
+            .then(docSnap => {
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    authState.isAuthenticated = true;
+                    authState.user = { uid: userId };
+                    authState.profile = { ...userData, id: userId };
+                } else {
+                    // Si l'utilisateur n'existe plus, le déconnecter
+                    localStorage.removeItem('userId');
+                }
+                authState.loading = false;
+                dispatchAuthEvent();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération du profil:', error);
+                authState.error = error;
+                authState.loading = false;
+                dispatchAuthEvent();
+            });
+    } else {
+        authState.loading = false;
+        dispatchAuthEvent();
+    }
 
+    authState.initialized = true;
     return authState;
 }
 
