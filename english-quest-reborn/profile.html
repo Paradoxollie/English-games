@@ -292,7 +292,7 @@
   <main class="profile-container">
     <div class="profile-header">
       <div class="avatar-container">
-        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt="Avatar" class="avatar" id="userAvatar">
+        <img src="assets/avatars/heads/default_boy.png" alt="Avatar" class="avatar" id="userAvatar" onerror="this.src='assets/avatars/heads/default_boy.png'">
         <label for="avatarUpload" class="avatar-upload">
           <i class="fas fa-camera"></i>
         </label>
@@ -329,8 +329,10 @@
       <main class="profile-main">
         <div class="tab-content active" id="inventory">
           <h2>Mon Inventaire</h2>
+          <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
           <div class="inventory-grid" id="inventoryGrid">
             <!-- Les items seront ajoutés dynamiquement -->
+            <p>Chargement de votre inventaire...</p>
           </div>
         </div>
 
@@ -387,6 +389,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script type="module" src="scripts/skin-service.js"></script>
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/profile.js"></script>
 </body>

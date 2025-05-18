@@ -2,35 +2,23 @@ import { authService } from './auth-service.js';
 
 class SkinService {
   constructor() {
-    // Utilisation d'images en ligne pour éviter les 404
-    const placeholder = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
-    
+    // Utiliser les vrais chemins d'accès aux assets d'avatar
     this.defaultSkins = {
       head: [
-        { id: 'default_boy', name: 'Garçon', price: 0, image: placeholder },
-        { id: 'default_girl', name: 'Fille', price: 0, image: placeholder },
-        { id: 'bear', name: 'Ours', price: 100, image: placeholder },
-        { id: 'fox', name: 'Renard', price: 150, image: placeholder },
-        { id: 'cat', name: 'Chat', price: 200, image: placeholder }
+        { id: 'default_boy', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png' },
+        { id: 'default_girl', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png' },
+        { id: 'bear', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' }
       ],
       body: [
-        { id: 'default_boy', name: 'Garçon', price: 0, image: placeholder },
-        { id: 'default_girl', name: 'Fille', price: 0, image: placeholder },
-        { id: 'knight', name: 'Chevalier', price: 200, image: placeholder },
-        { id: 'wizard', name: 'Magicien', price: 250, image: placeholder },
-        { id: 'ninja', name: 'Ninja', price: 300, image: placeholder }
+        { id: 'default_boy', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png' },
+        { id: 'default_girl', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png' },
+        { id: 'bear', name: 'Ours', price: 200, image: 'assets/avatars/bodies/bear.png' }
       ],
       accessory: [
-        { id: 'none', name: 'Aucun', price: 0, image: placeholder },
-        { id: 'hat', name: 'Chapeau', price: 100, image: placeholder },
-        { id: 'glasses', name: 'Lunettes', price: 150, image: placeholder },
-        { id: 'crown', name: 'Couronne', price: 500, image: placeholder }
+        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' }
       ],
       background: [
-        { id: 'default', name: 'Défaut', price: 0, image: placeholder },
-        { id: 'forest', name: 'Forêt', price: 200, image: placeholder },
-        { id: 'castle', name: 'Château', price: 300, image: placeholder },
-        { id: 'space', name: 'Espace', price: 400, image: placeholder }
+        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }
       ]
     };
   }
@@ -66,7 +54,7 @@ class SkinService {
 
     try {
       // Ajouter le skin à l'inventaire
-      const updatedInventory = [...userData.inventory, { ...skin, type: skinType }];
+      const updatedInventory = [...userData.inventory, { id: skinId, type: skinType }];
       
       // Mettre à jour le profil
       await authService.updateProfile({
@@ -87,8 +75,8 @@ class SkinService {
     if (!userData) return { success: false, error: 'Utilisateur non connecté' };
 
     // Vérifier si l'utilisateur possède le skin
-    const ownedSkin = userData.inventory.find(s => s.id === skinId && s.type === skinType);
-    if (!ownedSkin) {
+    const hasSkin = userData.inventory.some(item => item.id === skinId && item.type === skinType);
+    if (!hasSkin) {
       return { success: false, error: 'Vous ne possédez pas ce skin' };
     }
 
@@ -110,8 +98,13 @@ class SkinService {
 
   // Générer l'URL de l'avatar complet
   generateAvatarUrl(avatar) {
-    // Utiliser Gravatar comme avatar par défaut
-    return 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    if (!avatar) {
+      return 'assets/avatars/heads/default_boy.png'; // Avatar par défaut
+    }
+
+    // Retourner l'URL de la tête (partie principale visible sur l'avatar dans le header)
+    const headType = avatar.head || 'default_boy';
+    return `assets/avatars/heads/${headType}.png`;
   }
 }
 

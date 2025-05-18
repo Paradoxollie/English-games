@@ -170,8 +170,12 @@ async function loadProfile() {
     userXP.textContent = `${userData.xp || 0} XP`;
     userCoins.textContent = `${userData.coins || 0} pièces`;
     
-    // Mettre à jour l'avatar
-    userAvatar.src = userData.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    // Mettre à jour l'avatar avec l'URL générée par skinService
+    if (userData.avatar) {
+      userAvatar.src = skinService.generateAvatarUrl(userData.avatar);
+    } else {
+      userAvatar.src = 'assets/avatars/heads/default_boy.png';
+    }
     
     // Charger l'inventaire
     await loadInventory();
@@ -223,14 +227,14 @@ async function loadInventory() {
     if (!userData) return;
     
     // Récupérer l'inventaire et les skins disponibles
-    const inventory = userData.inventory || [];
+    const inventory = userData.avatar ? userData.inventory || [] : [];
     const availableSkins = skinService.getAvailableSkins();
     
     // Vider la grille d'inventaire
     inventoryGrid.innerHTML = '';
     
     // Si l'inventaire est vide
-    if (inventory.length === 0 && Object.keys(availableSkins).length === 0) {
+    if (Object.keys(availableSkins).length === 0) {
       inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
       return;
     }
@@ -241,7 +245,7 @@ async function loadInventory() {
       const section = document.createElement('div');
       section.className = 'inventory-section';
       section.innerHTML = `
-        <h3>${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+        <h3>${getTypeName(type)}</h3>
         <div class="skin-grid" id="skin-grid-${type}"></div>
       `;
       
@@ -259,7 +263,7 @@ async function loadInventory() {
         skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
         
         skinItem.innerHTML = `
-          <img src="${skin.image}" alt="${skin.name}">
+          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/heads/default_boy.png'">
           <h4>${skin.name}</h4>
           <p>${skin.price} pièces</p>
           ${owned ? 
@@ -281,6 +285,19 @@ async function loadInventory() {
   } catch (error) {
     console.error("Erreur lors du chargement de l'inventaire:", error);
   }
+}
+
+/**
+ * Obtenir un nom lisible pour le type de skin
+ */
+function getTypeName(type) {
+  const typeNames = {
+    'head': 'Têtes',
+    'body': 'Corps',
+    'accessory': 'Accessoires',
+    'background': 'Arrière-plans'
+  };
+  return typeNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 }
 
 /**
