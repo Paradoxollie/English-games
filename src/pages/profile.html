@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon Profil - English Quest</title>
+  <title>Mon Profil - English Quest Reborn</title>
   <meta name="description" content="Gérez votre profil et vos paramètres sur English Quest, la plateforme ludique pour apprendre l'anglais.">
   <meta name="theme-color" content="#c9aa71">
 
@@ -14,6 +14,8 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/profile.css">
 
   <!-- Favicon -->
   <link rel="icon" href="../assets/icons/favicon.ico">
@@ -95,46 +97,80 @@
       </div>
 
       <!-- Contenu des onglets -->
-      <div class="tab-content">
+      <div class="tabs__content">
         <!-- Onglet Profil -->
-        <div class="tab-pane active" id="profile-tab">
-          <div id="profile-container"></div>
-        </div>
-
-        <!-- Onglet Scores -->
-        <div class="tab-pane" id="scores-tab" style="display: none;">
-          <div class="panel">
-            <div class="panel__header">
-              <h2 class="panel__title">Mes Meilleurs Scores</h2>
-            </div>
-            <div class="panel__body">
-              <div id="user-scores-container">
-                <div class="loading">
-                  <div class="loading__spinner"></div>
-                  <p class="loading__text">Chargement de vos scores...</p>
-                </div>
+        <div id="profile" class="tabs__pane tabs__pane--active">
+          <div class="profile-section">
+            <div class="profile-header">
+              <div class="profile-avatar">
+                <img id="avatar-preview" src="../assets/avatars/default.png" alt="Avatar">
+                <button id="change-avatar-btn" class="btn btn-secondary">Changer d'avatar</button>
+              </div>
+              <div class="profile-info">
+                <h2 id="username">Chargement...</h2>
+                <p id="user-level">Niveau: Chargement...</p>
+                <p id="user-xp">XP: Chargement...</p>
+                <p id="user-coins">Pièces: Chargement...</p>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="panel">
-            <div class="panel__header">
-              <h2 class="panel__title">Mes Succès</h2>
+        <!-- Onglet Scores -->
+        <div id="scores" class="tabs__pane">
+          <div class="scores-section">
+            <div id="user-scores-container">
+              <div class="empty-state">
+                <p class="empty-state__text">Chargement des scores...</p>
+              </div>
             </div>
-            <div class="panel__body">
-              <div id="user-achievements-container">
-                <div class="loading">
-                  <div class="loading__spinner"></div>
-                  <p class="loading__text">Chargement de vos succès...</p>
-                </div>
+            <div id="user-achievements-container">
+              <div class="empty-state">
+                <p class="empty-state__text">Chargement des succès...</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Onglet Paramètres -->
-        <div class="tab-pane" id="settings-tab" style="display: none;">
-          <div id="settings-container"></div>
+        <div id="settings" class="tabs__pane">
+          <div class="settings-section">
+            <form id="profile-form" class="form">
+              <div class="form__group">
+                <label for="display-name" class="form__label">Nom d'affichage</label>
+                <input type="text" id="display-name" class="form__input" required>
+              </div>
+              <div class="form__group">
+                <label for="email" class="form__label">Email</label>
+                <input type="email" id="email" class="form__input" required>
+              </div>
+              <div class="form__group">
+                <label class="form__label">Notifications</label>
+                <div class="toggle">
+                  <input type="checkbox" id="notifications-toggle" class="toggle__input">
+                  <label for="notifications-toggle" class="toggle__label"></label>
+                </div>
+              </div>
+              <div class="form__group">
+                <label class="form__label">Son</label>
+                <div class="toggle">
+                  <input type="checkbox" id="sound-toggle" class="toggle__input">
+                  <label for="sound-toggle" class="toggle__label"></label>
+                </div>
+              </div>
+              <div class="form__group">
+                <label class="form__label">Musique</label>
+                <div class="toggle">
+                  <input type="checkbox" id="music-toggle" class="toggle__input">
+                  <label for="music-toggle" class="toggle__label"></label>
+                </div>
+              </div>
+              <div class="form__actions">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="button" id="logout-btn" class="btn btn-danger">Déconnexion</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -189,233 +225,249 @@
     </div>
   </footer>
 
+  <!-- Modal de changement d'avatar -->
+  <div id="avatar-modal" class="modal">
+    <div class="modal__content">
+      <div class="modal__header">
+        <h2 class="modal__title">Changer d'avatar</h2>
+        <button class="modal__close">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="avatar-grid" id="avatar-grid">
+          <!-- Les avatars seront chargés dynamiquement -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script type="module">
-    import app from '../js/core/app.js';
-    import UserAccount from '../components/common/user-account.js';
+    import { initAuth, isAuthenticated, getCurrentProfile, updateProfile, logout } from '../js/services/auth.service.js';
+    import { loadUserScores } from '../js/services/score.service.js';
+    import { loadUserAchievements } from '../js/services/achievement.service.js';
+    import { loadAvailableAvatars, updateUserAvatar } from '../js/services/avatar.service.js';
 
-    // Initialiser l'application
-    document.addEventListener('DOMContentLoaded', async () => {
+    // Initialiser l'authentification
+    initAuth();
+
+    // Vérifier si l'utilisateur est authentifié
+    if (!isAuthenticated()) {
+      window.location.href = 'login.html';
+    }
+
+    // Éléments DOM
+    const usernameElement = document.getElementById('username');
+    const levelElement = document.getElementById('user-level');
+    const xpElement = document.getElementById('user-xp');
+    const coinsElement = document.getElementById('user-coins');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const avatarModal = document.getElementById('avatar-modal');
+    const avatarGrid = document.getElementById('avatar-grid');
+    const profileForm = document.getElementById('profile-form');
+    const displayNameInput = document.getElementById('display-name');
+    const emailInput = document.getElementById('email');
+    const notificationsToggle = document.getElementById('notifications-toggle');
+    const soundToggle = document.getElementById('sound-toggle');
+    const musicToggle = document.getElementById('music-toggle');
+    const logoutButton = document.getElementById('logout-btn');
+
+    // Charger le profil
+    function loadProfile() {
+      const profile = getCurrentProfile();
+      if (!profile) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Mettre à jour les informations de base
+      usernameElement.textContent = profile.username;
+      levelElement.textContent = `Niveau: ${profile.level || 1}`;
+      xpElement.textContent = `XP: ${profile.xp || 0}`;
+      coinsElement.textContent = `Pièces: ${profile.coins || 0}`;
+
+      // Mettre à jour l'avatar
+      if (profile.avatar) {
+        avatarPreview.src = `../assets/avatars/${profile.avatar}.png`;
+      }
+
+      // Mettre à jour le formulaire
+      displayNameInput.value = profile.username;
+      emailInput.value = profile.email || '';
+
+      // Mettre à jour les paramètres
+      notificationsToggle.checked = profile.settings?.notifications ?? true;
+      soundToggle.checked = profile.settings?.sound ?? true;
+      musicToggle.checked = profile.settings?.music ?? true;
+    }
+
+    // Charger les scores
+    async function loadScores() {
+      const scoresContainer = document.getElementById('user-scores-container');
+      const achievementsContainer = document.getElementById('user-achievements-container');
+
       try {
-        // Initialiser l'application
-        await app.init();
+        const scores = await loadUserScores();
+        const achievements = await loadUserAchievements();
 
-        // Initialiser le composant de compte utilisateur
-        const userAccount = new UserAccount(app.authService);
+        // Afficher les scores
+        if (scores.length > 0) {
+          scoresContainer.innerHTML = `
+            <div class="scores-list">
+              ${scores.map(score => `
+                <div class="score-item">
+                  <span class="score-game">${score.game}</span>
+                  <span class="score-value">${score.value}</span>
+                  <span class="score-date">${new Date(score.date).toLocaleDateString()}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          scoresContainer.innerHTML = `
+            <div class="empty-state">
+              <p class="empty-state__text">Aucun score enregistré</p>
+            </div>
+          `;
+        }
 
-        // Rendre le profil et les paramètres
-        userAccount.renderProfile('profile-container');
-        userAccount.renderSettings('settings-container');
+        // Afficher les succès
+        if (achievements.length > 0) {
+          achievementsContainer.innerHTML = `
+            <div class="achievements-list">
+              ${achievements.map(achievement => `
+                <div class="achievement-item">
+                  <img src="../assets/achievements/${achievement.icon}.png" alt="${achievement.name}" class="achievement-icon">
+                  <div class="achievement-info">
+                    <h3 class="achievement-name">${achievement.name}</h3>
+                    <p class="achievement-description">${achievement.description}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          achievementsContainer.innerHTML = `
+            <div class="empty-state">
+              <p class="empty-state__text">Aucun succès débloqué</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des scores:', error);
+        scoresContainer.innerHTML = `
+          <div class="empty-state">
+            <p class="empty-state__text">Erreur lors du chargement des scores</p>
+          </div>
+        `;
+        achievementsContainer.innerHTML = `
+          <div class="empty-state">
+            <p class="empty-state__text">Erreur lors du chargement des succès</p>
+          </div>
+        `;
+      }
+    }
 
-        // Gérer les onglets
-        const tabLinks = document.querySelectorAll('.tabs__link');
-        const tabPanes = document.querySelectorAll('.tab-pane');
+    // Charger les avatars disponibles
+    async function loadAvatars() {
+      try {
+        const avatars = await loadAvailableAvatars();
+        avatarGrid.innerHTML = avatars.map(avatar => `
+          <div class="avatar-item" data-avatar="${avatar.id}">
+            <img src="../assets/avatars/${avatar.id}.png" alt="${avatar.name}" class="avatar-preview">
+            <div class="avatar-info">
+              <h3 class="avatar-name">${avatar.name}</h3>
+              <p class="avatar-price">${avatar.price} pièces</p>
+            </div>
+          </div>
+        `).join('');
 
-        tabLinks.forEach(link => {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Supprimer la classe active de tous les onglets
-            tabLinks.forEach(tab => tab.classList.remove('tabs__link--active'));
-
-            // Ajouter la classe active à l'onglet cliqué
-            link.classList.add('tabs__link--active');
-
-            // Afficher le contenu de l'onglet
-            const tabId = link.getAttribute('data-tab');
-            tabPanes.forEach(pane => {
-              pane.style.display = 'none';
-              if (pane.id === `${tabId}-tab`) {
-                pane.style.display = 'block';
-              }
-            });
-
-            // Charger les scores si nécessaire
-            if (tabId === 'scores') {
-              loadUserScores();
+        // Ajouter les événements de clic
+        document.querySelectorAll('.avatar-item').forEach(item => {
+          item.addEventListener('click', async () => {
+            const avatarId = item.dataset.avatar;
+            try {
+              await updateUserAvatar(avatarId);
+              avatarPreview.src = `../assets/avatars/${avatarId}.png`;
+              avatarModal.classList.remove('is-open');
+            } catch (error) {
+              console.error('Erreur lors de la mise à jour de l\'avatar:', error);
+              alert('Erreur lors de la mise à jour de l\'avatar');
             }
           });
         });
-
-        // Charger les scores de l'utilisateur
-        async function loadUserScores() {
-          const scoresContainer = document.getElementById('user-scores-container');
-          const achievementsContainer = document.getElementById('user-achievements-container');
-
-          if (!app.authService.isLoggedIn() || !app.authService.hasProfile()) {
-            scoresContainer.innerHTML = `
-              <div class="empty-state">
-                <p class="empty-state__text">Connectez-vous pour voir vos scores</p>
-                <button id="login-scores-btn" class="btn btn-primary">Se connecter</button>
-              </div>
-            `;
-
-            achievementsContainer.innerHTML = `
-              <div class="empty-state">
-                <p class="empty-state__text">Connectez-vous pour voir vos succès</p>
-              </div>
-            `;
-
-            // Ajouter l'événement de connexion
-            const loginScoresBtn = document.getElementById('login-scores-btn');
-            loginScoresBtn.addEventListener('click', () => {
-              // Ouvrir le modal d'authentification
-              const event = new CustomEvent('open-auth-modal');
-              document.dispatchEvent(event);
-            });
-
-            return;
-          }
-
-          try {
-            // Charger les scores
-            const scores = await app.authService.getUserScores(null, 10);
-
-            if (scores.length === 0) {
-              scoresContainer.innerHTML = `
-                <div class="empty-state">
-                  <p class="empty-state__text">Vous n'avez pas encore de scores enregistrés</p>
-                  <a href="all-games.html" class="btn btn-primary">Jouer maintenant</a>
-                </div>
-              `;
-            } else {
-              // Créer le tableau de scores
-              let html = `
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Jeu</th>
-                      <th>Score</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-              `;
-
-              scores.forEach(score => {
-                const date = new Date(score.timestamp).toLocaleDateString();
-                html += `
-                  <tr>
-                    <td>${score.gameId}</td>
-                    <td>${score.score.toLocaleString()}</td>
-                    <td>${date}</td>
-                  </tr>
-                `;
-              });
-
-              html += `
-                  </tbody>
-                </table>
-              `;
-
-              scoresContainer.innerHTML = html;
-            }
-
-            // Charger les succès
-            const profile = app.authService.userProfile;
-            const achievements = profile.stats?.achievements || [];
-
-            if (achievements.length === 0) {
-              achievementsContainer.innerHTML = `
-                <div class="empty-state">
-                  <p class="empty-state__text">Vous n'avez pas encore de succès débloqués</p>
-                  <a href="all-games.html" class="btn btn-primary">Jouer pour débloquer des succès</a>
-                </div>
-              `;
-            } else {
-              // Créer la liste des succès
-              let html = `<div class="achievements">`;
-
-              achievements.forEach(achievement => {
-                html += `
-                  <div class="achievement">
-                    <div class="achievement__icon">${achievement.icon || '🏆'}</div>
-                    <div class="achievement__content">
-                      <h3 class="achievement__title">${achievement.title}</h3>
-                      <p class="achievement__description">${achievement.description}</p>
-                      <p class="achievement__date">Débloqué le ${new Date(achievement.unlockedAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                `;
-              });
-
-              html += `</div>`;
-
-              achievementsContainer.innerHTML = html;
-            }
-          } catch (error) {
-            console.error('Erreur lors du chargement des scores:', error);
-
-            scoresContainer.innerHTML = `
-              <div class="error-state">
-                <p class="error-state__text">Une erreur s'est produite lors du chargement des scores</p>
-                <button id="retry-scores-btn" class="btn btn-primary">Réessayer</button>
-              </div>
-            `;
-
-            // Ajouter l'événement de nouvelle tentative
-            const retryScoresBtn = document.getElementById('retry-scores-btn');
-            retryScoresBtn.addEventListener('click', () => loadUserScores());
-          }
-        }
-
-        // Mettre à jour le bouton de connexion
-        function updateLoginButton() {
-          const loginButton = document.getElementById('login-button');
-
-          if (app.authService.isLoggedIn() && app.authService.hasProfile()) {
-            loginButton.textContent = app.authService.getUsername();
-            loginButton.classList.add('btn-primary');
-            loginButton.classList.remove('btn-outline-primary');
-
-            // Changer l'événement pour rediriger vers le profil
-            loginButton.removeEventListener('click', openAuthModal);
-            loginButton.addEventListener('click', () => {
-              window.location.href = 'profile.html';
-            });
-          } else {
-            loginButton.textContent = 'Connexion';
-            loginButton.classList.add('btn-outline-primary');
-            loginButton.classList.remove('btn-primary');
-
-            // Changer l'événement pour ouvrir le modal d'authentification
-            loginButton.removeEventListener('click', () => {
-              window.location.href = 'profile.html';
-            });
-            loginButton.addEventListener('click', openAuthModal);
-          }
-        }
-
-        // Ouvrir le modal d'authentification
-        function openAuthModal() {
-          const event = new CustomEvent('open-auth-modal');
-          document.dispatchEvent(event);
-        }
-
-        // Écouter les changements d'état d'authentification
-        document.addEventListener('auth-state-changed', (e) => {
-          updateLoginButton();
-
-          // Recharger les composants
-          userAccount.renderProfile('profile-container');
-          userAccount.renderSettings('settings-container');
-
-          // Recharger les scores si l'onglet est actif
-          const scoresTab = document.querySelector('.tabs__link[data-tab="scores"]');
-          if (scoresTab.classList.contains('tabs__link--active')) {
-            loadUserScores();
-          }
-        });
-
-        // Initialiser l'état du bouton de connexion
-        updateLoginButton();
-
-        // Ajouter l'événement d'ouverture du modal d'authentification
-        document.getElementById('login-button').addEventListener('click', openAuthModal);
       } catch (error) {
-        console.error('Erreur lors de l\'initialisation de la page de profil:', error);
+        console.error('Erreur lors du chargement des avatars:', error);
+        avatarGrid.innerHTML = `
+          <div class="empty-state">
+            <p class="empty-state__text">Erreur lors du chargement des avatars</p>
+          </div>
+        `;
+      }
+    }
+
+    // Gérer les onglets
+    document.querySelectorAll('.tabs__link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tabId = link.dataset.tab;
+
+        // Mettre à jour les onglets
+        document.querySelectorAll('.tabs__link').forEach(l => l.classList.remove('tabs__link--active'));
+        link.classList.add('tabs__link--active');
+
+        // Mettre à jour le contenu
+        document.querySelectorAll('.tabs__pane').forEach(pane => pane.classList.remove('tabs__pane--active'));
+        document.getElementById(tabId).classList.add('tabs__pane--active');
+
+        // Charger les données si nécessaire
+        if (tabId === 'scores') {
+          loadScores();
+        }
+      });
+    });
+
+    // Gérer le modal d'avatar
+    changeAvatarBtn.addEventListener('click', () => {
+      avatarModal.classList.add('is-open');
+      loadAvatars();
+    });
+
+    document.querySelector('.modal__close').addEventListener('click', () => {
+      avatarModal.classList.remove('is-open');
+    });
+
+    // Gérer le formulaire de profil
+    profileForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        const profileData = {
+          username: displayNameInput.value,
+          email: emailInput.value,
+          settings: {
+            notifications: notificationsToggle.checked,
+            sound: soundToggle.checked,
+            music: musicToggle.checked
+          }
+        };
+
+        await updateProfile(profileData);
+        loadProfile();
+        alert('Profil mis à jour avec succès');
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour du profil:', error);
+        alert('Erreur lors de la mise à jour du profil');
       }
     });
+
+    // Gérer la déconnexion
+    logoutButton.addEventListener('click', () => {
+      logout();
+    });
+
+    // Charger le profil au démarrage
+    loadProfile();
   </script>
 </body>
 </html>
