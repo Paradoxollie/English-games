@@ -16,7 +16,6 @@ const userEmail = document.getElementById('userEmail');
 const userLevel = document.getElementById('userLevel');
 const userXP = document.getElementById('userXP');
 const userCoins = document.getElementById('userCoins');
-const avatarUpload = document.getElementById('avatarUpload');
 const inventoryGrid = document.getElementById('inventoryGrid');
 const achievementList = document.getElementById('achievementList');
 const settingsForm = document.getElementById('settingsForm');
@@ -512,25 +511,6 @@ function updateSettings(settings = {}) {
 function setupEventListeners() {
   try {
     console.log("Configuration des écouteurs d'événements...");
-    
-    // Upload d'avatar
-    avatarUpload.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      try {
-        const result = await authService.uploadAvatar(file);
-        if (result.success) {
-          // Recharger le profil après l'upload pour mettre à jour l'avatar
-          await loadProfile();
-        } else {
-          alert(result.error || "Erreur lors de l'upload de l'avatar");
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'upload de l'avatar:", error);
-        alert("Une erreur est survenue lors de l'upload de l'avatar");
-      }
-    });
     
     // Paramètres
     themeToggle.addEventListener('change', async () => {
