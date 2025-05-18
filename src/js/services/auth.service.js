@@ -3,7 +3,21 @@
  * Gère l'état d'authentification et les redirections de manière cohérente
  */
 
-// État global de l'authentification
+import { auth, db } from '../../config/firebase.config.js';
+import { 
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut
+} from 'firebase/auth';
+import {
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc
+} from 'firebase/firestore';
+
+// État global d'authentification
 const authState = {
     isAuthenticated: false,
     user: null,
@@ -15,50 +29,113 @@ const authState = {
 
 // Clés de stockage
 const STORAGE_KEYS = {
-    USER: 'english_quest_current_user',
-    USER_ID: 'english_quest_user_id'
+    USER: 'user',
+    PROFILE: 'profile'
 };
 
 // Pages publiques qui ne nécessitent pas d'authentification
 const PUBLIC_PAGES = [
-    'index.html',
-    'login.html',
-    'register.html',
-    'new-index.html',
-    ''
+    '/',
+    '/index.html',
+    '/login.html',
+    '/register.html',
+    '/about.html',
+    '/contact.html'
 ];
 
 /**
  * Initialise le service d'authentification
  */
-export function initAuth() {
-    if (authState.initialized) {
-        return authState;
+export async function initAuth() {
+    if (authState.initialized) return;
+
+    return new Promise((resolve) => {
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Utilisateur connecté
+                authState.user = user;
+                authState.isAuthenticated = true;
+
+                // Charger le profil utilisateur
+                try {
+                    const profileDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (profileDoc.exists()) {
+                        authState.profile = profileDoc.data();
+                        localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(authState.profile));
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du chargement du profil:', error);
+                    authState.error = error;
+                }
+            } else {
+                // Utilisateur déconnecté
+                authState.user = null;
+                authState.profile = null;
+                authState.isAuthenticated = false;
+                localStorage.removeItem(STORAGE_KEYS.USER);
+                localStorage.removeItem(STORAGE_KEYS.PROFILE);
+            }
+
+            authState.loading = false;
+            authState.initialized = true;
+            dispatchAuthEvent();
+            resolve();
+        });
+    });
+}
+
+/**
+ * Connecte un utilisateur
+ * @param {string} email - L'email de l'utilisateur
+ * @param {string} password - Le mot de passe
+ * @returns {Promise<Object>} L'utilisateur connecté
+ */
+export async function login(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
+    } catch (error) {
+        console.error('Erreur lors de la connexion:', error);
+        throw error;
     }
+}
 
-    console.log('Initialisation du service d\'authentification');
+/**
+ * Crée un nouveau compte utilisateur
+ * @param {string} email - L'email de l'utilisateur
+ * @param {string} password - Le mot de passe
+ * @param {string} username - Le nom d'utilisateur
+ * @returns {Promise<Object>} L'utilisateur créé
+ */
+export async function register(email, password, username) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-    // Vérifier si un utilisateur est déjà connecté
-    const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
-    const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+        // Créer le profil utilisateur
+        const profileData = {
+            uid: user.uid,
+            email: user.email,
+            username: username,
+            createdAt: new Date().toISOString(),
+            level: 1,
+            xp: 0,
+            coins: 0,
+            currentAvatar: 'default',
+            unlockedAvatars: ['default'],
+            settings: {
+                notifications: true,
+                sound: true,
+                music: true
+            }
+        };
 
-    if (storedUser && userId) {
-        try {
-            const userProfile = JSON.parse(storedUser);
-            authState.isAuthenticated = true;
-            authState.user = { uid: userId };
-            authState.profile = userProfile;
-        } catch (error) {
-            console.error('Erreur lors du parsing du profil utilisateur:', error);
-            clearAuthState();
-        }
+        await setDoc(doc(db, 'users', user.uid), profileData);
+        return user;
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription:', error);
+        throw error;
     }
-
-    authState.loading = false;
-    authState.initialized = true;
-    dispatchAuthEvent();
-
-    return authState;
 }
 
 /**
@@ -66,7 +143,7 @@ export function initAuth() {
  * @returns {boolean} True si l'utilisateur est authentifié
  */
 export function isAuthenticated() {
-    return authState.isAuthenticated && authState.profile !== null;
+    return authState.isAuthenticated;
 }
 
 /**
@@ -90,7 +167,7 @@ export function getCurrentProfile() {
  * @returns {boolean} True si l'utilisateur a un profil
  */
 export function hasProfile() {
-    return authState.profile !== null;
+    return !!authState.profile;
 }
 
 /**
@@ -99,26 +176,20 @@ export function hasProfile() {
  * @returns {Promise<Object>} Le profil mis à jour
  */
 export async function updateProfile(profileData) {
-    if (!isAuthenticated()) {
+    if (!authState.user) {
         throw new Error('Utilisateur non authentifié');
     }
 
     try {
-        // Mettre à jour le profil local
-        const updatedProfile = {
-            ...authState.profile,
-            ...profileData,
-            updatedAt: new Date()
-        };
-
-        // Sauvegarder dans le localStorage
-        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedProfile));
-
-        // Mettre à jour l'état
-        authState.profile = updatedProfile;
+        const userRef = doc(db, 'users', authState.user.uid);
+        await updateDoc(userRef, profileData);
+        
+        // Mettre à jour l'état local
+        authState.profile = { ...authState.profile, ...profileData };
+        localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(authState.profile));
+        
         dispatchAuthEvent();
-
-        return updatedProfile;
+        return authState.profile;
     } catch (error) {
         console.error('Erreur lors de la mise à jour du profil:', error);
         throw error;
@@ -128,9 +199,14 @@ export async function updateProfile(profileData) {
 /**
  * Déconnecte l'utilisateur
  */
-export function logout() {
-    clearAuthState();
-    window.location.href = 'index.html';
+export async function logout() {
+    try {
+        await signOut(auth);
+        clearAuthState();
+    } catch (error) {
+        console.error('Erreur lors de la déconnexion:', error);
+        throw error;
+    }
 }
 
 /**
@@ -138,8 +214,8 @@ export function logout() {
  * @returns {boolean} True si l'authentification est requise
  */
 export function requiresAuth() {
-    const currentPage = window.location.pathname.split('/').pop();
-    return !PUBLIC_PAGES.includes(currentPage);
+    const currentPath = window.location.pathname;
+    return !PUBLIC_PAGES.includes(currentPath);
 }
 
 /**
@@ -147,7 +223,7 @@ export function requiresAuth() {
  */
 export function checkAuthAndRedirect() {
     if (requiresAuth() && !isAuthenticated()) {
-        window.location.href = 'login.html';
+        window.location.href = '/login.html';
     }
 }
 
@@ -155,26 +231,26 @@ export function checkAuthAndRedirect() {
  * Nettoie l'état d'authentification
  */
 function clearAuthState() {
-    localStorage.removeItem(STORAGE_KEYS.USER);
-    localStorage.removeItem(STORAGE_KEYS.USER_ID);
     authState.isAuthenticated = false;
     authState.user = null;
     authState.profile = null;
     authState.error = null;
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem(STORAGE_KEYS.PROFILE);
+    dispatchAuthEvent();
 }
 
 /**
  * Déclenche un événement de changement d'état d'authentification
  */
 function dispatchAuthEvent() {
-    const event = new CustomEvent('auth-state-changed', {
+    const event = new CustomEvent('authStateChanged', {
         detail: { ...authState }
     });
-    document.dispatchEvent(event);
+    window.dispatchEvent(event);
 }
 
-// Initialiser l'authentification au chargement
-initAuth();
-
-// Vérifier l'authentification et rediriger si nécessaire
-checkAuthAndRedirect(); 
+// Initialiser l'authentification et vérifier la redirection au chargement
+initAuth().then(() => {
+    checkAuthAndRedirect();
+}); 

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profil - English Quest</title>
+  <title>Mon Profil - English Quest</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/new-design.css">
   <link rel="stylesheet" href="styles/animations.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -35,243 +35,206 @@
   </script>
   <style>
     .profile-container {
-      min-height: 100vh;
-      background: linear-gradient(135deg, rgba(18, 18, 18, 0.95), rgba(30, 30, 30, 0.9));
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      border-radius: 1rem;
       padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('assets/images/pattern.png');
+      opacity: 0.1;
+      pointer-events: none;
     }
 
     .profile-content {
-      max-width: 1200px;
-      margin: 0 auto;
       display: grid;
       grid-template-columns: 300px 1fr;
       gap: 2rem;
     }
 
     .profile-sidebar {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--color-surface);
       border-radius: 1rem;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
       height: fit-content;
     }
 
     .profile-main {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--color-surface);
       border-radius: 1rem;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
     }
 
-    .profile-avatar {
+    .avatar-container {
+      position: relative;
       width: 150px;
       height: 150px;
+      margin: 0 auto 1rem;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      margin: 0 auto 1.5rem;
+      object-fit: cover;
+      border: 4px solid var(--color-primary);
+    }
+
+    .avatar-upload {
+      position: absolute;
+      bottom: 0;
+      right: 0;
       background: var(--color-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-avatar-edit {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 0.5rem;
-      text-align: center;
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
-    .profile-avatar:hover .profile-avatar-edit {
-      opacity: 1;
-    }
-
-    .profile-info {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .profile-username {
-      font-family: 'Cinzel', serif;
-      font-size: 1.5rem;
-      color: var(--color-primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-level {
-      color: var(--color-text-secondary);
-      font-size: 0.875rem;
+    .avatar-upload:hover {
+      transform: scale(1.1);
     }
 
     .profile-stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin: 1.5rem 0;
     }
 
     .stat-card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 0.5rem;
+      background: var(--color-background);
       padding: 1rem;
+      border-radius: 0.5rem;
       text-align: center;
     }
 
     .stat-value {
       font-size: 1.5rem;
+      font-weight: bold;
       color: var(--color-primary);
-      margin-bottom: 0.25rem;
     }
 
     .stat-label {
+      font-size: 0.9rem;
       color: var(--color-text-secondary);
-      font-size: 0.875rem;
     }
 
-    .profile-actions {
+    .profile-tabs {
       display: flex;
-      flex-direction: column;
       gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 1rem;
     }
 
-    .btn-profile {
-      padding: 0.75rem;
-      border: none;
+    .profile-tab {
+      padding: 0.5rem 1rem;
       border-radius: 0.5rem;
-      background: var(--color-primary);
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      text-align: center;
-      text-decoration: none;
     }
 
-    .btn-profile:hover {
-      background: var(--color-secondary);
-      transform: translateY(-2px);
+    .profile-tab.active {
+      background: var(--color-primary);
+      color: white;
     }
 
-    .btn-profile.secondary {
-      background: transparent;
-      border: 1px solid var(--color-primary);
-    }
-
-    .btn-profile.secondary:hover {
-      background: rgba(46, 204, 113, 0.1);
-    }
-
-    .profile-section {
-      margin-bottom: 2rem;
-    }
-
-    .profile-section-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.5rem;
-      color: var(--color-primary);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .profile-form {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .form-group {
-      display: grid;
-      gap: 0.5rem;
-    }
-
-    .form-label {
-      color: var(--color-text-primary);
-      font-weight: 500;
-    }
-
-    .form-input {
-      padding: 0.75rem 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 0.5rem;
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--color-text-primary);
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
-    }
-
-    .form-error {
-      color: #e74c3c;
-      font-size: 0.875rem;
+    .tab-content {
       display: none;
     }
 
-    .form-error.show {
+    .tab-content.active {
       display: block;
     }
 
-    .profile-settings {
+    .inventory-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 1rem;
     }
 
-    .setting-card {
-      background: rgba(255, 255, 255, 0.05);
+    .inventory-item {
+      background: var(--color-background);
       border-radius: 0.5rem;
       padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
     }
 
-    .setting-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .inventory-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .inventory-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
       margin-bottom: 0.5rem;
     }
 
-    .setting-icon {
-      color: var(--color-primary);
-      font-size: 1.25rem;
+    .achievement-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
     }
 
-    .setting-title {
-      color: var(--color-text-primary);
-      font-weight: 500;
+    .achievement-card {
+      background: var(--color-background);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
-    .setting-description {
-      color: var(--color-text-secondary);
-      font-size: 0.875rem;
+    .achievement-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .settings-form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 50px;
-      height: 24px;
+      width: 60px;
+      height: 34px;
     }
 
     .toggle-switch input {
@@ -287,16 +250,16 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--color-background);
       transition: .4s;
-      border-radius: 24px;
+      border-radius: 34px;
     }
 
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 16px;
-      width: 16px;
+      height: 26px;
+      width: 26px;
       left: 4px;
       bottom: 4px;
       background-color: white;
@@ -316,297 +279,137 @@
       .profile-content {
         grid-template-columns: 1fr;
       }
+
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="profile-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Content -->
+  <main class="profile-container">
+    <div class="profile-header">
+      <div class="avatar-container">
+        <img src="assets/images/default-avatar.png" alt="Avatar" class="avatar" id="userAvatar">
+        <label for="avatarUpload" class="avatar-upload">
+          <i class="fas fa-camera"></i>
+        </label>
+        <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+      </div>
+      <h1 id="username">Chargement...</h1>
+      <p id="userEmail">Chargement...</p>
+    </div>
+
     <div class="profile-content">
-      <div class="profile-sidebar">
-        <div class="profile-avatar">
-          <img src="assets/avatars/default_boy.png" alt="Avatar" id="avatarImage">
-          <div class="profile-avatar-edit">
-            <i class="fas fa-camera"></i>
-          </div>
-        </div>
-
-        <div class="profile-info">
-          <h1 class="profile-username" id="username">Chargement...</h1>
-          <p class="profile-level">Niveau <span id="level">1</span></p>
-        </div>
-
+      <aside class="profile-sidebar">
         <div class="profile-stats">
           <div class="stat-card">
-            <div class="stat-value" id="xp">0</div>
+            <div class="stat-value" id="userLevel">1</div>
+            <div class="stat-label">Niveau</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="userXP">0</div>
             <div class="stat-label">XP</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" id="coins">0</div>
+            <div class="stat-value" id="userCoins">0</div>
             <div class="stat-label">Pièces</div>
           </div>
         </div>
 
-        <div class="profile-actions">
-          <a href="index.html" class="btn-profile">Retour à l'accueil</a>
-          <button class="btn-profile secondary" id="logoutButton">Se déconnecter</button>
+        <div class="profile-tabs">
+          <div class="profile-tab active" data-tab="inventory">Inventaire</div>
+          <div class="profile-tab" data-tab="achievements">Succès</div>
+          <div class="profile-tab" data-tab="settings">Paramètres</div>
         </div>
-      </div>
+      </aside>
 
-      <div class="profile-main">
-        <div class="profile-section">
-          <h2 class="profile-section-title">Informations personnelles</h2>
-          <form id="profileForm" class="profile-form">
+      <main class="profile-main">
+        <div class="tab-content active" id="inventory">
+          <h2>Mon Inventaire</h2>
+          <div class="inventory-grid" id="inventoryGrid">
+            <!-- Les items seront ajoutés dynamiquement -->
+          </div>
+        </div>
+
+        <div class="tab-content" id="achievements">
+          <h2>Mes Succès</h2>
+          <div class="achievement-list" id="achievementList">
+            <!-- Les succès seront ajoutés dynamiquement -->
+          </div>
+        </div>
+
+        <div class="tab-content" id="settings">
+          <h2>Paramètres</h2>
+          <form class="settings-form" id="settingsForm">
             <div class="form-group">
-              <label for="displayName" class="form-label">Nom d'utilisateur</label>
-              <input type="text" id="displayName" name="displayName" class="form-input" required>
-              <div class="form-error" id="displayNameError"></div>
+              <label for="theme">Thème sombre</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
-
             <div class="form-group">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" id="email" name="email" class="form-input" required readonly>
+              <label for="notifications">Notifications</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="notificationsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
-
-            <button type="submit" class="btn-profile">Enregistrer les modifications</button>
+            <div class="form-group">
+              <label for="sound">Son</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="soundToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
           </form>
         </div>
+      </main>
+    </div>
+  </main>
 
-        <div class="profile-section">
-          <h2 class="profile-section-title">Paramètres</h2>
-          <div class="profile-settings">
-            <div class="setting-card">
-              <div class="setting-header">
-                <i class="fas fa-bell setting-icon"></i>
-                <span class="setting-title">Notifications</span>
-              </div>
-              <p class="setting-description">Recevoir des notifications</p>
-              <label class="toggle-switch">
-                <input type="checkbox" id="notificationsToggle">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-
-            <div class="setting-card">
-              <div class="setting-header">
-                <i class="fas fa-volume-up setting-icon"></i>
-                <span class="setting-title">Son</span>
-              </div>
-              <p class="setting-description">Activer les effets sonores</p>
-              <label class="toggle-switch">
-                <input type="checkbox" id="soundToggle">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-
-            <div class="setting-card">
-              <div class="setting-header">
-                <i class="fas fa-music setting-icon"></i>
-                <span class="setting-title">Musique</span>
-              </div>
-              <p class="setting-description">Activer la musique de fond</p>
-              <label class="toggle-switch">
-                <input type="checkbox" id="musicToggle">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-section">
-          <h2 class="profile-section-title">Personnalisation de l'Avatar</h2>
-          <div class="avatar-customization">
-            <div class="avatar-preview" id="avatar-preview"></div>
-            <div class="avatar-options">
-              <div class="avatar-category">
-                <h3>Tête</h3>
-                <select class="skin-selector" data-skin-type="head">
-                  <option value="default_boy">Garçon</option>
-                  <option value="default_girl">Fille</option>
-                  <option value="bear">Ours</option>
-                </select>
-              </div>
-              <div class="avatar-category">
-                <h3>Corps</h3>
-                <select class="skin-selector" data-skin-type="body">
-                  <option value="default_boy">Garçon</option>
-                  <option value="default_girl">Fille</option>
-                  <option value="bear">Ours</option>
-                </select>
-              </div>
-              <div class="avatar-category">
-                <h3>Accessoire</h3>
-                <select class="skin-selector" data-skin-type="accessory">
-                  <option value="none">Aucun</option>
-                </select>
-              </div>
-              <div class="avatar-category">
-                <h3>Arrière-plan</h3>
-                <select class="skin-selector" data-skin-type="background">
-                  <option value="default">Défaut</option>
-                </select>
-              </div>
-              <button id="save-avatar" class="btn-profile">Sauvegarder l'avatar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-section">
-          <h2 class="profile-section-title">Boutique de Skins</h2>
-          <div class="shop-container">
-            <div class="shop-header">
-              <div class="user-coins">
-                <i class="fas fa-coins"></i>
-                <span id="user-coins">0</span> pièces
-              </div>
-            </div>
-            <div class="shop-content">
-              <div id="skins-shop" class="skins-grid"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-section">
-          <h2 class="profile-section-title">Mes Skins</h2>
-          <div class="inventory-container">
-            <div class="inventory-filters">
-              <button class="filter-btn active" data-filter="all">Tous</button>
-              <button class="filter-btn" data-filter="head">Têtes</button>
-              <button class="filter-btn" data-filter="body">Corps</button>
-              <button class="filter-btn" data-filter="accessory">Accessoires</button>
-              <button class="filter-btn" data-filter="background">Arrière-plans</button>
-            </div>
-            <div id="skins-inventory" class="skins-grid"></div>
-          </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+          <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
         </div>
       </div>
+      <div class="footer-bottom">
+        <p>&copy; 2023 English Quest - Tous droits réservés</p>
+      </div>
     </div>
-  </div>
-
-  <script type="module">
-    import { getAuthState, logout } from './src/js/services/auth.service.js';
-    import { updateProfile } from './src/js/services/profile.service.js';
-
-    // Éléments du DOM
-    const usernameElement = document.getElementById('username');
-    const levelElement = document.getElementById('level');
-    const xpElement = document.getElementById('xp');
-    const coinsElement = document.getElementById('coins');
-    const avatarImage = document.getElementById('avatarImage');
-    const logoutButton = document.getElementById('logoutButton');
-    const profileForm = document.getElementById('profileForm');
-    const displayNameInput = document.getElementById('displayName');
-    const emailInput = document.getElementById('email');
-    const displayNameError = document.getElementById('displayNameError');
-    const notificationsToggle = document.getElementById('notificationsToggle');
-    const soundToggle = document.getElementById('soundToggle');
-    const musicToggle = document.getElementById('musicToggle');
-
-    // Charger les données du profil
-    function loadProfile() {
-      const authState = getAuthState();
-      if (!authState.isAuthenticated) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      const { profile } = authState;
-
-      // Mettre à jour les informations de base
-      usernameElement.textContent = profile.username;
-      levelElement.textContent = profile.level;
-      xpElement.textContent = profile.xp;
-      coinsElement.textContent = profile.coins;
-
-      // Mettre à jour l'avatar
-      if (profile.avatar) {
-        avatarImage.src = `assets/avatars/${profile.avatar.head}.png`;
-      }
-
-      // Mettre à jour le formulaire
-      displayNameInput.value = profile.username;
-      emailInput.value = profile.email;
-
-      // Mettre à jour les paramètres
-      notificationsToggle.checked = profile.settings?.notifications ?? true;
-      soundToggle.checked = profile.settings?.sound ?? true;
-      musicToggle.checked = profile.settings?.music ?? true;
-    }
-
-    // Gérer la déconnexion
-    logoutButton.addEventListener('click', async () => {
-      try {
-        await logout();
-      } catch (error) {
-        console.error('Erreur lors de la déconnexion:', error);
-      }
-    });
-
-    // Gérer la mise à jour du profil
-    profileForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      // Réinitialiser l'erreur
-      displayNameError.textContent = '';
-      displayNameError.classList.remove('show');
-
-      const displayName = displayNameInput.value.trim();
-
-      // Validation
-      if (!displayName) {
-        displayNameError.textContent = 'Le nom d\'utilisateur est requis';
-        displayNameError.classList.add('show');
-        return;
-      }
-
-      try {
-        await updateProfile({
-          username: displayName
-        });
-
-        // Recharger le profil
-        loadProfile();
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du profil:', error);
-        displayNameError.textContent = 'Une erreur est survenue lors de la mise à jour du profil';
-        displayNameError.classList.add('show');
-      }
-    });
-
-    // Gérer les paramètres
-    async function updateSetting(setting, value) {
-      try {
-        await updateProfile({
-          settings: {
-            [setting]: value
-          }
-        });
-      } catch (error) {
-        console.error(`Erreur lors de la mise à jour du paramètre ${setting}:`, error);
-      }
-    }
-
-    notificationsToggle.addEventListener('change', (e) => {
-      updateSetting('notifications', e.target.checked);
-    });
-
-    soundToggle.addEventListener('change', (e) => {
-      updateSetting('sound', e.target.checked);
-    });
-
-    musicToggle.addEventListener('change', (e) => {
-      updateSetting('music', e.target.checked);
-    });
-
-    // Charger le profil au chargement de la page
-    loadProfile();
-  </script>
+  </footer>
 
   <!-- Scripts -->
-  <script src="scripts/new-design.js"></script>
-  <script type="module" src="src/js/profile.js"></script>
-  <script type="module" src="src/js/services/profile.service.js"></script>
-  <script type="module" src="src/js/services/avatar.service.js"></script>
-  <script src="scripts/avatar.js"></script>
-  <script src="scripts/debug.js"></script>
+  <script type="module" src="scripts/auth-service.js"></script>
+  <script type="module" src="scripts/profile.js"></script>
 </body>
 </html>

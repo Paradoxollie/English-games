@@ -2,61 +2,81 @@
  * Service de gestion des succès pour English Quest Reborn
  */
 
+// Service de gestion des succès
+import { db } from '../../config/firebase.config.js';
+import { 
+    collection,
+    query,
+    where,
+    getDocs,
+    addDoc,
+    doc,
+    updateDoc
+} from 'firebase/firestore';
+import { getCurrentProfile } from './auth.service.js';
+
 // Clés de stockage
 const STORAGE_KEYS = {
-    ACHIEVEMENTS: 'english_quest_achievements'
+    ACHIEVEMENTS: 'achievements'
 };
 
 // Liste des succès disponibles
 const AVAILABLE_ACHIEVEMENTS = [
     {
         id: 'first_game',
-        name: 'Première partie',
-        description: 'Jouez votre première partie',
+        name: 'Premier pas',
+        description: 'Jouer à votre premier jeu',
         icon: 'first_game',
-        condition: (stats) => stats.totalGamesPlayed >= 1
+        condition: (stats) => stats.totalGames >= 1
     },
     {
         id: 'score_100',
-        name: 'Score de 100',
-        description: 'Atteignez un score de 100 points',
+        name: 'Scoreur débutant',
+        description: 'Atteindre un score de 100 points',
         icon: 'score_100',
         condition: (stats) => stats.highestScore >= 100
     },
     {
         id: 'score_500',
-        name: 'Score de 500',
-        description: 'Atteignez un score de 500 points',
+        name: 'Scoreur confirmé',
+        description: 'Atteindre un score de 500 points',
         icon: 'score_500',
         condition: (stats) => stats.highestScore >= 500
     },
     {
         id: 'score_1000',
-        name: 'Score de 1000',
-        description: 'Atteignez un score de 1000 points',
+        name: 'Maître du score',
+        description: 'Atteindre un score de 1000 points',
         icon: 'score_1000',
         condition: (stats) => stats.highestScore >= 1000
     },
     {
         id: 'games_10',
         name: 'Joueur régulier',
-        description: 'Jouez 10 parties',
+        description: 'Jouer à 10 parties',
         icon: 'games_10',
-        condition: (stats) => stats.totalGamesPlayed >= 10
+        condition: (stats) => stats.totalGames >= 10
     },
     {
         id: 'games_50',
         name: 'Joueur assidu',
-        description: 'Jouez 50 parties',
+        description: 'Jouer à 50 parties',
         icon: 'games_50',
-        condition: (stats) => stats.totalGamesPlayed >= 50
+        condition: (stats) => stats.totalGames >= 50
     },
     {
         id: 'games_100',
-        name: 'Joueur expert',
-        description: 'Jouez 100 parties',
+        name: 'Joueur passionné',
+        description: 'Jouer à 100 parties',
         icon: 'games_100',
-        condition: (stats) => stats.totalGamesPlayed >= 100
+        condition: (stats) => stats.totalGames >= 100
+    },
+    {
+        id: 'perfect_game',
+        name: 'Partie parfaite',
+        description: 'Obtenir un score parfait dans un jeu',
+        icon: 'perfect_game',
+        condition: (stats) => stats.perfectGames >= 1
     }
 ];
 
@@ -66,14 +86,31 @@ const AVAILABLE_ACHIEVEMENTS = [
  */
 export async function loadUserAchievements() {
     try {
-        // Récupérer les succès depuis le localStorage
-        const achievementsJson = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS);
-        if (!achievementsJson) {
-            return [];
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
         }
 
-        const achievements = JSON.parse(achievementsJson);
-        return achievements.sort((a, b) => new Date(b.unlockedAt) - new Date(a.unlockedAt));
+        const achievementsRef = collection(db, 'achievements');
+        const q = query(
+            achievementsRef,
+            where('userId', '==', profile.uid)
+        );
+
+        const querySnapshot = await getDocs(q);
+        const achievements = [];
+
+        querySnapshot.forEach((doc) => {
+            achievements.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        // Sauvegarder dans le localStorage
+        localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements));
+
+        return achievements;
     } catch (error) {
         console.error('Erreur lors du chargement des succès:', error);
         return [];
@@ -87,33 +124,47 @@ export async function loadUserAchievements() {
  */
 export async function checkAndUnlockAchievements(stats) {
     try {
-        // Récupérer les succès existants
-        const unlockedAchievements = await loadUserAchievements();
-        const unlockedIds = new Set(unlockedAchievements.map(a => a.id));
-
-        // Vérifier les nouveaux succès
-        const newAchievements = AVAILABLE_ACHIEVEMENTS
-            .filter(achievement => !unlockedIds.has(achievement.id) && achievement.condition(stats))
-            .map(achievement => ({
-                ...achievement,
-                unlockedAt: new Date().toISOString()
-            }));
-
-        if (newAchievements.length > 0) {
-            // Ajouter les nouveaux succès
-            const updatedAchievements = [...unlockedAchievements, ...newAchievements];
-
-            // Sauvegarder les succès
-            localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(updatedAchievements));
-
-            // Déclencher un événement pour les nouveaux succès
-            const event = new CustomEvent('achievements-unlocked', {
-                detail: { achievements: newAchievements }
-            });
-            document.dispatchEvent(event);
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
         }
 
-        return newAchievements;
+        const currentAchievements = await loadUserAchievements();
+        const unlockedAchievementIds = currentAchievements.map(a => a.id);
+        const newlyUnlocked = [];
+
+        for (const achievement of AVAILABLE_ACHIEVEMENTS) {
+            if (!unlockedAchievementIds.includes(achievement.id) && achievement.condition(stats)) {
+                const achievementData = {
+                    userId: profile.uid,
+                    achievementId: achievement.id,
+                    name: achievement.name,
+                    description: achievement.description,
+                    icon: achievement.icon,
+                    unlockedAt: new Date().toISOString()
+                };
+
+                const docRef = await addDoc(collection(db, 'achievements'), achievementData);
+                newlyUnlocked.push({
+                    id: docRef.id,
+                    ...achievementData
+                });
+            }
+        }
+
+        if (newlyUnlocked.length > 0) {
+            // Mettre à jour le localStorage
+            const allAchievements = [...currentAchievements, ...newlyUnlocked];
+            localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(allAchievements));
+
+            // Dispatcher un événement pour les nouveaux succès
+            const event = new CustomEvent('achievementsUnlocked', {
+                detail: { achievements: newlyUnlocked }
+            });
+            window.dispatchEvent(event);
+        }
+
+        return newlyUnlocked;
     } catch (error) {
         console.error('Erreur lors de la vérification des succès:', error);
         return [];
@@ -141,7 +192,8 @@ export async function getUnlockedAchievementsCount() {
 export async function getAchievementsProgress() {
     try {
         const unlockedCount = await getUnlockedAchievementsCount();
-        return Math.round((unlockedCount / AVAILABLE_ACHIEVEMENTS.length) * 100);
+        const totalCount = AVAILABLE_ACHIEVEMENTS.length;
+        return (unlockedCount / totalCount) * 100;
     } catch (error) {
         console.error('Erreur lors du calcul de la progression:', error);
         return 0;

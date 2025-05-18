@@ -2,9 +2,24 @@
  * Service de gestion des scores pour English Quest Reborn
  */
 
+// Service de gestion des scores
+import { db } from '../../config/firebase.config.js';
+import { 
+    collection,
+    query,
+    where,
+    orderBy,
+    limit,
+    getDocs,
+    addDoc,
+    deleteDoc,
+    doc
+} from 'firebase/firestore';
+import { getCurrentProfile } from './auth.service.js';
+
 // Clés de stockage
 const STORAGE_KEYS = {
-    SCORES: 'english_quest_scores'
+    SCORES: 'scores'
 };
 
 /**
@@ -13,14 +28,32 @@ const STORAGE_KEYS = {
  */
 export async function loadUserScores() {
     try {
-        // Récupérer les scores depuis le localStorage
-        const scoresJson = localStorage.getItem(STORAGE_KEYS.SCORES);
-        if (!scoresJson) {
-            return [];
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
         }
 
-        const scores = JSON.parse(scoresJson);
-        return scores.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const scoresRef = collection(db, 'scores');
+        const q = query(
+            scoresRef,
+            where('userId', '==', profile.uid),
+            orderBy('date', 'desc')
+        );
+
+        const querySnapshot = await getDocs(q);
+        const scores = [];
+
+        querySnapshot.forEach((doc) => {
+            scores.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        // Sauvegarder dans le localStorage
+        localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(scores));
+
+        return scores;
     } catch (error) {
         console.error('Erreur lors du chargement des scores:', error);
         return [];
@@ -35,26 +68,32 @@ export async function loadUserScores() {
  */
 export async function saveScore(game, value) {
     try {
-        // Récupérer les scores existants
-        const scores = await loadUserScores();
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
+        }
 
-        // Créer le nouveau score
-        const newScore = {
-            id: Date.now().toString(),
-            game,
-            value,
+        const scoreData = {
+            userId: profile.uid,
+            game: game,
+            value: value,
             date: new Date().toISOString()
         };
 
-        // Ajouter le nouveau score
-        scores.unshift(newScore);
+        const docRef = await addDoc(collection(db, 'scores'), scoreData);
+        const score = {
+            id: docRef.id,
+            ...scoreData
+        };
 
-        // Sauvegarder les scores
+        // Mettre à jour le localStorage
+        const scores = JSON.parse(localStorage.getItem(STORAGE_KEYS.SCORES) || '[]');
+        scores.unshift(score);
         localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(scores));
 
-        return newScore;
+        return score;
     } catch (error) {
-        console.error('Erreur lors de l\'enregistrement du score:', error);
+        console.error('Erreur lors de la sauvegarde du score:', error);
         throw error;
     }
 }
@@ -66,14 +105,19 @@ export async function saveScore(game, value) {
  */
 export async function deleteScore(scoreId) {
     try {
-        // Récupérer les scores existants
-        const scores = await loadUserScores();
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
+        }
 
-        // Filtrer le score à supprimer
+        await deleteDoc(doc(db, 'scores', scoreId));
+
+        // Mettre à jour le localStorage
+        const scores = JSON.parse(localStorage.getItem(STORAGE_KEYS.SCORES) || '[]');
         const updatedScores = scores.filter(score => score.id !== scoreId);
-
-        // Sauvegarder les scores mis à jour
         localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(updatedScores));
+
+        return true;
     } catch (error) {
         console.error('Erreur lors de la suppression du score:', error);
         throw error;
@@ -87,16 +131,30 @@ export async function deleteScore(scoreId) {
  */
 export async function getBestScore(game) {
     try {
-        const scores = await loadUserScores();
-        const gameScores = scores.filter(score => score.game === game);
-        
-        if (gameScores.length === 0) {
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
+        }
+
+        const scoresRef = collection(db, 'scores');
+        const q = query(
+            scoresRef,
+            where('userId', '==', profile.uid),
+            where('game', '==', game),
+            orderBy('value', 'desc'),
+            limit(1)
+        );
+
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
             return null;
         }
 
-        return gameScores.reduce((best, current) => 
-            current.value > best.value ? current : best
-        );
+        const doc = querySnapshot.docs[0];
+        return {
+            id: doc.id,
+            ...doc.data()
+        };
     } catch (error) {
         console.error('Erreur lors de la récupération du meilleur score:', error);
         return null;

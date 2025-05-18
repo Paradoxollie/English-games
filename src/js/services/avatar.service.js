@@ -2,6 +2,10 @@
  * Service de gestion des avatars pour English Quest Reborn
  */
 
+import { db } from '../../config/firebase.config.js';
+import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getCurrentProfile } from './auth.service.js';
+
 // Clés de stockage
 const STORAGE_KEYS = {
     AVATARS: 'english_quest_avatars',
@@ -15,42 +19,48 @@ const AVAILABLE_AVATARS = [
         name: 'Avatar par défaut',
         description: 'L\'avatar par défaut',
         price: 0,
-        unlocked: true
+        unlocked: true,
+        path: '/assets/avatars/default.png'
     },
     {
         id: 'wizard',
         name: 'Le Magicien',
         description: 'Un magicien mystérieux',
         price: 100,
-        unlocked: false
+        unlocked: false,
+        path: '/assets/avatars/wizard.png'
     },
     {
         id: 'knight',
         name: 'Le Chevalier',
         description: 'Un chevalier courageux',
         price: 200,
-        unlocked: false
+        unlocked: false,
+        path: '/assets/avatars/knight.png'
     },
     {
         id: 'ninja',
         name: 'Le Ninja',
         description: 'Un ninja silencieux',
         price: 300,
-        unlocked: false
+        unlocked: false,
+        path: '/assets/avatars/ninja.png'
     },
     {
         id: 'robot',
         name: 'Le Robot',
         description: 'Un robot futuriste',
         price: 400,
-        unlocked: false
+        unlocked: false,
+        path: '/assets/avatars/robot.png'
     },
     {
         id: 'alien',
         name: 'L\'Alien',
         description: 'Un extraterrestre curieux',
         price: 500,
-        unlocked: false
+        unlocked: false,
+        path: '/assets/avatars/alien.png'
     }
 ];
 
@@ -60,9 +70,15 @@ const AVAILABLE_AVATARS = [
  */
 export async function loadAvailableAvatars() {
     try {
-        // Récupérer les avatars débloqués depuis le localStorage
-        const unlockedAvatarsJson = localStorage.getItem(STORAGE_KEYS.AVATARS);
-        const unlockedAvatars = unlockedAvatarsJson ? JSON.parse(unlockedAvatarsJson) : ['default'];
+        const profile = getCurrentProfile();
+        if (!profile) {
+            return AVAILABLE_AVATARS;
+        }
+
+        // Récupérer les avatars débloqués depuis Firestore
+        const userDoc = await getDoc(doc(db, 'users', profile.uid));
+        const userData = userDoc.data();
+        const unlockedAvatars = userData?.unlockedAvatars || ['default'];
 
         // Mettre à jour la liste des avatars disponibles
         return AVAILABLE_AVATARS.map(avatar => ({
@@ -82,6 +98,11 @@ export async function loadAvailableAvatars() {
  */
 export async function updateUserAvatar(avatarId) {
     try {
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
+        }
+
         // Vérifier si l'avatar existe
         const avatar = AVAILABLE_AVATARS.find(a => a.id === avatarId);
         if (!avatar) {
@@ -89,14 +110,21 @@ export async function updateUserAvatar(avatarId) {
         }
 
         // Vérifier si l'avatar est débloqué
-        const unlockedAvatarsJson = localStorage.getItem(STORAGE_KEYS.AVATARS);
-        const unlockedAvatars = unlockedAvatarsJson ? JSON.parse(unlockedAvatarsJson) : ['default'];
+        const userDoc = await getDoc(doc(db, 'users', profile.uid));
+        const userData = userDoc.data();
+        const unlockedAvatars = userData?.unlockedAvatars || ['default'];
 
         if (!unlockedAvatars.includes(avatarId)) {
             throw new Error('Avatar non débloqué');
         }
 
-        // Mettre à jour l'avatar courant
+        // Mettre à jour l'avatar dans Firestore
+        await updateDoc(doc(db, 'users', profile.uid), {
+            currentAvatar: avatarId,
+            updatedAt: new Date().toISOString()
+        });
+
+        // Mettre à jour le localStorage
         localStorage.setItem(STORAGE_KEYS.CURRENT_AVATAR, avatarId);
 
         // Déclencher un événement de mise à jour
@@ -119,24 +147,38 @@ export async function updateUserAvatar(avatarId) {
  */
 export async function unlockAvatar(avatarId) {
     try {
+        const profile = getCurrentProfile();
+        if (!profile) {
+            throw new Error('Utilisateur non authentifié');
+        }
+
         // Vérifier si l'avatar existe
         const avatar = AVAILABLE_AVATARS.find(a => a.id === avatarId);
         if (!avatar) {
             throw new Error('Avatar non trouvé');
         }
 
+        // Vérifier si l'utilisateur a assez de pièces
+        if (profile.coins < avatar.price) {
+            throw new Error('Pas assez de pièces');
+        }
+
         // Récupérer les avatars débloqués
-        const unlockedAvatarsJson = localStorage.getItem(STORAGE_KEYS.AVATARS);
-        const unlockedAvatars = unlockedAvatarsJson ? JSON.parse(unlockedAvatarsJson) : ['default'];
+        const userDoc = await getDoc(doc(db, 'users', profile.uid));
+        const userData = userDoc.data();
+        const unlockedAvatars = userData?.unlockedAvatars || ['default'];
 
         // Vérifier si l'avatar est déjà débloqué
         if (unlockedAvatars.includes(avatarId)) {
             return avatar;
         }
 
-        // Ajouter l'avatar aux avatars débloqués
-        unlockedAvatars.push(avatarId);
-        localStorage.setItem(STORAGE_KEYS.AVATARS, JSON.stringify(unlockedAvatars));
+        // Mettre à jour dans Firestore
+        await updateDoc(doc(db, 'users', profile.uid), {
+            unlockedAvatars: [...unlockedAvatars, avatarId],
+            coins: profile.coins - avatar.price,
+            updatedAt: new Date().toISOString()
+        });
 
         // Déclencher un événement de déblocage
         const event = new CustomEvent('avatar-unlocked', {
@@ -157,8 +199,16 @@ export async function unlockAvatar(avatarId) {
  */
 export async function getCurrentAvatar() {
     try {
-        const avatarId = localStorage.getItem(STORAGE_KEYS.CURRENT_AVATAR) || 'default';
-        const avatar = AVAILABLE_AVATARS.find(a => a.id === avatarId);
+        const profile = getCurrentProfile();
+        if (!profile) {
+            return AVAILABLE_AVATARS[0];
+        }
+
+        const userDoc = await getDoc(doc(db, 'users', profile.uid));
+        const userData = userDoc.data();
+        const currentAvatarId = userData?.currentAvatar || 'default';
+
+        const avatar = AVAILABLE_AVATARS.find(a => a.id === currentAvatarId);
         return avatar || AVAILABLE_AVATARS[0];
     } catch (error) {
         console.error('Erreur lors de la récupération de l\'avatar actuel:', error);

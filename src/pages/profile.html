@@ -29,17 +29,17 @@
   <header class="header">
     <div class="container">
       <div class="header__content">
-        <a href="index.html" class="header__logo">
+        <a href="../index.html" class="header__logo">
           <img src="../assets/images/logo.gif" alt="English Quest Logo" width="180" height="60">
         </a>
 
         <nav class="header__nav" aria-label="Navigation principale">
           <ul class="nav__list">
-            <li class="nav__item"><a href="index.html" class="nav__link">Accueil</a></li>
-            <li class="nav__item"><a href="all-games.html" class="nav__link">Jeux</a></li>
-            <li class="nav__item"><a href="courses.html" class="nav__link">Cours</a></li>
-            <li class="nav__item"><a href="leaderboard.html" class="nav__link">Classement</a></li>
-            <li class="nav__item"><a href="contact.html" class="nav__link">Contact</a></li>
+            <li class="nav__item"><a href="../index.html" class="nav__link">Accueil</a></li>
+            <li class="nav__item"><a href="../games.html" class="nav__link">Jeux</a></li>
+            <li class="nav__item"><a href="../courses.html" class="nav__link">Cours</a></li>
+            <li class="nav__item"><a href="../leaderboard.html" class="nav__link">Classement</a></li>
+            <li class="nav__item"><a href="../contact.html" class="nav__link">Contact</a></li>
           </ul>
         </nav>
 
@@ -58,11 +58,11 @@
     <div id="mobile-menu" class="mobile-menu">
       <nav class="mobile-menu__nav" aria-label="Navigation mobile">
         <ul class="mobile-menu__list">
-          <li class="mobile-menu__item"><a href="index.html" class="mobile-menu__link">Accueil</a></li>
-          <li class="mobile-menu__item"><a href="all-games.html" class="mobile-menu__link">Jeux</a></li>
-          <li class="mobile-menu__item"><a href="courses.html" class="mobile-menu__link">Cours</a></li>
-          <li class="mobile-menu__item"><a href="leaderboard.html" class="mobile-menu__link">Classement</a></li>
-          <li class="mobile-menu__item"><a href="contact.html" class="mobile-menu__link">Contact</a></li>
+          <li class="mobile-menu__item"><a href="../index.html" class="mobile-menu__link">Accueil</a></li>
+          <li class="mobile-menu__item"><a href="../games.html" class="mobile-menu__link">Jeux</a></li>
+          <li class="mobile-menu__item"><a href="../courses.html" class="mobile-menu__link">Cours</a></li>
+          <li class="mobile-menu__item"><a href="../leaderboard.html" class="mobile-menu__link">Classement</a></li>
+          <li class="mobile-menu__item"><a href="../contact.html" class="mobile-menu__link">Contact</a></li>
         </ul>
       </nav>
     </div>
@@ -73,7 +73,7 @@
     <div class="container">
       <!-- Fil d'Ariane -->
       <ul class="breadcrumb">
-        <li class="breadcrumb__item"><a href="index.html" class="breadcrumb__link">Accueil</a></li>
+        <li class="breadcrumb__item"><a href="../index.html" class="breadcrumb__link">Accueil</a></li>
         <li class="breadcrumb__item"><a href="profile.html" class="breadcrumb__link">Mon Profil</a></li>
       </ul>
 
@@ -181,7 +181,7 @@
     <div class="container">
       <div class="footer__content">
         <div class="footer__brand">
-          <a href="index.html" class="footer__logo">
+          <a href="../index.html" class="footer__logo">
             <img src="../assets/images/logo-footer.gif" alt="English Quest Logo" width="150" height="50">
           </a>
           <p class="footer__tagline">Apprendre l'anglais n'a jamais été aussi amusant</p>
@@ -191,20 +191,20 @@
           <div class="footer__column">
             <h3 class="footer__title">Navigation</h3>
             <ul class="footer__list">
-              <li><a href="index.html" class="footer__link">Accueil</a></li>
-              <li><a href="all-games.html" class="footer__link">Jeux</a></li>
-              <li><a href="courses.html" class="footer__link">Cours</a></li>
-              <li><a href="leaderboard.html" class="footer__link">Classement</a></li>
-              <li><a href="contact.html" class="footer__link">Contact</a></li>
+              <li><a href="../index.html" class="footer__link">Accueil</a></li>
+              <li><a href="../games.html" class="footer__link">Jeux</a></li>
+              <li><a href="../courses.html" class="footer__link">Cours</a></li>
+              <li><a href="../leaderboard.html" class="footer__link">Classement</a></li>
+              <li><a href="../contact.html" class="footer__link">Contact</a></li>
             </ul>
           </div>
 
           <div class="footer__column">
             <h3 class="footer__title">Légal</h3>
             <ul class="footer__list">
-              <li><a href="terms.html" class="footer__link">Conditions d'utilisation</a></li>
-              <li><a href="privacy.html" class="footer__link">Politique de confidentialité</a></li>
-              <li><a href="cookies.html" class="footer__link">Politique de cookies</a></li>
+              <li><a href="../terms.html" class="footer__link">Conditions d'utilisation</a></li>
+              <li><a href="../privacy.html" class="footer__link">Politique de confidentialité</a></li>
+              <li><a href="../cookies.html" class="footer__link">Politique de cookies</a></li>
             </ul>
           </div>
 
@@ -248,11 +248,11 @@
     import { loadAvailableAvatars, updateUserAvatar } from '../js/services/avatar.service.js';
 
     // Initialiser l'authentification
-    initAuth();
+    await initAuth();
 
     // Vérifier si l'utilisateur est authentifié
     if (!isAuthenticated()) {
-      window.location.href = 'login.html';
+      window.location.href = '../login.html';
     }
 
     // Éléments DOM
@@ -273,10 +273,10 @@
     const logoutButton = document.getElementById('logout-btn');
 
     // Charger le profil
-    function loadProfile() {
+    async function loadProfile() {
       const profile = getCurrentProfile();
       if (!profile) {
-        window.location.href = 'login.html';
+        window.location.href = '../login.html';
         return;
       }
 
@@ -287,8 +287,8 @@
       coinsElement.textContent = `Pièces: ${profile.coins || 0}`;
 
       // Mettre à jour l'avatar
-      if (profile.avatar) {
-        avatarPreview.src = `../assets/avatars/${profile.avatar}.png`;
+      if (profile.currentAvatar) {
+        avatarPreview.src = `../assets/avatars/${profile.currentAvatar}.png`;
       }
 
       // Mettre à jour le formulaire
@@ -453,7 +453,7 @@
         };
 
         await updateProfile(profileData);
-        loadProfile();
+        await loadProfile();
         alert('Profil mis à jour avec succès');
       } catch (error) {
         console.error('Erreur lors de la mise à jour du profil:', error);
@@ -467,7 +467,7 @@
     });
 
     // Charger le profil au démarrage
-    loadProfile();
+    await loadProfile();
   </script>
 </body>
 </html>
