@@ -7,7 +7,10 @@ import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
 
 // Éléments du DOM
-const userAvatar = document.getElementById('userAvatar');
+const userAvatarHead = document.getElementById('userAvatarHead');
+const userAvatarBody = document.getElementById('userAvatarBody');
+const userAvatarBackground = document.getElementById('userAvatarBackground');
+const userAvatarAccessory = document.getElementById('userAvatarAccessory');
 const username = document.getElementById('username');
 const userEmail = document.getElementById('userEmail');
 const userLevel = document.getElementById('userLevel');
@@ -127,16 +130,16 @@ async function init() {
     if (!authService.currentUser) {
       console.log("Utilisateur non connecté, redirection vers la page de connexion");
       window.location.href = 'login.html';
-    return;
-  }
+      return;
+    }
 
     console.log("Utilisateur connecté:", authService.currentUser.email);
     
     // Charger le profil
     await loadProfile();
 
-  // Initialiser les onglets
-  initTabs();
+    // Initialiser les onglets
+    initTabs();
 
     // Configurer les écouteurs d'événements
     setupEventListeners();
@@ -170,12 +173,8 @@ async function loadProfile() {
     userXP.textContent = `${userData.xp || 0} XP`;
     userCoins.textContent = `${userData.coins || 0} pièces`;
     
-    // Mettre à jour l'avatar avec l'URL générée par skinService
-    if (userData.avatar) {
-      userAvatar.src = skinService.generateAvatarUrl(userData.avatar);
-    } else {
-      userAvatar.src = 'assets/avatars/heads/default_boy.png';
-    }
+    // Mettre à jour l'avatar complet
+    updateAvatarDisplay(userData.avatar);
     
     // Charger l'inventaire
     await loadInventory();
@@ -189,6 +188,32 @@ async function loadProfile() {
     console.log("Profil chargé avec succès");
   } catch (error) {
     console.error("Erreur lors du chargement du profil:", error);
+  }
+}
+
+/**
+ * Mettre à jour l'affichage de l'avatar
+ */
+function updateAvatarDisplay(avatar) {
+  if (!avatar) {
+    // Avatar par défaut
+    userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+    userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+    userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
+    userAvatarAccessory.src = 'assets/avatars/accessories/none.png';
+    return;
+  }
+
+  // Mettre à jour chaque partie de l'avatar
+  userAvatarHead.src = `assets/avatars/heads/${avatar.head || 'default_boy'}.png`;
+  userAvatarBody.src = `assets/avatars/bodies/${avatar.body || 'default_boy'}.png`;
+  userAvatarBackground.src = `assets/avatars/backgrounds/${avatar.background || 'default'}.png`;
+  
+  if (avatar.accessory && avatar.accessory !== 'none') {
+    userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+    userAvatarAccessory.style.display = 'block';
+  } else {
+    userAvatarAccessory.style.display = 'none';
   }
 }
 
@@ -449,7 +474,8 @@ function setupEventListeners() {
       try {
         const result = await authService.uploadAvatar(file);
         if (result.success) {
-          userAvatar.src = result.avatarUrl;
+          // Recharger le profil après l'upload pour mettre à jour l'avatar
+          await loadProfile();
         } else {
           alert(result.error || "Erreur lors de l'upload de l'avatar");
         }

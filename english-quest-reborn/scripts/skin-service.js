@@ -36,36 +36,66 @@ class SkinService {
 
   // Acheter un skin
   async buySkin(skinId, skinType) {
-    const userData = await authService.loadUserData();
-    if (!userData) return { success: false, error: 'Utilisateur non connecté' };
-
-    const skin = this.defaultSkins[skinType].find(s => s.id === skinId);
-    if (!skin) return { success: false, error: 'Skin non trouvé' };
-
-    // Vérifier si l'utilisateur possède déjà le skin
-    if (userData.inventory.some(s => s.id === skinId && s.type === skinType)) {
-      return { success: false, error: 'Vous possédez déjà ce skin' };
-    }
-
-    // Vérifier si l'utilisateur a assez de pièces
-    if (userData.coins < skin.price) {
-      return { success: false, error: 'Pas assez de pièces' };
-    }
-
     try {
+      console.log(`Tentative d'achat du skin: ${skinId} de type ${skinType}`);
+      
+      const userData = await authService.loadUserData();
+      if (!userData) {
+        console.error("Utilisateur non connecté lors de l'achat du skin");
+        return { success: false, error: 'Utilisateur non connecté' };
+      }
+
+      console.log("Données utilisateur récupérées:", userData);
+      
+      const skin = this.defaultSkins[skinType].find(s => s.id === skinId);
+      if (!skin) {
+        console.error(`Skin non trouvé: ${skinId} (${skinType})`);
+        return { success: false, error: 'Skin non trouvé' };
+      }
+
+      console.log("Skin trouvé:", skin);
+      
+      // Initialiser l'inventaire s'il n'existe pas
+      if (!userData.inventory || !Array.isArray(userData.inventory)) {
+        console.log("Création de l'inventaire initial");
+        userData.inventory = [];
+      }
+
+      // Vérifier si l'utilisateur possède déjà le skin
+      const alreadyOwned = userData.inventory.some(item => item.id === skinId && item.type === skinType);
+      if (alreadyOwned) {
+        console.log("L'utilisateur possède déjà ce skin");
+        return { success: false, error: 'Vous possédez déjà ce skin' };
+      }
+
+      // Vérifier si l'utilisateur a assez de pièces
+      if (userData.coins < skin.price) {
+        console.log(`Pas assez de pièces: ${userData.coins} < ${skin.price}`);
+        return { success: false, error: 'Pas assez de pièces' };
+      }
+
       // Ajouter le skin à l'inventaire
       const updatedInventory = [...userData.inventory, { id: skinId, type: skinType }];
       
+      console.log("Mise à jour de l'inventaire:", updatedInventory);
+      console.log("Nouvelles pièces:", userData.coins - skin.price);
+      
       // Mettre à jour le profil
-      await authService.updateProfile({
+      const updateResult = await authService.updateProfile({
         inventory: updatedInventory,
         coins: userData.coins - skin.price
       });
-
+      
+      if (!updateResult.success) {
+        console.error("Erreur lors de la mise à jour du profil:", updateResult.error);
+        return { success: false, error: updateResult.error || 'Erreur lors de la mise à jour du profil' };
+      }
+      
+      console.log("Achat réussi!");
       return { success: true, skin };
     } catch (error) {
-      console.error('Erreur lors de l\'achat du skin:', error);
-      return { success: false, error: 'Erreur lors de l\'achat' };
+      console.error('Erreur détaillée lors de l\'achat du skin:', error);
+      return { success: false, error: 'Erreur lors de l\'achat: ' + (error.message || 'Erreur inconnue') };
     }
   }
 
