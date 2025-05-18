@@ -252,13 +252,16 @@ async function loadInventory() {
     if (!userData) return;
     
     // Récupérer l'inventaire et les skins disponibles
-    const inventory = userData.avatar ? userData.inventory || [] : [];
+    const inventory = userData.inventory || [];
     const availableSkins = skinService.getAvailableSkins();
+    
+    console.log("Skins disponibles:", availableSkins);
+    console.log("Inventaire actuel:", inventory);
     
     // Vider la grille d'inventaire
     inventoryGrid.innerHTML = '';
     
-    // Si l'inventaire est vide
+    // Si l'inventaire est vide et pas de skins disponibles
     if (Object.keys(availableSkins).length === 0) {
       inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
       return;
@@ -266,6 +269,9 @@ async function loadInventory() {
     
     // Créer les sections pour chaque type de skin
     Object.entries(availableSkins).forEach(([type, skins]) => {
+      // Ne créer que les sections pour head et body
+      if (type !== 'head' && type !== 'body') return;
+      
       // Créer la section
       const section = document.createElement('div');
       section.className = 'inventory-section';
