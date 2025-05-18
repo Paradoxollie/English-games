@@ -60,23 +60,62 @@
 
     .avatar-container {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 250px;
+      height: 500px;
       margin: 0 auto 1rem;
+      background: none;
+      overflow: visible;
     }
 
-    .avatar {
+    .avatar-background {
+      position: absolute;
+      top: 250px;
+      left: 0;
       width: 100%;
-      height: 100%;
-      border-radius: 50%;
+      height: 250px;
       object-fit: cover;
-      border: 4px solid var(--color-primary);
+      z-index: 1;
+      border-radius: 10px;
+      background-color: #2c3e50;
+    }
+
+    .avatar-body {
+      position: absolute;
+      top: 270px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: auto;
+      object-fit: contain;
+      z-index: 2;
+    }
+
+    .avatar-head {
+      position: absolute;
+      top: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: auto;
+      object-fit: contain;
+      z-index: 3;
+    }
+
+    .avatar-accessory {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: auto;
+      object-fit: contain;
+      z-index: 4;
     }
 
     .avatar-upload {
       position: absolute;
-      bottom: 0;
-      right: 0;
+      bottom: 10px;
+      right: 10px;
       background: var(--color-primary);
       width: 40px;
       height: 40px;
@@ -86,6 +125,7 @@
       justify-content: center;
       cursor: pointer;
       transition: transform 0.3s ease;
+      z-index: 5;
     }
 
     .avatar-upload:hover {
@@ -157,11 +197,22 @@
       padding: 1rem;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
     }
 
     .inventory-item:hover {
       transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .inventory-item.owned {
+      border-color: var(--color-primary);
+    }
+    
+    .inventory-item.equipped {
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+      border-color: var(--color-secondary);
     }
 
     .inventory-item img {
@@ -169,6 +220,57 @@
       height: 80px;
       object-fit: contain;
       margin-bottom: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .inventory-item:hover img {
+      transform: scale(1.1);
+    }
+    
+    .inventory-section {
+      margin-bottom: 2rem;
+    }
+    
+    .inventory-section h3 {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+      color: var(--color-primary);
+    }
+    
+    .skin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+    
+    .btn-buy, .btn-equip {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+      width: 100%;
+    }
+    
+    .btn-buy {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    
+    .btn-buy:hover {
+      background-color: #27ae60;
+    }
+    
+    .btn-equip {
+      background-color: var(--color-secondary);
+      color: white;
+    }
+    
+    .btn-equip:hover {
+      background-color: #2980b9;
     }
 
     .achievement-list {
@@ -292,11 +394,10 @@
   <main class="profile-container">
     <div class="profile-header">
       <div class="avatar-container">
-        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt="Avatar" class="avatar" id="userAvatar">
-        <label for="avatarUpload" class="avatar-upload">
-          <i class="fas fa-camera"></i>
-        </label>
-        <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+        <img src="assets/avatars/backgrounds/default.png" alt="Background" class="avatar-background" id="userAvatarBackground" onerror="this.src='assets/avatars/backgrounds/default.png'">
+        <img src="assets/avatars/bodies/default_boy.png" alt="Body" class="avatar-body" id="userAvatarBody" onerror="this.src='assets/avatars/bodies/default_boy.png'">
+        <img src="assets/avatars/heads/default_boy.png" alt="Head" class="avatar-head" id="userAvatarHead" onerror="this.src='assets/avatars/heads/default_boy.png'">
+        <img src="assets/avatars/accessories/none.png" alt="Accessory" class="avatar-accessory" id="userAvatarAccessory" onerror="this.style.display='none'">
       </div>
       <h1 id="username">Chargement...</h1>
       <p id="userEmail">Chargement...</p>
@@ -329,8 +430,10 @@
       <main class="profile-main">
         <div class="tab-content active" id="inventory">
           <h2>Mon Inventaire</h2>
+          <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
           <div class="inventory-grid" id="inventoryGrid">
             <!-- Les items seront ajoutés dynamiquement -->
+            <p>Chargement de votre inventaire...</p>
           </div>
         </div>
 
@@ -387,6 +490,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script type="module" src="scripts/skin-service.js"></script>
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/profile.js"></script>
 </body>
