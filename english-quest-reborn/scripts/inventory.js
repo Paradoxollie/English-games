@@ -1,38 +1,55 @@
 // État de l'inventaire
 let inventoryItems = [];
 
-// Initialisation de l'inventaire
-async function loadInventory() {
+// Initialisation
+document.addEventListener('DOMContentLoaded', async () => {
     const user = await getCurrentUser();
-    if (!user) return;
+    if (user) {
+        await loadInventory(user.uid);
+        initializeInventoryUI();
+    }
+});
 
-    // Charger l'inventaire de l'utilisateur
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    if (userDoc.exists) {
-        const userInventory = userDoc.data().inventory || [];
-        
-        // Convertir les IDs en objets complets
-        inventoryItems = userInventory.map(id => {
-            // Chercher l'item dans toutes les catégories
-            for (const category of Object.values(avatarConfig)) {
-                if (category[id]) {
-                    return {
-                        id,
-                        ...category[id]
-                    };
-                }
-            }
-            return null;
-        }).filter(item => item !== null);
+// Chargement de l'inventaire
+async function loadInventory(userId) {
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (userDoc.exists) {
+            const inventory = userDoc.data().inventory || [];
+            
+            // Récupérer tous les items possédés
+            inventoryItems = [
+                ...avatarConfig.heads,
+                ...avatarConfig.bodies,
+                ...avatarConfig.accessories,
+                ...avatarConfig.backgrounds
+            ].filter(item => inventory.includes(item.id));
 
-        // Afficher les items
-        displayInventoryItems();
+            displayInventoryItems();
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement de l\'inventaire:', error);
     }
 }
 
-// Afficher les items de l'inventaire
+// Initialisation de l'interface de l'inventaire
+function initializeInventoryUI() {
+    // Gestion des filtres
+    const filterButtons = document.querySelectorAll('.inventory-filters .filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            displayInventoryItems(button.dataset.filter);
+        });
+    });
+}
+
+// Affichage des items de l'inventaire
 function displayInventoryItems(filter = 'all') {
     const inventoryGrid = document.getElementById('inventoryItems');
+    if (!inventoryGrid) return;
+
     inventoryGrid.innerHTML = '';
 
     const filteredItems = filter === 'all' 
@@ -45,33 +62,61 @@ function displayInventoryItems(filter = 'all') {
     });
 }
 
-// Créer un élément d'item d'inventaire
+// Création d'un élément d'item d'inventaire
 function createInventoryItemElement(item) {
     const div = document.createElement('div');
-    div.className = 'inventory-item';
-    div.dataset.id = item.id;
-    div.dataset.type = item.type;
-
-    const isEquipped = currentAvatar[item.type] === item.id;
-
-    div.innerHTML = `
-        <div class="inventory-item-image">
-            <img src="${item.path}" alt="${item.name}">
-            ${isEquipped ? '<div class="equipped-badge">Équipé</div>' : ''}
-        </div>
-        <div class="inventory-item-info">
-            <h3 class="inventory-item-name">${item.name}</h3>
-            <div class="inventory-item-type">${getTypeLabel(item.type)}</div>
-            <button class="btn ${isEquipped ? 'btn-secondary' : 'btn-primary'} btn-sm">
-                ${isEquipped ? 'Déséquiper' : 'Équiper'}
-            </button>
-        </div>
-    `;
-
-    const equipButton = div.querySelector('button');
-    equipButton.addEventListener('click', () => toggleEquipItem(item));
-
+    div.className = `inventory-item rarity-${item.rarity}`;
+    
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.name;
+    
+    const info = document.createElement('div');
+    info.className = 'inventory-item-info';
+    
+    const name = document.createElement('div');
+    name.className = 'inventory-item-name';
+    name.textContent = item.name;
+    
+    const type = document.createElement('div');
+    type.className = 'inventory-item-type';
+    type.textContent = getTypeLabel(item.type);
+    
+    const equipButton = document.createElement('button');
+    equipButton.className = 'equip-btn';
+    equipButton.textContent = 'Équiper';
+    equipButton.addEventListener('click', () => equipItem(item));
+    
+    info.appendChild(name);
+    info.appendChild(type);
+    
+    div.appendChild(img);
+    div.appendChild(info);
+    div.appendChild(equipButton);
+    
     return div;
+}
+
+// Équiper un item
+async function equipItem(item) {
+    const user = await getCurrentUser();
+    if (!user) return;
+
+    try {
+        // Mettre à jour l'avatar de l'utilisateur
+        await db.collection('users').doc(user.uid).update({
+            [`avatar.${item.type}`]: item.id
+        });
+
+        // Mettre à jour l'aperçu de l'avatar
+        currentAvatar[item.type] = item.id;
+        updateAvatarPreview();
+
+        alert('Item équipé avec succès !');
+    } catch (error) {
+        console.error('Erreur lors de l\'équipement:', error);
+        alert('Une erreur est survenue lors de l\'équipement.');
+    }
 }
 
 // Obtenir le libellé du type d'item
@@ -83,36 +128,4 @@ function getTypeLabel(type) {
         background: 'Arrière-plan'
     };
     return labels[type] || type;
-}
-
-// Équiper/Déséquiper un item
-async function toggleEquipItem(item) {
-    const isEquipped = currentAvatar[item.type] === item.id;
-
-    if (isEquipped) {
-        // Déséquiper l'item
-        currentAvatar[item.type] = item.type === 'accessory' ? null : `default_${item.type === 'head' || item.type === 'body' ? 'boy' : 'classroom'}`;
-    } else {
-        // Équiper l'item
-        currentAvatar[item.type] = item.id;
-    }
-
-    // Mettre à jour l'interface
-    updateAvatarPreview();
-    displayInventoryItems();
-    saveAvatar();
-}
-
-// Gestionnaire de filtres
-document.querySelectorAll('.inventory-filters .filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Mettre à jour l'état actif des boutons
-        document.querySelectorAll('.inventory-filters .filter-btn').forEach(b => {
-            b.classList.remove('active');
-        });
-        btn.classList.add('active');
-
-        // Filtrer les items
-        displayInventoryItems(btn.dataset.filter);
-    });
-}); 
+} 

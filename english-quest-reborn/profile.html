@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/new-design.css">
   <link rel="stylesheet" href="styles/animations.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -17,7 +17,12 @@
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     
     const firebaseConfig = {
-      // Votre configuration Firebase ici
+      apiKey: "AIzaSyDxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx",
+      authDomain: "english-quest-reborn.firebaseapp.com",
+      projectId: "english-quest-reborn",
+      storageBucket: "english-quest-reborn.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
     };
     
     const app = initializeApp(firebaseConfig);
@@ -26,6 +31,7 @@
     
     window.auth = auth;
     window.db = db;
+    window.onAuthStateChanged = onAuthStateChanged;
   </script>
   <style>
     .profile-container {

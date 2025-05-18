@@ -2,45 +2,65 @@
 let shopItems = [];
 let userCoins = 0;
 
-// Initialisation de la boutique
-async function loadShopItems() {
+// Initialisation
+document.addEventListener('DOMContentLoaded', async () => {
     const user = await getCurrentUser();
-    if (!user) return;
-
-    // Charger les pièces de l'utilisateur
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    if (userDoc.exists) {
-        userCoins = userDoc.data().coins || 0;
-        document.getElementById('coins').textContent = userCoins;
+    if (user) {
+        await loadShopItems(user.uid);
+        initializeShopUI();
     }
+});
 
-    // Charger tous les items disponibles
-    shopItems = [];
-    Object.entries(avatarConfig).forEach(([category, items]) => {
-        Object.entries(items).forEach(([id, item]) => {
-            shopItems.push({
-                id,
-                ...item
-            });
-        });
-    });
+// Chargement des items de la boutique
+async function loadShopItems(userId) {
+    try {
+        // Récupérer les pièces de l'utilisateur
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (userDoc.exists) {
+            userCoins = userDoc.data().coins || 0;
+            document.getElementById('userCoins').textContent = userCoins;
+        }
 
-    // Filtrer les items déjà possédés
-    const userInventory = userDoc.data().inventory || [];
-    shopItems = shopItems.filter(item => !userInventory.includes(item.id));
+        // Récupérer l'inventaire de l'utilisateur
+        const inventory = userDoc.data().inventory || [];
+        
+        // Filtrer les items déjà possédés
+        shopItems = [
+            ...avatarConfig.heads,
+            ...avatarConfig.bodies,
+            ...avatarConfig.accessories,
+            ...avatarConfig.backgrounds
+        ].filter(item => !inventory.includes(item.id));
 
-    // Afficher les items
-    displayShopItems();
+        displayShopItems();
+    } catch (error) {
+        console.error('Erreur lors du chargement de la boutique:', error);
+    }
 }
 
-// Afficher les items de la boutique
+// Initialisation de l'interface de la boutique
+function initializeShopUI() {
+    // Gestion des filtres
+    const filterButtons = document.querySelectorAll('.shop-filters .filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            displayShopItems(button.dataset.filter);
+        });
+    });
+}
+
+// Affichage des items de la boutique
 function displayShopItems(filter = 'all') {
     const shopGrid = document.getElementById('shopItems');
+    if (!shopGrid) return;
+
     shopGrid.innerHTML = '';
 
     const filteredItems = filter === 'all' 
         ? shopItems 
-        : shopItems.filter(item => item.type === filter);
+        : shopItems.filter(item => item.rarity === filter);
 
     filteredItems.forEach(item => {
         const itemElement = createShopItemElement(item);
@@ -48,80 +68,78 @@ function displayShopItems(filter = 'all') {
     });
 }
 
-// Créer un élément d'item de boutique
+// Création d'un élément d'item de boutique
 function createShopItemElement(item) {
     const div = document.createElement('div');
-    div.className = 'shop-item';
-    div.dataset.id = item.id;
-    div.dataset.type = item.type;
-
-    div.innerHTML = `
-        <div class="shop-item-image">
-            <img src="${item.path}" alt="${item.name}">
-        </div>
-        <div class="shop-item-info">
-            <h3 class="shop-item-name">${item.name}</h3>
-            <div class="shop-item-price">
-                <i class="fas fa-coins"></i>
-                <span>${item.price}</span>
-            </div>
-            <button class="btn btn-primary btn-sm" ${userCoins < item.price ? 'disabled' : ''}>
-                Acheter
-            </button>
-        </div>
-    `;
-
-    const buyButton = div.querySelector('button');
+    div.className = `shop-item rarity-${item.rarity}`;
+    
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.name;
+    
+    const info = document.createElement('div');
+    info.className = 'shop-item-info';
+    
+    const name = document.createElement('div');
+    name.className = 'shop-item-name';
+    name.textContent = item.name;
+    
+    const price = document.createElement('div');
+    price.className = 'shop-item-price';
+    price.innerHTML = `<i class="fas fa-coins"></i> ${item.price}`;
+    
+    const buyButton = document.createElement('button');
+    buyButton.className = 'buy-btn';
+    buyButton.textContent = 'Acheter';
+    buyButton.disabled = userCoins < item.price;
     buyButton.addEventListener('click', () => purchaseItem(item));
-
+    
+    info.appendChild(name);
+    info.appendChild(price);
+    
+    div.appendChild(img);
+    div.appendChild(info);
+    div.appendChild(buyButton);
+    
     return div;
 }
 
-// Acheter un item
+// Achat d'un item
 async function purchaseItem(item) {
     const user = await getCurrentUser();
     if (!user) return;
 
-    if (userCoins < item.price) {
-        alert('Vous n\'avez pas assez de pièces !');
-        return;
-    }
-
     try {
-        // Mettre à jour l'inventaire et les pièces de l'utilisateur
-        await db.collection('users').doc(user.uid).update({
-            inventory: firebase.firestore.FieldValue.arrayUnion(item.id),
-            coins: firebase.firestore.FieldValue.increment(-item.price)
+        const userRef = db.collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) return;
+        
+        const userData = userDoc.data();
+        const currentCoins = userData.coins || 0;
+        
+        if (currentCoins < item.price) {
+            alert('Vous n\'avez pas assez de pièces !');
+            return;
+        }
+        
+        // Mettre à jour l'inventaire et les pièces
+        await userRef.update({
+            coins: currentCoins - item.price,
+            inventory: [...(userData.inventory || []), item.id]
         });
-
+        
         // Mettre à jour l'interface
-        userCoins -= item.price;
-        document.getElementById('coins').textContent = userCoins;
-
+        userCoins = currentCoins - item.price;
+        document.getElementById('userCoins').textContent = userCoins;
+        
         // Retirer l'item de la boutique
-        shopItems = shopItems.filter(shopItem => shopItem.id !== item.id);
+        shopItems = shopItems.filter(i => i.id !== item.id);
         displayShopItems();
-
-        // Mettre à jour l'inventaire
-        loadInventory();
-
+        
         alert('Achat réussi !');
     } catch (error) {
         console.error('Erreur lors de l\'achat:', error);
-        alert('Erreur lors de l\'achat. Veuillez réessayer.');
+        alert('Une erreur est survenue lors de l\'achat.');
     }
-}
-
-// Gestionnaire de filtres
-document.querySelectorAll('.shop-filters .filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Mettre à jour l'état actif des boutons
-        document.querySelectorAll('.shop-filters .filter-btn').forEach(b => {
-            b.classList.remove('active');
-        });
-        btn.classList.add('active');
-
-        // Filtrer les items
-        displayShopItems(btn.dataset.filter);
-    });
-}); 
+} 
