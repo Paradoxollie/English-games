@@ -488,8 +488,25 @@ class AuthService {
       console.log("Mise à jour du profil pour:", this.currentUser.uid);
       console.log("Données à mettre à jour:", data);
       
+      // S'assurer que nous avons un document utilisateur valide
+      if (!this.currentUser.uid) {
+        console.error("UID utilisateur manquant lors de la mise à jour du profil");
+        return { success: false, error: 'Identifiant utilisateur manquant' };
+      }
+      
       const userRef = doc(this.db, 'users', this.currentUser.uid);
+      
+      // Vérifier si le document utilisateur existe
+      const docSnap = await getDoc(userRef);
+      if (!docSnap.exists()) {
+        console.error("Document utilisateur non trouvé lors de la mise à jour");
+        return { success: false, error: 'Profil utilisateur introuvable' };
+      }
+      
+      // Effectuer la mise à jour
       await updateDoc(userRef, data);
+      
+      // Recharger les données utilisateur
       await this.loadUserData();
       
       console.log("Profil mis à jour avec succès");
@@ -498,7 +515,7 @@ class AuthService {
       console.error('Erreur de mise à jour du profil:', error);
       return { 
         success: false, 
-        error: this.getErrorMessage(error.code)
+        error: error.message || this.getErrorMessage(error.code) || 'Une erreur inconnue est survenue'
       };
     }
   }

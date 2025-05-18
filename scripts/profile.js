@@ -7,13 +7,15 @@ import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
 
 // Éléments du DOM
-const userAvatar = document.getElementById('userAvatar');
+const userAvatarHead = document.getElementById('userAvatarHead');
+const userAvatarBody = document.getElementById('userAvatarBody');
+const userAvatarBackground = document.getElementById('userAvatarBackground');
+const userAvatarAccessory = document.getElementById('userAvatarAccessory');
 const username = document.getElementById('username');
 const userEmail = document.getElementById('userEmail');
 const userLevel = document.getElementById('userLevel');
 const userXP = document.getElementById('userXP');
 const userCoins = document.getElementById('userCoins');
-const avatarUpload = document.getElementById('avatarUpload');
 const inventoryGrid = document.getElementById('inventoryGrid');
 const achievementList = document.getElementById('achievementList');
 const settingsForm = document.getElementById('settingsForm');
@@ -127,16 +129,16 @@ async function init() {
     if (!authService.currentUser) {
       console.log("Utilisateur non connecté, redirection vers la page de connexion");
       window.location.href = 'login.html';
-    return;
-  }
+      return;
+    }
 
     console.log("Utilisateur connecté:", authService.currentUser.email);
     
     // Charger le profil
     await loadProfile();
 
-  // Initialiser les onglets
-  initTabs();
+    // Initialiser les onglets
+    initTabs();
 
     // Configurer les écouteurs d'événements
     setupEventListeners();
@@ -170,8 +172,8 @@ async function loadProfile() {
     userXP.textContent = `${userData.xp || 0} XP`;
     userCoins.textContent = `${userData.coins || 0} pièces`;
     
-    // Mettre à jour l'avatar
-    userAvatar.src = userData.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    // Mettre à jour l'avatar complet
+    updateAvatarDisplay(userData.avatar);
     
     // Charger l'inventaire
     await loadInventory();
@@ -185,6 +187,73 @@ async function loadProfile() {
     console.log("Profil chargé avec succès");
   } catch (error) {
     console.error("Erreur lors du chargement du profil:", error);
+  }
+}
+
+/**
+ * Mettre à jour l'affichage de l'avatar
+ */
+function updateAvatarDisplay(avatar) {
+  console.log("Mise à jour de l'affichage de l'avatar avec:", avatar);
+  
+  try {
+    if (!avatar) {
+      // Avatar par défaut
+      userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+      userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+      userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
+      userAvatarAccessory.style.display = 'none';
+      console.log("Avatar par défaut appliqué");
+      return;
+    }
+
+    // Mettre à jour chaque partie de l'avatar
+    const headType = avatar.head || 'default_boy';
+    const bodyType = avatar.body || 'default_boy';
+    const bgType = avatar.background || 'default';
+    
+    console.log("Types d'avatar:", { head: headType, body: bodyType, background: bgType, accessory: avatar.accessory });
+    
+    userAvatarHead.src = `assets/avatars/heads/${headType}.png`;
+    userAvatarBody.src = `assets/avatars/bodies/${bodyType}.png`;
+    userAvatarBackground.src = `assets/avatars/backgrounds/${bgType}.png`;
+    
+    // Gestion des erreurs d'image
+    userAvatarHead.onerror = function() {
+      console.error("Erreur de chargement de l'image de tête:", this.src);
+      this.src = 'assets/avatars/heads/default_boy.png';
+    };
+    
+    userAvatarBody.onerror = function() {
+      console.error("Erreur de chargement de l'image de corps:", this.src);
+      this.src = 'assets/avatars/bodies/default_boy.png';
+    };
+    
+    userAvatarBackground.onerror = function() {
+      console.error("Erreur de chargement de l'arrière-plan:", this.src);
+      this.src = 'assets/avatars/backgrounds/default.png';
+    };
+    
+    if (avatar.accessory && avatar.accessory !== 'none') {
+      userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+      userAvatarAccessory.style.display = 'block';
+      
+      userAvatarAccessory.onerror = function() {
+        console.error("Erreur de chargement de l'accessoire:", this.src);
+        this.style.display = 'none';
+      };
+    } else {
+      userAvatarAccessory.style.display = 'none';
+    }
+    
+    console.log("Avatar mis à jour avec succès");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'avatar:", error);
+    // Fallback vers l'avatar par défaut en cas d'erreur
+    userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+    userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+    userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
+    userAvatarAccessory.style.display = 'none';
   }
 }
 
@@ -226,22 +295,28 @@ async function loadInventory() {
     const inventory = userData.inventory || [];
     const availableSkins = skinService.getAvailableSkins();
     
+    console.log("Skins disponibles:", availableSkins);
+    console.log("Inventaire actuel:", inventory);
+    
     // Vider la grille d'inventaire
     inventoryGrid.innerHTML = '';
     
-    // Si l'inventaire est vide
-    if (inventory.length === 0 && Object.keys(availableSkins).length === 0) {
+    // Si l'inventaire est vide et pas de skins disponibles
+    if (Object.keys(availableSkins).length === 0) {
       inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
       return;
     }
     
     // Créer les sections pour chaque type de skin
     Object.entries(availableSkins).forEach(([type, skins]) => {
+      // Ne créer que les sections pour head et body
+      if (type !== 'head' && type !== 'body') return;
+      
       // Créer la section
       const section = document.createElement('div');
       section.className = 'inventory-section';
       section.innerHTML = `
-        <h3>${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+        <h3>${getTypeName(type)}</h3>
         <div class="skin-grid" id="skin-grid-${type}"></div>
       `;
       
@@ -259,7 +334,7 @@ async function loadInventory() {
         skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
         
         skinItem.innerHTML = `
-          <img src="${skin.image}" alt="${skin.name}">
+          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/heads/default_boy.png'">
           <h4>${skin.name}</h4>
           <p>${skin.price} pièces</p>
           ${owned ? 
@@ -281,6 +356,19 @@ async function loadInventory() {
   } catch (error) {
     console.error("Erreur lors du chargement de l'inventaire:", error);
   }
+}
+
+/**
+ * Obtenir un nom lisible pour le type de skin
+ */
+function getTypeName(type) {
+  const typeNames = {
+    'head': 'Têtes',
+    'body': 'Corps',
+    'accessory': 'Accessoires',
+    'background': 'Arrière-plans'
+  };
+  return typeNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 }
 
 /**
@@ -423,24 +511,6 @@ function updateSettings(settings = {}) {
 function setupEventListeners() {
   try {
     console.log("Configuration des écouteurs d'événements...");
-    
-    // Upload d'avatar
-    avatarUpload.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      try {
-        const result = await authService.uploadAvatar(file);
-        if (result.success) {
-          userAvatar.src = result.avatarUrl;
-        } else {
-          alert(result.error || "Erreur lors de l'upload de l'avatar");
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'upload de l'avatar:", error);
-        alert("Une erreur est survenue lors de l'upload de l'avatar");
-      }
-    });
     
     // Paramètres
     themeToggle.addEventListener('change', async () => {
