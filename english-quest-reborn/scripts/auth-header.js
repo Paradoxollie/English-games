@@ -2,58 +2,41 @@
  * Script pour gérer l'affichage du header en fonction de l'état d'authentification
  */
 
-import { getAuthState, onAuthStateChange } from '../src/js/services/auth.service.js';
+import { authService } from './auth-service.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialiser le service d'authentification
+  await authService.init();
+  
   // Récupérer les éléments du menu utilisateur
-  const userMenu = document.querySelector('.user-menu');
+  const userMenu = document.getElementById('userMenu');
+  const loginButton = document.getElementById('loginButton');
+  const profileButton = document.getElementById('profileButton');
+  
   if (!userMenu) return;
 
   // Fonction pour mettre à jour l'interface
-  function updateUI(authState) {
-    // Vider le menu utilisateur
-    while (userMenu.firstChild) {
-      userMenu.removeChild(userMenu.firstChild);
-    }
-
-    // Créer les éléments en fonction de l'état d'authentification
-    if (authState.isAuthenticated) {
-      // Créer le lien vers le profil
-      const profileLink = document.createElement('a');
-      profileLink.href = 'profile.html';
-      profileLink.className = 'btn-login';
-      profileLink.textContent = authState.profile.username || 'Mon Profil';
-      userMenu.appendChild(profileLink);
-
-      // Créer le lien vers l'administration si l'utilisateur est un administrateur
-      if (authState.profile.isAdmin) {
-        const adminLink = document.createElement('a');
-        adminLink.href = 'admin.html';
-        adminLink.className = 'btn-admin';
-        adminLink.textContent = 'Admin';
-        adminLink.style.marginLeft = '10px';
-        adminLink.style.color = '#e74c3c';
-        userMenu.appendChild(adminLink);
+  function updateUI(user) {
+    if (user) {
+      // L'utilisateur est connecté
+      if (loginButton) loginButton.style.display = 'none';
+      if (profileButton) {
+        profileButton.style.display = 'inline-block';
+        profileButton.textContent = user.displayName || 'Mon Profil';
       }
     } else {
-      // Créer le lien vers la page de connexion
-      const loginLink = document.createElement('a');
-      loginLink.href = 'login.html';
-      loginLink.className = 'btn-login';
-      loginLink.textContent = 'Connexion';
-      userMenu.appendChild(loginLink);
+      // L'utilisateur n'est pas connecté
+      if (loginButton) loginButton.style.display = 'inline-block';
+      if (profileButton) profileButton.style.display = 'none';
     }
-
-    // Ajouter le bouton de menu mobile
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.textContent = '☰';
-    userMenu.appendChild(menuToggle);
   }
 
-  // Mettre à jour l'interface avec l'état initial
-  updateUI(getAuthState());
+  // Mettre à jour l'UI avec l'état initial
+  updateUI(authService.currentUser);
 
   // Écouter les changements d'état d'authentification
-  onAuthStateChange(updateUI);
+  const auth = authService.auth;
+  auth.onAuthStateChanged(user => {
+    updateUI(user);
+  });
 });
