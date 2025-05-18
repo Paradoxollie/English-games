@@ -6,13 +6,201 @@
 // Données de l'utilisateur (partagées avec profile.js)
 // La variable userData est déclarée dans profile.js
 
-// Sélection actuelle de l'avatar
-let currentAvatar = {
-  head: 'default_boy', // Utiliser la tête de garçon par défaut
-  body: 'default_boy', // Utiliser le corps de garçon par défaut
-  accessory: 'none',
-  background: 'default'
+// Configuration des avatars
+const avatarConfig = {
+    heads: {
+        default_boy: {
+            name: "Garçon par défaut",
+            price: 0,
+            type: "head",
+            path: "assets/images/avatars/heads/default_boy.svg"
+        },
+        default_girl: {
+            name: "Fille par défaut",
+            price: 0,
+            type: "head",
+            path: "assets/images/avatars/heads/default_girl.svg"
+        }
+    },
+    bodies: {
+        default_boy: {
+            name: "Corps garçon",
+            price: 0,
+            type: "body",
+            path: "assets/images/avatars/bodies/default_boy.svg"
+        },
+        default_girl: {
+            name: "Corps fille",
+            price: 0,
+            type: "body",
+            path: "assets/images/avatars/bodies/default_girl.svg"
+        }
+    },
+    accessories: {
+        glasses: {
+            name: "Lunettes",
+            price: 100,
+            type: "accessory",
+            path: "assets/images/avatars/accessories/glasses.svg"
+        }
+    },
+    backgrounds: {
+        classroom: {
+            name: "Salle de classe",
+            price: 50,
+            type: "background",
+            path: "assets/images/avatars/backgrounds/classroom.svg"
+        }
+    }
 };
+
+// État de l'avatar
+let currentAvatar = {
+    head: "default_boy",
+    body: "default_boy",
+    accessory: null,
+    background: "classroom"
+};
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await getCurrentUser();
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Charger l'avatar de l'utilisateur
+    const userAvatar = await loadUserAvatar(user.uid);
+    if (userAvatar) {
+        currentAvatar = userAvatar;
+    }
+
+    // Initialiser l'interface
+    initializeAvatarUI();
+    updateAvatarPreview();
+    loadShopItems();
+    loadInventory();
+});
+
+// Initialiser l'interface utilisateur
+function initializeAvatarUI() {
+    // Initialiser les options de tête
+    const headOptions = document.getElementById('headOptions');
+    Object.entries(avatarConfig.heads).forEach(([id, head]) => {
+        const option = createOptionItem(id, head);
+        headOptions.appendChild(option);
+    });
+
+    // Initialiser les options de corps
+    const bodyOptions = document.getElementById('bodyOptions');
+    Object.entries(avatarConfig.bodies).forEach(([id, body]) => {
+        const option = createOptionItem(id, body);
+        bodyOptions.appendChild(option);
+    });
+
+    // Initialiser les options d'accessoires
+    const accessoryOptions = document.getElementById('accessoryOptions');
+    Object.entries(avatarConfig.accessories).forEach(([id, accessory]) => {
+        const option = createOptionItem(id, accessory);
+        accessoryOptions.appendChild(option);
+    });
+
+    // Initialiser les options d'arrière-plan
+    const backgroundOptions = document.getElementById('backgroundOptions');
+    Object.entries(avatarConfig.backgrounds).forEach(([id, background]) => {
+        const option = createOptionItem(id, background);
+        backgroundOptions.appendChild(option);
+    });
+}
+
+// Créer un élément d'option
+function createOptionItem(id, item) {
+    const div = document.createElement('div');
+    div.className = 'option-item';
+    div.dataset.id = id;
+    div.dataset.type = item.type;
+
+    const img = document.createElement('img');
+    img.src = item.path;
+    img.alt = item.name;
+
+    div.appendChild(img);
+    div.addEventListener('click', () => selectOption(id, item.type));
+
+    return div;
+}
+
+// Sélectionner une option
+function selectOption(id, type) {
+    currentAvatar[type] = id;
+    updateAvatarPreview();
+    saveAvatar();
+}
+
+// Mettre à jour l'aperçu de l'avatar
+function updateAvatarPreview() {
+    const headImg = document.getElementById('avatarHead');
+    const bodyImg = document.getElementById('avatarBody');
+    const accessoryImg = document.getElementById('avatarAccessory');
+    const backgroundImg = document.getElementById('avatarBackground');
+
+    headImg.src = avatarConfig.heads[currentAvatar.head].path;
+    bodyImg.src = avatarConfig.bodies[currentAvatar.body].path;
+    backgroundImg.src = avatarConfig.backgrounds[currentAvatar.background].path;
+
+    if (currentAvatar.accessory) {
+        accessoryImg.src = avatarConfig.accessories[currentAvatar.accessory].path;
+        accessoryImg.style.display = 'block';
+    } else {
+        accessoryImg.style.display = 'none';
+    }
+
+    // Mettre à jour la sélection visuelle
+    document.querySelectorAll('.option-item').forEach(item => {
+        item.classList.remove('selected');
+        if (item.dataset.id === currentAvatar[item.dataset.type]) {
+            item.classList.add('selected');
+        }
+    });
+}
+
+// Sauvegarder l'avatar
+async function saveAvatar() {
+    const user = await getCurrentUser();
+    if (!user) return;
+
+    try {
+        await db.collection('users').doc(user.uid).update({
+            avatar: currentAvatar
+        });
+    } catch (error) {
+        console.error('Erreur lors de la sauvegarde de l\'avatar:', error);
+    }
+}
+
+// Charger l'avatar de l'utilisateur
+async function loadUserAvatar(userId) {
+    try {
+        const doc = await db.collection('users').doc(userId).get();
+        if (doc.exists && doc.data().avatar) {
+            return doc.data().avatar;
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement de l\'avatar:', error);
+    }
+    return null;
+}
+
+// Obtenir l'utilisateur actuel
+async function getCurrentUser() {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        });
+    });
+}
 
 // Catalogue des skins disponibles
 const skinCatalog = {
