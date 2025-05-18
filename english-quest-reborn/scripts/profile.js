@@ -195,24 +195,65 @@ async function loadProfile() {
  * Mettre à jour l'affichage de l'avatar
  */
 function updateAvatarDisplay(avatar) {
-  if (!avatar) {
-    // Avatar par défaut
+  console.log("Mise à jour de l'affichage de l'avatar avec:", avatar);
+  
+  try {
+    if (!avatar) {
+      // Avatar par défaut
+      userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+      userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+      userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
+      userAvatarAccessory.style.display = 'none';
+      console.log("Avatar par défaut appliqué");
+      return;
+    }
+
+    // Mettre à jour chaque partie de l'avatar
+    const headType = avatar.head || 'default_boy';
+    const bodyType = avatar.body || 'default_boy';
+    const bgType = avatar.background || 'default';
+    
+    console.log("Types d'avatar:", { head: headType, body: bodyType, background: bgType, accessory: avatar.accessory });
+    
+    userAvatarHead.src = `assets/avatars/heads/${headType}.png`;
+    userAvatarBody.src = `assets/avatars/bodies/${bodyType}.png`;
+    userAvatarBackground.src = `assets/avatars/backgrounds/${bgType}.png`;
+    
+    // Gestion des erreurs d'image
+    userAvatarHead.onerror = function() {
+      console.error("Erreur de chargement de l'image de tête:", this.src);
+      this.src = 'assets/avatars/heads/default_boy.png';
+    };
+    
+    userAvatarBody.onerror = function() {
+      console.error("Erreur de chargement de l'image de corps:", this.src);
+      this.src = 'assets/avatars/bodies/default_boy.png';
+    };
+    
+    userAvatarBackground.onerror = function() {
+      console.error("Erreur de chargement de l'arrière-plan:", this.src);
+      this.src = 'assets/avatars/backgrounds/default.png';
+    };
+    
+    if (avatar.accessory && avatar.accessory !== 'none') {
+      userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+      userAvatarAccessory.style.display = 'block';
+      
+      userAvatarAccessory.onerror = function() {
+        console.error("Erreur de chargement de l'accessoire:", this.src);
+        this.style.display = 'none';
+      };
+    } else {
+      userAvatarAccessory.style.display = 'none';
+    }
+    
+    console.log("Avatar mis à jour avec succès");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'avatar:", error);
+    // Fallback vers l'avatar par défaut en cas d'erreur
     userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
     userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-    userAvatarAccessory.src = 'assets/avatars/accessories/none.png';
-    return;
-  }
-
-  // Mettre à jour chaque partie de l'avatar
-  userAvatarHead.src = `assets/avatars/heads/${avatar.head || 'default_boy'}.png`;
-  userAvatarBody.src = `assets/avatars/bodies/${avatar.body || 'default_boy'}.png`;
-  userAvatarBackground.src = `assets/avatars/backgrounds/${avatar.background || 'default'}.png`;
-  
-  if (avatar.accessory && avatar.accessory !== 'none') {
-    userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
-    userAvatarAccessory.style.display = 'block';
-  } else {
     userAvatarAccessory.style.display = 'none';
   }
 }
