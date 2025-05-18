@@ -388,6 +388,73 @@
             </div>
           </div>
         </div>
+
+        <div class="profile-section">
+          <h2 class="profile-section-title">Personnalisation de l'Avatar</h2>
+          <div class="avatar-customization">
+            <div class="avatar-preview" id="avatar-preview"></div>
+            <div class="avatar-options">
+              <div class="avatar-category">
+                <h3>Tête</h3>
+                <select class="skin-selector" data-skin-type="head">
+                  <option value="default_boy">Garçon</option>
+                  <option value="default_girl">Fille</option>
+                  <option value="bear">Ours</option>
+                </select>
+              </div>
+              <div class="avatar-category">
+                <h3>Corps</h3>
+                <select class="skin-selector" data-skin-type="body">
+                  <option value="default_boy">Garçon</option>
+                  <option value="default_girl">Fille</option>
+                  <option value="bear">Ours</option>
+                </select>
+              </div>
+              <div class="avatar-category">
+                <h3>Accessoire</h3>
+                <select class="skin-selector" data-skin-type="accessory">
+                  <option value="none">Aucun</option>
+                </select>
+              </div>
+              <div class="avatar-category">
+                <h3>Arrière-plan</h3>
+                <select class="skin-selector" data-skin-type="background">
+                  <option value="default">Défaut</option>
+                </select>
+              </div>
+              <button id="save-avatar" class="btn-profile">Sauvegarder l'avatar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h2 class="profile-section-title">Boutique de Skins</h2>
+          <div class="shop-container">
+            <div class="shop-header">
+              <div class="user-coins">
+                <i class="fas fa-coins"></i>
+                <span id="user-coins">0</span> pièces
+              </div>
+            </div>
+            <div class="shop-content">
+              <div id="skins-shop" class="skins-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h2 class="profile-section-title">Mes Skins</h2>
+          <div class="inventory-container">
+            <div class="inventory-filters">
+              <button class="filter-btn active" data-filter="all">Tous</button>
+              <button class="filter-btn" data-filter="head">Têtes</button>
+              <button class="filter-btn" data-filter="body">Corps</button>
+              <button class="filter-btn" data-filter="accessory">Accessoires</button>
+              <button class="filter-btn" data-filter="background">Arrière-plans</button>
+            </div>
+            <div id="skins-inventory" class="skins-grid"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -510,5 +577,13 @@
     // Charger le profil au chargement de la page
     loadProfile();
   </script>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script type="module" src="src/js/profile.js"></script>
+  <script type="module" src="src/js/services/profile.service.js"></script>
+  <script type="module" src="src/js/services/avatar.service.js"></script>
+  <script src="scripts/avatar.js"></script>
+  <script src="scripts/debug.js"></script>
 </body>
 </html>
