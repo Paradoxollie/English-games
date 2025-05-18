@@ -6,13 +6,176 @@
 // Données de l'utilisateur (partagées avec profile.js)
 // La variable userData est déclarée dans profile.js
 
-// Sélection actuelle de l'avatar
-let currentAvatar = {
-  head: 'default_boy', // Utiliser la tête de garçon par défaut
-  body: 'default_boy', // Utiliser le corps de garçon par défaut
-  accessory: 'none',
-  background: 'default'
+// Configuration des avatars
+const avatarConfig = {
+    heads: [
+        { id: 'default_boy', name: 'Garçon', type: 'head', rarity: 'common', price: 0, image: 'assets/images/avatars/heads/default_boy.svg' },
+        { id: 'default_girl', name: 'Fille', type: 'head', rarity: 'common', price: 0, image: 'assets/images/avatars/heads/default_girl.svg' },
+        { id: 'bear', name: 'Ours', type: 'head', rarity: 'rare', price: 1000, image: 'assets/images/avatars/heads/bear.svg' }
+    ],
+    bodies: [
+        { id: 'default_boy', name: 'T-shirt', type: 'body', rarity: 'common', price: 0, image: 'assets/images/avatars/bodies/default_boy.svg' },
+        { id: 'default_girl', name: 'Robe', type: 'body', rarity: 'common', price: 0, image: 'assets/images/avatars/bodies/default_girl.svg' },
+        { id: 'bear', name: 'Ours', type: 'body', rarity: 'rare', price: 1000, image: 'assets/images/avatars/bodies/bear.svg' }
+    ],
+    accessories: [
+        { id: 'none', name: 'Aucun', type: 'accessory', rarity: 'common', price: 0, image: 'assets/images/avatars/accessories/none.svg' },
+        { id: 'glasses', name: 'Lunettes', type: 'accessory', rarity: 'common', price: 500, image: 'assets/images/avatars/accessories/glasses.svg' }
+    ],
+    backgrounds: [
+        { id: 'classroom', name: 'Salle de classe', type: 'background', rarity: 'common', price: 0, image: 'assets/images/avatars/backgrounds/classroom.svg' },
+        { id: 'forest', name: 'Forêt', type: 'background', rarity: 'rare', price: 800, image: 'assets/images/avatars/backgrounds/forest.svg' }
+    ]
 };
+
+// État initial de l'avatar
+let currentAvatar = {
+    head: 'default_boy',
+    body: 'default_boy',
+    accessory: 'none',
+    background: 'classroom'
+};
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = await getCurrentUser();
+    if (user) {
+        await loadUserAvatar(user.uid);
+        initializeAvatarUI();
+        updateAvatarPreview();
+    }
+});
+
+// Initialisation de l'interface utilisateur
+function initializeAvatarUI() {
+    // Initialisation des options de personnalisation
+    Object.keys(avatarConfig).forEach(category => {
+        const container = document.getElementById(`${category}Options`);
+        if (container) {
+            avatarConfig[category].forEach(item => {
+                const optionElement = createOptionElement(item);
+                container.appendChild(optionElement);
+            });
+        }
+    });
+
+    // Gestion de la navigation
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            const sections = document.querySelectorAll('.profile-section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(button.dataset.section).classList.add('active');
+        });
+    });
+}
+
+// Création d'un élément d'option
+function createOptionElement(item) {
+    const div = document.createElement('div');
+    div.className = `option-item ${item.rarity}`;
+    div.dataset.id = item.id;
+    div.dataset.type = item.type;
+    
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.name;
+    
+    div.appendChild(img);
+    
+    div.addEventListener('click', () => selectOption(item));
+    
+    return div;
+}
+
+// Sélection d'une option
+function selectOption(item) {
+    currentAvatar[item.type] = item.id;
+    updateAvatarPreview();
+    saveAvatar();
+}
+
+// Mise à jour de l'aperçu de l'avatar
+function updateAvatarPreview() {
+    const preview = document.getElementById('avatarPreview');
+    if (preview) {
+        const head = avatarConfig.heads.find(h => h.id === currentAvatar.head);
+        const body = avatarConfig.bodies.find(b => b.id === currentAvatar.body);
+        const accessory = avatarConfig.accessories.find(a => a.id === currentAvatar.accessory);
+        const background = avatarConfig.backgrounds.find(bg => bg.id === currentAvatar.background);
+
+        // Création de l'image composite
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+
+        // Chargement des images
+        Promise.all([
+            loadImage(background.image),
+            loadImage(body.image),
+            loadImage(head.image),
+            accessory.id !== 'none' ? loadImage(accessory.image) : Promise.resolve(null)
+        ]).then(([bgImg, bodyImg, headImg, accImg]) => {
+            ctx.drawImage(bgImg, 0, 0, 200, 200);
+            ctx.drawImage(bodyImg, 0, 0, 200, 200);
+            ctx.drawImage(headImg, 0, 0, 200, 200);
+            if (accImg) {
+                ctx.drawImage(accImg, 0, 0, 200, 200);
+            }
+            preview.src = canvas.toDataURL();
+        });
+    }
+}
+
+// Chargement d'une image
+function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+}
+
+// Sauvegarde de l'avatar
+async function saveAvatar() {
+    const user = await getCurrentUser();
+    if (user) {
+        try {
+            await db.collection('users').doc(user.uid).update({
+                avatar: currentAvatar
+            });
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde de l\'avatar:', error);
+        }
+    }
+}
+
+// Chargement de l'avatar de l'utilisateur
+async function loadUserAvatar(userId) {
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (userDoc.exists && userDoc.data().avatar) {
+            currentAvatar = userDoc.data().avatar;
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement de l\'avatar:', error);
+    }
+}
+
+// Récupération de l'utilisateur courant
+async function getCurrentUser() {
+    return new Promise((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            unsubscribe();
+            resolve(user);
+        });
+    });
+}
 
 // Catalogue des skins disponibles
 const skinCatalog = {

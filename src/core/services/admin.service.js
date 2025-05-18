@@ -3,7 +3,8 @@
  * Gère les fonctionnalités d'administration du site
  */
 
-import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
+import { db } from '../../config/firebase-config.js';
+import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getCurrentUser, isCurrentUserAdmin, getAllUsersFromFirestore } from './user.service.js';
 
 // Nom de la collection principale des utilisateurs
@@ -27,16 +28,12 @@ function checkAdminRights() {
  */
 export async function getAllUsersForAdmin() {
   try {
-    // Vérifier les droits d'administration
-    checkAdminRights();
-    
-    // Récupérer tous les utilisateurs
+    console.log('[Admin] Récupération de tous les utilisateurs depuis Firestore...');
     const users = await getAllUsersFromFirestore();
-    
-    // Convertir l'objet en tableau
+    console.log(`[Admin] Utilisateurs récupérés: ${Object.keys(users).length}`);
     return Object.values(users);
   } catch (error) {
-    console.error('Erreur lors de la récupération des utilisateurs pour l\'administration:', error);
+    console.error('[Admin] Erreur lors de la récupération des utilisateurs pour l\'administration:', error);
     throw error;
   }
 }
@@ -49,36 +46,26 @@ export async function getAllUsersForAdmin() {
  */
 export async function updateUserAsAdmin(userId, userData) {
   try {
-    // Vérifier les droits d'administration
-    checkAdminRights();
-    
     // Vérifier si l'utilisateur existe
-    const db = getFirestore();
     const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
-    
     if (!userDoc.exists()) {
       throw new Error('Utilisateur non trouvé');
     }
-    
     // SÉCURITÉ: Vérifier si on essaie de modifier les droits d'administrateur
     if (userData.hasOwnProperty('isAdmin')) {
       const currentUser = getCurrentUser();
-      
       // Seul Ollie peut modifier les droits d'administrateur
       if (currentUser.username.toLowerCase() !== 'ollie') {
         throw new Error('Seul Ollie peut modifier les droits d\'administrateur');
       }
-      
       // Vérifier si on essaie de retirer les droits d'Ollie
       const existingUser = userDoc.data();
       if (existingUser.username.toLowerCase() === 'ollie' && userData.isAdmin === false) {
         throw new Error('Impossible de retirer les droits d\'administrateur à Ollie');
       }
     }
-    
     // Mettre à jour l'utilisateur
     await updateDoc(doc(db, USERS_COLLECTION, userId), userData);
-    
     return true;
   } catch (error) {
     console.error('Erreur lors de la mise à jour de l\'utilisateur (admin):', error);
@@ -97,7 +84,6 @@ export async function deleteUserAsAdmin(userId) {
     checkAdminRights();
     
     // Vérifier si l'utilisateur existe
-    const db = getFirestore();
     const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
     
     if (!userDoc.exists()) {
@@ -147,7 +133,6 @@ export async function addXpToUserAsAdmin(userId, xpAmount) {
     checkAdminRights();
     
     // Vérifier si l'utilisateur existe
-    const db = getFirestore();
     const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
     
     if (!userDoc.exists()) {
@@ -209,7 +194,6 @@ export async function addCoinsToUserAsAdmin(userId, coinsAmount) {
     checkAdminRights();
     
     // Vérifier si l'utilisateur existe
-    const db = getFirestore();
     const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
     
     if (!userDoc.exists()) {
@@ -243,33 +227,24 @@ export async function addCoinsToUserAsAdmin(userId, coinsAmount) {
  */
 export async function setUserAdminRights(userId, isAdmin) {
   try {
-    // Vérifier les droits d'administration
     const currentUser = getCurrentUser();
-    
     // SÉCURITÉ: Seul Ollie peut modifier les droits d'administrateur
     if (currentUser.username.toLowerCase() !== 'ollie') {
       throw new Error('Seul Ollie peut modifier les droits d\'administrateur');
     }
-    
     // Vérifier si l'utilisateur existe
-    const db = getFirestore();
     const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
-    
     if (!userDoc.exists()) {
       throw new Error('Utilisateur non trouvé');
     }
-    
     // Récupérer les données de l'utilisateur
     const userData = userDoc.data();
-    
     // SÉCURITÉ: Empêcher de retirer les droits d'Ollie
     if (userData.username.toLowerCase() === 'ollie' && isAdmin === false) {
       throw new Error('Impossible de retirer les droits d\'administrateur à Ollie');
     }
-    
     // Mettre à jour les droits d'administrateur
     await updateDoc(doc(db, USERS_COLLECTION, userId), { isAdmin });
-    
     return true;
   } catch (error) {
     console.error('Erreur lors de la modification des droits d\'administrateur:', error);
@@ -285,8 +260,6 @@ export async function getGlobalStats() {
   try {
     // Vérifier les droits d'administration
     checkAdminRights();
-    
-    const db = getFirestore();
     
     // Récupérer le nombre d'utilisateurs
     const usersSnapshot = await getDocs(collection(db, USERS_COLLECTION));

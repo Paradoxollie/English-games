@@ -3,6 +3,10 @@
  * Ce fichier centralise toutes les configurations Firebase
  */
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+
 // Configuration Firebase
 export const firebaseConfig = {
     apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
@@ -13,6 +17,26 @@ export const firebaseConfig = {
     appId: "1:452279652544:web:916f93e0ab29183e739d25",
     measurementId: "G-RMCQTMKDVP"
 };
+
+console.log('Initialisation de Firebase avec la configuration:', firebaseConfig);
+
+let app, auth, db;
+
+try {
+    app = initializeApp(firebaseConfig);
+    console.log('Application Firebase initialisée avec succès');
+    
+    auth = getAuth(app);
+    console.log('Service d\'authentification initialisé');
+    
+    db = getFirestore(app);
+    console.log('Service Firestore initialisé');
+} catch (error) {
+    console.error('Erreur lors de l\'initialisation de Firebase:', error);
+    throw error;
+}
+
+export { app, auth, db };
 
 // Collections Firestore
 export const collections = {

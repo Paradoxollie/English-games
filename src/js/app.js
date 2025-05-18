@@ -4,13 +4,12 @@
  */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { firebaseConfig } from './firebase-config.js';
+import { auth, firebaseConfig } from '../config/firebase-config.js';
+import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { initializeUserService, getCurrentUser, addUserChangeListener } from '../core/services/user.service.js';
 
 // Initialiser Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 // Variables globales
 let currentUser = null;

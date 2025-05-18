@@ -3,6 +3,31 @@
  * Gère la page de profil utilisateur
  */
 
+// Centralisation Firebase v9+ modulaire
+import { app, auth, db } from '../src/js/firebase-config.js';
+import { updateUserInFirestore } from '../src/core/services/user.service.js';
+import { authService } from './auth-service.js';
+import { skinService } from './skin-service.js';
+
+// Éléments du DOM
+const userAvatar = document.getElementById('userAvatar');
+const username = document.getElementById('username');
+const userEmail = document.getElementById('userEmail');
+const userLevel = document.getElementById('userLevel');
+const userXP = document.getElementById('userXP');
+const userCoins = document.getElementById('userCoins');
+const avatarUpload = document.getElementById('avatarUpload');
+const inventoryGrid = document.getElementById('inventoryGrid');
+const achievementList = document.getElementById('achievementList');
+const settingsForm = document.getElementById('settingsForm');
+const themeToggle = document.getElementById('themeToggle');
+const notificationsToggle = document.getElementById('notificationsToggle');
+const soundToggle = document.getElementById('soundToggle');
+
+// Onglets
+const tabs = document.querySelectorAll('.profile-tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
 // Données de l'utilisateur
 let userData = null;
 
@@ -492,46 +517,19 @@ function initAccountActions() {
 }
 
 // Sauvegarder les données de l'utilisateur
-function saveUserData() {
-  // Récupérer tous les utilisateurs
-  const users = getUsers();
-
-  // Trouver l'ID de l'utilisateur actuel
-  const userId = Object.keys(users).find(id => users[id].username === userData.username);
-
-  if (userId) {
-    // S'assurer que les données importantes sont préservées
-    userData.coins = userData.coins || 0;
-    userData.xp = userData.xp || 0;
-    userData.level = userData.level || 1;
-
-    // Mettre à jour les données de l'utilisateur
-    users[userId] = userData;
-
-    // Sauvegarder les modifications
-    saveUsers(users);
-
-    // Mettre à jour l'utilisateur courant
-    setCurrentUser(userData);
-
-    // Mettre à jour l'affichage de l'avatar si la fonction existe
-    if (typeof updateAvatarDisplay === 'function') {
-      updateAvatarDisplay();
-    }
-
-    // Mettre à jour également le profil local pour la compatibilité
-    const profile = {
-      coins: userData.coins,
-      xp: userData.xp,
-      level: userData.level,
-      username: userData.username
-    };
-
-    localStorage.setItem('userProfile', JSON.stringify(profile));
-
-    console.log("Données utilisateur sauvegardées avec succès pour:", userData.username);
-  } else {
-    console.error("Impossible de trouver l'utilisateur dans la liste des utilisateurs");
+async function saveUserData() {
+  if (!userData || !userData.username) {
+    console.error("Impossible de sauvegarder : utilisateur non défini");
+    return;
+  }
+  try {
+    // Mettre à jour dans Firestore
+    await updateUserInFirestore(userData.username, userData);
+    // Mettre à jour la session locale
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    console.log("Données utilisateur sauvegardées avec succès dans Firestore pour:", userData.username);
+  } catch (error) {
+    console.error("Erreur lors de la sauvegarde des données utilisateur dans Firestore:", error);
   }
 }
 
@@ -641,3 +639,202 @@ function formatDate(dateString) {
 
   return `${day}/${month}/${year}`;
 }
+
+// Initialisation
+async function init() {
+  await authService.init();
+  
+  if (!authService.currentUser) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  loadProfile();
+  setupEventListeners();
+}
+
+// Chargement du profil
+async function loadProfile() {
+  const userData = await authService.loadUserData();
+  if (!userData) return;
+
+  // Informations de base
+  username.textContent = userData.username;
+  userEmail.textContent = userData.email;
+  userLevel.textContent = userData.level;
+  userXP.textContent = userData.xp;
+  userCoins.textContent = userData.coins;
+
+  // Avatar
+  const avatarUrl = skinService.generateAvatarUrl(userData.avatar);
+  userAvatar.src = avatarUrl;
+
+  // Paramètres
+  themeToggle.checked = userData.settings?.theme === 'dark';
+  notificationsToggle.checked = userData.settings?.notifications ?? true;
+  soundToggle.checked = userData.settings?.sound ?? true;
+
+  // Inventaire
+  await loadInventory();
+
+  // Succès
+  loadAchievements(userData.achievements || []);
+}
+
+// Chargement de l'inventaire
+async function loadInventory() {
+  const userData = await authService.loadUserData();
+  const inventory = userData?.inventory || [];
+  const availableSkins = skinService.getAvailableSkins();
+
+  // Vider la grille
+  inventoryGrid.innerHTML = '';
+
+  // Créer les sections pour chaque type de skin
+  Object.entries(availableSkins).forEach(([type, skins]) => {
+    const section = document.createElement('div');
+    section.className = 'inventory-section';
+    section.innerHTML = `
+      <h3>${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+      <div class="skin-grid"></div>
+    `;
+
+    const skinGrid = section.querySelector('.skin-grid');
+    skins.forEach(skin => {
+      const owned = inventory.some(s => s.id === skin.id && s.type === type);
+      const equipped = userData.avatar?.[type] === skin.id;
+
+      const skinElement = document.createElement('div');
+      skinElement.className = `skin-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
+      skinElement.innerHTML = `
+        <img src="${skin.image}" alt="${skin.name}">
+        <h4>${skin.name}</h4>
+        <p>${skin.price} pièces</p>
+        ${owned ? 
+          `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">
+            ${equipped ? 'Équipé' : 'Équiper'}
+          </button>` :
+          `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">
+            Acheter
+          </button>`
+        }
+      `;
+
+      skinGrid.appendChild(skinElement);
+    });
+
+    inventoryGrid.appendChild(section);
+  });
+
+  // Ajouter les écouteurs d'événements pour les boutons
+  document.querySelectorAll('.btn-buy').forEach(button => {
+    button.addEventListener('click', async () => {
+      const skinId = button.dataset.skinId;
+      const skinType = button.dataset.skinType;
+      
+      const result = await skinService.buySkin(skinId, skinType);
+      if (result.success) {
+        alert('Achat réussi !');
+        await loadInventory();
+        await loadProfile();
+      } else {
+        alert(result.error);
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-equip').forEach(button => {
+    button.addEventListener('click', async () => {
+      const skinId = button.dataset.skinId;
+      const skinType = button.dataset.skinType;
+      
+      const result = await skinService.equipSkin(skinId, skinType);
+      if (result.success) {
+        await loadInventory();
+        await loadProfile();
+      } else {
+        alert(result.error);
+      }
+    });
+  });
+}
+
+// Chargement des succès
+function loadAchievements(achievements) {
+  achievementList.innerHTML = '';
+  
+  if (achievements.length === 0) {
+    achievementList.innerHTML = '<p class="empty-message">Aucun succès débloqué</p>';
+    return;
+  }
+
+  achievements.forEach(achievement => {
+    const achievementElement = document.createElement('div');
+    achievementElement.className = 'achievement-card';
+    achievementElement.innerHTML = `
+      <div class="achievement-icon">
+        <i class="fas ${achievement.icon}"></i>
+      </div>
+      <div class="achievement-info">
+        <h3>${achievement.name}</h3>
+        <p>${achievement.description}</p>
+      </div>
+    `;
+    achievementList.appendChild(achievementElement);
+  });
+}
+
+// Configuration des écouteurs d'événements
+function setupEventListeners() {
+  // Gestion des onglets
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabId = tab.dataset.tab;
+      
+      // Mise à jour des classes actives
+      tabs.forEach(t => t.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      tab.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    });
+  });
+
+  // Upload d'avatar
+  avatarUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const result = await authService.uploadAvatar(file);
+      if (result.success) {
+        userAvatar.src = result.avatarUrl;
+      } else {
+        console.error('Erreur lors de l\'upload de l\'avatar:', result.error);
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'upload de l\'avatar:', error);
+    }
+  });
+
+  // Paramètres
+  settingsForm.addEventListener('change', async (e) => {
+    const setting = e.target.id.replace('Toggle', '');
+    const value = e.target.checked;
+
+    try {
+      await authService.updateProfile({
+        settings: {
+          [setting]: value
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des paramètres:', error);
+      // Revenir à l'état précédent
+      e.target.checked = !value;
+    }
+  });
+}
+
+// Initialisation au chargement de la page
+document.addEventListener('DOMContentLoaded', init);

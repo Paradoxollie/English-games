@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Verres -->
+  <circle cx="35" cy="45" r="15" stroke="#2C3E50" stroke-width="3" fill="none"/>
+  <circle cx="65" cy="45" r="15" stroke="#2C3E50" stroke-width="3" fill="none"/>
+  <!-- Branches -->
+  <path d="M20 45 L10 45" stroke="#2C3E50" stroke-width="3" fill="none"/>
+  <path d="M80 45 L90 45" stroke="#2C3E50" stroke-width="3" fill="none"/>
+  <!-- Pont -->
+  <path d="M50 45 L50 40" stroke="#2C3E50" stroke-width="3" fill="none"/>
+</svg> 

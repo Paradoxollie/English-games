@@ -3,7 +3,8 @@
  * Permet de migrer les données des anciennes collections vers les nouvelles
  */
 
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, query, where } from 'firebase/firestore';
+import { db } from '../../config/firebase-config.js';
+import { collection, getDocs, doc, getDoc, setDoc, addDoc, query, where, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { createNewUser } from '../models/user.model.js';
 
 // Collections
@@ -273,129 +274,101 @@ export async function migrateScores() {
 }
 
 /**
- * Vérifie et corrige les incohérences dans les données utilisateur
- * @returns {Promise<Object>} Résultat de la vérification
+ * Vérifie et corrige les données des utilisateurs
+ * @returns {Promise<Object>} Résultat des corrections
  */
 export async function checkAndFixUserData() {
   try {
     const db = getFirestore();
     let fixedCount = 0;
     let errorCount = 0;
-    const issues = [];
+    const errors = [];
 
     // Récupérer tous les utilisateurs
     const usersSnapshot = await getDocs(collection(db, NEW_USERS_COLLECTION));
 
-    // Vérifier chaque utilisateur
     for (const userDoc of usersSnapshot.docs) {
       try {
-        const userId = userDoc.id;
         const userData = userDoc.data();
         let needsUpdate = false;
         const updates = {};
 
-        // Vérifier les droits d'administrateur
-        if (userData.username && userData.username.toLowerCase() === 'ollie' && !userData.isAdmin) {
-          updates.isAdmin = true;
-          needsUpdate = true;
-          issues.push(`Correction des droits d'administrateur pour Ollie (${userId})`);
-        } else if (userData.username && userData.username.toLowerCase() !== 'ollie' && userData.isAdmin) {
-          updates.isAdmin = false;
-          needsUpdate = true;
-          issues.push(`Retrait des droits d'administrateur pour ${userData.username} (${userId})`);
+        // Vérifier et corriger les droits admin
+        if (userData.isAdmin !== undefined) {
+          const shouldBeAdmin = userData.username.toLowerCase() === 'ollie';
+          if (userData.isAdmin !== shouldBeAdmin) {
+            updates.isAdmin = shouldBeAdmin;
+            needsUpdate = true;
+          }
         }
 
-        // Vérifier les valeurs par défaut
-        if (userData.level === undefined) {
-          updates.level = 1;
-          needsUpdate = true;
-        }
-
-        if (userData.xp === undefined) {
-          updates.xp = 0;
+        // Vérifier et corriger les champs obligatoires
+        if (!userData.username) {
+          updates.username = `user_${userDoc.id.substring(0, 6)}`;
           needsUpdate = true;
         }
 
-        if (userData.coins === undefined) {
-          updates.coins = 100;
+        if (!userData.displayName) {
+          updates.displayName = userData.username || `user_${userDoc.id.substring(0, 6)}`;
           needsUpdate = true;
         }
 
-        // Vérifier l'inventaire
-        if (!userData.inventory || !userData.inventory.skins) {
-          updates.inventory = {
-            ...(userData.inventory || {}),
-            skins: {
-              head: ['default_boy', 'default_girl'],
-              body: ['default_boy', 'default_girl'],
-              accessory: ['none'],
-              background: ['default']
-            }
-          };
-          needsUpdate = true;
-        }
-
-        // Mettre à jour si nécessaire
         if (needsUpdate) {
-          await updateDoc(doc(db, NEW_USERS_COLLECTION, userId), updates);
+          await updateDoc(doc(db, NEW_USERS_COLLECTION, userDoc.id), updates);
           fixedCount++;
         }
       } catch (error) {
-        console.error(`Erreur lors de la vérification de l'utilisateur ${userDoc.id}:`, error);
+        console.error(`Erreur lors de la correction de l'utilisateur ${userDoc.id}:`, error);
         errorCount++;
-        issues.push(`Erreur pour ${userDoc.id}: ${error.message}`);
+        errors.push({
+          userId: userDoc.id,
+          error: error.message
+        });
       }
     }
 
     return {
       fixedCount,
       errorCount,
-      issues
+      errors
     };
   } catch (error) {
-    console.error('Erreur lors de la vérification des données utilisateur:', error);
+    console.error('Erreur lors de la vérification des données utilisateurs:', error);
     return {
       fixedCount: 0,
       errorCount: 1,
-      issues: [error.message]
+      errors: [error.message]
     };
   }
 }
 
 /**
- * Exécute toutes les migrations
- * @returns {Promise<Object>} Résultat des migrations
+ * Exécute toutes les migrations et corrections
+ * @returns {Promise<Object>} Résultat complet des migrations
  */
 export async function runAllMigrations() {
-  try {
-    console.log('Début de la migration des données...');
-
-    // Migrer les utilisateurs
-    console.log('Migration des utilisateurs...');
-    const usersMigrationResult = await migrateUsers();
-    console.log(`Migration des utilisateurs terminée: ${usersMigrationResult.migratedCount} migrés, ${usersMigrationResult.errorCount} erreurs`);
-
-    // Migrer les scores
-    console.log('Migration des scores...');
-    const scoresMigrationResult = await migrateScores();
-    console.log(`Migration des scores terminée: ${scoresMigrationResult.totalMigrated} migrés, ${scoresMigrationResult.totalErrors} erreurs`);
-
-    // Vérifier et corriger les données utilisateur
-    console.log('Vérification et correction des données utilisateur...');
-    const dataCheckResult = await checkAndFixUserData();
-    console.log(`Vérification terminée: ${dataCheckResult.fixedCount} utilisateurs corrigés, ${dataCheckResult.errorCount} erreurs`);
-
-    return {
-      users: usersMigrationResult,
-      scores: scoresMigrationResult,
-      dataCheck: dataCheckResult
-    };
-  } catch (error) {
-    console.error('Erreur lors de la migration des données:', error);
-    return {
-      error: error.message
-    };
-  }
+  console.log('Démarrage des migrations...');
+  
+  // 1. Migrer les utilisateurs
+  console.log('Migration des utilisateurs...');
+  const usersResult = await migrateUsers();
+  console.log('Migration des utilisateurs terminée:', usersResult);
+  
+  // 2. Migrer les scores
+  console.log('Migration des scores...');
+  const scoresResult = await migrateScores();
+  console.log('Migration des scores terminée:', scoresResult);
+  
+  // 3. Vérifier et corriger les données
+  console.log('Vérification et correction des données...');
+  const fixResult = await checkAndFixUserData();
+  console.log('Vérification et correction terminée:', fixResult);
+  
+  return {
+    users: usersResult,
+    scores: scoresResult,
+    fixes: fixResult
+  };
 }
 
 export default {

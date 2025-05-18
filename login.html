@@ -3,126 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - English Quest</title>
-    <link rel="stylesheet" href="src/styles/main.css">
-    <link rel="stylesheet" href="src/styles/login.css">
-    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <title>Connexion - English Quest Reborn</title>
+    <link rel="stylesheet" href="styles/new-design.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--color-text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background: var(--color-background);
+            color: var(--color-text-primary);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .error-message {
+            color: var(--color-danger);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .auth-button:hover {
+            background: var(--color-secondary);
+        }
+
+        .auth-button:disabled {
+            background: var(--color-border);
+            cursor: not-allowed;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-links a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="container">
-            <div class="logo">
-                <a href="new-index.html">
-                    <img src="assets/images/logo.png" alt="English Quest Logo">
-                </a>
+    <div class="auth-container">
+        <h1 class="auth-title">Connexion</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" required>
+                <div class="error-message" id="usernameError"></div>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="new-index.html">Accueil</a></li>
-                    <li><a href="games.html">Jeux</a></li>
-                    <li><a href="courses.html">Cours</a></li>
-                    <li><a href="gallery.html">Galerie</a></li>
-                </ul>
-            </nav>
-            <button class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+            <button type="submit" class="auth-button" id="loginButton">
+                <span id="buttonText">Se connecter</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
             </button>
+        </form>
+        <div class="auth-links">
+            <p>Pas encore de compte ? <a href="register.html">S'inscrire</a></p>
+            <p><a href="index.html">Retour à l'accueil</a></p>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <section class="hero login-hero">
-            <div class="container">
-                <h1>Bienvenue sur English Quest</h1>
-                <p>Connectez-vous ou créez un compte pour commencer votre aventure</p>
-            </div>
-        </section>
+    <script type="module">
+        import { login, initAuth } from './src/js/services/auth.service.js';
 
-        <section class="login-section">
-            <div class="container">
-                <div class="login-container">
-                    <div class="login-tabs">
-                        <button class="tab-button active" id="login-tab">Connexion</button>
-                        <button class="tab-button" id="register-tab">Inscription</button>
-                    </div>
+        // Initialiser le service d'authentification
+        initAuth();
 
-                    <div class="tab-content active" id="login-content">
-                        <form id="login-form">
-                            <div class="form-message">
-                                <p>Connectez-vous avec votre nom d'utilisateur pour continuer votre aventure.</p>
-                            </div>
-                            <div class="form-error" id="login-error"></div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary" id="login-button">Se connecter</button>
-                            </div>
-                        </form>
-                    </div>
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const usernameError = document.getElementById('usernameError');
+        const passwordError = document.getElementById('passwordError');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-                    <div class="tab-content" id="register-content">
-                        <form id="register-form">
-                            <div class="form-message">
-                                <p>Créez un compte pour commencer votre aventure.</p>
-                            </div>
-                            <div class="form-group">
-                                <label for="register-username">Nom d'utilisateur</label>
-                                <input type="text" id="register-username" required>
-                            </div>
-                            <div class="form-error" id="register-error"></div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary" id="register-button">S'inscrire</button>
-                            </div>
-                        </form>
-                    </div>
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.add('show');
+        }
 
-                    <div class="login-info">
-                        <h3>Pourquoi s'inscrire ?</h3>
-                        <ul>
-                            <li>Suivez votre progression en anglais</li>
-                            <li>Débloquez des avatars et des skins uniques</li>
-                            <li>Participez aux classements des meilleurs joueurs</li>
-                            <li>Accédez à tous les jeux et cours</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+        function hideError(element) {
+            element.textContent = '';
+            element.classList.remove('show');
+        }
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <img src="assets/images/logo.png" alt="English Quest Logo">
-                </div>
-                <div class="footer-links">
-                    <h3>Liens rapides</h3>
-                    <ul>
-                        <li><a href="new-index.html">Accueil</a></li>
-                        <li><a href="games.html">Jeux</a></li>
-                        <li><a href="courses.html">Cours</a></li>
-                        <li><a href="gallery.html">Galerie</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h3>Contact</h3>
-                    <p>Pour toute question ou suggestion, n'hésitez pas à nous contacter.</p>
-                    <a href="contact.html" class="btn btn-secondary">Contact</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 English Quest. Tous droits réservés.</p>
-                <div class="footer-legal">
-                    <a href="privacy.html">Politique de confidentialité</a>
-                    <a href="terms.html">Conditions d'utilisation</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+        function setLoading(isLoading) {
+            loginButton.disabled = isLoading;
+            buttonText.style.display = isLoading ? 'none' : 'inline';
+            loadingSpinner.style.display = isLoading ? 'block' : 'none';
+        }
 
-    <!-- Scripts -->
-    <script type="module" src="src/js/firebase-config.js"></script>
-    <script type="module" src="src/js/login.js"></script>
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Réinitialiser les erreurs
+            hideError(usernameError);
+            hideError(passwordError);
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validation basique
+            if (!username) {
+                showError(usernameError, 'Le nom d\'utilisateur est requis');
+                return;
+            }
+
+            if (!password) {
+                showError(passwordError, 'Le mot de passe est requis');
+                return;
+            }
+
+            try {
+                setLoading(true);
+                await login(username, password);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                showError(passwordError, 'Nom d\'utilisateur ou mot de passe incorrect');
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
 </body>
 </html>

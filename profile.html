@@ -3,24 +3,295 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>English Quest - Mon Profil</title>
+  <title>Mon Profil - English Quest</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/new-design.css">
   <link rel="stylesheet" href="styles/animations.css">
-  <link rel="stylesheet" href="styles/profile.css">
-  <link rel="stylesheet" href="src/css/admin-panel.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyDxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx",
+      authDomain: "english-quest-reborn.firebaseapp.com",
+      projectId: "english-quest-reborn",
+      storageBucket: "english-quest-reborn.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    window.auth = auth;
+    window.db = db;
+    window.onAuthStateChanged = onAuthStateChanged;
+  </script>
+  <style>
+    .profile-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('assets/images/pattern.png');
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .profile-content {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+    }
+
+    .profile-sidebar {
+      background: var(--color-surface);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      height: fit-content;
+    }
+
+    .profile-main {
+      background: var(--color-surface);
+      border-radius: 1rem;
+      padding: 1.5rem;
+    }
+
+    .avatar-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1rem;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--color-primary);
+    }
+
+    .avatar-upload {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--color-primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .avatar-upload:hover {
+      transform: scale(1.1);
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .stat-card {
+      background: var(--color-background);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .profile-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 1rem;
+    }
+
+    .profile-tab {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-tab.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .inventory-item {
+      background: var(--color-background);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .inventory-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .inventory-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .achievement-card {
+      background: var(--color-background);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .achievement-icon {
+      width: 50px;
+      height: 50px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .settings-form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--color-background);
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: var(--color-primary);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    @media (max-width: 768px) {
+      .profile-content {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Header -->
   <header class="header">
     <div class="container header-container">
       <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
-      <button class="menu-toggle">
-        <i class="fas fa-bars"></i>
-      </button>
+
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="index.html" class="nav-link">Accueil</a></li>
@@ -30,373 +301,115 @@
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
         </ul>
       </nav>
-      <div class="user-menu">
-        <a href="profile.html" class="btn-login active">Mon Profil</a>
+
+      <div class="user-menu" id="userMenu">
+        <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>
 
-  <!-- Profile Hero Section -->
-  <section class="profile-hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
-    <div class="container">
-      <div class="profile-header">
-        <div class="profile-avatar-container">
-          <div class="profile-avatar" id="current-avatar">
-            <!-- L'avatar sera chargé dynamiquement -->
-          </div>
-          <div class="profile-level">
-            <span id="user-level">1</span>
-          </div>
-          <button class="btn-customize" id="customize-avatar">
-            <i class="fas fa-palette"></i> Personnaliser
-          </button>
-        </div>
-        <div class="profile-info">
-          <h1 class="profile-username" id="profile-username">Chargement...</h1>
-          <div class="profile-stats">
-            <div class="stat">
-              <i class="fas fa-star"></i>
-              <span>XP: <span id="user-xp">0</span></span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-coins"></i>
-              <span>Pièces: <span id="user-coins">0</span></span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-trophy"></i>
-              <span>Rang: <span id="user-rank">Novice</span></span>
-            </div>
-          </div>
-          <div class="profile-progress">
-            <div class="progress-label">
-              <span>Niveau <span id="current-level">1</span></span>
-              <span>Niveau <span id="next-level">2</span></span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="xp-progress"></div>
-            </div>
-            <div class="progress-text">
-              <span><span id="current-xp">0</span>/<span id="required-xp">100</span> XP pour le prochain niveau</span>
-            </div>
-          </div>
-        </div>
+  <!-- Profile Content -->
+  <main class="profile-container">
+    <div class="profile-header">
+      <div class="avatar-container">
+        <img src="assets/images/default-avatar.png" alt="Avatar" class="avatar" id="userAvatar">
+        <label for="avatarUpload" class="avatar-upload">
+          <i class="fas fa-camera"></i>
+        </label>
+        <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
       </div>
+      <h1 id="username">Chargement...</h1>
+      <p id="userEmail">Chargement...</p>
     </div>
-  </section>
 
-  <!-- Profile Content Section -->
-  <section class="profile-content">
-    <div class="container">
-      <div class="profile-tabs">
-        <button class="profile-tab active" data-tab="overview">Vue d'ensemble</button>
-        <button class="profile-tab" data-tab="achievements">Succès</button>
-        <button class="profile-tab" data-tab="inventory">Inventaire</button>
-        <button class="profile-tab" data-tab="settings">Paramètres</button>
-      </div>
-
-      <!-- Overview Tab -->
-      <div class="profile-tab-content active" id="overview-content">
-        <div class="profile-section">
-          <h2 class="section-title">Statistiques</h2>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon">
-                <i class="fas fa-gamepad"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Jeux joués</h3>
-                <p id="games-played">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">
-                <i class="fas fa-trophy"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Jeux gagnés</h3>
-                <p id="games-won">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">
-                <i class="fas fa-book"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Cours terminés</h3>
-                <p id="courses-completed">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div class="stat-info">
-                <h3>Temps de jeu</h3>
-                <p id="time-played">0h</p>
-              </div>
-            </div>
+    <div class="profile-content">
+      <aside class="profile-sidebar">
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="userLevel">1</div>
+            <div class="stat-label">Niveau</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="userXP">0</div>
+            <div class="stat-label">XP</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="userCoins">0</div>
+            <div class="stat-label">Pièces</div>
           </div>
         </div>
 
-        <div class="profile-section">
-          <h2 class="section-title">Progression récente</h2>
-          <div class="recent-activities">
-            <div class="activity-list" id="recent-activities">
-              <!-- Les activités seront chargées dynamiquement -->
-              <div class="activity-empty">
-                <p>Aucune activité récente. Commencez à jouer pour voir votre progression !</p>
-              </div>
-            </div>
+        <div class="profile-tabs">
+          <div class="profile-tab active" data-tab="inventory">Inventaire</div>
+          <div class="profile-tab" data-tab="achievements">Succès</div>
+          <div class="profile-tab" data-tab="settings">Paramètres</div>
+        </div>
+      </aside>
+
+      <main class="profile-main">
+        <div class="tab-content active" id="inventory">
+          <h2>Mon Inventaire</h2>
+          <div class="inventory-grid" id="inventoryGrid">
+            <!-- Les items seront ajoutés dynamiquement -->
           </div>
         </div>
 
-        <div class="profile-section">
-          <h2 class="section-title">Jeux favoris</h2>
-          <div class="favorites-grid" id="favorite-games">
-            <!-- Les jeux favoris seront chargés dynamiquement -->
-            <div class="empty-favorites">
-              <p>Vous n'avez pas encore de jeux favoris. Jouez à des jeux pour les ajouter à vos favoris !</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Achievements Tab -->
-      <div class="profile-tab-content" id="achievements-content">
-        <div class="profile-section">
-          <h2 class="section-title">Succès débloqués</h2>
-          <div class="achievements-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" id="achievements-progress"></div>
-            </div>
-            <div class="progress-text">
-              <span><span id="unlocked-achievements">0</span>/<span id="total-achievements">30</span> succès débloqués</span>
-            </div>
-          </div>
-          <div class="achievements-grid" id="achievements-list">
-            <!-- Les succès seront chargés dynamiquement -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Inventory Tab -->
-      <div class="profile-tab-content" id="inventory-content">
-        <div class="profile-section">
-          <h2 class="section-title">Mes skins</h2>
-          <div class="inventory-filters">
-            <button class="filter-btn active" data-filter="all">Tous</button>
-            <button class="filter-btn" data-filter="head">Têtes</button>
-            <button class="filter-btn" data-filter="body">Corps</button>
-            <button class="filter-btn" data-filter="accessory">Accessoires</button>
-            <button class="filter-btn" data-filter="background">Arrière-plans</button>
-          </div>
-          <div class="inventory-grid" id="skins-inventory">
-            <!-- Les skins seront chargés dynamiquement -->
+        <div class="tab-content" id="achievements">
+          <h2>Mes Succès</h2>
+          <div class="achievement-list" id="achievementList">
+            <!-- Les succès seront ajoutés dynamiquement -->
           </div>
         </div>
 
-        <div class="profile-section">
-          <h2 class="section-title">Boutique</h2>
-          <p class="shop-description">Dépensez vos pièces pour débloquer de nouveaux skins et accessoires !</p>
-          <div class="shop-grid" id="skins-shop">
-            <!-- Les skins à acheter seront chargés dynamiquement -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Settings Tab -->
-      <div class="profile-tab-content" id="settings-content">
-        <div class="profile-section">
-          <h2 class="section-title">Paramètres du compte</h2>
-          <form id="settings-form" class="settings-form">
+        <div class="tab-content" id="settings">
+          <h2>Paramètres</h2>
+          <form class="settings-form" id="settingsForm">
             <div class="form-group">
-              <label for="username">Nom d'utilisateur</label>
-              <input type="text" id="username" name="username" placeholder="Votre nom d'utilisateur">
+              <label for="theme">Thème sombre</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
             <div class="form-group">
-              <label for="current-password">Mot de passe actuel</label>
-              <input type="password" id="current-password" name="current-password" placeholder="Votre mot de passe actuel">
+              <label for="notifications">Notifications</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="notificationsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
             <div class="form-group">
-              <label for="new-password">Nouveau mot de passe</label>
-              <input type="password" id="new-password" name="new-password" placeholder="Nouveau mot de passe">
+              <label for="sound">Son</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="soundToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
             </div>
-            <div class="form-group">
-              <label for="confirm-password">Confirmer le mot de passe</label>
-              <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmer le nouveau mot de passe">
-            </div>
-            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
           </form>
         </div>
-
-        <div class="profile-section">
-          <h2 class="section-title">Préférences</h2>
-          <div class="settings-options">
-            <div class="setting-option">
-              <span>Son</span>
-              <label class="switch">
-                <input type="checkbox" id="sound-toggle" checked>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div class="setting-option">
-              <span>Musique</span>
-              <label class="switch">
-                <input type="checkbox" id="music-toggle" checked>
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div class="setting-option">
-              <span>Notifications</span>
-              <label class="switch">
-                <input type="checkbox" id="notifications-toggle" checked>
-                <span class="slider round"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-section">
-          <h2 class="section-title">Actions du compte</h2>
-          <div class="account-actions">
-            <button id="logout-btn" class="btn btn-secondary">
-              <i class="fas fa-sign-out-alt"></i> Se déconnecter
-            </button>
-            <button id="delete-account-btn" class="btn btn-danger">
-              <i class="fas fa-trash-alt"></i> Supprimer le compte
-            </button>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
-  </section>
-
-  <!-- Avatar Customization Modal -->
-  <div class="modal" id="avatar-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Personnaliser votre avatar</h2>
-        <button class="close-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="avatar-preview">
-          <div class="avatar-display" id="avatar-preview">
-            <!-- L'aperçu de l'avatar sera affiché ici -->
-          </div>
-        </div>
-        <div class="avatar-options">
-          <div class="avatar-category">
-            <h3>Tête</h3>
-            <div class="avatar-items" id="head-items">
-              <!-- Les options de tête seront chargées dynamiquement -->
-            </div>
-          </div>
-          <div class="avatar-category">
-            <h3>Corps</h3>
-            <div class="avatar-items" id="body-items">
-              <!-- Les options de corps seront chargées dynamiquement -->
-            </div>
-          </div>
-          <div class="avatar-category">
-            <h3>Accessoires</h3>
-            <div class="avatar-items" id="accessory-items">
-              <!-- Les options d'accessoires seront chargées dynamiquement -->
-            </div>
-          </div>
-          <div class="avatar-category">
-            <h3>Arrière-plan</h3>
-            <div class="avatar-items" id="background-items">
-              <!-- Les options d'arrière-plan seront chargées dynamiquement -->
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="reset-avatar">Réinitialiser</button>
-        <button class="btn btn-primary" id="save-avatar">Enregistrer</button>
-      </div>
-    </div>
-  </div>
+  </main>
 
   <!-- Footer -->
-  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+  <footer class="footer">
     <div class="container">
-      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+      <div class="footer-content">
         <div class="footer-brand">
-          <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
-          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
-          <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
-            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
-            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
-            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
-            <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-discord"></i></a>
-          </div>
-        </div>
-
-        <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
-          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
-            <li><a href="index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
-            <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
-            <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
-            <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
-            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
-          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Contact</h4>
-          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Support</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Nous contacter</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">FAQ</a></li>
-          </ul>
+          <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+          <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
         </div>
       </div>
-
-      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+      <div class="footer-bottom">
         <p>&copy; 2023 English Quest - Tous droits réservés</p>
       </div>
     </div>
   </footer>
 
   <!-- Scripts -->
-  <script src="scripts/new-design.js"></script>
-  <script src="scripts/local-auth.js"></script>
-  <script src="scripts/profile.js"></script>
-  <script src="scripts/avatar.js"></script>
-  <script src="scripts/admin.js"></script>
-  <script src="scripts/gender-selection.js"></script>
-  <script src="scripts/debug.js"></script>
-  <script src="scripts/firebase-config.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="scripts/firebase-admin.js"></script>
-  <script src="scripts/firebase-users.js"></script>
-  <script src="scripts/firebase-diagnostic.js"></script>
-  <script src="scripts/firebase-all-users.js"></script>
-  <script src="scripts/firebase-auth-users.js"></script>
-  <script src="scripts/firebase-direct-auth.js"></script>
-  <script src="scripts/admin-fix.js"></script>
-
-  <!-- Nouveaux scripts pour l'administration -->
-  <script src="scripts/admin-service.js"></script>
-  <script src="scripts/admin-users.js"></script>
-  <script src="scripts/admin-tab.js"></script>
-  <script src="scripts/user-diagnostic.js"></script>
-  <script src="scripts/fix-users.js"></script>
-  <script src="scripts/firebase-explorer.js"></script>
+  <script type="module" src="scripts/auth-service.js"></script>
+  <script type="module" src="scripts/profile.js"></script>
 </body>
 </html>
