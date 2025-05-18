@@ -127,17 +127,17 @@ async function init() {
     if (!authService.currentUser) {
       console.log("Utilisateur non connecté, redirection vers la page de connexion");
       window.location.href = 'login.html';
-      return;
-    }
-    
+    return;
+  }
+
     console.log("Utilisateur connecté:", authService.currentUser.email);
     
     // Charger le profil
     await loadProfile();
-    
-    // Initialiser les onglets
-    initTabs();
-    
+
+  // Initialiser les onglets
+  initTabs();
+
     // Configurer les écouteurs d'événements
     setupEventListeners();
     
@@ -197,10 +197,10 @@ function initTabs() {
       // Retirer la classe active de tous les onglets et contenus
       tabs.forEach(t => t.classList.remove('active'));
       tabContents.forEach(content => content.classList.remove('active'));
-      
+
       // Ajouter la classe active à l'onglet cliqué
       tab.classList.add('active');
-      
+
       // Trouver et activer le contenu correspondant
       const tabId = tab.getAttribute('data-tab');
       const tabContent = document.getElementById(tabId);
@@ -363,13 +363,13 @@ function loadAchievements(userAchievements = []) {
     
     // Créer l'élément HTML pour chaque succès
     mergedAchievements.forEach(achievement => {
-      const achievementItem = document.createElement('div');
+    const achievementItem = document.createElement('div');
       achievementItem.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
-      
-      achievementItem.innerHTML = `
-        <div class="achievement-icon">
-          <i class="${achievement.icon}"></i>
-        </div>
+
+    achievementItem.innerHTML = `
+      <div class="achievement-icon">
+        <i class="${achievement.icon}"></i>
+      </div>
         <div class="achievement-info">
           <h3>${achievement.title}</h3>
           <p>${achievement.description}</p>

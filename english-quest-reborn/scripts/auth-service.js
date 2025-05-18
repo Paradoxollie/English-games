@@ -1,4 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { 
   getAuth, 
   signInWithEmailAndPassword,
@@ -43,13 +43,34 @@ const firebaseConfig = {
 let app;
 try {
   app = initializeApp(firebaseConfig);
+  console.log("Firebase app initialized successfully.");
 } catch (e) {
-  // Si l'application a déjà été initialisée, Firebase renvoie une erreur
-  // Dans ce cas, nous utilisons l'application existante
-  console.log("Firebase déjà initialisé, utilisation de l'instance existante");
+  if (e.code === 'duplicate-app') {
+    console.log("Firebase app already initialized. Getting existing instance.");
+    // Firebase v9+ automatically handles this by returning the existing app if initialized with the same name
+    // or if getApps().length > 0, you can get it via getApp()
+    // For simplicity here, we rely on initializeApp's behavior for named apps (default here)
+    // or we can assume the first call succeeded if we reach here in a module script context
+    // and subsequent calls to getAuth(), getFirestore() will use the default app.
+    // However, to be explicit if 'app' is needed by getFirestore(app) and getStorage(app):
+    const existingApps = getApps(); // Make sure to import getApps
+    if (existingApps.length > 0) {
+      app = getApp(); // Make sure to import getApp
+      console.log("Using existing Firebase app instance.");
+    } else {
+      // This case should ideally not happen if initializeApp threw 'duplicate-app'
+      console.error("Firebase duplicate app error, but no existing app found. This is unexpected.");
+      // Fallback or re-throw, depending on desired error handling
+      app = initializeApp(firebaseConfig); // Try again (might still throw)
+    }
+  } else {
+    console.error("Error initializing Firebase:", e);
+    // Handle other initialization errors
+    throw e; // Re-throw if it's a critical error
+  }
 }
 
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
@@ -530,8 +551,8 @@ class AuthService {
   // Ajout d'un écouteur pour les changements d'état d'authentification
   addAuthStateListener(listener) {
     this.listeners.add(listener);
-    // Appel immédiat avec l'état actuel
-    if (listener) listener(this.currentUser);
+    // L'appel immédiat est redondant car init() s'en charge et auth-header.js met à jour l'UI après init.
+    // if (listener) listener(this.currentUser); 
   }
 
   // Suppression d'un écouteur
