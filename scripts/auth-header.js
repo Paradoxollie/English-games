@@ -2,58 +2,95 @@
  * Script pour gérer l'affichage du header en fonction de l'état d'authentification
  */
 
-import { getAuthState, onAuthStateChange } from '../src/js/services/auth.service.js';
+import { authService } from './auth-service.js';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log("Initialisation du header d'authentification...");
+  
+  // Initialiser le service d'authentification
+  await authService.init();
+  
   // Récupérer les éléments du menu utilisateur
-  const userMenu = document.querySelector('.user-menu');
-  if (!userMenu) return;
-
-  // Fonction pour mettre à jour l'interface
-  function updateUI(authState) {
-    // Vider le menu utilisateur
-    while (userMenu.firstChild) {
-      userMenu.removeChild(userMenu.firstChild);
-    }
-
-    // Créer les éléments en fonction de l'état d'authentification
-    if (authState.isAuthenticated) {
-      // Créer le lien vers le profil
-      const profileLink = document.createElement('a');
-      profileLink.href = 'profile.html';
-      profileLink.className = 'btn-login';
-      profileLink.textContent = authState.profile.username || 'Mon Profil';
-      userMenu.appendChild(profileLink);
-
-      // Créer le lien vers l'administration si l'utilisateur est un administrateur
-      if (authState.profile.isAdmin) {
-        const adminLink = document.createElement('a');
-        adminLink.href = 'admin.html';
-        adminLink.className = 'btn-admin';
-        adminLink.textContent = 'Admin';
-        adminLink.style.marginLeft = '10px';
-        adminLink.style.color = '#e74c3c';
-        userMenu.appendChild(adminLink);
-      }
-    } else {
-      // Créer le lien vers la page de connexion
-      const loginLink = document.createElement('a');
-      loginLink.href = 'login.html';
-      loginLink.className = 'btn-login';
-      loginLink.textContent = 'Connexion';
-      userMenu.appendChild(loginLink);
-    }
-
-    // Ajouter le bouton de menu mobile
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.textContent = '☰';
-    userMenu.appendChild(menuToggle);
+  const userMenu = document.getElementById('userMenu');
+  const loginButton = document.getElementById('loginButton');
+  const profileButton = document.getElementById('profileButton');
+  
+  if (!userMenu) {
+    console.warn("Menu utilisateur non trouvé dans la page");
+    return;
   }
 
-  // Mettre à jour l'interface avec l'état initial
-  updateUI(getAuthState());
+  // Fonction pour mettre à jour l'interface
+  function updateUI(user) {
+    console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || "Utilisateur connecté") : "Déconnecté");
+    
+    if (user) {
+      // L'utilisateur est connecté
+      if (loginButton) {
+        loginButton.style.display = 'none';
+        console.log("Bouton de connexion masqué");
+      }
+      
+      if (profileButton) {
+        profileButton.style.display = 'inline-block';
+        
+        // Mettre à jour le texte du bouton (nom d'utilisateur ou texte par défaut)
+        if (user.displayName) {
+          profileButton.textContent = user.displayName;
+        } else if (user.email) {
+          profileButton.textContent = user.email.split('@')[0];
+        } else {
+          profileButton.textContent = 'Mon Profil';
+        }
+        
+        console.log("Bouton de profil affiché avec le texte:", profileButton.textContent);
+        
+        // Ajouter un bouton de déconnexion si nécessaire
+        if (!document.getElementById('logoutButton')) {
+          const logoutButton = document.createElement('a');
+          logoutButton.id = 'logoutButton';
+          logoutButton.className = 'btn-logout';
+          logoutButton.style.marginLeft = '10px';
+          logoutButton.textContent = 'Déconnexion';
+          logoutButton.href = '#';
+          logoutButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log("Clic sur le bouton de déconnexion");
+            await authService.logout();
+            window.location.href = 'index.html';
+          });
+          
+          userMenu.appendChild(logoutButton);
+          console.log("Bouton de déconnexion ajouté");
+        }
+      }
+    } else {
+      // L'utilisateur n'est pas connecté
+      if (loginButton) {
+        loginButton.style.display = 'inline-block';
+        console.log("Bouton de connexion affiché");
+      }
+      
+      if (profileButton) {
+        profileButton.style.display = 'none';
+        console.log("Bouton de profil masqué");
+      }
+      
+      // Supprimer le bouton de déconnexion s'il existe
+      const logoutButton = document.getElementById('logoutButton');
+      if (logoutButton) {
+        logoutButton.remove();
+        console.log("Bouton de déconnexion supprimé");
+      }
+    }
+  }
 
-  // Écouter les changements d'état d'authentification
-  onAuthStateChange(updateUI);
+  // Mettre à jour l'UI avec l'état initial
+  const currentUser = authService.getCurrentUser();
+  updateUI(currentUser);
+  console.log("Interface initialisée avec l'état d'authentification actuel");
+
+  // Ajouter un écouteur pour les changements d'état d'authentification
+  authService.addAuthStateListener(updateUI);
+  console.log("Écouteur d'état d'authentification ajouté");
 });

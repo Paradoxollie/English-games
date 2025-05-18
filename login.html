@@ -113,7 +113,7 @@
         <h1 class="auth-title">Connexion</h1>
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">Nom d'utilisateur</label>
+                <label for="username">Nom d'utilisateur ou Email</label>
                 <input type="text" id="username" name="username" required>
                 <div class="error-message" id="usernameError"></div>
             </div>
@@ -134,67 +134,80 @@
     </div>
 
     <script type="module">
-        import { login, initAuth } from './src/js/services/auth.service.js';
+        import { authService } from './scripts/auth-service.js';
 
         // Initialiser le service d'authentification
-        initAuth();
-
-        const form = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const usernameError = document.getElementById('usernameError');
-        const passwordError = document.getElementById('passwordError');
-        const loginButton = document.getElementById('loginButton');
-        const buttonText = document.getElementById('buttonText');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-
-        function showError(element, message) {
-            element.textContent = message;
-            element.classList.add('show');
-        }
-
-        function hideError(element) {
-            element.textContent = '';
-            element.classList.remove('show');
-        }
-
-        function setLoading(isLoading) {
-            loginButton.disabled = isLoading;
-            buttonText.style.display = isLoading ? 'none' : 'inline';
-            loadingSpinner.style.display = isLoading ? 'block' : 'none';
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("Initialisation du service d'authentification...");
+            await authService.init();
+            console.log("Service d'authentification initialisé");
             
-            // Réinitialiser les erreurs
-            hideError(usernameError);
-            hideError(passwordError);
-            
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
+            const form = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const usernameError = document.getElementById('usernameError');
+            const passwordError = document.getElementById('passwordError');
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
 
-            // Validation basique
-            if (!username) {
-                showError(usernameError, 'Le nom d\'utilisateur est requis');
-                return;
+            function showError(element, message) {
+                element.textContent = message;
+                element.classList.add('show');
             }
 
-            if (!password) {
-                showError(passwordError, 'Le mot de passe est requis');
-                return;
+            function hideError(element) {
+                element.textContent = '';
+                element.classList.remove('show');
             }
 
-            try {
-                setLoading(true);
-                await login(username, password);
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Erreur de connexion:', error);
-                showError(passwordError, 'Nom d\'utilisateur ou mot de passe incorrect');
-            } finally {
-                setLoading(false);
+            function setLoading(isLoading) {
+                loginButton.disabled = isLoading;
+                buttonText.style.display = isLoading ? 'none' : 'inline';
+                loadingSpinner.style.display = isLoading ? 'block' : 'none';
             }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Réinitialiser les erreurs
+                hideError(usernameError);
+                hideError(passwordError);
+                
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+
+                // Validation basique
+                if (!username) {
+                    showError(usernameError, 'Le nom d\'utilisateur est requis');
+                    return;
+                }
+
+                if (!password) {
+                    showError(passwordError, 'Le mot de passe est requis');
+                    return;
+                }
+
+                try {
+                    setLoading(true);
+                    console.log("Tentative de connexion pour:", username);
+                    
+                    const result = await authService.login(username, password);
+                    
+                    if (result.success) {
+                        console.log("Connexion réussie, redirection...");
+                        window.location.href = 'index.html';
+                    } else {
+                        console.error("Échec de la connexion:", result.error);
+                        showError(passwordError, result.error || 'Nom d\'utilisateur ou mot de passe incorrect');
+                    }
+                } catch (error) {
+                    console.error('Erreur de connexion:', error);
+                    showError(passwordError, 'Une erreur est survenue lors de la connexion');
+                } finally {
+                    setLoading(false);
+                }
+            });
         });
     </script>
 </body>

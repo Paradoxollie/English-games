@@ -3,9 +3,6 @@
  * Gère la page de profil utilisateur
  */
 
-// Centralisation Firebase v9+ modulaire
-import { app, auth, db } from '../src/js/firebase-config.js';
-import { updateUserInFirestore } from '../src/core/services/user.service.js';
 import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
 
@@ -28,11 +25,8 @@ const soundToggle = document.getElementById('soundToggle');
 const tabs = document.querySelectorAll('.profile-tab');
 const tabContents = document.querySelectorAll('.tab-content');
 
-// Données de l'utilisateur
-let userData = null;
-
-// Données des succès
-const achievements = [
+// Succès par défaut
+const defaultAchievements = [
   {
     id: 'first_login',
     title: 'Premier pas',
@@ -119,722 +113,383 @@ const achievements = [
   }
 ];
 
-// Données des activités récentes (vide par défaut)
-const recentActivities = [];
-
-// Données des jeux favoris (vide par défaut)
-const favoriteGames = [];
-
-// Initialiser la page
-document.addEventListener('DOMContentLoaded', function() {
-  // Récupérer les données de l'utilisateur
-  userData = getCurrentUser();
-
-  if (!userData) {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    window.location.href = 'auth.html';
-    return;
+/**
+ * Initialisation de la page
+ */
+async function init() {
+  try {
+    console.log("Initialisation du profil...");
+    
+    // Initialiser le service d'authentification
+    await authService.init();
+    
+    // Vérifier si l'utilisateur est connecté
+    if (!authService.currentUser) {
+      console.log("Utilisateur non connecté, redirection vers la page de connexion");
+      window.location.href = 'login.html';
+      return;
+    }
+    
+    console.log("Utilisateur connecté:", authService.currentUser.email);
+    
+    // Charger le profil
+    await loadProfile();
+    
+    // Initialiser les onglets
+    initTabs();
+    
+    // Configurer les écouteurs d'événements
+    setupEventListeners();
+    
+    console.log("Initialisation terminée avec succès");
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation:", error);
   }
+}
 
-  // Mettre à jour la date de dernière connexion
-  updateLastLoginDate();
+/**
+ * Chargement du profil utilisateur
+ */
+async function loadProfile() {
+  try {
+    console.log("Chargement du profil...");
+    
+    // Charger les données utilisateur
+    const userData = await authService.loadUserData();
+    if (!userData) {
+      console.error("Impossible de charger les données utilisateur");
+      return;
+    }
+    
+    console.log("Données utilisateur chargées:", userData);
+    
+    // Mettre à jour les informations du profil
+    username.textContent = userData.username || authService.currentUser.displayName || 'Aventurier';
+    userEmail.textContent = userData.email || authService.currentUser.email;
+    userLevel.textContent = `Niveau ${userData.level || 1}`;
+    userXP.textContent = `${userData.xp || 0} XP`;
+    userCoins.textContent = `${userData.coins || 0} pièces`;
+    
+    // Mettre à jour l'avatar
+    userAvatar.src = userData.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    
+    // Charger l'inventaire
+    await loadInventory();
+    
+    // Charger les succès
+    loadAchievements(userData.achievements || []);
+    
+    // Mettre à jour les paramètres
+    updateSettings(userData.settings);
+    
+    console.log("Profil chargé avec succès");
+  } catch (error) {
+    console.error("Erreur lors du chargement du profil:", error);
+  }
+}
 
-  // Initialiser les onglets
-  initTabs();
-
-  // Charger les données du profil
-  loadProfileData();
-
-  // Charger les succès
-  loadAchievements();
-
-  // Charger les activités récentes
-  loadRecentActivities();
-
-  // Charger les jeux favoris
-  loadFavoriteGames();
-
-  // Initialiser les paramètres
-  initSettings();
-
-  // Initialiser les actions du compte
-  initAccountActions();
-});
-
-// Initialiser les onglets
+/**
+ * Initialiser les onglets
+ */
 function initTabs() {
-  const tabs = document.querySelectorAll('.profile-tab');
-  const tabContents = document.querySelectorAll('.profile-tab-content');
-
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       // Retirer la classe active de tous les onglets et contenus
       tabs.forEach(t => t.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-
+      tabContents.forEach(content => content.classList.remove('active'));
+      
       // Ajouter la classe active à l'onglet cliqué
       tab.classList.add('active');
-
-      // Afficher le contenu correspondant
-      const tabId = tab.dataset.tab + '-content';
-      document.getElementById(tabId).classList.add('active');
-    });
-  });
-}
-
-// Charger les données du profil
-function loadProfileData() {
-  console.log("Chargement des données du profil pour:", userData.username);
-
-  // S'assurer que les données importantes sont présentes
-  userData.coins = userData.coins || 0;
-  userData.xp = userData.xp || 0;
-  userData.level = userData.level || 1;
-
-  // Mettre à jour le nom d'utilisateur
-  const usernameElement = document.getElementById('profile-username');
-  if (usernameElement) {
-    usernameElement.textContent = userData.username || 'Aventurier';
-  }
-
-  // Mettre à jour le niveau
-  const level = userData.level || 1;
-  const userLevelElement = document.getElementById('user-level');
-  if (userLevelElement) {
-    userLevelElement.textContent = level;
-  }
-
-  const currentLevelElement = document.getElementById('current-level');
-  if (currentLevelElement) {
-    currentLevelElement.textContent = level;
-  }
-
-  const nextLevelElement = document.getElementById('next-level');
-  if (nextLevelElement) {
-    nextLevelElement.textContent = level + 1;
-  }
-
-  // Mettre à jour l'XP
-  const xp = userData.xp || 0;
-  const requiredXp = calculateRequiredXp(level);
-  const progress = Math.min(100, (xp / requiredXp) * 100);
-
-  const userXpElement = document.getElementById('user-xp');
-  if (userXpElement) {
-    userXpElement.textContent = xp;
-  }
-
-  const currentXpElement = document.getElementById('current-xp');
-  if (currentXpElement) {
-    currentXpElement.textContent = xp;
-  }
-
-  const requiredXpElement = document.getElementById('required-xp');
-  if (requiredXpElement) {
-    requiredXpElement.textContent = requiredXp;
-  }
-
-  const xpProgressElement = document.getElementById('xp-progress');
-  if (xpProgressElement) {
-    xpProgressElement.style.width = progress + '%';
-  }
-
-  // Mettre à jour les pièces
-  const userCoinsElement = document.getElementById('user-coins');
-  if (userCoinsElement) {
-    userCoinsElement.textContent = userData.coins || 0;
-  }
-
-  // Mettre à jour le rang
-  const userRankElement = document.getElementById('user-rank');
-  if (userRankElement) {
-    userRankElement.textContent = calculateRank(level);
-  }
-
-  // S'assurer que les statistiques existent
-  if (!userData.stats) {
-    userData.stats = {
-      gamesPlayed: 0,
-      gamesWon: 0,
-      coursesCompleted: 0,
-      timeSpent: 0
-    };
-  }
-
-  // Mettre à jour les statistiques
-  const gamesPlayedElement = document.getElementById('games-played');
-  if (gamesPlayedElement) {
-    gamesPlayedElement.textContent = userData.stats.gamesPlayed || 0;
-  }
-
-  const gamesWonElement = document.getElementById('games-won');
-  if (gamesWonElement) {
-    gamesWonElement.textContent = userData.stats.gamesWon || 0;
-  }
-
-  const coursesCompletedElement = document.getElementById('courses-completed');
-  if (coursesCompletedElement) {
-    coursesCompletedElement.textContent = userData.stats.coursesCompleted || 0;
-  }
-
-  const timePlayedElement = document.getElementById('time-played');
-  if (timePlayedElement) {
-    timePlayedElement.textContent = formatTime(userData.stats.timeSpent || 0);
-  }
-
-  console.log("Données du profil chargées avec succès");
-}
-
-// Charger les succès
-function loadAchievements() {
-  const achievementsList = document.getElementById('achievements-list');
-  if (!achievementsList) return;
-
-  // Vider la liste
-  achievementsList.innerHTML = '';
-
-  // Fusionner les succès par défaut avec les succès de l'utilisateur
-  let userAchievements = [...achievements];
-
-  // Si l'utilisateur a des succès, les utiliser pour mettre à jour les succès par défaut
-  if (userData.achievements && userData.achievements.length > 0) {
-    userData.achievements.forEach(userAchievement => {
-      const index = userAchievements.findIndex(a => a.id === userAchievement.id);
-      if (index !== -1) {
-        userAchievements[index].unlocked = userAchievement.unlocked;
-        userAchievements[index].unlockedAt = userAchievement.unlockedAt;
+      
+      // Trouver et activer le contenu correspondant
+      const tabId = tab.getAttribute('data-tab');
+      const tabContent = document.getElementById(tabId);
+      if (tabContent) {
+        tabContent.classList.add('active');
       }
     });
-  }
-
-  // Compter les succès débloqués
-  const unlockedCount = userAchievements.filter(a => a.unlocked).length;
-  const totalCount = userAchievements.length;
-
-  // Mettre à jour la barre de progression
-  document.getElementById('unlocked-achievements').textContent = unlockedCount;
-  document.getElementById('total-achievements').textContent = totalCount;
-  document.getElementById('achievements-progress').style.width = (unlockedCount / totalCount * 100) + '%';
-
-  // Ajouter chaque succès à la liste
-  userAchievements.forEach(achievement => {
-    const achievementItem = document.createElement('div');
-    achievementItem.className = `achievement-item ${achievement.unlocked ? 'achievement-unlocked' : 'achievement-locked'}`;
-
-    achievementItem.innerHTML = `
-      <div class="achievement-icon">
-        <i class="${achievement.icon}"></i>
-      </div>
-      <h3 class="achievement-title">${achievement.title}</h3>
-      <p class="achievement-description">${achievement.description}</p>
-      ${!achievement.unlocked ? '<div class="achievement-locked-overlay"><i class="fas fa-lock"></i></div>' : ''}
-      ${achievement.unlocked && achievement.unlockedAt ? `<div class="achievement-date">Débloqué le ${new Date(achievement.unlockedAt).toLocaleDateString()}</div>` : ''}
-    `;
-
-    achievementsList.appendChild(achievementItem);
   });
 }
 
-// Charger les activités récentes
-function loadRecentActivities() {
-  const activitiesList = document.getElementById('recent-activities');
-  if (!activitiesList) return;
-
-  // Vider la liste
-  activitiesList.innerHTML = '';
-
-  // Récupérer les activités de l'utilisateur ou utiliser les activités par défaut
-  const userActivities = userData.activities || recentActivities;
-
-  // Si aucune activité, afficher un message
-  if (userActivities.length === 0) {
-    activitiesList.innerHTML = `
-      <div class="activity-empty">
-        <p>Aucune activité récente. Commencez à jouer pour voir votre progression !</p>
-      </div>
-    `;
-    return;
-  }
-
-  // Ajouter chaque activité à la liste
-  userActivities.forEach(activity => {
-    const activityItem = document.createElement('div');
-    activityItem.className = 'activity-item';
-
-    activityItem.innerHTML = `
-      <div class="activity-icon">
-        <i class="${activity.icon}"></i>
-      </div>
-      <div class="activity-info">
-        <div class="activity-title">${activity.title}</div>
-        <div class="activity-description">${activity.description}</div>
-      </div>
-      <div class="activity-time">${formatDate(activity.time)}</div>
-    `;
-
-    activitiesList.appendChild(activityItem);
-  });
-}
-
-// Charger les jeux favoris
-function loadFavoriteGames() {
-  const favoritesList = document.getElementById('favorite-games');
-  if (!favoritesList) return;
-
-  // Vider la liste
-  favoritesList.innerHTML = '';
-
-  // Récupérer les jeux favoris de l'utilisateur
-  const userFavorites = userData.favoriteGames || [];
-
-  // Si aucun jeu favori, afficher un message
-  if (userFavorites.length === 0) {
-    favoritesList.innerHTML = `
-      <div class="empty-favorites">
-        <p>Vous n'avez pas encore de jeux favoris. Jouez à des jeux pour les ajouter à vos favoris !</p>
-      </div>
-    `;
-    return;
-  }
-
-  // Ajouter chaque jeu favori à la liste
-  userFavorites.forEach(game => {
-    const gameItem = document.createElement('div');
-    gameItem.className = 'favorite-item';
-
-    gameItem.innerHTML = `
-      <div class="favorite-image">
-        <img src="${game.image || 'assets/icons/default-game.webp'}" alt="${game.title}">
-      </div>
-      <div class="favorite-content">
-        <h3 class="favorite-title">${game.title}</h3>
-        <p class="favorite-description">${game.description || 'Aucune description disponible'}</p>
-        <div class="favorite-stats">
-          <span><i class="fas fa-gamepad"></i> ${game.playCount || 0} parties</span>
-          <span><i class="fas fa-trophy"></i> ${game.bestScore || 0} points</span>
-        </div>
-      </div>
-    `;
-
-    favoritesList.appendChild(gameItem);
-  });
-}
-
-// Initialiser les paramètres
-function initSettings() {
-  const settingsForm = document.getElementById('settings-form');
-  if (!settingsForm) return;
-
-  // Remplir le formulaire avec les données de l'utilisateur
-  document.getElementById('username').value = userData.username || '';
-
-  // Gérer la soumission du formulaire
-  settingsForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const username = document.getElementById('username').value;
-    const currentPassword = document.getElementById('current-password').value;
-    const newPassword = document.getElementById('new-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-
-    // Vérifier que le nom d'utilisateur n'est pas vide
-    if (!username) {
-      alert('Le nom d\'utilisateur ne peut pas être vide');
-      return;
-    }
-
-    // Si un nouveau mot de passe est fourni, vérifier qu'il correspond à la confirmation
-    if (newPassword && newPassword !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas');
-      return;
-    }
-
-    // Mettre à jour les données de l'utilisateur
-    userData.username = username;
-
-    // Si un nouveau mot de passe est fourni, le mettre à jour
-    if (newPassword) {
-      userData.password = newPassword;
-    }
-
-    // Sauvegarder les modifications
-    saveUserData();
-
-    // Afficher un message de succès
-    alert('Vos paramètres ont été enregistrés avec succès');
-  });
-
-  // Gérer les toggles de préférences
-  document.getElementById('sound-toggle').addEventListener('change', function() {
-    userData.settings = userData.settings || {};
-    userData.settings.sound = this.checked;
-    saveUserData();
-  });
-
-  document.getElementById('music-toggle').addEventListener('change', function() {
-    userData.settings = userData.settings || {};
-    userData.settings.music = this.checked;
-    saveUserData();
-  });
-
-  document.getElementById('notifications-toggle').addEventListener('change', function() {
-    userData.settings = userData.settings || {};
-    userData.settings.notifications = this.checked;
-    saveUserData();
-  });
-
-  // Initialiser les toggles avec les valeurs sauvegardées
-  if (userData.settings) {
-    document.getElementById('sound-toggle').checked = userData.settings.sound !== false;
-    document.getElementById('music-toggle').checked = userData.settings.music !== false;
-    document.getElementById('notifications-toggle').checked = userData.settings.notifications !== false;
-  }
-}
-
-// Initialiser les actions du compte
-function initAccountActions() {
-  // Gérer la déconnexion
-  document.getElementById('logout-btn').addEventListener('click', function() {
-    logoutUser();
-  });
-
-  // Gérer la suppression du compte
-  document.getElementById('delete-account-btn').addEventListener('click', function() {
-    if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
-      // Supprimer l'utilisateur du stockage local
-      const users = getUsers();
-      const userId = Object.keys(users).find(id => users[id].username === userData.username);
-
-      if (userId) {
-        delete users[userId];
-        saveUsers(users);
-      }
-
-      // Déconnecter l'utilisateur
-      logoutUser();
-    }
-  });
-}
-
-// Sauvegarder les données de l'utilisateur
-async function saveUserData() {
-  if (!userData || !userData.username) {
-    console.error("Impossible de sauvegarder : utilisateur non défini");
-    return;
-  }
-  try {
-    // Mettre à jour dans Firestore
-    await updateUserInFirestore(userData.username, userData);
-    // Mettre à jour la session locale
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    console.log("Données utilisateur sauvegardées avec succès dans Firestore pour:", userData.username);
-  } catch (error) {
-    console.error("Erreur lors de la sauvegarde des données utilisateur dans Firestore:", error);
-  }
-}
-
-// Calculer l'XP requis pour le niveau suivant
-function calculateRequiredXp(level) {
-  return level * 100;
-}
-
-// Calculer le rang en fonction du niveau
-function calculateRank(level) {
-  if (level < 5) return 'Novice';
-  if (level < 10) return 'Apprenti';
-  if (level < 15) return 'Adepte';
-  if (level < 20) return 'Expert';
-  if (level < 25) return 'Maître';
-  if (level < 30) return 'Grand Maître';
-  return 'Légende';
-}
-
-// Formater le temps de jeu
-function formatTime(minutes) {
-  if (minutes < 60) {
-    return minutes + ' min';
-  }
-
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-
-  if (remainingMinutes === 0) {
-    return hours + 'h';
-  }
-
-  return hours + 'h ' + remainingMinutes + 'min';
-}
-
-// Mettre à jour la date de dernière connexion
-function updateLastLoginDate() {
-  if (!userData) return;
-
-  // Mettre à jour la date de dernière connexion
-  userData.lastLogin = new Date().toISOString();
-
-  // Sauvegarder l'utilisateur
-  saveUserData();
-
-  console.log("Date de dernière connexion mise à jour dans le profil:", userData.lastLogin);
-}
-
-// Formater une date
-function formatDate(dateString) {
-  // Utiliser la date actuelle réelle comme référence
-  const currentDate = new Date();
-  const date = new Date(dateString);
-
-  // Vérifier si la date est valide
-  if (isNaN(date.getTime())) {
-    return "Date inconnue";
-  }
-
-  // Vérifier si l'utilisateur est actuellement connecté
-  const currentUser = getCurrentUser();
-  if (currentUser && currentUser.lastLogin) {
-    const userLastLogin = new Date(currentUser.lastLogin);
-    const dateToCheck = new Date(dateString);
-
-    // Si les dates sont proches (moins de 5 minutes d'écart), considérer comme "Maintenant"
-    const diffMs = Math.abs(userLastLogin - dateToCheck);
-    if (diffMs < 5 * 60 * 1000) { // 5 minutes en millisecondes
-      return 'Maintenant';
-    }
-  }
-
-  const diffMs = currentDate - date;
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
-
-  if (diffSec < 60) {
-    return 'À l\'instant';
-  }
-
-  if (diffMin < 60) {
-    return `Il y a ${diffMin} min`;
-  }
-
-  if (diffHour < 24) {
-    return `Il y a ${diffHour} h`;
-  }
-
-  if (diffDay === 0) {
-    return 'Aujourd\'hui';
-  }
-
-  if (diffDay === 1) {
-    return 'Hier';
-  }
-
-  if (diffDay < 7) {
-    return `Il y a ${diffDay} jours`;
-  }
-
-  // Format de date français (JJ/MM/AAAA)
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
-
-// Initialisation
-async function init() {
-  await authService.init();
-  
-  if (!authService.currentUser) {
-    window.location.href = 'login.html';
-    return;
-  }
-
-  loadProfile();
-  setupEventListeners();
-}
-
-// Chargement du profil
-async function loadProfile() {
-  const userData = await authService.loadUserData();
-  if (!userData) return;
-
-  // Informations de base
-  username.textContent = userData.username;
-  userEmail.textContent = userData.email;
-  userLevel.textContent = userData.level;
-  userXP.textContent = userData.xp;
-  userCoins.textContent = userData.coins;
-
-  // Avatar
-  const avatarUrl = skinService.generateAvatarUrl(userData.avatar);
-  userAvatar.src = avatarUrl;
-
-  // Paramètres
-  themeToggle.checked = userData.settings?.theme === 'dark';
-  notificationsToggle.checked = userData.settings?.notifications ?? true;
-  soundToggle.checked = userData.settings?.sound ?? true;
-
-  // Inventaire
-  await loadInventory();
-
-  // Succès
-  loadAchievements(userData.achievements || []);
-}
-
-// Chargement de l'inventaire
+/**
+ * Chargement de l'inventaire
+ */
 async function loadInventory() {
-  const userData = await authService.loadUserData();
-  const inventory = userData?.inventory || [];
-  const availableSkins = skinService.getAvailableSkins();
-
-  // Vider la grille
-  inventoryGrid.innerHTML = '';
-
-  // Créer les sections pour chaque type de skin
-  Object.entries(availableSkins).forEach(([type, skins]) => {
-    const section = document.createElement('div');
-    section.className = 'inventory-section';
-    section.innerHTML = `
-      <h3>${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
-      <div class="skin-grid"></div>
-    `;
-
-    const skinGrid = section.querySelector('.skin-grid');
-    skins.forEach(skin => {
-      const owned = inventory.some(s => s.id === skin.id && s.type === type);
-      const equipped = userData.avatar?.[type] === skin.id;
-
-      const skinElement = document.createElement('div');
-      skinElement.className = `skin-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
-      skinElement.innerHTML = `
-        <img src="${skin.image}" alt="${skin.name}">
-        <h4>${skin.name}</h4>
-        <p>${skin.price} pièces</p>
-        ${owned ? 
-          `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">
-            ${equipped ? 'Équipé' : 'Équiper'}
-          </button>` :
-          `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">
-            Acheter
-          </button>`
-        }
+  try {
+    console.log("Chargement de l'inventaire...");
+    
+    // Récupérer les données utilisateur
+    const userData = await authService.loadUserData();
+    if (!userData) return;
+    
+    // Récupérer l'inventaire et les skins disponibles
+    const inventory = userData.inventory || [];
+    const availableSkins = skinService.getAvailableSkins();
+    
+    // Vider la grille d'inventaire
+    inventoryGrid.innerHTML = '';
+    
+    // Si l'inventaire est vide
+    if (inventory.length === 0 && Object.keys(availableSkins).length === 0) {
+      inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
+      return;
+    }
+    
+    // Créer les sections pour chaque type de skin
+    Object.entries(availableSkins).forEach(([type, skins]) => {
+      // Créer la section
+      const section = document.createElement('div');
+      section.className = 'inventory-section';
+      section.innerHTML = `
+        <h3>${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+        <div class="skin-grid" id="skin-grid-${type}"></div>
       `;
-
-      skinGrid.appendChild(skinElement);
+      
+      const skinGrid = section.querySelector(`.skin-grid`);
+      
+      // Ajouter chaque skin
+      skins.forEach(skin => {
+        // Vérifier si l'utilisateur possède le skin
+        const owned = inventory.some(item => item.id === skin.id && item.type === type);
+        // Vérifier si le skin est équipé
+        const equipped = userData.avatar && userData.avatar[type] === skin.id;
+        
+        // Créer l'élément de skin
+        const skinItem = document.createElement('div');
+        skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
+        
+        skinItem.innerHTML = `
+          <img src="${skin.image}" alt="${skin.name}">
+          <h4>${skin.name}</h4>
+          <p>${skin.price} pièces</p>
+          ${owned ? 
+            `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">${equipped ? 'Équipé' : 'Équiper'}</button>` : 
+            `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
+          }
+        `;
+        
+        skinGrid.appendChild(skinItem);
+      });
+      
+      inventoryGrid.appendChild(section);
     });
+    
+    // Ajouter les écouteurs d'événements pour les boutons
+    setupInventoryButtons();
+    
+    console.log("Inventaire chargé avec succès");
+  } catch (error) {
+    console.error("Erreur lors du chargement de l'inventaire:", error);
+  }
+}
 
-    inventoryGrid.appendChild(section);
-  });
-
-  // Ajouter les écouteurs d'événements pour les boutons
+/**
+ * Configuration des boutons d'inventaire
+ */
+function setupInventoryButtons() {
+  // Boutons d'achat
   document.querySelectorAll('.btn-buy').forEach(button => {
     button.addEventListener('click', async () => {
       const skinId = button.dataset.skinId;
       const skinType = button.dataset.skinType;
       
-      const result = await skinService.buySkin(skinId, skinType);
-      if (result.success) {
-        alert('Achat réussi !');
-        await loadInventory();
-        await loadProfile();
-      } else {
-        alert(result.error);
+      try {
+        const result = await skinService.buySkin(skinId, skinType);
+        if (result.success) {
+          alert(`Vous avez acheté ${result.skin.name} avec succès !`);
+          await loadInventory();
+          await loadProfile();
+        } else {
+          alert(result.error || "Erreur lors de l'achat du skin");
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'achat du skin:", error);
+        alert("Une erreur est survenue lors de l'achat");
       }
     });
   });
-
+  
+  // Boutons d'équipement
   document.querySelectorAll('.btn-equip').forEach(button => {
     button.addEventListener('click', async () => {
       const skinId = button.dataset.skinId;
       const skinType = button.dataset.skinType;
       
-      const result = await skinService.equipSkin(skinId, skinType);
-      if (result.success) {
-        await loadInventory();
-        await loadProfile();
-      } else {
-        alert(result.error);
-      }
-    });
-  });
-}
-
-// Chargement des succès
-function loadAchievements(achievements) {
-  achievementList.innerHTML = '';
-  
-  if (achievements.length === 0) {
-    achievementList.innerHTML = '<p class="empty-message">Aucun succès débloqué</p>';
-    return;
-  }
-
-  achievements.forEach(achievement => {
-    const achievementElement = document.createElement('div');
-    achievementElement.className = 'achievement-card';
-    achievementElement.innerHTML = `
-      <div class="achievement-icon">
-        <i class="fas ${achievement.icon}"></i>
-      </div>
-      <div class="achievement-info">
-        <h3>${achievement.name}</h3>
-        <p>${achievement.description}</p>
-      </div>
-    `;
-    achievementList.appendChild(achievementElement);
-  });
-}
-
-// Configuration des écouteurs d'événements
-function setupEventListeners() {
-  // Gestion des onglets
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabId = tab.dataset.tab;
-      
-      // Mise à jour des classes actives
-      tabs.forEach(t => t.classList.remove('active'));
-      tabContents.forEach(content => content.classList.remove('active'));
-      
-      tab.classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-    });
-  });
-
-  // Upload d'avatar
-  avatarUpload.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    try {
-      const result = await authService.uploadAvatar(file);
-      if (result.success) {
-        userAvatar.src = result.avatarUrl;
-      } else {
-        console.error('Erreur lors de l\'upload de l\'avatar:', result.error);
-      }
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de l\'avatar:', error);
-    }
-  });
-
-  // Paramètres
-  settingsForm.addEventListener('change', async (e) => {
-    const setting = e.target.id.replace('Toggle', '');
-    const value = e.target.checked;
-
-    try {
-      await authService.updateProfile({
-        settings: {
-          [setting]: value
+      try {
+        const result = await skinService.equipSkin(skinId, skinType);
+        if (result.success) {
+          await loadInventory();
+          await loadProfile();
+        } else {
+          alert(result.error || "Erreur lors de l'équipement du skin");
         }
-      });
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour des paramètres:', error);
-      // Revenir à l'état précédent
-      e.target.checked = !value;
-    }
+      } catch (error) {
+        console.error("Erreur lors de l'équipement du skin:", error);
+        alert("Une erreur est survenue lors de l'équipement");
+      }
+    });
   });
 }
 
-// Initialisation au chargement de la page
+/**
+ * Chargement des succès
+ */
+function loadAchievements(userAchievements = []) {
+  try {
+    console.log("Chargement des succès...");
+    
+    // Vider la liste des succès
+    achievementList.innerHTML = '';
+    
+    // Si aucun succès n'est disponible
+    if (defaultAchievements.length === 0 && userAchievements.length === 0) {
+      achievementList.innerHTML = '<p>Aucun succès disponible pour le moment.</p>';
+      return;
+    }
+    
+    // Fusionner les succès par défaut avec ceux de l'utilisateur
+    const mergedAchievements = [...defaultAchievements];
+    
+    // Mettre à jour les succès avec ceux de l'utilisateur
+    userAchievements.forEach(userAchievement => {
+      const index = mergedAchievements.findIndex(a => a.id === userAchievement.id);
+      if (index !== -1) {
+        mergedAchievements[index].unlocked = userAchievement.unlocked;
+        mergedAchievements[index].unlockedAt = userAchievement.unlockedAt;
+      } else {
+        mergedAchievements.push(userAchievement);
+      }
+    });
+    
+    // Créer l'élément HTML pour chaque succès
+    mergedAchievements.forEach(achievement => {
+      const achievementItem = document.createElement('div');
+      achievementItem.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+      
+      achievementItem.innerHTML = `
+        <div class="achievement-icon">
+          <i class="${achievement.icon}"></i>
+        </div>
+        <div class="achievement-info">
+          <h3>${achievement.title}</h3>
+          <p>${achievement.description}</p>
+          ${achievement.unlocked && achievement.unlockedAt ? 
+            `<span class="achievement-date">Débloqué le ${new Date(achievement.unlockedAt).toLocaleDateString()}</span>` : 
+            ''}
+        </div>
+        ${!achievement.unlocked ? '<div class="achievement-locked"><i class="fas fa-lock"></i></div>' : ''}
+      `;
+      
+      achievementList.appendChild(achievementItem);
+    });
+    
+    console.log("Succès chargés avec succès");
+  } catch (error) {
+    console.error("Erreur lors du chargement des succès:", error);
+  }
+}
+
+/**
+ * Mise à jour des paramètres
+ */
+function updateSettings(settings = {}) {
+  try {
+    console.log("Mise à jour des paramètres...");
+    
+    // Valeurs par défaut
+    const defaultSettings = {
+      theme: 'dark',
+      notifications: true,
+      sound: true
+    };
+    
+    // Fusionner avec les paramètres par défaut
+    const mergedSettings = { ...defaultSettings, ...settings };
+    
+    // Mettre à jour les toggles
+    themeToggle.checked = mergedSettings.theme === 'dark';
+    notificationsToggle.checked = mergedSettings.notifications;
+    soundToggle.checked = mergedSettings.sound;
+    
+    console.log("Paramètres mis à jour avec succès");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour des paramètres:", error);
+  }
+}
+
+/**
+ * Configuration des écouteurs d'événements
+ */
+function setupEventListeners() {
+  try {
+    console.log("Configuration des écouteurs d'événements...");
+    
+    // Upload d'avatar
+    avatarUpload.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      try {
+        const result = await authService.uploadAvatar(file);
+        if (result.success) {
+          userAvatar.src = result.avatarUrl;
+        } else {
+          alert(result.error || "Erreur lors de l'upload de l'avatar");
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'upload de l'avatar:", error);
+        alert("Une erreur est survenue lors de l'upload de l'avatar");
+      }
+    });
+    
+    // Paramètres
+    themeToggle.addEventListener('change', async () => {
+      try {
+        await authService.updateProfile({
+          settings: {
+            theme: themeToggle.checked ? 'dark' : 'light'
+          }
+        });
+        
+        // Mettre à jour le thème
+        document.body.classList.toggle('light-theme', !themeToggle.checked);
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour du thème:", error);
+        themeToggle.checked = !themeToggle.checked;
+      }
+    });
+    
+    notificationsToggle.addEventListener('change', async () => {
+      try {
+        await authService.updateProfile({
+          settings: {
+            notifications: notificationsToggle.checked
+          }
+        });
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour des notifications:", error);
+        notificationsToggle.checked = !notificationsToggle.checked;
+      }
+    });
+    
+    soundToggle.addEventListener('change', async () => {
+      try {
+        await authService.updateProfile({
+          settings: {
+            sound: soundToggle.checked
+          }
+        });
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour du son:", error);
+        soundToggle.checked = !soundToggle.checked;
+      }
+    });
+    
+    console.log("Écouteurs d'événements configurés avec succès");
+  } catch (error) {
+    console.error("Erreur lors de la configuration des écouteurs d'événements:", error);
+  }
+}
+
+// Initialiser la page au chargement du DOM
 document.addEventListener('DOMContentLoaded', init);
