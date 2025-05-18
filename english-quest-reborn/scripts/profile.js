@@ -4,8 +4,6 @@
  */
 
 // Centralisation Firebase v9+ modulaire
-import { app, auth, db } from '../src/js/firebase-config.js';
-import { updateUserInFirestore } from '../src/core/services/user.service.js';
 import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
 
@@ -287,51 +285,25 @@ function loadProfileData() {
 
 // Charger les succès
 function loadAchievements() {
-  const achievementsList = document.getElementById('achievements-list');
-  if (!achievementsList) return;
+  const achievementList = document.getElementById('achievementList');
+  if (!achievementList) return;
 
-  // Vider la liste
-  achievementsList.innerHTML = '';
-
-  // Fusionner les succès par défaut avec les succès de l'utilisateur
-  let userAchievements = [...achievements];
-
-  // Si l'utilisateur a des succès, les utiliser pour mettre à jour les succès par défaut
-  if (userData.achievements && userData.achievements.length > 0) {
-    userData.achievements.forEach(userAchievement => {
-      const index = userAchievements.findIndex(a => a.id === userAchievement.id);
-      if (index !== -1) {
-        userAchievements[index].unlocked = userAchievement.unlocked;
-        userAchievements[index].unlockedAt = userAchievement.unlockedAt;
-      }
-    });
-  }
-
-  // Compter les succès débloqués
-  const unlockedCount = userAchievements.filter(a => a.unlocked).length;
-  const totalCount = userAchievements.length;
-
-  // Mettre à jour la barre de progression
-  document.getElementById('unlocked-achievements').textContent = unlockedCount;
-  document.getElementById('total-achievements').textContent = totalCount;
-  document.getElementById('achievements-progress').style.width = (unlockedCount / totalCount * 100) + '%';
-
-  // Ajouter chaque succès à la liste
-  userAchievements.forEach(achievement => {
-    const achievementItem = document.createElement('div');
-    achievementItem.className = `achievement-item ${achievement.unlocked ? 'achievement-unlocked' : 'achievement-locked'}`;
-
-    achievementItem.innerHTML = `
-      <div class="achievement-icon">
-        <i class="${achievement.icon}"></i>
+  achievementList.innerHTML = '';
+  
+  achievements.forEach(achievement => {
+    const achievementElement = document.createElement('div');
+    achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+    achievementElement.innerHTML = `
+      <i class="${achievement.icon}"></i>
+      <div class="achievement-info">
+        <h4>${achievement.title}</h4>
+        <p>${achievement.description}</p>
       </div>
-      <h3 class="achievement-title">${achievement.title}</h3>
-      <p class="achievement-description">${achievement.description}</p>
-      ${!achievement.unlocked ? '<div class="achievement-locked-overlay"><i class="fas fa-lock"></i></div>' : ''}
-      ${achievement.unlocked && achievement.unlockedAt ? `<div class="achievement-date">Débloqué le ${new Date(achievement.unlockedAt).toLocaleDateString()}</div>` : ''}
+      <div class="achievement-status">
+        ${achievement.unlocked ? '<i class="fas fa-check"></i>' : '<i class="fas fa-lock"></i>'}
+      </div>
     `;
-
-    achievementsList.appendChild(achievementItem);
+    achievementList.appendChild(achievementElement);
   });
 }
 
@@ -655,30 +627,39 @@ async function init() {
 
 // Chargement du profil
 async function loadProfile() {
-  const userData = await authService.loadUserData();
-  if (!userData) return;
+  try {
+    const user = await authService.getCurrentUser();
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
 
-  // Informations de base
-  username.textContent = userData.username;
-  userEmail.textContent = userData.email;
-  userLevel.textContent = userData.level;
-  userXP.textContent = userData.xp;
-  userCoins.textContent = userData.coins;
+    const userData = await authService.loadUserData();
+    if (!userData) {
+      console.error('Impossible de charger les données utilisateur');
+      return;
+    }
 
-  // Avatar
-  const avatarUrl = skinService.generateAvatarUrl(userData.avatar);
-  userAvatar.src = avatarUrl;
+    // Mettre à jour les informations du profil
+    document.getElementById('username').textContent = userData.username || 'Aventurier';
+    document.getElementById('userEmail').textContent = userData.email;
+    document.getElementById('userLevel').textContent = `Niveau ${userData.level || 1}`;
+    document.getElementById('userXP').textContent = `${userData.xp || 0} XP`;
+    document.getElementById('userCoins').textContent = `${userData.coins || 0} pièces`;
 
-  // Paramètres
-  themeToggle.checked = userData.settings?.theme === 'dark';
-  notificationsToggle.checked = userData.settings?.notifications ?? true;
-  soundToggle.checked = userData.settings?.sound ?? true;
+    // Mettre à jour l'avatar
+    const avatarUrl = userData.avatar || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+    document.getElementById('userAvatar').src = avatarUrl;
 
-  // Inventaire
-  await loadInventory();
+    // Charger l'inventaire
+    await loadInventory();
 
-  // Succès
-  loadAchievements(userData.achievements || []);
+    // Charger les succès
+    loadAchievements();
+
+  } catch (error) {
+    console.error('Erreur lors du chargement du profil:', error);
+  }
 }
 
 // Chargement de l'inventaire
@@ -759,25 +740,24 @@ async function loadInventory() {
   });
 }
 
-// Chargement des succès
-function loadAchievements(achievements) {
+// Mettre à jour les succès
+function updateAchievements(achievements) {
+  const achievementList = document.getElementById('achievementList');
+  if (!achievementList) return;
+
   achievementList.innerHTML = '';
   
-  if (achievements.length === 0) {
-    achievementList.innerHTML = '<p class="empty-message">Aucun succès débloqué</p>';
-    return;
-  }
-
   achievements.forEach(achievement => {
     const achievementElement = document.createElement('div');
-    achievementElement.className = 'achievement-card';
+    achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
     achievementElement.innerHTML = `
-      <div class="achievement-icon">
-        <i class="fas ${achievement.icon}"></i>
-      </div>
+      <i class="${achievement.icon}"></i>
       <div class="achievement-info">
-        <h3>${achievement.name}</h3>
+        <h4>${achievement.title}</h4>
         <p>${achievement.description}</p>
+      </div>
+      <div class="achievement-status">
+        ${achievement.unlocked ? '<i class="fas fa-check"></i>' : '<i class="fas fa-lock"></i>'}
       </div>
     `;
     achievementList.appendChild(achievementElement);
