@@ -3,12 +3,14 @@
  * Permet aux joueurs de choisir entre une tête de fille et une tête de garçon
  */
 
+import { authService } from './auth-service.js';
+
 // Afficher le modal de sélection de genre
-function showGenderSelectionModal() {
+async function showGenderSelectionModal() {
   console.log("Vérification pour afficher le modal de sélection de genre");
 
   // Vérifier si l'utilisateur est connecté
-  const currentUser = getCurrentUser();
+  const currentUser = authService.getCurrentUser();
   if (!currentUser) {
     console.log("Aucun utilisateur connecté, modal non affiché");
     return;
@@ -16,17 +18,23 @@ function showGenderSelectionModal() {
 
   console.log("Vérification de l'état de sélection du genre");
 
+  // Charger les données utilisateur 
+  const userData = await authService.loadUserData();
+  if (!userData) {
+    console.log("Impossible de charger les données utilisateur, modal non affiché");
+    return;
+  }
+
   // Vérifier si l'utilisateur a déjà choisi son genre (vérification stricte)
-  if (currentUser.hasSelectedGender === true) {
+  if (userData.hasSelectedGender === true) {
     console.log("L'utilisateur a déjà choisi son genre, modal non affiché");
     return;
   }
 
   // Vérification supplémentaire basée sur l'avatar
-  if (currentUser.avatar || currentUser.selectedSkin) {
-    // Récupérer la tête et le corps de l'avatar (compatibilité avec les deux structures)
-    const head = currentUser.avatar ? currentUser.avatar.head : currentUser.selectedSkin ? currentUser.selectedSkin.head : null;
-    const body = currentUser.avatar ? currentUser.avatar.body : currentUser.selectedSkin ? currentUser.selectedSkin.body : null;
+  if (userData.avatar) {
+    const head = userData.avatar.head || null;
+    const body = userData.avatar.body || null;
 
     console.log("Avatar détecté - Tête:", head, "Corps:", body);
 
@@ -39,43 +47,7 @@ function showGenderSelectionModal() {
       console.log("L'utilisateur a déjà un avatar cohérent, définition de hasSelectedGender à true");
 
       // Mettre à jour hasSelectedGender
-      currentUser.hasSelectedGender = true;
-
-      // Sauvegarder les modifications dans toutes les clés possibles
-      try {
-        // Sauvegarder dans la clé 'users'
-        const users = localStorage.getItem('users');
-        if (users) {
-          const usersObj = JSON.parse(users);
-          const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
-          if (userId) {
-            usersObj[userId].hasSelectedGender = true;
-            localStorage.setItem('users', JSON.stringify(usersObj));
-          }
-        }
-      } catch (e) {
-        console.error("Erreur lors de la sauvegarde dans 'users':", e);
-      }
-
-      try {
-        // Sauvegarder dans la clé 'english_quest_users'
-        const eqUsers = localStorage.getItem('english_quest_users');
-        if (eqUsers) {
-          const eqUsersObj = JSON.parse(eqUsers);
-          const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
-          if (userId) {
-            eqUsersObj[userId].hasSelectedGender = true;
-            localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
-          }
-        }
-      } catch (e) {
-        console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
-      }
-
-      // Mettre à jour l'utilisateur courant dans toutes les clés possibles
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
-
+      await authService.updateProfile({ hasSelectedGender: true });
       return;
     }
   }
@@ -165,80 +137,29 @@ function showGenderSelectionModal() {
 }
 
 // Mettre à jour l'avatar de l'utilisateur en fonction du genre choisi
-function updateUserAvatar(gender) {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-  if (!currentUser) {
-    console.error("Aucun utilisateur connecté");
-    return;
-  }
-
-  console.log("Mise à jour de l'avatar avec le genre:", gender);
-
+async function updateUserAvatar(gender) {
   try {
-    // Mettre à jour l'avatar (tête et corps)
-    currentUser.avatar.head = gender === 'boy' ? 'default_boy' : 'default_girl';
-    currentUser.avatar.body = gender === 'boy' ? 'default_boy' : 'default_girl';
+    console.log("Mise à jour de l'avatar avec le genre:", gender);
 
-    // Marquer explicitement que l'utilisateur a choisi son genre
-    currentUser.hasSelectedGender = true;
+    // Mettre à jour l'avatar (tête et corps)
+    await authService.updateProfile({
+      avatar: {
+        head: gender === 'boy' ? 'default_boy' : 'default_girl',
+        body: gender === 'boy' ? 'default_boy' : 'default_girl',
+        accessory: 'none',
+        background: 'default'
+      },
+      hasSelectedGender: true
+    });
 
     console.log("Avatar mis à jour pour l'utilisateur");
     console.log("Préférence de genre enregistrée");
-
-    // Sauvegarder les modifications dans toutes les clés possibles
-    try {
-      // Sauvegarder dans la clé 'users'
-      const users = localStorage.getItem('users');
-      if (users) {
-        const usersObj = JSON.parse(users);
-        const userId = Object.keys(usersObj).find(id => usersObj[id].username === currentUser.username);
-        if (userId) {
-          // Mettre à jour l'utilisateur dans la liste des utilisateurs
-          usersObj[userId] = {...currentUser};
-          localStorage.setItem('users', JSON.stringify(usersObj));
-          console.log("Choix de genre sauvegardé dans 'users'");
-        }
-      }
-    } catch (e) {
-      console.error("Erreur lors de la sauvegarde dans 'users':", e);
-    }
-
-    try {
-      // Sauvegarder dans la clé 'english_quest_users'
-      const eqUsers = localStorage.getItem('english_quest_users');
-      if (eqUsers) {
-        const eqUsersObj = JSON.parse(eqUsers);
-        const userId = Object.keys(eqUsersObj).find(id => eqUsersObj[id].username === currentUser.username);
-        if (userId) {
-          // Mettre à jour l'utilisateur dans la liste des utilisateurs
-          eqUsersObj[userId] = {...currentUser};
-          localStorage.setItem('english_quest_users', JSON.stringify(eqUsersObj));
-          console.log("Choix de genre sauvegardé dans 'english_quest_users'");
-        }
-      }
-    } catch (e) {
-      console.error("Erreur lors de la sauvegarde dans 'english_quest_users':", e);
-    }
-
-    // Mettre à jour l'utilisateur courant dans toutes les clés possibles
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
-
-    console.log("Choix de genre sauvegardé avec succès dans toutes les clés");
-
-    // Mettre à jour l'affichage de l'avatar si possible
-    if (typeof updateAvatarDisplay === 'function') {
-      updateAvatarDisplay();
-      console.log("Affichage de l'avatar mis à jour");
-    }
 
     // Recharger la page pour s'assurer que les changements sont appliqués
     console.log("Rechargement de la page pour appliquer les changements");
     setTimeout(() => {
       window.location.reload();
     }, 500);
-
   } catch (error) {
     console.error("Erreur lors de la mise à jour de l'avatar:", error);
   }
@@ -247,65 +168,133 @@ function updateUserAvatar(gender) {
 // Ajouter des styles CSS pour le modal de sélection de genre
 document.addEventListener('DOMContentLoaded', function() {
   const style = document.createElement('style');
-
   style.textContent = `
-    /* Options de genre */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #1a1a1a;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      color: #2ecc71;
+    }
+
     .gender-options {
       display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin: 2rem 0;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 20px 0;
     }
 
     .gender-option {
-      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
       cursor: pointer;
-      padding: 1rem;
-      border-radius: var(--border-radius-lg);
       transition: all 0.3s ease;
+      text-align: center;
+      width: 45%;
     }
 
-    .gender-option:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+    .gender-option:hover, .gender-option.selected {
+      background-color: rgba(46, 204, 113, 0.1);
+      transform: translateY(-5px);
     }
 
     .gender-option.selected {
-      background-color: rgba(46, 204, 113, 0.1);
-      border: 2px solid var(--color-primary);
+      border: 2px solid #2ecc71;
     }
 
     .gender-avatar {
-      margin-bottom: 1rem;
-    }
-
-    .gender-option .avatar-display {
       width: 150px;
       height: 150px;
       margin: 0 auto;
+      position: relative;
     }
 
-    .gender-option h3 {
-      margin: 0;
-      font-size: 1.2rem;
-      color: var(--color-text);
+    .avatar-display {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 50%;
+      overflow: hidden;
     }
 
-    /* Modal de sélection de genre */
-    #gender-selection-modal .modal-content {
-      max-width: 600px;
+    .avatar-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
     }
 
-    #gender-selection-modal .modal-body {
+    .avatar-body, .avatar-head {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .modal-footer {
+      padding-top: 15px;
       text-align: center;
     }
 
-    #gender-selection-modal .modal-footer {
-      justify-content: center;
+    #confirm-gender {
+      padding: 10px 20px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    #confirm-gender:hover {
+      background-color: #27ae60;
+    }
+
+    @media (max-width: 768px) {
+      .gender-options {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .gender-option {
+        width: 80%;
+        margin-bottom: 20px;
+      }
     }
   `;
-
   document.head.appendChild(style);
 
-  // Afficher le modal de sélection de genre après un court délai
-  setTimeout(showGenderSelectionModal, 1000);
+  // Appeler la fonction après un délai pour s'assurer que l'utilisateur est connecté
+  setTimeout(showGenderSelectionModal, 2000);
 });
+
+// Exposer la fonction pour qu'elle puisse être appelée depuis d'autres scripts
+window.showGenderSelectionModal = showGenderSelectionModal;
