@@ -367,8 +367,14 @@ async function loadInventory() {
         const skinItem = document.createElement('div');
         skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
         
+        // Choisir l'image de fallback en fonction du type
+        const fallbackImage = type === 'head' ? 'assets/avatars/heads/default_boy.png' : 
+                             type === 'body' ? 'assets/avatars/bodies/default_boy.png' :
+                             type === 'accessory' ? 'assets/avatars/accessories/none.png' : 
+                             'assets/avatars/backgrounds/default.png';
+        
         skinItem.innerHTML = `
-          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/heads/default_boy.png'">
+          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
           <h4>${skin.name}</h4>
           <p>${skin.price} pièces</p>
           ${owned ? 
