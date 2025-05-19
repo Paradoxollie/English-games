@@ -235,15 +235,16 @@ function updateAvatarDisplay(avatar) {
     };
     
     if (avatar.accessory && avatar.accessory !== 'none') {
-      userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+      userAvatarAccessory.querySelector('img').src = `assets/avatars/accessories/${avatar.accessory}.png`;
       userAvatarAccessory.style.display = 'block';
       
-      userAvatarAccessory.onerror = function() {
+      userAvatarAccessory.querySelector('img').onerror = function() {
         console.error("Erreur de chargement de l'accessoire:", this.src);
         this.style.display = 'none';
       };
     } else {
-      userAvatarAccessory.style.display = 'none';
+      // Ne pas masquer le conteneur accessoire, juste l'image à l'intérieur
+      userAvatarAccessory.querySelector('img').style.display = 'none';
     }
     
     console.log("Avatar mis à jour avec succès");
@@ -309,8 +310,8 @@ async function loadInventory() {
     
     // Créer les sections pour chaque type de skin
     Object.entries(availableSkins).forEach(([type, skins]) => {
-      // Ne créer que les sections pour head et body
-      if (type !== 'head' && type !== 'body') return;
+      // Ne plus filtrer les types d'éléments
+      // if (type !== 'head' && type !== 'body') return;
       
       // Créer la section
       const section = document.createElement('div');
