@@ -197,12 +197,19 @@ function updateAvatarDisplay(avatar) {
   console.log("Mise à jour de l'affichage de l'avatar avec:", avatar);
   
   try {
+    // Avatar par défaut si aucun avatar n'est fourni
     if (!avatar) {
-      // Avatar par défaut
       userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
       userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
       userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-      userAvatarAccessory.style.display = 'none';
+      
+      // Cache l'accessoire s'il n'y en a pas
+      if (userAvatarAccessory.querySelector('img')) {
+        userAvatarAccessory.querySelector('img').style.display = 'none';
+      } else {
+        userAvatarAccessory.style.display = 'none';
+      }
+      
       console.log("Avatar par défaut appliqué");
       return;
     }
@@ -214,6 +221,7 @@ function updateAvatarDisplay(avatar) {
     
     console.log("Types d'avatar:", { head: headType, body: bodyType, background: bgType, accessory: avatar.accessory });
     
+    // Mise à jour des images
     userAvatarHead.src = `assets/avatars/heads/${headType}.png`;
     userAvatarBody.src = `assets/avatars/bodies/${bodyType}.png`;
     userAvatarBackground.src = `assets/avatars/backgrounds/${bgType}.png`;
@@ -234,16 +242,28 @@ function updateAvatarDisplay(avatar) {
       this.src = 'assets/avatars/backgrounds/default.png';
     };
     
+    // Gestion de l'accessoire
+    const accessoryImgElement = userAvatarAccessory.querySelector('img');
+    
     if (avatar.accessory && avatar.accessory !== 'none') {
-      userAvatarAccessory.src = `assets/avatars/accessories/${avatar.accessory}.png`;
-      userAvatarAccessory.style.display = 'block';
-      
-      userAvatarAccessory.onerror = function() {
-        console.error("Erreur de chargement de l'accessoire:", this.src);
-        this.style.display = 'none';
-      };
+      if (accessoryImgElement) {
+        accessoryImgElement.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+        accessoryImgElement.style.display = 'block';
+        userAvatarAccessory.style.display = 'block';
+        
+        accessoryImgElement.onerror = function() {
+          console.error("Erreur de chargement de l'accessoire:", this.src);
+          this.style.display = 'none';
+        };
+      } else {
+        console.error("Élément image d'accessoire non trouvé");
+      }
     } else {
-      userAvatarAccessory.style.display = 'none';
+      // Pas d'accessoire équipé
+      if (accessoryImgElement) {
+        accessoryImgElement.style.display = 'none';
+      }
+      // On garde le conteneur visible car il a une couleur/bordure
     }
     
     console.log("Avatar mis à jour avec succès");
@@ -253,7 +273,12 @@ function updateAvatarDisplay(avatar) {
     userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
     userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-    userAvatarAccessory.style.display = 'none';
+    
+    if (userAvatarAccessory.querySelector('img')) {
+      userAvatarAccessory.querySelector('img').style.display = 'none';
+    } else {
+      userAvatarAccessory.style.display = 'none';
+    }
   }
 }
 
@@ -289,14 +314,18 @@ async function loadInventory() {
     
     // Récupérer les données utilisateur
     const userData = await authService.loadUserData();
-    if (!userData) return;
+    if (!userData) {
+      console.error("Données utilisateur non disponibles lors du chargement de l'inventaire");
+      return;
+    }
     
     // Récupérer l'inventaire et les skins disponibles
     const inventory = userData.inventory || [];
     const availableSkins = skinService.getAvailableSkins();
     
-    console.log("Skins disponibles:", availableSkins);
-    console.log("Inventaire actuel:", inventory);
+    console.log("Skins disponibles:", JSON.stringify(availableSkins));
+    console.log("Types de skins disponibles:", Object.keys(availableSkins));
+    console.log("Inventaire actuel:", JSON.stringify(inventory));
     
     // Vider la grille d'inventaire
     inventoryGrid.innerHTML = '';
@@ -307,10 +336,13 @@ async function loadInventory() {
       return;
     }
     
+    // Afficher toutes les clés disponibles
+    const availableTypes = Object.keys(availableSkins);
+    console.log("Types disponibles:", availableTypes);
+    
     // Créer les sections pour chaque type de skin
     Object.entries(availableSkins).forEach(([type, skins]) => {
-      // Ne créer que les sections pour head et body
-      if (type !== 'head' && type !== 'body') return;
+      console.log(`Traitement du type: ${type} avec ${skins.length} skins`);
       
       // Créer la section
       const section = document.createElement('div');
@@ -329,12 +361,20 @@ async function loadInventory() {
         // Vérifier si le skin est équipé
         const equipped = userData.avatar && userData.avatar[type] === skin.id;
         
+        console.log(`Skin: ${skin.id} (${type}) - Owned: ${owned}, Equipped: ${equipped}`);
+        
         // Créer l'élément de skin
         const skinItem = document.createElement('div');
         skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
         
+        // Choisir l'image de fallback en fonction du type
+        const fallbackImage = type === 'head' ? 'assets/avatars/heads/default_boy.png' : 
+                             type === 'body' ? 'assets/avatars/bodies/default_boy.png' :
+                             type === 'accessory' ? 'assets/avatars/accessories/none.png' : 
+                             'assets/avatars/backgrounds/default.png';
+        
         skinItem.innerHTML = `
-          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/heads/default_boy.png'">
+          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
           <h4>${skin.name}</h4>
           <p>${skin.price} pièces</p>
           ${owned ? 
@@ -355,6 +395,7 @@ async function loadInventory() {
     console.log("Inventaire chargé avec succès");
   } catch (error) {
     console.error("Erreur lors du chargement de l'inventaire:", error);
+    inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
   }
 }
 

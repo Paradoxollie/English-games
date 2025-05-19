@@ -15,10 +15,12 @@ class SkinService {
         { id: 'bear', name: 'Ours', price: 200, image: 'assets/avatars/bodies/bear.png' }
       ],
       accessory: [
-        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' }
+        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' },
+        { id: 'wand', name: 'Baguette magique', price: 50, image: 'assets/avatars/accessories/wand.png' }
       ],
       background: [
-        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }
+        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' },
+        { id: 'forest', name: 'Forêt', price: 100, image: 'assets/avatars/backgrounds/forest.png' }
       ]
     };
   }
