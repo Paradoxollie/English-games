@@ -202,7 +202,23 @@ function updateAvatarDisplay(avatar) {
       userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
       userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
       userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-      userAvatarAccessory.style.display = 'none';
+      
+      // Gérer l'accessoire de façon plus robuste
+      if (userAvatarAccessory.tagName === 'IMG') {
+        userAvatarAccessory.style.display = 'none';
+      } else {
+        // C'est un conteneur DIV
+        const imgElement = userAvatarAccessory.querySelector('img');
+        if (imgElement) imgElement.style.display = 'none';
+        else userAvatarAccessory.style.display = 'none';
+      }
+      
+      // Mettre à jour le background du conteneur si c'est celui qu'on utilise
+      const avatarContainer = document.getElementById('userAvatarContainer');
+      if (avatarContainer) {
+        avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
+      }
+      
       console.log("Avatar par défaut appliqué");
       return;
     }
@@ -217,6 +233,12 @@ function updateAvatarDisplay(avatar) {
     userAvatarHead.src = `assets/avatars/heads/${headType}.png`;
     userAvatarBody.src = `assets/avatars/bodies/${bodyType}.png`;
     userAvatarBackground.src = `assets/avatars/backgrounds/${bgType}.png`;
+    
+    // Mettre à jour le background du conteneur si c'est celui qu'on utilise
+    const avatarContainer = document.getElementById('userAvatarContainer');
+    if (avatarContainer) {
+      avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/${bgType}.png')`;
+    }
     
     // Gestion des erreurs d'image
     userAvatarHead.onerror = function() {
@@ -234,17 +256,44 @@ function updateAvatarDisplay(avatar) {
       this.src = 'assets/avatars/backgrounds/default.png';
     };
     
+    // Gérer l'accessoire de façon plus robuste
     if (avatar.accessory && avatar.accessory !== 'none') {
-      userAvatarAccessory.querySelector('img').src = `assets/avatars/accessories/${avatar.accessory}.png`;
-      userAvatarAccessory.style.display = 'block';
+      const accessorySrc = `assets/avatars/accessories/${avatar.accessory}.png`;
       
-      userAvatarAccessory.querySelector('img').onerror = function() {
-        console.error("Erreur de chargement de l'accessoire:", this.src);
-        this.style.display = 'none';
-      };
+      if (userAvatarAccessory.tagName === 'IMG') {
+        // Si c'est une image directement
+        userAvatarAccessory.src = accessorySrc;
+        userAvatarAccessory.style.display = 'block';
+        
+        userAvatarAccessory.onerror = function() {
+          console.error("Erreur de chargement de l'accessoire:", this.src);
+          this.style.display = 'none';
+        };
+      } else {
+        // Si c'est un conteneur DIV
+        const imgElement = userAvatarAccessory.querySelector('img');
+        if (imgElement) {
+          imgElement.src = accessorySrc;
+          imgElement.style.display = 'block';
+          userAvatarAccessory.style.display = 'block';
+          
+          imgElement.onerror = function() {
+            console.error("Erreur de chargement de l'accessoire:", this.src);
+            this.style.display = 'none';
+          };
+        } else {
+          console.error("Élément image non trouvé dans le conteneur d'accessoire");
+        }
+      }
     } else {
-      // Ne pas masquer le conteneur accessoire, juste l'image à l'intérieur
-      userAvatarAccessory.querySelector('img').style.display = 'none';
+      // Gérer le cas où il n'y a pas d'accessoire
+      if (userAvatarAccessory.tagName === 'IMG') {
+        userAvatarAccessory.style.display = 'none';
+      } else {
+        const imgElement = userAvatarAccessory.querySelector('img');
+        if (imgElement) imgElement.style.display = 'none';
+        // Garder le conteneur visible car il a une couleur/bordure
+      }
     }
     
     console.log("Avatar mis à jour avec succès");
@@ -254,7 +303,14 @@ function updateAvatarDisplay(avatar) {
     userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
     userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-    userAvatarAccessory.style.display = 'none';
+    
+    if (userAvatarAccessory.tagName === 'IMG') {
+      userAvatarAccessory.style.display = 'none';
+    } else {
+      const imgElement = userAvatarAccessory.querySelector('img');
+      if (imgElement) imgElement.style.display = 'none';
+      else userAvatarAccessory.style.display = 'none';
+    }
   }
 }
 
