@@ -62,30 +62,22 @@
     .avatar-container {
       position: relative;
       width: 250px;
-      height: 500px;
+      height: 440px;
       margin: 0 auto 1rem;
-      background: none;
-      overflow: visible;
+      background: url('assets/avatars/backgrounds/default.png') center center / cover no-repeat;
       border-radius: 20px;
+      border: 3px solid black;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      overflow: visible;
     }
 
     .avatar-background {
-      position: absolute;
-      top: -50px;
-      left: -20px;
-      width: 120%;
-      height: 600px;
-      object-fit: cover;
-      z-index: 1;
-      border-radius: 20px;
-      background-color: orange; /* Couleur plus visible de test */
-      border: 3px solid blue; /* Bordure visible */
+      display: none; /* Masquer l'image de fond car nous utilisons le fond CSS ci-dessus */
     }
 
     .avatar-body {
       position: absolute;
-      top: 100px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%);
       width: 85%;
@@ -96,7 +88,7 @@
 
     .avatar-head {
       position: absolute;
-      top: -102px;
+      top: -142px;
       left: 50%;
       transform: translateX(-50%);
       width: 160px;
@@ -107,14 +99,13 @@
 
     .avatar-accessory {
       position: absolute;
-      bottom: 25px;
-      right: 25px;
-      width: 20px;
-      height: 20px;
+      bottom: 125px;
+      right: -10px;
+      width: 40%;
+      height: 40%;
       object-fit: contain;
       z-index: 10; /* Z-index très élevé pour garantir qu'il est au-dessus */
-      background-color: purple; /* Couleur plus visible */
-      border: 2px solid lime; /* Bordure très visible */
+
       display: block !important; /* Forcer l'affichage */
     }
 
@@ -399,8 +390,9 @@
   <!-- Profile Content -->
   <main class="profile-container">
     <div class="profile-header">
-      <div class="avatar-container">
-        <img src="assets/avatars/backgrounds/default.png" alt="Background" class="avatar-background" id="userAvatarBackground" onerror="this.src='assets/avatars/backgrounds/default.png'">
+      <div class="avatar-container" id="userAvatarContainer">
+        <!-- Le background est maintenant défini en CSS sur le conteneur lui-même -->
+        <img src="assets/avatars/backgrounds/default.png" alt="Background" class="avatar-background" id="userAvatarBackground" style="display: none;">
         <img src="assets/avatars/bodies/default_boy.png" alt="Body" class="avatar-body" id="userAvatarBody" onerror="this.src='assets/avatars/bodies/default_boy.png'">
         <img src="assets/avatars/heads/default_boy.png" alt="Head" class="avatar-head" id="userAvatarHead" onerror="this.src='assets/avatars/heads/default_boy.png'">
         <div class="avatar-accessory" id="userAvatarAccessory">
@@ -502,5 +494,41 @@
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>
   <script type="module" src="scripts/profile.js"></script>
+  
+  <!-- Script pour gérer le background de la carte avatar -->
+  <script>
+    // Attendre que le document soit chargé
+    document.addEventListener('DOMContentLoaded', function() {
+      // Observer les changements d'attributs sur l'élément de background
+      const backgroundImg = document.getElementById('userAvatarBackground');
+      const avatarContainer = document.getElementById('userAvatarContainer');
+      
+      // Fonction pour mettre à jour le background
+      function updateAvatarBackground() {
+        if (backgroundImg && avatarContainer) {
+          // Obtenir l'URL de l'image de background
+          const bgUrl = backgroundImg.getAttribute('src');
+          // Appliquer comme fond du conteneur
+          avatarContainer.style.backgroundImage = `url('${bgUrl}')`;
+        }
+      }
+      
+      // Observer les changements sur l'image de fond
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+            updateAvatarBackground();
+          }
+        });
+      });
+      
+      // Configurer l'observation
+      if (backgroundImg) {
+        observer.observe(backgroundImg, { attributes: true });
+        // Initialiser avec l'image actuelle
+        updateAvatarBackground();
+      }
+    });
+  </script>
 </body>
 </html>
