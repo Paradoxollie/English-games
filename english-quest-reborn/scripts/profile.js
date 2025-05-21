@@ -120,21 +120,22 @@ const defaultAchievements = [
  */
 async function init() {
   try {
-    console.log("Initialisation du profil...");
+    console.log("[ProfileJs] init() CALLED. Attempting to initialize authService...");
+    const initialUser = await authService.init(); // Attend la promesse de init
+    console.log("[ProfileJs] authService.init() COMPLETED. Initial user from authService.init():", initialUser);
     
-    // Initialiser le service d'authentification
-    await authService.init();
-    
-    const currentUser = authService.getCurrentUser();
+    // Récupérer à nouveau au cas où notifyListeners aurait mis à jour entre-temps, ou utiliser initialUser.
+    const currentUser = authService.getCurrentUser(); 
+    console.log("[ProfileJs] currentUser from authService.getCurrentUser() after init:", currentUser);
     
     // Vérifier si l'utilisateur est connecté
-    if (!currentUser) {
-      console.log("Utilisateur non connecté (depuis profile.js init), redirection vers la page de connexion");
+    if (!currentUser) { // La vérification principale
+      console.warn("[ProfileJs] currentUser is NULL or undefined. Redirecting to login.html");
       window.location.href = 'login.html';
       return;
     }
 
-    console.log("Utilisateur connecté (depuis profile.js init):", currentUser.username);
+    console.log("[ProfileJs] User IS connected. Username:", currentUser.username);
     
     // Charger le profil
     await loadProfile(currentUser);
@@ -145,9 +146,11 @@ async function init() {
     // Configurer les écouteurs d'événements
     setupEventListeners();
     
-    console.log("Initialisation terminée avec succès");
+    console.log("[ProfileJs] Profile page initialization successful.");
   } catch (error) {
-    console.error("Erreur lors de l'initialisation:", error);
+    console.error("[ProfileJs] CRITICAL ERROR during profile page init:", error);
+    // Optionnel : rediriger vers une page d'erreur ou login si l'initialisation échoue de manière critique
+    // window.location.href = 'login.html'; 
   }
 }
 

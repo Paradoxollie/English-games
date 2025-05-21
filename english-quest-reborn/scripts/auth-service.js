@@ -26,39 +26,76 @@ const IS_ADMIN_KEY = 'englishQuestIsAdmin';
 class AuthService {
     constructor() {
         this.db = db;
-        this.currentUser = null; // Will store { uid, username, isAdmin, ...other Firestore data }
-        this.userData = null; // Redundant with currentUser if currentUser holds all data
+        this.currentUser = null;
+        this.userData = null;
         this.listeners = new Set();
-        this._initializeFromLocalStorage();
+        this.initPromise = null; // Pour la refactorisation de init()
+        // _initializeFromLocalStorage() n'est plus appelé directement ici, init() le gère.
+        console.log("[AuthService] Constructor: instance created.");
     }
 
     _initializeFromLocalStorage() {
-        const userId = localStorage.getItem(USER_ID_KEY);
-        if (userId) {
-            // Attempt to load user data. If successful, user is considered logged in.
-            this.loadUserData(userId).then((userData) => {
-                if (userData) {
-                    this.currentUser = { uid: userId, ...userData };
-                    this.userData = userData; // Keep for compatibility if used elsewhere
-                    this.notifyListeners();
-                }
-            });
-        }
+        // Cette méthode est maintenant intégrée dans la logique de la promesse de init()
+        // pour s'assurer que l'initialisation est bien attendue.
+        // Le code original a été déplacé et adapté dans la nouvelle fonction init().
+        // On pourrait garder une version de cette fonction si elle est appelée ailleurs,
+        // mais pour l'instant, init() prend en charge le flux de chargement initial.
+        console.log("[AuthService] _initializeFromLocalStorage CALLED (mais la logique principale est dans init).");
     }
 
     getCurrentUser() {
+        console.log("[AuthService] getCurrentUser() CALLED. Returning:", this.currentUser);
         return this.currentUser;
     }
 
     async init() {
-      // Initialization is now handled by constructor and _initializeFromLocalStorage
-      // We ensure listeners are notified once initial state is determined.
-      // If user was found in localStorage, loadUserData would have notified.
-      // If not, notify with null state.
-      if (!this.currentUser) {
-          this.notifyListeners();
+      console.log("[AuthService] init() CALLED");
+      if (!this.initPromise) {
+          console.log("[AuthService] init() - Creating new initPromise.");
+          this.initPromise = new Promise((resolve) => {
+              const localUserId = localStorage.getItem(USER_ID_KEY);
+              console.log(`[AuthService] init() - userId from localStorage: '${localUserId}'`);
+
+              if (localUserId && localUserId !== "undefined" && localUserId !== "null") {
+                  console.log(`[AuthService] init() - Attempting to load user data for userId: ${localUserId}`);
+                  this.loadUserData(localUserId)
+                      .then(userData => {
+                          console.log(`[AuthService] init() - userData from loadUserData for ${localUserId}:`, userData);
+                          if (userData) {
+                              this.currentUser = { uid: localUserId, ...userData };
+                              this.userData = userData; // Conserver pour compatibilité si nécessaire
+                              console.log("[AuthService] init() - currentUser SET from localStorage:", this.currentUser);
+                          } else {
+                              console.warn(`[AuthService] init() - No userData returned for stored userId: ${localUserId}. Clearing localStorage.`);
+                              localStorage.removeItem(USER_ID_KEY);
+                              localStorage.removeItem(IS_ADMIN_KEY);
+                              this.currentUser = null;
+                              this.userData = null;
+                          }
+                          this.notifyListeners();
+                          resolve(this.currentUser);
+                      })
+                      .catch(error => {
+                          console.error(`[AuthService] init() - Error in loadUserData promise for userId ${localUserId}:`, error);
+                          localStorage.removeItem(USER_ID_KEY);
+                          localStorage.removeItem(IS_ADMIN_KEY);
+                          this.currentUser = null;
+                          this.userData = null;
+                          this.notifyListeners();
+                          resolve(null); // Résoudre avec null en cas d'erreur
+                      });
+              } else {
+                  console.log("[AuthService] init() - No valid userId found in localStorage. Setting currentUser to null.");
+                  this.currentUser = null;
+                  this.userData = null;
+                  this.notifyListeners(); 
+                  resolve(null);
+              }
+          });
+      } else {
+        console.log("[AuthService] init() - Returning existing initPromise.");
       }
-      return Promise.resolve(this.currentUser);
+      return this.initPromise;
     }
 
     async loadUserData(userId) {
@@ -80,6 +117,7 @@ class AuthService {
     }
 
     async login(username, password) { // Simplified, only username login
+        console.log(`[AuthService] login() CALLED for username: ${username}`);
         if (!username || !password) {
             return { success: false, error: "Username and password are required." };
         }
@@ -130,6 +168,7 @@ class AuthService {
             this.userData = userData; // for compatibility
             localStorage.setItem(USER_ID_KEY, userId);
             localStorage.setItem(IS_ADMIN_KEY, userData.isAdmin ? 'true' : 'false');
+            console.log(`[AuthService] login() - User ID ${userId} and isAdmin ${userData.isAdmin} stored in localStorage.`);
             
             await updateDoc(doc(this.db, 'users', userId), { lastLogin: serverTimestamp() });
             this.notifyListeners();
@@ -143,6 +182,7 @@ class AuthService {
     }
 
     async register(username, password) { // Simplified, only username registration
+        console.log(`[AuthService] register() CALLED for username: ${username}`);
         if (!username || !password) {
             return { success: false, error: "Username and password are required." };
         }
@@ -200,6 +240,7 @@ class AuthService {
             this.userData = newUser; // for compatibility
             localStorage.setItem(USER_ID_KEY, userId);
             localStorage.setItem(IS_ADMIN_KEY, newUser.isAdmin ? 'true' : 'false');
+            console.log(`[AuthService] register() - User ID ${userId} and isAdmin ${newUser.isAdmin} stored in localStorage.`);
             this.notifyListeners();
             console.log("Registration successful for:", username);
             return { success: true, user: this.currentUser };
@@ -211,8 +252,10 @@ class AuthService {
     }
 
     async logout() {
+        console.log("[AuthService] logout() CALLED.");
         localStorage.removeItem(USER_ID_KEY);
         localStorage.removeItem(IS_ADMIN_KEY);
+        console.log("[AuthService] logout() - localStorage cleared.");
         this.currentUser = null;
         this.userData = null;
         this.notifyListeners();
@@ -248,17 +291,32 @@ class AuthService {
     // Listener methods
     addAuthStateListener(listener) {
         this.listeners.add(listener);
-        // Immediately notify with current state upon adding listener
-        if (listener) listener(this.currentUser);
+        // Exécute immédiatement le listener avec l'état actuel
+        // Peut-être attendre que initPromise soit résolue si l'état n'est pas encore fiable
+        if (this.initPromise) {
+            this.initPromise.then(() => listener(this.currentUser));
+        } else {
+             // Si init n'a pas encore été appelé, le listener sera notifié lorsque init se terminera
+             // ou lorsque l'état changera via login/logout.
+             // Pour l'instant, on peut l'appeler avec l'état potentiellement non initialisé.
+            listener(this.currentUser);
+        }
+        console.log("[AuthService] addAuthStateListener() - Listener added. Total listeners:", this.listeners.size);
     }
 
     removeAuthStateListener(listener) {
         this.listeners.delete(listener);
+        console.log("[AuthService] removeAuthStateListener() - Listener removed. Total listeners:", this.listeners.size);
     }
 
     notifyListeners() {
+        console.log("[AuthService] notifyListeners() CALLED. Notifying", this.listeners.size, "listeners with user:", this.currentUser);
         this.listeners.forEach(listener => {
-            if (listener) listener(this.currentUser);
+            try {
+                listener(this.currentUser);
+            } catch (error) {
+                console.error("[AuthService] Error in one of the auth state listeners:", error);
+            }
         });
     }
 
