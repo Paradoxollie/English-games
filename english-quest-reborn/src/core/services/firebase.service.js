@@ -157,6 +157,17 @@ class FirebaseService {
         }
     }
 
+    async updateUserProfile(userId, data) {
+        try {
+            console.log('Updating user profile for:', userId, 'with data:', data);
+            await updateDoc(doc(db, 'users', userId), data);
+            console.log('User profile updated successfully');
+        } catch (error) {
+            console.error('Error in updateUserProfile:', error);
+            throw error;
+        }
+    }
+
     // Score management methods
     async getUserScores(userId) {
         try {
@@ -239,6 +250,17 @@ class FirebaseService {
             console.log('Admin status updated successfully');
         } catch (error) {
             console.error('Error in setUserAdmin:', error);
+            throw error;
+        }
+    }
+
+    async flagUserForPasswordReset(userId) {
+        try {
+            console.log('Flagging user for password reset:', userId);
+            await updateDoc(doc(db, 'users', userId), { needsPasswordReset: true });
+            console.log('User flagged for password reset successfully');
+        } catch (error) {
+            console.error('Error in flagUserForPasswordReset:', error);
             throw error;
         }
     }

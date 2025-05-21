@@ -46,13 +46,23 @@
                 const usersTable = document.getElementById('usersTable');
                 usersTable.innerHTML = users.map(user => `
                     <tr>
-                        <td class="px-4 py-2">${user.username || 'N/A'}</td>
+                        <td class="px-4 py-2"><input type="text" value="${user.username || 'N/A'}" id="username-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2"><input type="number" value="${user.xp || 0}" id="xp-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2"><input type="number" value="${user.gold || 0}" id="gold-${user.id}" class="border rounded px-2 py-1 w-full"></td>
                         <td class="px-4 py-2">${new Date(user.lastLogin).toLocaleString()}</td>
                         <td class="px-4 py-2">${user.isAdmin ? 'Oui' : 'Non'}</td>
-                        <td class="px-4 py-2">
+                        <td class="px-4 py-2 flex flex-col space-y-1">
+                            <button onclick="updateUser('${user.id}')" 
+                                    class="bg-green-500 text-white px-2 py-1 rounded text-sm">
+                                Mettre à jour
+                            </button>
                             <button onclick="toggleAdmin('${user.id}', ${!user.isAdmin})" 
-                                    class="bg-blue-500 text-white px-2 py-1 rounded">
+                                    class="bg-blue-500 text-white px-2 py-1 rounded text-sm">
                                 ${user.isAdmin ? 'Retirer Admin' : 'Rendre Admin'}
+                            </button>
+                            <button onclick="resetPassword('${user.id}')" 
+                                    class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">
+                                Réinitialiser MDP
                             </button>
                         </td>
                     </tr>
@@ -97,6 +107,43 @@
             }
         };
 
+        window.updateUser = async function(userId) {
+            try {
+                const newUsername = document.getElementById(`username-${userId}`).value;
+                const newXp = parseInt(document.getElementById(`xp-${userId}`).value);
+                const newGold = parseInt(document.getElementById(`gold-${userId}`).value);
+
+                if (!newUsername || isNaN(newXp) || isNaN(newGold)) {
+                    alert('Veuillez vérifier les valeurs saisies.');
+                    return;
+                }
+
+                console.log('Updating user:', userId, { username: newUsername, xp: newXp, gold: newGold });
+                await firebaseService.updateUserProfile(userId, { username: newUsername, xp: newXp, gold: newGold });
+                console.log('User updated, reloading users');
+                alert('Utilisateur mis à jour avec succès!');
+                loadUsers();
+            } catch (error) {
+                console.error('Error updating user:', error);
+                alert('Erreur lors de la mise à jour de l\'utilisateur.');
+            }
+        };
+
+        window.resetPassword = async function(userId) {
+            try {
+                if (!confirm('Voulez-vous vraiment marquer cet utilisateur pour une réinitialisation de mot de passe ? Il devra le changer à sa prochaine connexion.')) {
+                    return;
+                }
+                console.log('Flagging user for password reset:', userId);
+                await firebaseService.flagUserForPasswordReset(userId);
+                console.log('User flagged for password reset');
+                alert('Utilisateur marqué pour la réinitialisation du mot de passe.');
+            } catch (error) {
+                console.error('Error flagging user for password reset:', error);
+                alert('Erreur lors du marquage pour la réinitialisation du mot de passe.');
+            }
+        };
+
         // Fonction pour déconnecter
         window.logout = async function() {
             try {
@@ -127,6 +174,8 @@
                     <thead>
                         <tr>
                             <th class="px-4 py-2">Pseudo</th>
+                            <th class="px-4 py-2">XP</th>
+                            <th class="px-4 py-2">Gold</th>
                             <th class="px-4 py-2">Dernière connexion</th>
                             <th class="px-4 py-2">Admin</th>
                             <th class="px-4 py-2">Actions</th>

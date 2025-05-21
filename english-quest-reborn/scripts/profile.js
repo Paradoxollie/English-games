@@ -183,6 +183,14 @@ async function loadProfile() {
     
     // Mettre à jour les paramètres
     updateSettings(userData.settings);
+
+    // Afficher le lien vers le panneau d'administration si l'utilisateur est admin
+    if (userData.isAdmin) {
+      const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer');
+      if (adminPanelLinkContainer) {
+        adminPanelLinkContainer.style.display = 'block';
+      }
+    }
     
     console.log("Profil chargé avec succès");
   } catch (error) {
