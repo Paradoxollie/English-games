@@ -12,7 +12,7 @@ import {
     serverTimestamp,
     deleteField
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from './lib/bcrypt.min.js';
 import { firebaseConfig } from '../config/app.config.js'; // Ensure this path is correct
 
 // Initialize Firebase App
