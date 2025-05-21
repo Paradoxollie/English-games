@@ -12,7 +12,7 @@ import {
     serverTimestamp,
     deleteField
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import bcrypt from './lib/bcrypt.min.js';
+// import bcrypt from './lib/bcrypt.min.js'; // Removed import, bcrypt is now global via dcodeIO.bcrypt
 import { firebaseConfig } from '../src/config/app.config.js'; // Corrected path
 
 // Initialize Firebase App
@@ -99,12 +99,12 @@ class AuthService {
             let passwordMatch = false;
 
             if (userData.hashedPassword) {
-                passwordMatch = await bcrypt.compare(password, userData.hashedPassword);
+                passwordMatch = await dcodeIO.bcrypt.compare(password, userData.hashedPassword);
             } else if (userData.password) { // Legacy plaintext password
                 if (userData.password === password) {
                     passwordMatch = true;
                     console.log(`User ${username} (ID: ${userId}) logged in with plaintext password. Migrating...`);
-                    const newHashedPassword = await bcrypt.hash(password, saltRounds);
+                    const newHashedPassword = await dcodeIO.bcrypt.hash(password, saltRounds);
                     await updateDoc(doc(this.db, 'users', userId), {
                         hashedPassword: newHashedPassword,
                         password: deleteField(),
@@ -159,7 +159,7 @@ class AuthService {
                 return { success: false, error: "Username already taken." };
             }
 
-            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const hashedPassword = await dcodeIO.bcrypt.hash(password, saltRounds);
             const userId = doc(usersRef).id; // Generate a new unique ID for the user
 
             const newUser = {
