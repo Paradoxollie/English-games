@@ -322,92 +322,106 @@ function initTabs() {
  */
 async function loadInventory(userData) {
   try {
-    console.log("Chargement de l'inventaire...");
+    console.log("[ProfileJs_loadInventory] CALLED. UserData:", userData); // Log 1
     inventoryGrid.innerHTML = '<p>Chargement de l\'inventaire...</p>';
 
-    if (!userData || !skinService) {
-      console.error("Données utilisateur ou SkinService non disponibles pour charger l'inventaire.");
-      inventoryGrid.innerHTML = '<p>Erreur lors du chargement de l\'inventaire.</p>';
+    if (!userData) { // Log 2a
+      console.error("[ProfileJs_loadInventory] UserData is MISSING.");
+      inventoryGrid.innerHTML = '<p>Erreur: Données utilisateur manquantes.</p>';
       return;
     }
+    if (!skinService) { // Log 2b
+      console.error("[ProfileJs_loadInventory] skinService is NOT AVAILABLE (undefined or null).");
+      inventoryGrid.innerHTML = '<p>Erreur: Service de skins non initialisé.</p>';
+      return;
+    }
+    console.log("[ProfileJs_loadInventory] UserData and skinService seem OK initially."); // Log 3
 
-    const allSkins = skinService.getAvailableSkins();
+    const allSkins = skinService.getAvailableSkins(); 
+    console.log("[ProfileJs_loadInventory] allSkins from skinService.getAvailableSkins():", allSkins); // Log 4
+
+    if (!allSkins || typeof allSkins !== 'object' || Object.keys(allSkins).length === 0) { // Log 5
+        console.warn("[ProfileJs_loadInventory] No skins available from skinService or format is incorrect. allSkins:", allSkins);
+        inventoryGrid.innerHTML = '<p>Aucun item disponible dans la boutique pour le moment.</p>'; 
+        // return; // Commenté pour l'instant
+    }
+
     const userInventory = userData.inventory || [];
     const userEquipped = userData.avatar || {};
     
-    console.log("Skins disponibles:", JSON.stringify(allSkins));
-    console.log("Types de skins disponibles:", Object.keys(allSkins));
-    console.log("Inventaire actuel:", JSON.stringify(userInventory));
+    console.log("[ProfileJs_loadInventory] User Inventory:", userInventory); // Log 6
+    console.log("[ProfileJs_loadInventory] User Equipped:", userEquipped); // Log 7
     
-    // Vider la grille d'inventaire
-    inventoryGrid.innerHTML = '';
+    inventoryGrid.innerHTML = ''; 
     
-    // Si l'inventaire est vide et pas de skins disponibles
-    if (Object.keys(allSkins).length === 0) {
-      inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
-      return;
+    // Gérer le cas où allSkins est vide ou non un objet avant Object.entries
+    if (!allSkins || typeof allSkins !== 'object') {
+        console.warn("[ProfileJs_loadInventory] allSkins is not a valid object for Object.entries. Displaying empty inventory or message.");
+        if (userInventory.length === 0) {
+             inventoryGrid.innerHTML = '<p>Votre inventaire et la boutique sont vides pour le moment.</p>';
+        }
+        // Si l'inventaire n'est pas vide, on pourrait vouloir l'afficher même si la boutique est vide.
+        // Pour l'instant, cette condition arrête le traitement des skins de la boutique.
+    } else if (Object.keys(allSkins).length === 0) {
+        console.log("[ProfileJs_loadInventory] Boutique vide (Object.keys(allSkins).length === 0).");
+        // Afficher l'inventaire si la boutique est vide
+        // Cette logique peut être fusionnée ou améliorée, mais pour l'instant on affiche un message.
+        if (userInventory.length === 0) {
+            inventoryGrid.innerHTML = '<p>Votre inventaire est vide et la boutique ne propose aucun article.</p>';
+        } else {
+            // TODO: Logique pour afficher les items de userInventory même si allSkins est vide
+            // Pour l'instant, on pourrait juste dire que la boutique est vide mais que l'utilisateur a des items.
+            inventoryGrid.innerHTML = '<p>La boutique est vide, mais vous avez des items dans votre inventaire (affichage non implémenté ici).</p>';
+        }
+    } else {
+        Object.entries(allSkins).forEach(([type, skins]) => {
+          console.log(`[ProfileJs_loadInventory] Processing type: ${type}, Number of skins: ${skins.length}`); // Log 8
+          
+          const section = document.createElement('div');
+          section.className = 'inventory-section';
+          section.innerHTML = `
+            <h3>${getTypeName(type)}</h3>
+            <div class="skin-grid" id="skin-grid-${type}"></div>
+          `;
+          
+          const skinGrid = section.querySelector(`.skin-grid`);
+          
+          if (Array.isArray(skins)) { // S'assurer que skins est bien un tableau
+            skins.forEach(skin => {
+              const owned = userInventory.some(item => item.id === skin.id && item.type === type);
+              const equipped = userEquipped[type] === skin.id;
+              
+              const skinItem = document.createElement('div');
+              skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
+              
+              const fallbackImage = type === 'head' ? 'assets/avatars/heads/default_boy.png' : 
+                                   type === 'body' ? 'assets/avatars/bodies/default_boy.png' :
+                                   type === 'accessory' ? 'assets/avatars/accessories/none.png' : 
+                                   'assets/avatars/backgrounds/default.png';
+              
+              skinItem.innerHTML = `
+                <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
+                <h4>${skin.name}</h4>
+                <p>${skin.price} pièces</p>
+                ${owned ? 
+                  `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">${equipped ? 'Équipé' : 'Équiper'}</button>` : 
+                  `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
+                }
+              `;
+              skinGrid.appendChild(skinItem);
+            });
+          } else {
+            console.warn(`[ProfileJs_loadInventory] Skins for type '${type}' is not an array:`, skins);
+          }
+          inventoryGrid.appendChild(section);
+        });
     }
     
-    // Afficher toutes les clés disponibles
-    const availableTypes = Object.keys(allSkins);
-    console.log("Types disponibles:", availableTypes);
-    
-    // Créer les sections pour chaque type de skin
-    Object.entries(allSkins).forEach(([type, skins]) => {
-      console.log(`Traitement du type: ${type} avec ${skins.length} skins`);
-      
-      // Créer la section
-      const section = document.createElement('div');
-      section.className = 'inventory-section';
-      section.innerHTML = `
-        <h3>${getTypeName(type)}</h3>
-        <div class="skin-grid" id="skin-grid-${type}"></div>
-      `;
-      
-      const skinGrid = section.querySelector(`.skin-grid`);
-      
-      // Ajouter chaque skin
-      skins.forEach(skin => {
-        // Vérifier si l'utilisateur possède le skin
-        const owned = userInventory.some(item => item.id === skin.id && item.type === type);
-        // Vérifier si le skin est équipé
-        const equipped = userEquipped[type] === skin.id;
-        
-        console.log(`Skin: ${skin.id} (${type}) - Owned: ${owned}, Equipped: ${equipped}`);
-        
-        // Créer l'élément de skin
-        const skinItem = document.createElement('div');
-        skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
-        
-        // Choisir l'image de fallback en fonction du type
-        const fallbackImage = type === 'head' ? 'assets/avatars/heads/default_boy.png' : 
-                             type === 'body' ? 'assets/avatars/bodies/default_boy.png' :
-                             type === 'accessory' ? 'assets/avatars/accessories/none.png' : 
-                             'assets/avatars/backgrounds/default.png';
-        
-        skinItem.innerHTML = `
-          <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
-          <h4>${skin.name}</h4>
-          <p>${skin.price} pièces</p>
-          ${owned ? 
-            `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">${equipped ? 'Équipé' : 'Équiper'}</button>` : 
-            `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
-          }
-        `;
-        
-        skinGrid.appendChild(skinItem);
-      });
-      
-      inventoryGrid.appendChild(section);
-    });
-    
-    // Ajouter les écouteurs d'événements pour les boutons
-    setupInventoryButtons();
-    
-    console.log("Inventaire chargé avec succès");
+    setupInventoryButtons(); 
+    console.log("[ProfileJs_loadInventory] COMPLETED successfully (ou partiellement si boutique vide)."); // Log 9
   } catch (error) {
-    console.error("Erreur lors du chargement de l'inventaire:", error);
-    inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
+    console.error("[ProfileJs_loadInventory] CRITICAL ERROR in loadInventory:", error); // Log 10
+    inventoryGrid.innerHTML = `<p>Erreur critique lors du chargement de l'inventaire: ${error.message}</p>`;
   }
 }
 
