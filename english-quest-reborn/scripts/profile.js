@@ -331,7 +331,7 @@ async function loadInventory(userData) {
       return;
     }
 
-    const allSkins = await skinService.getAllSkins();
+    const allSkins = skinService.getAvailableSkins();
     const userInventory = userData.inventory || [];
     const userEquipped = userData.avatar || {};
     
