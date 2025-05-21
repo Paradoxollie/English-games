@@ -125,17 +125,19 @@ async function init() {
     // Initialiser le service d'authentification
     await authService.init();
     
+    const currentUser = authService.getCurrentUser();
+    
     // Vérifier si l'utilisateur est connecté
-    if (!authService.currentUser) {
-      console.log("Utilisateur non connecté, redirection vers la page de connexion");
+    if (!currentUser) {
+      console.log("Utilisateur non connecté (depuis profile.js init), redirection vers la page de connexion");
       window.location.href = 'login.html';
       return;
     }
 
-    console.log("Utilisateur connecté:", authService.currentUser.email);
+    console.log("Utilisateur connecté (depuis profile.js init):", currentUser.username);
     
     // Charger le profil
-    await loadProfile();
+    await loadProfile(currentUser);
 
     // Initialiser les onglets
     initTabs();
@@ -152,23 +154,22 @@ async function init() {
 /**
  * Chargement du profil utilisateur
  */
-async function loadProfile() {
+async function loadProfile(userData) {
   try {
-    console.log("Chargement du profil...");
+    console.log("Chargement du profil pour l'utilisateur:", userData.username);
     
-    // Charger les données utilisateur
-    const userData = await authService.loadUserData();
     if (!userData) {
-      console.error("Impossible de charger les données utilisateur");
+      console.error("Impossible de charger les données utilisateur (données non fournies à loadProfile)");
+      window.location.href = 'login.html';
       return;
     }
     
-    console.log("Données utilisateur chargées:", userData);
+    console.log("Données utilisateur pour le profil:", userData);
     
     // Mettre à jour les informations du profil
-    username.textContent = userData.username || authService.currentUser.displayName || 'Aventurier';
-    userEmail.textContent = userData.email || authService.currentUser.email;
-    userLevel.textContent = `Niveau ${userData.level || 1}`;
+    username.textContent = userData.username || 'Aventurier';
+    userEmail.textContent = userData.email || 'Email non disponible';
+    userLevel.textContent = userData.level || 1;
     userXP.textContent = `${userData.xp || 0} XP`;
     userCoins.textContent = `${userData.coins || 0} pièces`;
     
@@ -176,7 +177,7 @@ async function loadProfile() {
     updateAvatarDisplay(userData.avatar);
     
     // Charger l'inventaire
-    await loadInventory();
+    await loadInventory(userData);
     
     // Charger les succès
     loadAchievements(userData.achievements || []);
@@ -316,40 +317,40 @@ function initTabs() {
 /**
  * Chargement de l'inventaire
  */
-async function loadInventory() {
+async function loadInventory(userData) {
   try {
     console.log("Chargement de l'inventaire...");
-    
-    // Récupérer les données utilisateur
-    const userData = await authService.loadUserData();
-    if (!userData) {
-      console.error("Données utilisateur non disponibles lors du chargement de l'inventaire");
+    inventoryGrid.innerHTML = '<p>Chargement de l\'inventaire...</p>';
+
+    if (!userData || !skinService) {
+      console.error("Données utilisateur ou SkinService non disponibles pour charger l'inventaire.");
+      inventoryGrid.innerHTML = '<p>Erreur lors du chargement de l\'inventaire.</p>';
       return;
     }
+
+    const allSkins = await skinService.getAllSkins();
+    const userInventory = userData.inventory || [];
+    const userEquipped = userData.avatar || {};
     
-    // Récupérer l'inventaire et les skins disponibles
-    const inventory = userData.inventory || [];
-    const availableSkins = skinService.getAvailableSkins();
-    
-    console.log("Skins disponibles:", JSON.stringify(availableSkins));
-    console.log("Types de skins disponibles:", Object.keys(availableSkins));
-    console.log("Inventaire actuel:", JSON.stringify(inventory));
+    console.log("Skins disponibles:", JSON.stringify(allSkins));
+    console.log("Types de skins disponibles:", Object.keys(allSkins));
+    console.log("Inventaire actuel:", JSON.stringify(userInventory));
     
     // Vider la grille d'inventaire
     inventoryGrid.innerHTML = '';
     
     // Si l'inventaire est vide et pas de skins disponibles
-    if (Object.keys(availableSkins).length === 0) {
+    if (Object.keys(allSkins).length === 0) {
       inventoryGrid.innerHTML = '<p>Aucun item dans votre inventaire pour le moment.</p>';
       return;
     }
     
     // Afficher toutes les clés disponibles
-    const availableTypes = Object.keys(availableSkins);
+    const availableTypes = Object.keys(allSkins);
     console.log("Types disponibles:", availableTypes);
     
     // Créer les sections pour chaque type de skin
-    Object.entries(availableSkins).forEach(([type, skins]) => {
+    Object.entries(allSkins).forEach(([type, skins]) => {
       console.log(`Traitement du type: ${type} avec ${skins.length} skins`);
       
       // Créer la section
@@ -365,9 +366,9 @@ async function loadInventory() {
       // Ajouter chaque skin
       skins.forEach(skin => {
         // Vérifier si l'utilisateur possède le skin
-        const owned = inventory.some(item => item.id === skin.id && item.type === type);
+        const owned = userInventory.some(item => item.id === skin.id && item.type === type);
         // Vérifier si le skin est équipé
-        const equipped = userData.avatar && userData.avatar[type] === skin.id;
+        const equipped = userEquipped[type] === skin.id;
         
         console.log(`Skin: ${skin.id} (${type}) - Owned: ${owned}, Equipped: ${equipped}`);
         
