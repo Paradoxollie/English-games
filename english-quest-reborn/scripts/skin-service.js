@@ -32,8 +32,8 @@ class SkinService {
 
   // Obtenir les skins possédés par l'utilisateur
   async getUserSkins() {
-    const userData = await authService.loadUserData();
-    return userData?.inventory || [];
+    const currentUserData = authService.getCurrentUser();
+    return currentUserData?.inventory || [];
   }
 
   // Acheter un skin
@@ -41,13 +41,13 @@ class SkinService {
     try {
       console.log(`Tentative d'achat du skin: ${skinId} de type ${skinType}`);
       
-      const userData = await authService.loadUserData();
-      if (!userData) {
+      const currentUserData = authService.getCurrentUser();
+      if (!currentUserData) {
         console.error("Utilisateur non connecté lors de l'achat du skin");
         return { success: false, error: 'Utilisateur non connecté' };
       }
 
-      console.log("Données utilisateur récupérées:", userData);
+      console.log("Données utilisateur récupérées:", currentUserData);
       
       const skin = this.defaultSkins[skinType].find(s => s.id === skinId);
       if (!skin) {
@@ -58,34 +58,34 @@ class SkinService {
       console.log("Skin trouvé:", skin);
       
       // Initialiser l'inventaire s'il n'existe pas
-      if (!userData.inventory || !Array.isArray(userData.inventory)) {
+      if (!currentUserData.inventory || !Array.isArray(currentUserData.inventory)) {
         console.log("Création de l'inventaire initial");
-        userData.inventory = [];
+        currentUserData.inventory = [];
       }
 
       // Vérifier si l'utilisateur possède déjà le skin
-      const alreadyOwned = userData.inventory.some(item => item.id === skinId && item.type === skinType);
+      const alreadyOwned = currentUserData.inventory.some(item => item.id === skinId && item.type === skinType);
       if (alreadyOwned) {
         console.log("L'utilisateur possède déjà ce skin");
         return { success: false, error: 'Vous possédez déjà ce skin' };
       }
 
       // Vérifier si l'utilisateur a assez de pièces
-      if (userData.coins < skin.price) {
-        console.log(`Pas assez de pièces: ${userData.coins} < ${skin.price}`);
+      if (currentUserData.coins < skin.price) {
+        console.log(`Pas assez de pièces: ${currentUserData.coins} < ${skin.price}`);
         return { success: false, error: 'Pas assez de pièces' };
       }
 
       // Ajouter le skin à l'inventaire
-      const updatedInventory = [...userData.inventory, { id: skinId, type: skinType }];
+      const updatedInventory = [...currentUserData.inventory, { id: skinId, type: skinType }];
       
       console.log("Mise à jour de l'inventaire:", updatedInventory);
-      console.log("Nouvelles pièces:", userData.coins - skin.price);
+      console.log("Nouvelles pièces:", currentUserData.coins - skin.price);
       
       // Mettre à jour le profil
       const updateResult = await authService.updateProfile({
         inventory: updatedInventory,
-        coins: userData.coins - skin.price
+        coins: currentUserData.coins - skin.price
       });
       
       if (!updateResult.success) {
@@ -103,18 +103,18 @@ class SkinService {
 
   // Équiper un skin
   async equipSkin(skinId, skinType) {
-    const userData = await authService.loadUserData();
-    if (!userData) return { success: false, error: 'Utilisateur non connecté' };
+    const currentUserData = authService.getCurrentUser();
+    if (!currentUserData) return { success: false, error: 'Utilisateur non connecté' };
 
     // Vérifier si l'utilisateur possède le skin
-    const hasSkin = userData.inventory.some(item => item.id === skinId && item.type === skinType);
+    const hasSkin = currentUserData.inventory.some(item => item.id === skinId && item.type === skinType);
     if (!hasSkin) {
       return { success: false, error: 'Vous ne possédez pas ce skin' };
     }
 
     try {
       // Mettre à jour l'avatar
-      const currentAvatar = userData.avatar || {};
+      const currentAvatar = currentUserData.avatar || {};
       const updatedAvatar = { ...currentAvatar, [skinType]: skinId };
 
       await authService.updateProfile({
