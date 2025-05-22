@@ -1,182 +1,136 @@
-/**
- * Fonctions d'aide Firebase pour le jeu Enigma Scroll
- */
+// Assumes firebaseServiceInstance and authService are globally available.
 
-// Constantes
-const GAME_ID = 'enigma-scroll';
+const ENIGMA_SCROLL_GAME_ID = 'enigma-scroll';
 
-/**
- * Sauvegarde un score dans Firebase
- * @param {number} score - Le score à sauvegarder
- * @param {Object} gameData - Données supplémentaires du jeu
- * @returns {Promise} - Promesse résolue lorsque le score est sauvegardé
- */
-function saveScore(score, gameData = {}) {
-  // Vérifier si Firebase est disponible et connecté
-  if (!window.firebase || !window.firebaseConnectionState || !window.firebaseConnectionState.isOnline) {
-    console.log("Firebase non disponible ou hors ligne, score sauvegardé localement uniquement");
-    return Promise.resolve();
+async function saveScore(score, gameData = {}) {
+  const authState = window.authService?.getAuthState();
+  if (!authState?.isAuthenticated || !authState.profile) {
+    console.warn("[EnigmaFirebaseHelper] User not authenticated. Cannot save score online.");
+    return Promise.reject(new Error("User not authenticated"));
   }
 
-  // Vérifier si l'utilisateur est connecté
-  const auth = firebase.auth();
-  if (!auth || !auth.currentUser) {
-    console.log("Utilisateur non connecté, score sauvegardé localement uniquement");
-    return Promise.resolve();
-  }
+  const { userId, username } = authState.profile;
 
-  // Récupérer les informations de l'utilisateur
-  const userId = auth.currentUser.uid;
-  const username = auth.currentUser.displayName || "Joueur";
-
-  // Préparer les données du score
   const scoreData = {
     userId,
-    username,
-    gameId: GAME_ID,
-    game: GAME_ID, // Pour compatibilité
-    score,
+    playerName: username, // Using profile's username as playerName for consistency
+    gameId: ENIGMA_SCROLL_GAME_ID,
+    score: parseInt(score) || 0,
     difficulty: gameData.difficulty || 'intermediate',
     wordsFound: gameData.wordsFound || 0,
     maxCombo: gameData.maxCombo || 1,
     totalTime: gameData.totalTime || 0,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    timestamp: new Date() // Client-side timestamp; firebaseServiceInstance.addScore might use server ts
   };
 
-  // Sauvegarder dans Firestore - utiliser la même collection que Speed Verb Challenge
-  return firebase.firestore().collection('game_scores').add(scoreData)
-    .then((docRef) => {
-      console.log("Score sauvegardé dans Firebase avec ID:", docRef.id);
-
-      // Mettre à jour le meilleur score de l'utilisateur si nécessaire
-      return updateUserBestScore(userId, score, gameData.difficulty);
-    })
-    .catch(error => {
-      console.error("Erreur lors de la sauvegarde du score:", error);
-    });
+  try {
+    // firebaseServiceInstance.addScore should handle writing to 'game_scores'
+    const docRef = await window.firebaseServiceInstance.addScore(scoreData); 
+    console.log("[EnigmaFirebaseHelper] Score saved via firebaseService. ID:", docRef?.id);
+    
+    // Update user's best score for this game/difficulty
+    await updateUserBestScore(userId, scoreData.score, scoreData.difficulty);
+    return docRef; // Return the docRef or some success indicator
+  } catch (error) {
+    console.error("[EnigmaFirebaseHelper] Error saving score:", error);
+    throw error; // Re-throw to be caught by caller
+  }
 }
 
-/**
- * Met à jour le meilleur score de l'utilisateur si nécessaire
- * @param {string} userId - ID de l'utilisateur
- * @param {number} score - Score actuel
- * @param {string} difficulty - Niveau de difficulté
- * @returns {Promise} - Promesse résolue lorsque le meilleur score est mis à jour
- */
-function updateUserBestScore(userId, score, difficulty) {
-  const db = firebase.firestore();
-  const userRef = db.collection('users').doc(userId);
+async function updateUserBestScore(userId, currentScore, difficulty) {
+  if (!userId) return;
 
-  return userRef.get()
-    .then(doc => {
-      if (doc.exists) {
-        const userData = doc.data();
-        const bestScores = userData.bestScores || {};
-        const gameScores = bestScores[GAME_ID] || {};
-        const currentBest = gameScores[difficulty] || 0;
-
-        // Mettre à jour uniquement si le nouveau score est meilleur
-        if (score > currentBest) {
-          // Créer la structure si elle n'existe pas
-          if (!bestScores[GAME_ID]) {
-            bestScores[GAME_ID] = {};
-          }
-
-          bestScores[GAME_ID][difficulty] = score;
-
-          return userRef.update({ bestScores });
-        }
-      } else {
-        // Créer un nouveau document utilisateur avec le score
-        const bestScores = {
-          [GAME_ID]: {
-            [difficulty]: score
-          }
-        };
-
-        return userRef.set({
-          userId,
-          bestScores,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+  try {
+    const profile = await window.firebaseServiceInstance.getProfile(userId);
+    if (profile) {
+      const bestScores = profile.bestScores || {};
+      if (!bestScores[ENIGMA_SCROLL_GAME_ID]) {
+        bestScores[ENIGMA_SCROLL_GAME_ID] = {};
       }
-    })
-    .catch(error => {
-      console.error("Erreur lors de la mise à jour du meilleur score:", error);
-    });
+      
+      const currentBest = bestScores[ENIGMA_SCROLL_GAME_ID][difficulty] || 0;
+
+      if (currentScore > currentBest) {
+        bestScores[ENIGMA_SCROLL_GAME_ID][difficulty] = currentScore;
+        await window.firebaseServiceInstance.updateProfile(userId, { bestScores });
+        console.log(\`[EnigmaFirebaseHelper] Updated best score for \${difficulty}: \${currentScore}\`);
+      }
+    } else {
+      // Profile might not exist if called out of sync, though unlikely with auth guard on saveScore
+      console.warn(\`[EnigmaFirebaseHelper] Profile not found for userId: \${userId} when updating best score.\`);
+      // Optionally, create a basic best score entry if profile is created later
+      // For now, we assume profile exists if user is authenticated.
+    }
+  } catch (error) {
+    console.error("[EnigmaFirebaseHelper] Error updating user best score:", error);
+    // Non-critical error, don't need to re-throw and break main flow
+  }
 }
 
-/**
- * Récupère les meilleurs scores
- * @param {string} timeFrame - Période ('daily', 'weekly', 'alltime')
- * @param {string} difficulty - Niveau de difficulté
- * @param {number} limit - Nombre de scores à récupérer
- * @returns {Promise<Array>} - Promesse résolue avec les scores
- */
-function getTopScores(timeFrame = 'alltime', difficulty = 'intermediate', limit = 10) {
-  // Vérifier si Firebase est disponible et connecté
-  if (!window.firebase || !window.firebaseConnectionState || !window.firebaseConnectionState.isOnline) {
-    console.log("Firebase non disponible ou hors ligne, impossible de récupérer les scores");
+async function getTopScores(timeFrame = 'alltime', difficulty = null, limit = 10) {
+  if (!window.firebaseServiceInstance || !window.firebaseServiceInstance.db) {
+    console.warn("[EnigmaFirebaseHelper] firebaseServiceInstance not available. Cannot fetch scores.");
     return Promise.resolve([]);
   }
 
-  const db = firebase.firestore();
+  try {
+    let query = window.firebaseServiceInstance.db.collection('game_scores')
+      .where('gameId', '==', ENIGMA_SCROLL_GAME_ID);
+    
+    // Difficulty filtering should ideally be part of the Firestore query if an index is set up.
+    // For now, if difficulty is specified, it will be filtered client-side AFTER the initial fetch.
+    // This is less efficient if many scores of other difficulties are fetched.
+    // if (difficulty) {
+    //   query = query.where('difficulty', '==', difficulty); // Requires composite index with 'score'
+    // }
 
-  // Utiliser la collection générale et filtrer par jeu
-  return db.collection('game_scores')
-    .where('gameId', '==', GAME_ID)
-    .orderBy('score', 'desc')
-    .limit(limit)
-    .get()
-    .then(snapshot => {
-      // Convertir les documents en objets
-      let scores = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          username: data.username,
-          score: data.score,
-          difficulty: data.difficulty,
-          wordsFound: data.wordsFound,
-          maxCombo: data.maxCombo,
-          gameId: data.gameId,
-          timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
-        };
-      });
+    query = query.orderBy('score', 'desc').limit(limit);
+    
+    const snapshot = await query.get();
+    let scores = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        username: data.playerName, // Use playerName from score data
+        score: data.score,
+        difficulty: data.difficulty,
+        wordsFound: data.wordsFound,
+        maxCombo: data.maxCombo,
+        gameId: data.gameId,
+        timestamp: data.timestamp ? (data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp)) : new Date()
+      };
+    });
 
-      // Filtrer par période si nécessaire
-      if (timeFrame !== 'alltime') {
-        const now = new Date();
-        let startDate;
-
-        if (timeFrame === 'daily') {
-          // Aujourd'hui à minuit
-          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        } else if (timeFrame === 'weekly') {
-          // Il y a 7 jours
-          startDate = new Date(now);
-          startDate.setDate(startDate.getDate() - 7);
-        }
-
+    // Client-side filtering for timeframe (less efficient but works without specific timestamp indexes)
+    if (timeFrame !== 'alltime') {
+      const now = new Date();
+      let startDate;
+      if (timeFrame === 'daily') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      } else if (timeFrame === 'weekly') {
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7);
+      }
+      if (startDate) {
         scores = scores.filter(score => score.timestamp >= startDate);
       }
+    }
 
-      // Filtrer par difficulté côté client si spécifiée
-      if (difficulty) {
+    // Client-side filtering for difficulty if not done in query
+    if (difficulty) {
         scores = scores.filter(score => score.difficulty === difficulty);
-      }
+    }
 
-      // Limiter le nombre de résultats
-      return scores.slice(0, limit);
-    })
-    .catch(error => {
-      console.error("Erreur lors de la récupération des scores:", error);
-      return [];
-    });
+    return scores; // Already limited by query, client-side filter might reduce count further.
+
+  } catch (error) {
+    console.error("[EnigmaFirebaseHelper] Error fetching top scores:", error);
+    return []; // Return empty array on error
+  }
 }
 
-// Exporter les fonctions
 window.EnigmaScrollFirebase = {
   saveScore,
-  getTopScores
+  getTopScores,
+  isAvailable: true // Add a flag to indicate it's available/refactored
 };

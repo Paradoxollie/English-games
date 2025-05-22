@@ -271,7 +271,7 @@
 
   <!-- Scripts -->
   <script src="scripts/new-design.js"></script>
-  <script src="scripts/local-auth.js"></script>
+  <script type="module" src="scripts/auth-header.js"></script>
   <script src="scripts/debug.js"></script>
   <script>
     // Script pour gérer les onglets du classement
@@ -295,10 +295,134 @@
       });
       
       // Fonction pour charger les données du classement
-      function loadLeaderboardData(type) {
-        console.log(`Chargement des données du classement: ${type}`);
-        // Cette fonction sera implémentée ultérieurement pour charger les données réelles
-      }
+      // This function replaces the existing placeholder in leaderboard.html's script tag
+async function loadLeaderboardData(type = 'global') {
+    console.log(`Chargement des données du classement: ${type}`);
+    const leaderboardDataBody = document.getElementById('leaderboard-data');
+    const podiumItems = {
+        first: document.querySelector('.podium-item.podium-first'),
+        second: document.querySelector('.podium-item.podium-second'),
+        third: document.querySelector('.podium-item.podium-third')
+    };
+
+    if (!leaderboardDataBody || !podiumItems.first) {
+        console.error("Leaderboard DOM elements not found.");
+        return;
+    }
+
+    leaderboardDataBody.innerHTML = '<tr><td colspan="6">Chargement...</td></tr>';
+    // Clear podium
+    for (const pos in podiumItems) {
+        if (podiumItems[pos]) {
+            podiumItems[pos].style.visibility = 'hidden';
+        }
+    }
+
+    try {
+        let users = [];
+        let query;
+
+        if (type === 'global' || type === 'xp') {
+            query = window.firebaseServiceInstance.db.collection('PROFILES')
+                .orderBy('level', 'desc')
+                .orderBy('xp', 'desc')
+                .limit(10); // Fetch top 10 for podium + table
+        } else if (type === 'games') {
+            // Simple version: order by gamesWon, then gamesPlayed
+            // Firestore requires a composite index for this: (stats.gamesWon desc, stats.gamesPlayed desc)
+            // Or fetch all and sort client-side if a small number of users, less ideal.
+            // For now, let's do a client-side sort after fetching by level/xp as a placeholder for 'games' tab
+            // In a real scenario, this would need its own query or a different data structure.
+            console.warn("Le tri 'Par jeux' utilise actuellement le tri par XP/Niveau. Un index Firestore dédié est recommandé pour un tri par jeux gagnés.");
+            query = window.firebaseServiceInstance.db.collection('PROFILES')
+                .orderBy('stats.gamesWon', 'desc') // This will likely require a composite index
+                .orderBy('level', 'desc') // Secondary sort
+                .limit(10);
+        } else {
+            leaderboardDataBody.innerHTML = '<tr><td colspan="6">Type de classement non reconnu.</td></tr>';
+            return;
+        }
+
+        const snapshot = await query.get();
+        users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        if (users.length === 0) {
+            leaderboardDataBody.innerHTML = '<tr><td colspan="6">Aucun joueur dans le classement pour le moment.</td></tr>';
+            return;
+        }
+
+        // Populate Podium
+        const podiumOrder = ['first', 'second', 'third'];
+        for (let i = 0; i < Math.min(users.length, 3); i++) {
+            const user = users[i];
+            const podiumEl = podiumItems[podiumOrder[i]];
+            if (podiumEl) {
+                podiumEl.querySelector('.podium-name').textContent = user.username || 'Joueur';
+                podiumEl.querySelector('.score-value').textContent = user.xp || 0; // For XP tab, this is XP
+                if (type === 'games') {
+                     podiumEl.querySelector('.score-value').textContent = user.stats?.gamesWon || 0;
+                     podiumEl.querySelector('.score-label').textContent = 'victoires';
+                } else {
+                     podiumEl.querySelector('.score-value').textContent = user.xp || 0;
+                     podiumEl.querySelector('.score-label').textContent = 'XP';
+                }
+                podiumEl.querySelector('.podium-level').textContent = `Niveau ${user.level || 1}`;
+                const avatarImg = podiumEl.querySelector('.podium-avatar img');
+                if (avatarImg && window.skinService) { // Check if skinService is available
+                    // Assuming profile.avatar stores equipped skin IDs {head: 'id', body: 'id', ...}
+                    const headSkin = window.skinService.defaultSkins.head.find(s => s.id === (user.avatar?.head || 'default_boy_head'));
+                    if (headSkin) avatarImg.src = headSkin.image;
+                    else avatarImg.src = 'assets/avatars/heads/default_boy.png'; // Fallback
+                } else if (avatarImg) {
+                    avatarImg.src = 'assets/avatars/default_avatar.png'; // Fallback if no skinService
+                }
+                podiumEl.style.visibility = 'visible';
+            }
+        }
+
+        // Populate Table (ranks 4+)
+        let tableHtml = '';
+        const authState = window.authService?.getAuthState();
+        const currentUserId = authState?.profile?.userId;
+
+        for (let i = (users.length > 3 ? 3 : users.length); i < users.length; i++) {
+            const user = users[i];
+            const isCurrentUser = user.id === currentUserId;
+            let avatarSrc = 'assets/avatars/default_avatar.png';
+            if (window.skinService && user.avatar?.head) {
+                 const headSkin = window.skinService.defaultSkins.head.find(s => s.id === user.avatar.head);
+                 if (headSkin) avatarSrc = headSkin.image;
+            }
+
+            tableHtml += `
+                <tr class="${isCurrentUser ? 'current-player-row' : ''}">
+                    <td>${i + 1}</td>
+                    <td>
+                        <div class="player-info">
+                            <img src="${avatarSrc}" alt="Avatar" class="player-avatar">
+                            <span class="player-name">${user.username || 'Joueur'}</span>
+                        </div>
+                    </td>
+                    <td>${user.level || 1}</td>
+                    <td>${user.xp || 0}</td>
+                    <td>${user.stats?.gamesPlayed || 0}</td>
+                    <td>${user.stats?.gamesWon || 0}</td>
+                </tr>
+            `;
+        }
+        leaderboardDataBody.innerHTML = tableHtml || '<tr><td colspan="6">Plus de joueurs à afficher.</td></tr>';
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des données du classement:", error);
+        leaderboardDataBody.innerHTML = '<tr><td colspan="6">Impossible de charger le classement.</td></tr>';
+         if (error.message.includes("indexes?")) {
+            leaderboardDataBody.innerHTML = '<tr><td colspan="6">Erreur de configuration de la base de données. Index manquant. Contactez l\'administrateur.</td></tr>';
+        }
+    }
+}
+
+// Initial load
+loadLeaderboardData('global');
     });
   </script>
   
