@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script type="module">
         import firebaseService from './src/core/services/firebase.service.js';
+        import { addXpToUser } from './src/core/models/user.model.js';
 
         console.log('Admin page loaded');
 
@@ -40,15 +41,17 @@
         async function loadUsers() {
             try {
                 console.log('Loading users...');
-                const users = await firebaseService.getAllUsers();
+                const users = await firebaseService.getAllProfiles();
                 console.log('Users loaded:', users);
 
                 const usersTable = document.getElementById('usersTable');
                 usersTable.innerHTML = users.map(user => `
                     <tr>
-                        <td class="px-4 py-2"><input type="text" value="${user.username || 'N/A'}" id="username-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2"><input type="text" value="${user.username || 'N/A'}" id="username-${user.id}" class="border rounded px-2 py-1 w-full" ${user.username?.toLowerCase() === 'ollie' ? 'readonly' : ''}></td>
                         <td class="px-4 py-2"><input type="number" value="${user.xp || 0}" id="xp-${user.id}" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-2"><input type="number" value="${user.gold || 0}" id="gold-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2"><input type="number" value="${user.coins || 0}" id="coins-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2">${user.pendingXP || 0}</td>
+                        <td class="px-4 py-2">${user.pendingCoins || 0}</td>
                         <td class="px-4 py-2">${new Date(user.lastLogin).toLocaleString()}</td>
                         <td class="px-4 py-2">${user.isAdmin ? 'Oui' : 'Non'}</td>
                         <td class="px-4 py-2 flex flex-col space-y-1">
@@ -63,6 +66,10 @@
                             <button onclick="resetPassword('${user.id}')" 
                                     class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">
                                 Réinitialiser MDP
+                            </button>
+                            <button onclick="approveRewards('${user.id}')"
+                                    class="bg-purple-500 text-white px-2 py-1 rounded text-sm">
+                                Approuver Récompenses
                             </button>
                         </td>
                     </tr>
@@ -109,17 +116,23 @@
 
         window.updateUser = async function(userId) {
             try {
-                const newUsername = document.getElementById(`username-${userId}`).value;
+                const usernameInput = document.getElementById(`username-${userId}`);
+                const newUsername = usernameInput.value;
                 const newXp = parseInt(document.getElementById(`xp-${userId}`).value);
-                const newGold = parseInt(document.getElementById(`gold-${userId}`).value);
+                const newCoins = parseInt(document.getElementById(`coins-${userId}`).value); // Changed gold to coins
 
-                if (!newUsername || isNaN(newXp) || isNaN(newGold)) {
+                if (!newUsername || isNaN(newXp) || isNaN(newCoins)) {
                     alert('Veuillez vérifier les valeurs saisies.');
                     return;
                 }
 
-                console.log('Updating user:', userId, { username: newUsername, xp: newXp, gold: newGold });
-                await firebaseService.updateUserProfile(userId, { username: newUsername, xp: newXp, gold: newGold });
+                const updatePayload = { xp: newXp, coins: newCoins };
+                if (!usernameInput.readOnly) {
+                    updatePayload.username = newUsername;
+                }
+
+                console.log('Updating user:', userId, updatePayload);
+                await firebaseService.updateUserProfile(userId, updatePayload);
                 console.log('User updated, reloading users');
                 alert('Utilisateur mis à jour avec succès!');
                 loadUsers();
@@ -153,6 +166,64 @@
                 window.location.href = '/login.html';
             } catch (error) {
                 console.error('Error logging out:', error);
+            }
+        };
+
+        window.approveRewards = async function(userId) {
+            try {
+                console.log(\`Approving rewards for user: \${userId}\`);
+                const userProfile = await firebaseService.getProfile(userId);
+
+                if (!userProfile) {
+                    alert('Profil utilisateur non trouvé.');
+                    return;
+                }
+
+                const pendingXP = userProfile.pendingXP || 0;
+                const pendingCoins = userProfile.pendingCoins || 0;
+
+                if (pendingXP === 0 && pendingCoins === 0) {
+                    alert('Aucune récompense en attente à approuver.');
+                    return;
+                }
+
+                // Create a mutable copy for level-up logic if needed
+                let updatedProfileData = { ...userProfile };
+
+                // Apply pending XP and handle level-ups
+                if (pendingXP > 0) {
+                    const xpResult = addXpToUser(updatedProfileData, pendingXP); // addXpToUser returns { user, leveledUp, oldLevel, newLevel }
+                    updatedProfileData = xpResult.user; // This now has updated xp and level
+                    if (xpResult.leveledUp) {
+                        alert(\`L'utilisateur \${userProfile.username} est monté au niveau \${xpResult.newLevel}!\`);
+                    }
+                }
+
+                // Apply pending coins
+                updatedProfileData.coins = (updatedProfileData.coins || 0) + pendingCoins;
+                
+                // Reset pending amounts
+                updatedProfileData.pendingXP = 0;
+                updatedProfileData.pendingCoins = 0;
+                
+                // Prepare payload for Firestore (only fields that changed or need to be set)
+                const finalUpdatePayload = {
+                    xp: updatedProfileData.xp,
+                    level: updatedProfileData.level,
+                    coins: updatedProfileData.coins,
+                    pendingXP: 0,
+                    pendingCoins: 0,
+                    // Include stats if addXpToUser modified it and it's part of the PROFILES doc directly
+                    // If stats is a sub-object, ensure it's updated correctly:
+                    stats: updatedProfileData.stats 
+                };
+
+                await firebaseService.updateUserProfile(userId, finalUpdatePayload);
+                alert('Récompenses approuvées et profil mis à jour !');
+                loadUsers(); // Refresh the list
+            } catch (error) {
+                console.error('Error approving rewards:', error);
+                alert('Erreur lors de l'approbation des récompenses: ' + error.message);
             }
         };
     </script>

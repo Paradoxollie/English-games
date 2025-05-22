@@ -1,43 +1,77 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Règles temporaires pour le développement - À RESTREINDRE AVANT LA PRODUCTION
-    match /{document=**} {
-      allow read, write: if true;
-    }
 
-    /* RÈGLES À ACTIVER AVANT LA PRODUCTION
-    // Fonction pour vérifier si l'utilisateur est admin
+    // Helper function to check if the requesting user is an admin
     function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      return request.auth != null && get(/databases/$(database)/documents/PROFILES/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Règles pour la collection users
-    match /users/{userId} {
+    // Rules for User Profiles
+    match /PROFILES/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        (request.auth.uid == userId ||
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+
+      allow create: if request.auth != null && request.auth.uid == userId
+                      && request.resource.data.isAdmin == false
+                      // It's good practice to ensure client cannot set initial xp, coins, level
+                      // if these are meant to be controlled (e.g. start at 0 or specific defaults).
+                      // Assuming createNewUser in the application logic sets these correctly,
+                      // and this rule primarily prevents isAdmin override.
+                      // For stricter control, add:
+                      // && request.resource.data.xp == 0  // Or initial value
+                      // && request.resource.data.coins == 100 // Or initial value
+                      // && request.resource.data.level == 1;
+                      ; // Semicolon to end if no further conditions.
+
+      allow update: if request.auth != null && request.auth.uid == userId
+                      // Prevent self-admin promotion by user
+                      && !(request.resource.data.isAdmin == true && resource.data.isAdmin == false)
+                      // XP: User can only increase or keep same. Admin can do anything.
+                      && (request.resource.data.xp >= resource.data.xp || isAdmin())
+                      // Coins: User can only decrease or keep same (spending). Admin can do anything (granting/setting).
+                      && (request.resource.data.coins <= resource.data.coins || isAdmin())
+                      // Level: User can only increase or keep same. Admin can do anything.
+                      && (request.resource.data.level >= resource.data.level || isAdmin())
+                      // Achievements: User can only add new achievements (size increases or stays same). Admin can do anything.
+                      && (size(request.resource.data.achievements) >= size(resource.data.achievements) || isAdmin())
+                      // PendingXP: User can increment (or set if null to a non-negative value). Admin can do anything.
+                      && (request.resource.data.pendingXP >= resource.data.pendingXP || (resource.data.pendingXP == null && request.resource.data.pendingXP >= 0) || isAdmin())
+                      // PendingCoins: User can increment (or set if null to a non-negative value). Admin can do anything.
+                      && (request.resource.data.pendingCoins >= resource.data.pendingCoins || (resource.data.pendingCoins == null && request.resource.data.pendingCoins >= 0) || isAdmin());
+
+      // Admins have full write access, which includes create, update, delete.
+      // This rule should come after more specific user-level rules if you want those to apply first to admins too,
+      // or be the primary rule for admins. Given the above, this grants override power.
+      allow write: if isAdmin(); 
+      // Explicit delete rule for clarity, though covered by admin write.
+      allow delete: if isAdmin();
     }
 
-    // Règles pour la collection scores
+    // Rules for Game Scores
     match /game_scores/{scoreId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read: if true; // Publicly readable leaderboards
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+                      // Add other validations: e.g. score is a number, gameId exists.
+                      // && request.resource.data.score is number
+      allow update, delete: if isAdmin(); // Users cannot change/delete scores.
     }
 
-    // Règles pour la collection games
+    // Rules for Games Configuration
     match /games/{gameId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      allow write: if isAdmin();
     }
 
-    // Règles pour les statistiques
+    // Rules for general application Stats
     match /stats/{statId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && isAdmin();
+      allow write: if isAdmin();
     }
-    */
+
+    // Default deny for any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

@@ -1,14 +1,15 @@
 /**
  * Service Firebase pour English Quest Reborn
- * Gère l'initialisation et les interactions avec Firebase
+ * Gère l'initialisation et les interactions de bas niveau avec Firebase.
+ * L'authentification de plus haut niveau et la gestion de profil sont dans auth.service.js.
  */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { 
     getAuth, 
-    signInWithEmailAndPassword, 
-    createUserWithEmailAndPassword,
-    signOut,
+    signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword, 
+    createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
+    signOut as firebaseSignOut,
     onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { 
@@ -24,248 +25,130 @@ import {
     orderBy,
     limit
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js';
-import { firebaseConfig } from '../../config/app.config.js';
-
-console.log('Initializing Firebase with config:', firebaseConfig);
+import { getAnalytics, logEvent as firebaseLogEvent } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js';
+// Assuming firebaseConfig is correctly exported from firebase-config.js
+import { firebaseConfig } from '../../config/firebase-config.js'; 
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const authInstance = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
-console.log('Firebase initialized successfully');
+// Domain for internal email construction, can be used by auth.service.js
+export const INTERNAL_EMAIL_DOMAIN = 'eqr.internal';
 
 class FirebaseService {
     constructor() {
-        this.auth = auth;
+        this.auth = authInstance;
         this.db = db;
         this.analytics = analytics;
-        console.log('FirebaseService instance created');
     }
 
-    // Authentication methods
-    async register(username, password) {
-        try {
-            console.log('Registering user:', username);
-            // Créer l'utilisateur avec email (username@english-quest.com)
-            const email = `${username}@english-quest.com`;
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('User created:', userCredential.user.uid);
-            
-            // Créer le document utilisateur dans Firestore
-            const userData = {
-                username,
-                isAdmin: false,
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            };
-            console.log('Creating user document with data:', userData);
-            await setDoc(doc(db, 'users', userCredential.user.uid), userData);
-            console.log('User document created successfully');
-
-            return userCredential.user;
-        } catch (error) {
-            console.error('Error in register:', error);
-            throw error;
-        }
+    // Raw Firebase Auth operations, expecting fully formed email
+    async _createUserWithEmailAndPassword(email, password) {
+        return firebaseCreateUserWithEmailAndPassword(this.auth, email, password);
     }
 
-    async login(username, password) {
-        try {
-            console.log('Logging in user:', username);
-            // Vérifier d'abord si l'utilisateur existe dans Firestore
-            const usersQuery = query(collection(db, 'users'), where('username', '==', username));
-            const usersSnapshot = await getDocs(usersQuery);
-            
-            if (usersSnapshot.empty) {
-                throw new Error('Utilisateur non trouvé');
-            }
-
-            // Récupérer l'ID de l'utilisateur
-            const userDoc = usersSnapshot.docs[0];
-            const userId = userDoc.id;
-
-            // Essayer de se connecter avec l'email généré
-            const email = `${username}@english-quest.com`;
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            console.log('User logged in:', userCredential.user.uid);
-            
-            // Mettre à jour la dernière connexion
-            await updateDoc(doc(db, 'users', userId), {
-                lastLogin: new Date().toISOString()
-            });
-            console.log('Last login updated');
-
-            return userCredential.user;
-        } catch (error) {
-            console.error('Error in login:', error);
-            if (error.message === 'Utilisateur non trouvé') {
-                throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
-            }
-            throw new Error('Erreur de connexion. Veuillez réessayer.');
-        }
+    async _signInWithEmailAndPassword(email, password) {
+        return firebaseSignInWithEmailAndPassword(this.auth, email, password);
     }
 
-    async logout() {
-        try {
-            console.log('Logging out user');
-            await signOut(auth);
-            console.log('User logged out successfully');
-        } catch (error) {
-            console.error('Error in logout:', error);
-            throw error;
-        }
+    async _signOut() {
+        return firebaseSignOut(this.auth);
     }
 
-    onAuthStateChange(callback) {
-        console.log('Setting up auth state change listener');
-        return onAuthStateChanged(auth, (user) => {
-            console.log('Auth state changed:', user ? user.uid : 'no user');
-            callback(user);
-        });
+    _onAuthStateChanged(callback) {
+        return onAuthStateChanged(this.auth, callback);
+    }
+    
+    // Firestore methods for PROFILES collection
+    async getProfile(userId) {
+        const profileDocRef = doc(this.db, 'PROFILES', userId);
+        const profileDoc = await getDoc(profileDocRef);
+        return profileDoc.exists() ? { id: profileDoc.id, ...profileDoc.data() } : null;
     }
 
-    // User management methods
-    async getUserData(userId) {
-        try {
-            console.log('Getting user data for:', userId);
-            const userDoc = await getDoc(doc(db, 'users', userId));
-            const userData = userDoc.exists() ? userDoc.data() : null;
-            console.log('User data retrieved:', userData);
-            return userData;
-        } catch (error) {
-            console.error('Error in getUserData:', error);
-            throw error;
-        }
+    async getAllProfiles() {
+        const profilesSnapshot = await getDocs(collection(this.db, 'PROFILES'));
+        return profilesSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
-    async getAllUsers() {
-        try {
-            console.log('Getting all users');
-            const usersSnapshot = await getDocs(collection(db, 'users'));
-            const users = usersSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            console.log('Retrieved users:', users);
-            return users;
-        } catch (error) {
-            console.error('Error in getAllUsers:', error);
-            throw error;
-        }
+    async createProfile(userId, profileData) {
+        const profileDocRef = doc(this.db, 'PROFILES', userId);
+        return setDoc(profileDocRef, profileData);
     }
 
-    async updateUserProfile(userId, data) {
-        try {
-            console.log('Updating user profile for:', userId, 'with data:', data);
-            await updateDoc(doc(db, 'users', userId), data);
-            console.log('User profile updated successfully');
-        } catch (error) {
-            console.error('Error in updateUserProfile:', error);
-            throw error;
-        }
+    async updateProfile(userId, data) {
+        const profileDocRef = doc(this.db, 'PROFILES', userId);
+        return updateDoc(profileDocRef, data);
     }
 
-    // Score management methods
+    // Score management methods (collection: 'scores')
     async getUserScores(userId) {
-        try {
-            console.log('Getting scores for user:', userId);
-            const scoresQuery = query(
-                collection(db, 'scores'),
-                where('userId', '==', userId),
-                orderBy('timestamp', 'desc')
-            );
-            const scoresSnapshot = await getDocs(scoresQuery);
-            const scores = scoresSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            console.log('Retrieved scores:', scores);
-            return scores;
-        } catch (error) {
-            console.error('Error in getUserScores:', error);
-            throw error;
-        }
+        const scoresQuery = query(
+            collection(this.db, 'scores'),
+            where('userId', '==', userId),
+            orderBy('timestamp', 'desc')
+        );
+        const scoresSnapshot = await getDocs(scoresQuery);
+        return scoresSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
-    async getAllScores(limit = 100) {
-        try {
-            console.log('Getting all scores');
-            const scoresQuery = query(
-                collection(db, 'scores'),
-                orderBy('timestamp', 'desc'),
-                limit(limit)
-            );
-            const scoresSnapshot = await getDocs(scoresQuery);
-            const scores = scoresSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            console.log('Retrieved scores:', scores);
-            return scores;
-        } catch (error) {
-            console.error('Error in getAllScores:', error);
-            throw error;
-        }
+    async getAllScores(max = 100) {
+        const scoresQuery = query(
+            collection(this.db, 'scores'),
+            orderBy('timestamp', 'desc'),
+            limit(max)
+        );
+        const scoresSnapshot = await getDocs(scoresQuery);
+        return scoresSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     }
 
-    async addScore(userId, gameId, score, metadata = {}) {
-        try {
-            console.log('Adding score:', { userId, gameId, score, metadata });
-            const scoreData = {
-                userId,
-                gameId,
-                score,
-                timestamp: new Date().toISOString(),
-                ...metadata
-            };
-            await setDoc(doc(collection(db, 'scores')), scoreData);
-            console.log('Score added successfully');
-        } catch (error) {
-            console.error('Error in addScore:', error);
-            throw error;
-        }
+    async addScore(scoreData) { 
+        const scoresCollectionRef = collection(this.db, 'scores');
+        return setDoc(doc(scoresCollectionRef), scoreData); // Firestore auto-generates ID
     }
 
-    // Admin methods
+    // Admin specific methods related to profiles
     async isUserAdmin(userId) {
-        try {
-            console.log('Checking if user is admin:', userId);
-            const userDoc = await getDoc(doc(db, 'users', userId));
-            const isAdmin = userDoc.exists() && userDoc.data().isAdmin === true;
-            console.log('Is user admin:', isAdmin);
-            return isAdmin;
-        } catch (error) {
-            console.error('Error in isUserAdmin:', error);
-            throw error;
-        }
+        const profile = await this.getProfile(userId);
+        return profile ? profile.isAdmin === true : false;
     }
 
-    async setUserAdmin(userId, isAdmin) {
-        try {
-            console.log('Setting admin status for user:', userId, 'to:', isAdmin);
-            await updateDoc(doc(db, 'users', userId), { isAdmin });
-            console.log('Admin status updated successfully');
-        } catch (error) {
-            console.error('Error in setUserAdmin:', error);
-            throw error;
-        }
+    async setUserAdminStatus(userId, isAdmin) {
+        return this.updateProfile(userId, { isAdmin });
     }
 
-    async flagUserForPasswordReset(userId) {
-        try {
-            console.log('Flagging user for password reset:', userId);
-            await updateDoc(doc(db, 'users', userId), { needsPasswordReset: true });
-            console.log('User flagged for password reset successfully');
-        } catch (error) {
-            console.error('Error in flagUserForPasswordReset:', error);
-            throw error;
-        }
+    // Analytics
+    logEvent(eventName, eventParams) {
+      firebaseLogEvent(this.analytics, eventName, eventParams);
     }
 }
 
-// Create and export a single instance
-const firebaseService = new FirebaseService();
-export default firebaseService;
+const firebaseServiceInstance = new FirebaseService();
+export default firebaseServiceInstance;
+
+// Exported wrapper functions for Firebase Auth, to be used by auth.service.js
+export const createUserWithEmailAndPasswordFirebase = async (email, password) => {
+  // Pass the auth instance from this module
+  return firebaseServiceInstance._createUserWithEmailAndPassword(email, password);
+};
+
+export const signInWithEmailAndPasswordFirebase = async (email, password) => {
+  // Pass the auth instance from this module
+  return firebaseServiceInstance._signInWithEmailAndPassword(email, password);
+};
+
+export const signOutUser = async () => {
+  return firebaseServiceInstance._signOut();
+};
+
+export const subscribeToAuthChanges = (callback) => {
+  return firebaseServiceInstance._onAuthStateChanged(callback);
+};
+
+// Export getAuth and getFirestore for direct access if absolutely needed elsewhere,
+// though preferably other services would go via firebaseServiceInstance methods.
+export const getFirebaseAuth = () => firebaseServiceInstance.auth;
+export const getFirestoreDb = () => firebaseServiceInstance.db;

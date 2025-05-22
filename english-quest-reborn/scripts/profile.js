@@ -22,6 +22,8 @@ const settingsForm = document.getElementById('settingsForm');
 const themeToggle = document.getElementById('themeToggle');
 const notificationsToggle = document.getElementById('notificationsToggle');
 const soundToggle = document.getElementById('soundToggle');
+const userPendingXP = document.getElementById('userPendingXP'); // Added
+const userPendingCoins = document.getElementById('userPendingCoins'); // Added
 
 // Onglets
 const tabs = document.querySelectorAll('.profile-tab');
@@ -120,177 +122,130 @@ const defaultAchievements = [
  */
 async function init() {
   try {
-    console.log("[ProfileJs] init() CALLED. Attempting to initialize authService...");
-    const initialUser = await authService.init(); // Attend la promesse de init
-    console.log("[ProfileJs] authService.init() COMPLETED. Initial user from authService.init():", initialUser);
-    
-    // Récupérer à nouveau au cas où notifyListeners aurait mis à jour entre-temps, ou utiliser initialUser.
-    const currentUser = authService.getCurrentUser(); 
-    console.log("[ProfileJs] currentUser from authService.getCurrentUser() after init:", currentUser);
-    
-    // Vérifier si l'utilisateur est connecté
-    if (!currentUser) { // La vérification principale
-      console.warn("[ProfileJs] currentUser is NULL or undefined. Redirecting to login.html");
+    await authService.initializeAuth(); // Changed from authService.init()
+    const authState = authService.getAuthState();
+
+    if (!authState.isAuthenticated || !authState.profile) {
+      console.warn("[ProfileJs] User not authenticated or profile missing. Redirecting to login.html");
       window.location.href = 'login.html';
       return;
     }
-
-    console.log("[ProfileJs] User IS connected. Username:", currentUser.username);
     
-    // Charger le profil
-    await loadProfile(currentUser);
-
-    // Initialiser les onglets
+    // console.log("[ProfileJs] User IS connected. Username:", authState.profile.username); // Keep console logs if desired
+    await loadProfile(authState.profile);
     initTabs();
-
-    // Configurer les écouteurs d'événements
     setupEventListeners();
-    
-    console.log("[ProfileJs] Profile page initialization successful.");
+    // console.log("[ProfileJs] Profile page initialization successful."); // Keep console logs if desired
   } catch (error) {
     console.error("[ProfileJs] CRITICAL ERROR during profile page init:", error);
-    // Optionnel : rediriger vers une page d'erreur ou login si l'initialisation échoue de manière critique
-    // window.location.href = 'login.html'; 
+    // Optional: window.location.href = 'login.html'; 
   }
 }
 
 /**
  * Chargement du profil utilisateur
  */
-async function loadProfile(userData) {
+async function loadProfile(profileData) {
   try {
-    console.log("Chargement du profil pour l'utilisateur:", userData.username);
-    
-    if (!userData) {
-      console.error("Impossible de charger les données utilisateur (données non fournies à loadProfile)");
-      window.location.href = 'login.html';
+    if (!profileData) {
+      console.warn("[ProfileJs] loadProfile called without profileData. Redirecting.");
+      window.location.href = 'login.html'; 
       return;
     }
-    
-    console.log("Données utilisateur pour le profil:", userData);
-    
-    // Mettre à jour les informations du profil
-    username.textContent = userData.username || 'Aventurier';
-    userEmail.textContent = userData.email || 'Email non disponible';
-    userLevel.textContent = userData.level || 1;
-    userXP.textContent = `${userData.xp || 0} XP`;
-    userCoins.textContent = `${userData.coins || 0} pièces`;
-    
-    // Mettre à jour l'avatar complet
-    updateAvatarDisplay(userData.avatar);
-    
-    // Charger l'inventaire
-    await loadInventory(userData);
-    
-    // Charger les succès
-    loadAchievements(userData.achievements || []);
-    
-    // Mettre à jour les paramètres
-    updateSettings(userData.settings);
 
-    // Afficher le lien vers le panneau d'administration si l'utilisateur est admin
-    if (userData.isAdmin) {
-      const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer');
-      if (adminPanelLinkContainer) {
-        adminPanelLinkContainer.style.display = 'block';
-      }
-    }
+    // Ensure global DOM element variables are used (username, userEmail, etc.)
+    // DOM elements are: username, userEmail, userLevel, userXP, userCoins
+    if (username) username.textContent = profileData.username || 'Aventurier';
+    // For userEmail, it shows the internal email. This might be okay for admin,
+    // but for regular users, it might be better to show profileData.username again or hide it.
+    // For now, it displays the internal email as per previous refactor.
+    if (userEmail) userEmail.textContent = profileData.email || 'Internal ID not set'; 
+    if (userLevel) userLevel.textContent = profileData.level || 1;
+    if (userXP) userXP.textContent = `${profileData.xp || 0} XP`;
+    if (userCoins) userCoins.textContent = `${profileData.coins || 0} pièces`;
     
-    console.log("Profil chargé avec succès");
+    // Add these lines:
+    if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;
+    if (userPendingCoins) userPendingCoins.textContent = `${profileData.pendingCoins || 0} pièces`;
+    
+    updateAvatarDisplay(profileData.avatar); 
+    await loadInventory(profileData); // loadInventory will also take profileData
+    loadAchievements(profileData.achievements || []);
+    updateSettings(profileData.settings); // Adjusted to call existing updateSettings function
+
+    // Assuming adminPanelLinkContainer is defined globally or fetched if needed
+    const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
+    if (adminPanelLinkContainer) {
+      adminPanelLinkContainer.style.display = profileData.isAdmin ? 'block' : 'none';
+    }
   } catch (error) {
-    console.error("Erreur lors du chargement du profil:", error);
+    console.error("[ProfileJs] Error loading profile:", error);
   }
 }
 
 /**
  * Mettre à jour l'affichage de l'avatar
  */
-function updateAvatarDisplay(avatar) {
-  console.log("Mise à jour de l'affichage de l'avatar avec:", avatar);
-  
+function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar object {head: 'id', body: 'id', ...}
   try {
-    // Avatar par défaut si aucun avatar n'est fourni
-    if (!avatar) {
-      userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
-      userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
-      userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-      
-      // Cache l'accessoire s'il n'y en a pas
-      if (userAvatarAccessory.querySelector('img')) {
-        userAvatarAccessory.querySelector('img').style.display = 'none';
-      } else {
-        userAvatarAccessory.style.display = 'none';
-      }
-      
-      console.log("Avatar par défaut appliqué");
-      return;
-    }
+    const skins = skinService.getAvailableSkins(); // Get all available skin details
+    const defaultHeadId = 'default_boy_head';
+    const defaultBodyId = 'default_boy_body';
+    const defaultBackgroundId = 'default_background';
+    const defaultAccessoryId = 'none';
 
-    // Mettre à jour chaque partie de l'avatar
-    const headType = avatar.head || 'default_boy';
-    const bodyType = avatar.body || 'default_boy';
-    const bgType = avatar.background || 'default';
+    const headId = avatarData?.head || defaultHeadId;
+    const bodyId = avatarData?.body || defaultBodyId;
+    const backgroundId = avatarData?.background || defaultBackgroundId;
+    const accessoryId = avatarData?.accessory || defaultAccessoryId;
+
+    const headSkin = skins.head.find(s => s.id === headId) || skins.head.find(s => s.id === defaultHeadId);
+    const bodySkin = skins.body.find(s => s.id === bodyId) || skins.body.find(s => s.id === defaultBodyId);
+    const backgroundSkin = skins.background.find(s => s.id === backgroundId) || skins.background.find(s => s.id === defaultBackgroundId);
+    const accessorySkin = skins.accessory.find(s => s.id === accessoryId) || skins.accessory.find(s => s.id === defaultAccessoryId);
+
+    // Global DOM elements from file: userAvatarHead, userAvatarBody, userAvatarBackground (img), userAvatarAccessory (div)
+    // New code expects: userAvatarHead, userAvatarBody, avatarContainer (div for background), userAvatarAccessoryDiv, userAvatarAccessoryImg
+
+    if (userAvatarHead && headSkin) userAvatarHead.src = headSkin.image;
+    else if (userAvatarHead) userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+
+    if (userAvatarBody && bodySkin) userAvatarBody.src = bodySkin.image;
+    else if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     
-    console.log("Types d'avatar:", { head: headType, body: bodyType, background: bgType, accessory: avatar.accessory });
+    // Assuming 'avatarContainer' is a new global const that should point to the main avatar display div
+    const avatarContainer = document.getElementById('avatarContainer'); // Attempt to get it if not global
+    if (avatarContainer && backgroundSkin) {
+        avatarContainer.style.backgroundImage = `url('${backgroundSkin.image}')`;
+    } else if (avatarContainer) {
+        avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
+    }
     
-    // Mise à jour des images
-    userAvatarHead.src = `assets/avatars/heads/${headType}.png`;
-    userAvatarBody.src = `assets/avatars/bodies/${bodyType}.png`;
-    userAvatarBackground.src = `assets/avatars/backgrounds/${bgType}.png`;
-    
-    // Gestion des erreurs d'image
-    userAvatarHead.onerror = function() {
-      console.error("Erreur de chargement de l'image de tête:", this.src);
-      this.src = 'assets/avatars/heads/default_boy.png';
-    };
-    
-    userAvatarBody.onerror = function() {
-      console.error("Erreur de chargement de l'image de corps:", this.src);
-      this.src = 'assets/avatars/bodies/default_boy.png';
-    };
-    
-    userAvatarBackground.onerror = function() {
-      console.error("Erreur de chargement de l'arrière-plan:", this.src);
-      this.src = 'assets/avatars/backgrounds/default.png';
-    };
-    
-    // Gestion de l'accessoire
-    const accessoryImgElement = userAvatarAccessory.querySelector('img');
-    
-    if (avatar.accessory && avatar.accessory !== 'none') {
-      if (accessoryImgElement) {
-        accessoryImgElement.src = `assets/avatars/accessories/${avatar.accessory}.png`;
+    // Hide the original <img> tag for background (userAvatarBackground)
+    if(userAvatarBackground) userAvatarBackground.style.display = 'none';
+
+    // userAvatarAccessory is the DIV. We need to find the IMG tag within it.
+    const accessoryImgElement = userAvatarAccessory ? userAvatarAccessory.querySelector('img') : null;
+
+    if (userAvatarAccessory && accessoryImgElement) { // userAvatarAccessory is the Div
+      if (accessorySkin && accessorySkin.id !== 'none' && accessorySkin.image) {
+        accessoryImgElement.src = accessorySkin.image;
         accessoryImgElement.style.display = 'block';
-        userAvatarAccessory.style.display = 'block';
-        
-        accessoryImgElement.onerror = function() {
-          console.error("Erreur de chargement de l'accessoire:", this.src);
-          this.style.display = 'none';
-        };
+        userAvatarAccessory.style.display = 'block'; 
       } else {
-        console.error("Élément image d'accessoire non trouvé");
-      }
-    } else {
-      // Pas d'accessoire équipé
-      if (accessoryImgElement) {
         accessoryImgElement.style.display = 'none';
+        // userAvatarAccessory.style.display = 'none'; // Optionally hide div
       }
-      // On garde le conteneur visible car il a une couleur/bordure
     }
-    
-    console.log("Avatar mis à jour avec succès");
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'avatar:", error);
-    // Fallback vers l'avatar par défaut en cas d'erreur
-    userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
-    userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
-    userAvatarBackground.src = 'assets/avatars/backgrounds/default.png';
-    
-    if (userAvatarAccessory.querySelector('img')) {
-      userAvatarAccessory.querySelector('img').style.display = 'none';
-    } else {
-      userAvatarAccessory.style.display = 'none';
-    }
+    console.error("[ProfileJs] Error updating avatar display:", error);
+    // Fallback
+    if (userAvatarHead) userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+    if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+    const avatarContainer = document.getElementById('avatarContainer');
+    if (avatarContainer) avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
+    const accessoryImgElement = userAvatarAccessory ? userAvatarAccessory.querySelector('img') : null;
+    if (accessoryImgElement) accessoryImgElement.style.display = 'none';
   }
 }
 
@@ -320,108 +275,67 @@ function initTabs() {
 /**
  * Chargement de l'inventaire
  */
-async function loadInventory(userData) {
+async function loadInventory(profileData) {
   try {
-    console.log("[ProfileJs_loadInventory] CALLED. UserData:", userData); // Log 1
+    // Ensure global DOM element 'inventoryGrid' is used
+    if (!inventoryGrid) {
+        console.error("[ProfileJs] inventoryGrid DOM element not found.");
+        return;
+    }
     inventoryGrid.innerHTML = '<p>Chargement de l\'inventaire...</p>';
 
-    if (!userData) { // Log 2a
-      console.error("[ProfileJs_loadInventory] UserData is MISSING.");
-      inventoryGrid.innerHTML = '<p>Erreur: Données utilisateur manquantes.</p>';
+    if (!profileData) {
+      inventoryGrid.innerHTML = '<p>Erreur: Données utilisateur non disponibles pour l\'inventaire.</p>';
       return;
     }
-    if (!skinService) { // Log 2b
-      console.error("[ProfileJs_loadInventory] skinService is NOT AVAILABLE (undefined or null).");
-      inventoryGrid.innerHTML = '<p>Erreur: Service de skins non initialisé.</p>';
-      return;
-    }
-    console.log("[ProfileJs_loadInventory] UserData and skinService seem OK initially."); // Log 3
 
-    const allSkins = skinService.getAvailableSkins(); 
-    console.log("[ProfileJs_loadInventory] allSkins from skinService.getAvailableSkins():", allSkins); // Log 4
+    const allSkinCategories = skinService.getAvailableSkins();
+    // profileData.inventory.skins should be like { head: ['id1'], body: ['id2'], ... }
+    const userOwnedSkinsData = profileData.inventory?.skins || {}; 
+    // profileData.avatar should be like { head: 'equippedId1', body: 'equippedId2', ... }
+    const userEquippedSkins = profileData.avatar || {}; 
+    
+    inventoryGrid.innerHTML = ''; // Clear loading message
 
-    if (!allSkins || typeof allSkins !== 'object' || Object.keys(allSkins).length === 0) { // Log 5
-        console.warn("[ProfileJs_loadInventory] No skins available from skinService or format is incorrect. allSkins:", allSkins);
-        inventoryGrid.innerHTML = '<p>Aucun item disponible dans la boutique pour le moment.</p>'; 
-        // return; // Commenté pour l'instant
-    }
-
-    const userInventory = userData.inventory || [];
-    const userEquipped = userData.avatar || {};
-    
-    console.log("[ProfileJs_loadInventory] User Inventory:", userInventory); // Log 6
-    console.log("[ProfileJs_loadInventory] User Equipped:", userEquipped); // Log 7
-    
-    inventoryGrid.innerHTML = ''; 
-    
-    // Gérer le cas où allSkins est vide ou non un objet avant Object.entries
-    if (!allSkins || typeof allSkins !== 'object') {
-        console.warn("[ProfileJs_loadInventory] allSkins is not a valid object for Object.entries. Displaying empty inventory or message.");
-        if (userInventory.length === 0) {
-             inventoryGrid.innerHTML = '<p>Votre inventaire et la boutique sont vides pour le moment.</p>';
-        }
-        // Si l'inventaire n'est pas vide, on pourrait vouloir l'afficher même si la boutique est vide.
-        // Pour l'instant, cette condition arrête le traitement des skins de la boutique.
-    } else if (Object.keys(allSkins).length === 0) {
-        console.log("[ProfileJs_loadInventory] Boutique vide (Object.keys(allSkins).length === 0).");
-        // Afficher l'inventaire si la boutique est vide
-        // Cette logique peut être fusionnée ou améliorée, mais pour l'instant on affiche un message.
-        if (userInventory.length === 0) {
-            inventoryGrid.innerHTML = '<p>Votre inventaire est vide et la boutique ne propose aucun article.</p>';
-        } else {
-            // TODO: Logique pour afficher les items de userInventory même si allSkins est vide
-            // Pour l'instant, on pourrait juste dire que la boutique est vide mais que l'utilisateur a des items.
-            inventoryGrid.innerHTML = '<p>La boutique est vide, mais vous avez des items dans votre inventaire (affichage non implémenté ici).</p>';
-        }
-    } else {
-        Object.entries(allSkins).forEach(([type, skins]) => {
-          console.log(`[ProfileJs_loadInventory] Processing type: ${type}, Number of skins: ${skins.length}`); // Log 8
+    Object.entries(allSkinCategories).forEach(([type, skinsInCategory]) => {
+      const section = document.createElement('div');
+      section.className = 'inventory-section';
+      // Ensure getTypeName is available or define it within profile.js
+      section.innerHTML = `<h3>${getTypeName(type)}</h3><div class="skin-grid" id="skin-grid-${type}"></div>`;
+      const skinGridElement = section.querySelector(`.skin-grid`);
+      
+      if (Array.isArray(skinsInCategory)) {
+        skinsInCategory.forEach(skin => {
+          const ownedSkinsForTypeArray = userOwnedSkinsData[type] || [];
+          // Items with price 0 are considered owned for equipping purposes.
+          const owned = ownedSkinsForTypeArray.includes(skin.id) || skin.price === 0; 
+          const equipped = userEquippedSkins[type] === skin.id;
           
-          const section = document.createElement('div');
-          section.className = 'inventory-section';
-          section.innerHTML = `
-            <h3>${getTypeName(type)}</h3>
-            <div class="skin-grid" id="skin-grid-${type}"></div>
+          const skinItem = document.createElement('div');
+          skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
+          
+          // Consider a more specific fallback or ensure skin.image is always valid
+          const fallbackImage = 'assets/images/placeholder.webp'; 
+          
+          skinItem.innerHTML = `
+            <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
+            <h4>${skin.name}</h4>
+            <p>${skin.price} pièces</p>
+            ${owned ? 
+              `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}" ${equipped ? 'disabled' : ''}>${equipped ? 'Équipé' : 'Équiper'}</button>` : 
+              `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
+            }
           `;
-          
-          const skinGrid = section.querySelector(`.skin-grid`);
-          
-          if (Array.isArray(skins)) { // S'assurer que skins est bien un tableau
-            skins.forEach(skin => {
-              const owned = userInventory.some(item => item.id === skin.id && item.type === type);
-              const equipped = userEquipped[type] === skin.id;
-              
-              const skinItem = document.createElement('div');
-              skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
-              
-              const fallbackImage = type === 'head' ? 'assets/avatars/heads/default_boy.png' : 
-                                   type === 'body' ? 'assets/avatars/bodies/default_boy.png' :
-                                   type === 'accessory' ? 'assets/avatars/accessories/none.png' : 
-                                   'assets/avatars/backgrounds/default.png';
-              
-              skinItem.innerHTML = `
-                <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
-                <h4>${skin.name}</h4>
-                <p>${skin.price} pièces</p>
-                ${owned ? 
-                  `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}">${equipped ? 'Équipé' : 'Équiper'}</button>` : 
-                  `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
-                }
-              `;
-              skinGrid.appendChild(skinItem);
-            });
-          } else {
-            console.warn(`[ProfileJs_loadInventory] Skins for type '${type}' is not an array:`, skins);
-          }
-          inventoryGrid.appendChild(section);
+          if (skinGridElement) skinGridElement.appendChild(skinItem);
         });
-    }
+      }
+      inventoryGrid.appendChild(section);
+    });
     
-    setupInventoryButtons(); 
-    console.log("[ProfileJs_loadInventory] COMPLETED successfully (ou partiellement si boutique vide)."); // Log 9
+    setupInventoryButtons(); // This function should exist in profile.js
   } catch (error) {
-    console.error("[ProfileJs_loadInventory] CRITICAL ERROR in loadInventory:", error); // Log 10
-    inventoryGrid.innerHTML = `<p>Erreur critique lors du chargement de l'inventaire: ${error.message}</p>`;
+    console.error("[ProfileJs] Error loading inventory:", error);
+    if (inventoryGrid) inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
   }
 }
 
@@ -442,45 +356,59 @@ function getTypeName(type) {
  * Configuration des boutons d'inventaire
  */
 function setupInventoryButtons() {
-  // Boutons d'achat
   document.querySelectorAll('.btn-buy').forEach(button => {
-    button.addEventListener('click', async () => {
-      const skinId = button.dataset.skinId;
-      const skinType = button.dataset.skinType;
-      
+    button.addEventListener('click', async (e) => {
+      const targetButton = e.currentTarget;
+      targetButton.disabled = true;
+      const skinId = targetButton.dataset.skinId;
+      const skinType = targetButton.dataset.skinType;
       try {
         const result = await skinService.buySkin(skinId, skinType);
         if (result.success) {
-          alert(`Vous avez acheté ${result.skin.name} avec succès !`);
-          await loadInventory();
-          await loadProfile();
+          alert(\`Achat réussi: \${result.skin.name}\`);
+          const latestProfile = authService.getAuthState().profile;
+          if (latestProfile) {
+            await loadProfile(latestProfile); 
+          } else {
+            console.warn('[ProfileJs] Profile data not immediately available after buy, re-initializing.');
+            await init(); 
+          }
         } else {
-          alert(result.error || "Erreur lors de l'achat du skin");
+          alert(result.error || "Erreur lors de l'achat.");
         }
       } catch (error) {
-        console.error("Erreur lors de l'achat du skin:", error);
-        alert("Une erreur est survenue lors de l'achat");
+        console.error('[ProfileJs] Exception during buy:', error);
+        alert("Exception lors de l'achat: " + error.message);
+      } finally {
+        if (targetButton) targetButton.disabled = false;
       }
     });
   });
   
-  // Boutons d'équipement
   document.querySelectorAll('.btn-equip').forEach(button => {
-    button.addEventListener('click', async () => {
-      const skinId = button.dataset.skinId;
-      const skinType = button.dataset.skinType;
-      
+    button.addEventListener('click', async (e) => {
+      const targetButton = e.currentTarget;
+      targetButton.disabled = true;
+      const skinId = targetButton.dataset.skinId;
+      const skinType = targetButton.dataset.skinType;
       try {
         const result = await skinService.equipSkin(skinId, skinType);
         if (result.success) {
-          await loadInventory();
-          await loadProfile();
+           const latestProfile = authService.getAuthState().profile;
+           if (latestProfile) {
+            await loadProfile(latestProfile);
+           } else {
+            console.warn('[ProfileJs] Profile data not immediately available after equip, re-initializing.');
+            await init();
+           }
         } else {
-          alert(result.error || "Erreur lors de l'équipement du skin");
+          alert(result.error || "Erreur lors de l'équipement.");
         }
       } catch (error) {
-        console.error("Erreur lors de l'équipement du skin:", error);
-        alert("Une erreur est survenue lors de l'équipement");
+        console.error('[ProfileJs] Exception during equip:', error);
+        alert("Exception lors de l'équipement: " + error.message);
+      } finally {
+        if (targetButton) targetButton.disabled = false;
       }
     });
   });
@@ -491,84 +419,51 @@ function setupInventoryButtons() {
  */
 function loadAchievements(userAchievements = []) {
   try {
-    console.log("Chargement des succès...");
-    
-    // Vider la liste des succès
-    achievementList.innerHTML = '';
-    
-    // Si aucun succès n'est disponible
-    if (defaultAchievements.length === 0 && userAchievements.length === 0) {
-      achievementList.innerHTML = '<p>Aucun succès disponible pour le moment.</p>';
-      return;
-    }
-    
-    // Fusionner les succès par défaut avec ceux de l'utilisateur
-    const mergedAchievements = [...defaultAchievements];
-    
-    // Mettre à jour les succès avec ceux de l'utilisateur
-    userAchievements.forEach(userAchievement => {
-      const index = mergedAchievements.findIndex(a => a.id === userAchievement.id);
-      if (index !== -1) {
-        mergedAchievements[index].unlocked = userAchievement.unlocked;
-        mergedAchievements[index].unlockedAt = userAchievement.unlockedAt;
+    if (!achievementList) return;
+    achievementList.innerHTML = ''; // Clear previous
+    const achievementsToDisplay = JSON.parse(JSON.stringify(defaultAchievements)); // Deep copy defaults
+
+    (userAchievements || []).forEach(userAch => {
+      const existingAch = achievementsToDisplay.find(da => da.id === userAch.id);
+      if (existingAch) {
+        existingAch.unlocked = userAch.unlocked;
+        existingAch.unlockedAt = userAch.unlockedAt;
       } else {
-        mergedAchievements.push(userAchievement);
+        // Optional: if user can have achievements not in default list
+        // achievementsToDisplay.push(userAch); 
       }
     });
-    
-    // Créer l'élément HTML pour chaque succès
-    mergedAchievements.forEach(achievement => {
-    const achievementItem = document.createElement('div');
-      achievementItem.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
 
-    achievementItem.innerHTML = `
-      <div class="achievement-icon">
-        <i class="${achievement.icon}"></i>
-      </div>
+    achievementsToDisplay.forEach(ach => {
+      const item = document.createElement('div');
+      item.className = \`achievement-card \${ach.unlocked ? 'unlocked' : 'locked'}\`;
+      item.innerHTML = \`
+        <div class="achievement-icon"><i class="\${ach.icon || 'fas fa-question-circle'}"></i></div>
         <div class="achievement-info">
-          <h3>${achievement.title}</h3>
-          <p>${achievement.description}</p>
-          ${achievement.unlocked && achievement.unlockedAt ? 
-            `<span class="achievement-date">Débloqué le ${new Date(achievement.unlockedAt).toLocaleDateString()}</span>` : 
-            ''}
+          <h3>\${ach.title}</h3><p>\${ach.description}</p>
+          \${ach.unlocked && ach.unlockedAt ? \`<span class="achievement-date">Débloqué le \${new Date(ach.unlockedAt).toLocaleDateString()}</span>\` : ''}
         </div>
-        ${!achievement.unlocked ? '<div class="achievement-locked"><i class="fas fa-lock"></i></div>' : ''}
-      `;
-      
-      achievementList.appendChild(achievementItem);
+        \${!ach.unlocked ? '<div class="achievement-locked"><i class="fas fa-lock"></i></div>' : ''}
+      \`;
+      achievementList.appendChild(item);
     });
-    
-    console.log("Succès chargés avec succès");
   } catch (error) {
-    console.error("Erreur lors du chargement des succès:", error);
+    console.error("[ProfileJs] Error loading achievements:", error);
   }
 }
 
 /**
  * Mise à jour des paramètres
  */
-function updateSettings(settings = {}) {
+function updateSettingsUI(settings = {}) { // Ensure this is the correct name
   try {
-    console.log("Mise à jour des paramètres...");
-    
-    // Valeurs par défaut
-    const defaultSettings = {
-      theme: 'dark',
-      notifications: true,
-      sound: true
-    };
-    
-    // Fusionner avec les paramètres par défaut
-    const mergedSettings = { ...defaultSettings, ...settings };
-    
-    // Mettre à jour les toggles
-    themeToggle.checked = mergedSettings.theme === 'dark';
-    notificationsToggle.checked = mergedSettings.notifications;
-    soundToggle.checked = mergedSettings.sound;
-    
-    console.log("Paramètres mis à jour avec succès");
+    const currentSettings = { theme: 'dark', notifications: true, sound: true, ...settings };
+    if(themeToggle) themeToggle.checked = currentSettings.theme === 'dark';
+    if(notificationsToggle) notificationsToggle.checked = currentSettings.notifications;
+    if(soundToggle) soundToggle.checked = currentSettings.sound;
+    document.body.classList.toggle('light-theme', currentSettings.theme !== 'dark');
   } catch (error) {
-    console.error("Erreur lors de la mise à jour des paramètres:", error);
+    console.error("[ProfileJs] Error updating settings display:", error);
   }
 }
 
@@ -577,54 +472,36 @@ function updateSettings(settings = {}) {
  */
 function setupEventListeners() {
   try {
-    console.log("Configuration des écouteurs d'événements...");
-    
-    // Paramètres
-    themeToggle.addEventListener('change', async () => {
-      try {
-        await authService.updateProfile({
-          settings: {
-            theme: themeToggle.checked ? 'dark' : 'light'
-          }
-        });
-        
-        // Mettre à jour le thème
-        document.body.classList.toggle('light-theme', !themeToggle.checked);
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour du thème:", error);
-        themeToggle.checked = !themeToggle.checked;
+    if(themeToggle) themeToggle.addEventListener('change', async () => {
+      const newTheme = themeToggle.checked ? 'dark' : 'light';
+      const profile = authService.getAuthState().profile;
+      if(profile?.settings) {
+        try {
+          await authService.updateUserProfile({ settings: { ...profile.settings, theme: newTheme } });
+          document.body.classList.toggle('light-theme', !themeToggle.checked);
+        } catch (e) { console.error('Error saving theme', e); /* Revert UI? */ }
       }
     });
     
-    notificationsToggle.addEventListener('change', async () => {
-      try {
-        await authService.updateProfile({
-          settings: {
-            notifications: notificationsToggle.checked
-          }
-        });
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour des notifications:", error);
-        notificationsToggle.checked = !notificationsToggle.checked;
-      }
+    if(notificationsToggle) notificationsToggle.addEventListener('change', async () => {
+       const profile = authService.getAuthState().profile;
+       if(profile?.settings) {
+         try {
+          await authService.updateUserProfile({ settings: { ...profile.settings, notifications: notificationsToggle.checked } });
+         } catch (e) { console.error('Error saving notification settings', e); /* Revert UI? */ }
+       }
     });
     
-    soundToggle.addEventListener('change', async () => {
-      try {
-        await authService.updateProfile({
-          settings: {
-            sound: soundToggle.checked
-          }
-        });
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour du son:", error);
-        soundToggle.checked = !soundToggle.checked;
+    if(soundToggle) soundToggle.addEventListener('change', async () => {
+      const profile = authService.getAuthState().profile;
+      if(profile?.settings) {
+        try {
+          await authService.updateUserProfile({ settings: { ...profile.settings, sound: soundToggle.checked } });
+        } catch (e) { console.error('Error saving sound settings', e); /* Revert UI? */ }
       }
     });
-    
-    console.log("Écouteurs d'événements configurés avec succès");
   } catch (error) {
-    console.error("Erreur lors de la configuration des écouteurs d'événements:", error);
+    console.error("[ProfileJs] Error setting up settings listeners:", error);
   }
 }
 

@@ -36,6 +36,8 @@ export function createNewUser(userId, username) {
     level: 1,
     xp: 0,
     coins: 100,
+    pendingXP: 0, // Added field
+    pendingCoins: 0, // Added field
     stats: {
       gamesPlayed: 0,
       gamesWon: 0,

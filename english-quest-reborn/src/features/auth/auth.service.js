@@ -1,16 +1,16 @@
-/**
- * Service d'authentification pour English Quest Reborn
- * Gère l'inscription, la connexion et la gestion des utilisateurs
- */
+// auth.service.js refactored for username/password with internal email
 
-import { v4 as uuidv4 } from 'uuid';
-import { getAuth, signInAnonymous, signOutUser, subscribeToAuthChanges } from '@core/services/firebase.service';
-import { setDocument, getDocument, updateDocument } from '@core/services/firebase.service';
-import { collections } from '@core/config/firebase.config';
-import { getConfig } from '@core/config/app.config';
-import { logAnalyticsEvent } from '@core/services/firebase.service';
+import { 
+  signOutUser, 
+  subscribeToAuthChanges,
+  createUserWithEmailAndPasswordFirebase,
+  signInWithEmailAndPasswordFirebase
+} from '@core/services/firebase.service.js'; 
 
-// État de l'authentification
+import firebaseServiceInstance, { INTERNAL_EMAIL_DOMAIN } from '@core/services/firebase.service.js';
+import { getConfig } from '@core/config/app.config.js';
+import { createNewUser } from '@core/models/user.model.js';
+
 let authState = {
   initialized: false,
   isAuthenticated: false,
@@ -20,41 +20,28 @@ let authState = {
   error: null
 };
 
-// Callbacks pour les changements d'état
 const authStateListeners = new Set();
+let pendingDisplayNameForNewUserProfile = null;
 
-/**
- * Initialise le service d'authentification
- * @returns {Promise<Object>} L'état d'authentification initial
- */
 export async function initializeAuth() {
   try {
     authState.loading = true;
     notifyListeners();
-
-    // S'abonner aux changements d'état d'authentification
     subscribeToAuthChanges(handleAuthStateChange);
 
-    // Vérifier s'il y a un utilisateur déjà connecté
-    const auth = getAuth();
+    const auth = firebaseServiceInstance.auth;
     const currentUser = auth.currentUser;
 
     if (currentUser) {
       await handleAuthStateChange(currentUser);
     } else {
-      // Si l'authentification anonyme est activée, connecter automatiquement
-      if (getConfig().authConfig?.methods?.anonymous) {
-        await signInAnonymous();
-      } else {
-        authState.loading = false;
-        authState.initialized = true;
-        notifyListeners();
-      }
+      authState.loading = false;
+      authState.initialized = true;
+      notifyListeners();
     }
-
     return authState;
   } catch (error) {
-    console.error('Failed to initialize auth service:', error);
+    console.error('Auth Service Init Error:', error);
     authState.error = error.message;
     authState.loading = false;
     authState.initialized = true;
@@ -63,166 +50,116 @@ export async function initializeAuth() {
   }
 }
 
-/**
- * Gère les changements d'état d'authentification
- * @param {Object} user - L'utilisateur Firebase
- */
-async function handleAuthStateChange(user) {
+async function handleAuthStateChange(firebaseUser) {
   try {
-    if (user) {
-      // Utilisateur connecté
+    if (firebaseUser) {
       authState.isAuthenticated = true;
-      authState.user = user;
-
-      // Récupérer ou créer le profil utilisateur
-      const profile = await getOrCreateUserProfile(user.uid);
+      authState.user = firebaseUser;
+      
+      const displayName = pendingDisplayNameForNewUserProfile || (firebaseUser.email ? firebaseUser.email.split('@')[0] : 'Player');
+      const profile = await getOrCreateUserProfile(firebaseUser.uid, displayName, firebaseUser.email);
       authState.profile = profile;
+      pendingDisplayNameForNewUserProfile = null;
 
-      // Enregistrer l'événement de connexion
-      logAnalyticsEvent('login', {
-        method: user.isAnonymous ? 'anonymous' : 'custom',
-        user_id: user.uid
+      firebaseServiceInstance.logEvent('login', {
+        method: 'username_password',
+        user_id: firebaseUser.uid
       });
     } else {
-      // Utilisateur déconnecté
       authState.isAuthenticated = false;
       authState.user = null;
       authState.profile = null;
     }
-
     authState.loading = false;
     authState.initialized = true;
     notifyListeners();
   } catch (error) {
-    console.error('Error handling auth state change:', error);
+    console.error('Auth State Change Error:', error);
     authState.error = error.message;
     authState.loading = false;
     authState.initialized = true;
+    pendingDisplayNameForNewUserProfile = null;
     notifyListeners();
   }
 }
 
-/**
- * Récupère ou crée le profil utilisateur
- * @param {string} userId - ID de l'utilisateur
- * @returns {Promise<Object>} Le profil utilisateur
- */
-async function getOrCreateUserProfile(userId) {
+async function getOrCreateUserProfile(userId, displayName, internalEmail) {
   try {
-    // Vérifier si le profil existe déjà
-    const existingProfile = await getDocument(collections.PROFILES, userId);
-
+    const existingProfile = await firebaseServiceInstance.getProfile(userId);
     if (existingProfile) {
+      await firebaseServiceInstance.updateProfile(userId, { lastLogin: new Date().toISOString() });
       return existingProfile;
     }
 
-    // Créer un nouveau profil
-    const randomUsername = `Player${Math.floor(Math.random() * 10000)}`;
-    const newProfile = {
-      userId,
-      username: randomUsername,
-      displayName: '',
-      avatar: '/src/assets/images/default-avatar.png',
-      level: 1,
-      xp: 0,
-      coins: 0,
-      gems: 0,
-      inventory: [],
-      achievements: [],
-      stats: {
-        gamesPlayed: 0,
-        gamesWon: 0,
-        battlesParticipated: 0,
-        battlesWon: 0,
-        questsCompleted: 0,
-        totalScore: 0,
-        totalXp: 0,
-        timeSpent: 0
-      },
-      settings: {
-        theme: getConfig().defaultTheme,
-        notifications: true,
-        sound: true,
-        music: true,
-        language: getConfig().defaultLanguage
-      },
-      // SÉCURITÉ CRITIQUE: S'assurer que les nouveaux utilisateurs ne sont jamais administrateurs
-      // Seul Ollie peut être administrateur
-      isAdmin: false, // Par défaut, aucun utilisateur n'est administrateur
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString()
-    };
+    const newProfileData = createNewUser(userId, displayName);
+    newProfileData.email = internalEmail; 
 
-    // Enregistrer le profil dans Firestore
-    const savedProfile = await setDocument(collections.PROFILES, userId, newProfile);
-
-    // Enregistrer l'événement de création de profil
-    logAnalyticsEvent('sign_up', {
-      method: 'anonymous',
+    await firebaseServiceInstance.createProfile(userId, newProfileData);
+    firebaseServiceInstance.logEvent('sign_up', {
+      method: 'username_password',
       user_id: userId
     });
-
-    return savedProfile;
+    return await firebaseServiceInstance.getProfile(userId);
   } catch (error) {
-    console.error('Error getting or creating user profile:', error);
+    console.error('Get/Create Profile Error:', error);
     throw error;
   }
 }
 
-/**
- * Crée un compte utilisateur avec un nom d'utilisateur
- * @param {string} username - Nom d'utilisateur
- * @returns {Promise<Object>} L'utilisateur créé
- */
-export async function createUserWithUsername(username) {
+export async function registerWithEmailPassword(loginUsername, password, displayName) {
   try {
     authState.loading = true;
     notifyListeners();
-
-    // Vérifier si l'utilisateur est déjà connecté
-    if (authState.isAuthenticated) {
-      throw new Error('User already authenticated');
-    }
-
-    // Connecter anonymement
-    const user = await signInAnonymous();
-
-    // Créer le profil avec le nom d'utilisateur
-    const profile = await getOrCreateUserProfile(user.uid);
-
-    // Préparer les données de mise à jour
-    const updateData = {
-      username,
-      displayName: username
-    };
-
-    // SÉCURITÉ CRITIQUE: Vérifier si c'est Ollie pour lui donner des privilèges d'administrateur
-    // Seul Ollie peut être administrateur
-    if (username.toLowerCase() === 'ollie') {
-      console.log("Compte Ollie détecté, attribution des privilèges administrateur");
-      updateData.isAdmin = true;
-    } else {
-      // S'assurer explicitement que les autres utilisateurs ne sont pas administrateurs
-      updateData.isAdmin = false;
-      console.log(`Compte ${username} créé sans privilèges administrateur`);
-    }
-
-    // Mettre à jour le profil avec les données préparées
-    await updateDocument(collections.PROFILES, user.uid, updateData);
-
-    // Mettre à jour le profil local
-    authState.profile = {
-      ...profile,
-      username,
-      displayName: username
-    };
-
-    authState.loading = false;
-    notifyListeners();
-
-    return { user, profile: authState.profile };
+    pendingDisplayNameForNewUserProfile = displayName;
+    const internalEmail = `${loginUsername.toLowerCase()}@${INTERNAL_EMAIL_DOMAIN}`; 
+    
+    await createUserWithEmailAndPasswordFirebase(internalEmail, password);
+    
+    await new Promise((resolve, reject) => {
+      const unsubscribe = subscribeToAuthState(newState => {
+        if (!newState.loading && newState.profile) {
+          unsubscribe();
+          resolve();
+        } else if (!newState.loading && newState.error) {
+          unsubscribe();
+          reject(new Error(newState.error)); // Reject promise if authState has error
+        }
+      });
+    });
+    
+    return { user: authState.user, profile: authState.profile };
   } catch (error) {
-    console.error('Error creating user with username:', error);
+    console.error('Registration Error:', error.message);
+    authState.error = error.message;
+    authState.loading = false;
+    pendingDisplayNameForNewUserProfile = null;
+    notifyListeners();
+    throw error;
+  }
+}
+
+export async function loginWithEmailPassword(loginUsername, password) {
+  try {
+    authState.loading = true;
+    notifyListeners();
+    const internalEmail = `${loginUsername.toLowerCase()}@${INTERNAL_EMAIL_DOMAIN}`;
+    await signInWithEmailAndPasswordFirebase(internalEmail, password);
+
+    await new Promise((resolve, reject) => {
+      const unsubscribe = subscribeToAuthState(newState => {
+        if (!newState.loading && newState.profile) {
+          unsubscribe();
+          resolve();
+        } else if (!newState.loading && newState.error) {
+          unsubscribe();
+          reject(new Error(newState.error));
+        }
+      });
+    });
+        
+    return { user: authState.user, profile: authState.profile };
+  } catch (error) {
+    console.error('Login Error:', error.message);
     authState.error = error.message;
     authState.loading = false;
     notifyListeners();
@@ -230,55 +167,31 @@ export async function createUserWithUsername(username) {
   }
 }
 
-/**
- * Met à jour le profil utilisateur
- * @param {Object} profileData - Données du profil à mettre à jour
- * @returns {Promise<Object>} Le profil mis à jour
- */
 export async function updateUserProfile(profileData) {
   try {
     if (!authState.isAuthenticated || !authState.user) {
-      throw new Error('User not authenticated');
+      throw new Error('User not authenticated for profile update');
     }
-
     authState.loading = true;
     notifyListeners();
 
-    // Vérifier si l'utilisateur essaie de modifier les droits d'administrateur
     const profileDataToUpdate = { ...profileData };
+    const currentProfileUsername = authState.profile?.username;
 
-    // SÉCURITÉ CRITIQUE: Protection contre la modification des droits d'administrateur
-    if ('isAdmin' in profileDataToUpdate) {
-      // Récupérer le profil actuel pour vérifier le nom d'utilisateur
-      const currentProfile = await getDocument(collections.PROFILES, authState.user.uid);
-
-      // Seul Ollie peut être administrateur, et on ne peut pas lui retirer ce droit
-      if (currentProfile && currentProfile.username && currentProfile.username.toLowerCase() === 'ollie') {
-        // Forcer isAdmin à true pour Ollie
-        profileDataToUpdate.isAdmin = true;
-        console.log("Protection des privilèges administrateur pour Ollie");
-      } else {
-        // Supprimer la tentative de modification des droits d'administrateur
+    if ('isAdmin' in profileDataToUpdate && currentProfileUsername?.toLowerCase() !== 'ollie') {
         delete profileDataToUpdate.isAdmin;
-        console.log("Tentative non autorisée de modification des droits d'administrateur bloquée");
-      }
+        console.warn("Attempt to modify isAdmin by non-Ollie user blocked.");
+    } else if ('isAdmin' in profileDataToUpdate && currentProfileUsername?.toLowerCase() === 'ollie') {
+        profileDataToUpdate.isAdmin = true; 
     }
 
-    // Mettre à jour le profil dans Firestore
-    const updatedProfile = await updateDocument(
-      collections.PROFILES,
-      authState.user.uid,
-      profileDataToUpdate
-    );
-
-    // Mettre à jour le profil local
-    authState.profile = updatedProfile;
+    await firebaseServiceInstance.updateProfile(authState.user.uid, { ...profileDataToUpdate, lastLogin: new Date().toISOString() });
+    authState.profile = await firebaseServiceInstance.getProfile(authState.user.uid);
     authState.loading = false;
     notifyListeners();
-
-    return updatedProfile;
+    return authState.profile;
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    console.error('Update Profile Error:', error);
     authState.error = error.message;
     authState.loading = false;
     notifyListeners();
@@ -286,24 +199,14 @@ export async function updateUserProfile(profileData) {
   }
 }
 
-/**
- * Déconnecte l'utilisateur actuel
- * @returns {Promise<void>}
- */
 export async function logout() {
   try {
-    if (!authState.isAuthenticated) {
-      return;
-    }
-
+    if (!authState.isAuthenticated) return;
     authState.loading = true;
     notifyListeners();
-
-    await signOutUser();
-
-    // La mise à jour de l'état sera gérée par le listener d'authentification
+    await signOutUser(); 
   } catch (error) {
-    console.error('Error logging out:', error);
+    console.error('Logout Error:', error);
     authState.error = error.message;
     authState.loading = false;
     notifyListeners();
@@ -311,56 +214,33 @@ export async function logout() {
   }
 }
 
-/**
- * Génère un identifiant unique pour un utilisateur anonyme
- * @returns {string} Identifiant unique
- */
-export function generateAnonymousId() {
-  return uuidv4();
-}
-
-/**
- * Récupère l'état d'authentification actuel
- * @returns {Object} État d'authentification
- */
 export function getAuthState() {
   return { ...authState };
 }
 
-/**
- * S'abonne aux changements d'état d'authentification
- * @param {Function} listener - Fonction à appeler lors des changements
- * @returns {Function} Fonction pour se désabonner
- */
 export function subscribeToAuthState(listener) {
   authStateListeners.add(listener);
-
-  // Appeler immédiatement avec l'état actuel
-  listener({ ...authState });
-
-  // Retourner une fonction pour se désabonner
+  listener({ ...authState }); 
   return () => {
     authStateListeners.delete(listener);
   };
 }
 
-/**
- * Notifie tous les listeners des changements d'état
- */
 function notifyListeners() {
   const state = { ...authState };
   authStateListeners.forEach(listener => {
     try {
       listener(state);
     } catch (error) {
-      console.error('Error in auth state listener:', error);
+      console.error('Listener Error:', error);
     }
   });
 }
 
 export default {
   initializeAuth,
-  createUserWithUsername,
+  registerWithEmailPassword,
+  loginWithEmailPassword,
   updateUserProfile,
   logout,
   getAuthState,

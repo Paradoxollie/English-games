@@ -2,142 +2,125 @@ import { authService } from './auth-service.js';
 
 class SkinService {
   constructor() {
-    // Utiliser les vrais chemins d'accès aux assets d'avatar
     this.defaultSkins = {
       head: [
-        { id: 'default_boy', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png' },
-        { id: 'default_girl', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png' },
-        { id: 'bear', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' }
+        { id: 'default_boy_head', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png' },
+        { id: 'default_girl_head', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png' },
+        { id: 'bear', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' },
+        { id: 'fox', name: 'Renard', price: 150, image: 'assets/avatars/heads/fox.png' },
+        { id: 'cat', name: 'Chat', price: 200, image: 'assets/avatars/heads/cat.png' }
       ],
       body: [
-        { id: 'default_boy', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png' },
-        { id: 'default_girl', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png' },
-        { id: 'bear', name: 'Ours', price: 200, image: 'assets/avatars/bodies/bear.png' }
+        { id: 'default_boy_body', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png' },
+        { id: 'default_girl_body', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png' },
+        { id: 'knight', name: 'Chevalier', price: 200, image: 'assets/avatars/bodies/knight.png' },
+        { id: 'wizard', name: 'Magicien', price: 250, image: 'assets/avatars/bodies/wizard.png' },
+        { id: 'ninja', name: 'Ninja', price: 300, image: 'assets/avatars/bodies/ninja.png' }
       ],
       accessory: [
         { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' },
-        { id: 'wand', name: 'Baguette magique', price: 50, image: 'assets/avatars/accessories/wand.png' }
+        { id: 'hat', name: 'Chapeau', price: 100, image: 'assets/avatars/accessories/hat.png' },
+        { id: 'glasses', name: 'Lunettes', price: 150, image: 'assets/avatars/accessories/glasses.png' },
+        { id: 'crown', name: 'Couronne', price: 500, image: 'assets/avatars/accessories/crown.png' }
       ],
       background: [
-        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' },
-        { id: 'forest', name: 'Forêt', price: 100, image: 'assets/avatars/backgrounds/forest.png' }
+        { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' },
+        { id: 'forest', name: 'Forêt', price: 200, image: 'assets/avatars/backgrounds/forest.png' },
+        { id: 'castle', name: 'Château', price: 300, image: 'assets/avatars/backgrounds/castle.png' },
+        { id: 'space', name: 'Espace', price: 400, image: 'assets/avatars/backgrounds/space.png' }
       ]
     };
   }
 
-  // Obtenir tous les skins disponibles
   getAvailableSkins() {
     return this.defaultSkins;
   }
 
-  // Obtenir les skins possédés par l'utilisateur
-  async getUserSkins() {
-    const currentUserData = authService.getCurrentUser();
-    return currentUserData?.inventory || [];
-  }
-
-  // Acheter un skin
   async buySkin(skinId, skinType) {
     try {
-      console.log(`Tentative d'achat du skin: ${skinId} de type ${skinType}`);
-      
-      const currentUserData = authService.getCurrentUser();
-      if (!currentUserData) {
-        console.error("Utilisateur non connecté lors de l'achat du skin");
+      const authState = authService.getAuthState();
+      if (!authState.isAuthenticated || !authState.profile) {
         return { success: false, error: 'Utilisateur non connecté' };
       }
+      const profile = authState.profile;
 
-      console.log("Données utilisateur récupérées:", currentUserData);
-      
-      const skin = this.defaultSkins[skinType].find(s => s.id === skinId);
-      if (!skin) {
-        console.error(`Skin non trouvé: ${skinId} (${skinType})`);
+      const skinToBuy = this.defaultSkins[skinType]?.find(s => s.id === skinId);
+      if (!skinToBuy) {
         return { success: false, error: 'Skin non trouvé' };
       }
 
-      console.log("Skin trouvé:", skin);
-      
-      // Initialiser l'inventaire s'il n'existe pas
-      if (!currentUserData.inventory || !Array.isArray(currentUserData.inventory)) {
-        console.log("Création de l'inventaire initial");
-        currentUserData.inventory = [];
-      }
+      const currentInventory = JSON.parse(JSON.stringify(profile.inventory || { skins: {}, items: [] }));
+      if (!currentInventory.skins) currentInventory.skins = {};
+      if (!currentInventory.skins[skinType]) currentInventory.skins[skinType] = [];
 
-      // Vérifier si l'utilisateur possède déjà le skin
-      const alreadyOwned = currentUserData.inventory.some(item => item.id === skinId && item.type === skinType);
+      const alreadyOwned = currentInventory.skins[skinType].includes(skinId);
       if (alreadyOwned) {
-        console.log("L'utilisateur possède déjà ce skin");
         return { success: false, error: 'Vous possédez déjà ce skin' };
       }
 
-      // Vérifier si l'utilisateur a assez de pièces
-      if (currentUserData.coins < skin.price) {
-        console.log(`Pas assez de pièces: ${currentUserData.coins} < ${skin.price}`);
+      if (profile.coins < skinToBuy.price) {
         return { success: false, error: 'Pas assez de pièces' };
       }
 
-      // Ajouter le skin à l'inventaire
-      const updatedInventory = [...currentUserData.inventory, { id: skinId, type: skinType }];
-      
-      console.log("Mise à jour de l'inventaire:", updatedInventory);
-      console.log("Nouvelles pièces:", currentUserData.coins - skin.price);
-      
-      // Mettre à jour le profil
-      const updateResult = await authService.updateProfile({
-        inventory: updatedInventory,
-        coins: currentUserData.coins - skin.price
+      currentInventory.skins[skinType].push(skinId);
+      const newCoins = profile.coins - skinToBuy.price;
+
+      await authService.updateUserProfile({
+        inventory: currentInventory,
+        coins: newCoins
       });
       
-      if (!updateResult.success) {
-        console.error("Erreur lors de la mise à jour du profil:", updateResult.error);
-        return { success: false, error: updateResult.error || 'Erreur lors de la mise à jour du profil' };
-      }
-      
-      console.log("Achat réussi!");
-      return { success: true, skin };
+      return { success: true, skin: skinToBuy };
+
     } catch (error) {
-      console.error('Erreur détaillée lors de l\'achat du skin:', error);
-      return { success: false, error: 'Erreur lors de l\'achat: ' + (error.message || 'Erreur inconnue') };
+      console.error('SkinService Buy Error:', error);
+      return { success: false, error: 'Erreur lors de l'achat: ' + (error.message || 'Erreur inconnue') };
     }
   }
 
-  // Équiper un skin
   async equipSkin(skinId, skinType) {
-    const currentUserData = authService.getCurrentUser();
-    if (!currentUserData) return { success: false, error: 'Utilisateur non connecté' };
-
-    // Vérifier si l'utilisateur possède le skin
-    const hasSkin = currentUserData.inventory.some(item => item.id === skinId && item.type === skinType);
-    if (!hasSkin) {
-      return { success: false, error: 'Vous ne possédez pas ce skin' };
-    }
-
     try {
-      // Mettre à jour l'avatar
-      const currentAvatar = currentUserData.avatar || {};
+      const authState = authService.getAuthState();
+      if (!authState.isAuthenticated || !authState.profile) {
+        return { success: false, error: 'Utilisateur non connecté' };
+      }
+      const profile = authState.profile;
+
+      const ownedSkinsForType = profile.inventory?.skins?.[skinType] || [];
+      const isDefaultFreeSkin = this.defaultSkins[skinType]?.find(s => s.id === skinId && s.price === 0);
+
+      if (!ownedSkinsForType.includes(skinId) && !isDefaultFreeSkin) {
+        return { success: false, error: 'Vous ne possédez pas ce skin' };
+      }
+
+      const currentAvatar = profile.avatar || {};
       const updatedAvatar = { ...currentAvatar, [skinType]: skinId };
 
-      await authService.updateProfile({
+      await authService.updateUserProfile({
         avatar: updatedAvatar
       });
-
       return { success: true, avatar: updatedAvatar };
     } catch (error) {
-      console.error('Erreur lors de l\'équipement du skin:', error);
-      return { success: false, error: 'Erreur lors de l\'équipement' };
+      console.error('SkinService Equip Error:', error);
+      return { success: false, error: 'Erreur lors de l'équipement: ' + (error.message || 'Erreur inconnue') };
     }
   }
 
-  // Générer l'URL de l'avatar complet
   generateAvatarUrl(avatar) {
-    if (!avatar) {
-      return 'assets/avatars/heads/default_boy.png'; // Avatar par défaut
+    // This is a simplified version for header or small displays
+    const authState = authService.getAuthState();
+    const profile = authState.profile;
+    let defaultHeadId = 'default_boy_head';
+    // A profile.gender field could be used here for a better default
+    if (profile?.gender === 'female' && this.defaultSkins.head.find(s => s.id === 'default_girl_head')) {
+        defaultHeadId = 'default_girl_head';
     }
-
-    // Retourner l'URL de la tête (partie principale visible sur l'avatar dans le header)
-    const headType = avatar.head || 'default_boy';
-    return `assets/avatars/heads/${headType}.png`;
+    
+    const headIdToUse = avatar?.head || defaultHeadId;
+    const headSkin = this.defaultSkins.head.find(s => s.id === headIdToUse);
+    
+    return headSkin ? headSkin.image : 'assets/avatars/heads/default_boy.png';
   }
 }
 
-export const skinService = new SkinService(); 
+export const skinService = new SkinService();
