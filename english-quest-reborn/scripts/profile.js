@@ -151,16 +151,12 @@ async function init() {
  */
 async function loadProfile(profileData) {
   try {
-    console.log("[ProfileJs] ===== STARTING LOAD PROFILE =====");
-    console.log("[ProfileJs] loadProfile called with profileData:", profileData);
-    
     if (!profileData) {
       console.warn("[ProfileJs] loadProfile called without profileData. Redirecting.");
       window.location.href = 'login.html'; 
       return;
     }
 
-    console.log("[ProfileJs] Setting up basic profile info...");
     // Ensure global DOM element variables are used (username, userEmail, etc.)
     // DOM elements are: username, userEmail, userLevel, userXP, userCoins
     if (username) username.textContent = profileData.username || 'Aventurier';
@@ -186,8 +182,6 @@ async function loadProfile(profileData) {
     if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;
     if (userPendingCoins) userPendingCoins.textContent = `${profileData.pendingCoins || 0} pièces`;
     
-    console.log("[ProfileJs] Basic profile info set, preparing avatar...");
-    
     // S'assurer que l'avatar a des valeurs par défaut si pas définies
     const avatarToDisplay = {
       head: profileData.avatar?.head || 'default_boy_head',
@@ -197,29 +191,18 @@ async function loadProfile(profileData) {
     };
     
     console.log("[ProfileJs] Loading profile with avatar:", avatarToDisplay);
-    console.log("[ProfileJs] About to call updateAvatarDisplay...");
     updateAvatarDisplay(avatarToDisplay); 
-    console.log("[ProfileJs] updateAvatarDisplay completed, about to call loadInventory...");
-    
     await loadInventory(profileData); // loadInventory will also take profileData
-    console.log("[ProfileJs] loadInventory completed, loading achievements...");
-    
     loadAchievements(profileData.achievements || []);
-    console.log("[ProfileJs] loadAchievements completed, updating settings...");
-    
     updateSettingsUI(profileData.settings); // Fixed function name
-    console.log("[ProfileJs] updateSettingsUI completed, setting up admin panel...");
 
     // Assuming adminPanelLinkContainer is defined globally or fetched if needed
     const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
     if (adminPanelLinkContainer) {
       adminPanelLinkContainer.style.display = profileData.isAdmin ? 'block' : 'none';
     }
-    
-    console.log("[ProfileJs] ===== LOAD PROFILE COMPLETED =====");
   } catch (error) {
-    console.error("[ProfileJs] CRITICAL ERROR in loadProfile:", error);
-    console.error("[ProfileJs] Error stack:", error.stack);
+    console.error("[ProfileJs] Error loading profile:", error);
   }
 }
 
@@ -429,8 +412,6 @@ async function loadInventory(profileData) {
   }
   
   isLoadingInventory = true;
-  console.log("[ProfileJs] ===== STARTING INVENTORY LOAD =====");
-  console.log("[ProfileJs] profileData:", profileData);
   
   try {
     // Ensure global DOM element 'inventoryGrid' is used
@@ -438,7 +419,6 @@ async function loadInventory(profileData) {
         console.error("[ProfileJs] inventoryGrid DOM element not found.");
         return;
     }
-    console.log("[ProfileJs] inventoryGrid element found:", inventoryGrid);
     inventoryGrid.innerHTML = '<p>Chargement de l\'inventaire...</p>';
 
     if (!profileData) {
@@ -448,24 +428,13 @@ async function loadInventory(profileData) {
     }
 
     const allSkinCategories = skinService.getAvailableSkins();
-    console.log("[ProfileJs] allSkinCategories:", allSkinCategories);
-    
-    // profileData.inventory.skins should be like { head: ['id1'], body: ['id2'], ... }
     const userOwnedSkinsData = profileData.inventory?.skins || {}; 
-    console.log("[ProfileJs] userOwnedSkinsData:", userOwnedSkinsData);
-    
-    // profileData.avatar should be like { head: 'equippedId1', body: 'equippedId2', ... }
     const userEquippedSkins = profileData.avatar || {}; 
-    console.log("[ProfileJs] userEquippedSkins:", userEquippedSkins);
     
     inventoryGrid.innerHTML = ''; // Clear loading message
-    console.log("[ProfileJs] Cleared loading message, starting to build sections");
 
     // Create sections for each skin category
-    let sectionsCreated = 0;
     Object.keys(allSkinCategories).forEach(category => {
-        console.log(`[ProfileJs] Processing category: ${category}`);
-        
         // Create a section for this category
         const categorySection = document.createElement('div');
         categorySection.className = 'inventory-section';
@@ -473,7 +442,6 @@ async function loadInventory(profileData) {
         const categoryTitle = document.createElement('h3');
         categoryTitle.textContent = getTypeName(category);
         categorySection.appendChild(categoryTitle);
-        console.log(`[ProfileJs] Created title for ${category}: ${getTypeName(category)}`);
         
         const categoryGrid = document.createElement('div');
         categoryGrid.className = 'skin-grid';
@@ -483,7 +451,6 @@ async function loadInventory(profileData) {
         let ownedSkins = [];
         if (profileData.inventory) {
             if (Array.isArray(profileData.inventory)) {
-                console.log(`[ProfileJs] Using old inventory format for ${category}`);
                 // Old format: array of objects - convert on the fly
                 ownedSkins = profileData.inventory
                     .filter(item => item.type === category)
@@ -499,39 +466,25 @@ async function loadInventory(profileData) {
                         return skinId;
                     });
             } else if (profileData.inventory.skins && profileData.inventory.skins[category]) {
-                console.log(`[ProfileJs] Using new inventory format for ${category}`);
                 // New format: object with skins
                 ownedSkins = profileData.inventory.skins[category];
             }
         }
-        console.log(`[ProfileJs] ownedSkins for ${category}:`, ownedSkins);
 
-        let skinsAdded = 0;
         allSkinCategories[category].forEach(skin => {
             const isOwned = ownedSkins.includes(skin.id) || skin.price === 0;
             const isEquipped = userEquippedSkins[category] === skin.id;
-            console.log(`[ProfileJs] Processing skin ${skin.id}: owned=${isOwned}, equipped=${isEquipped}`);
-            
             const skinElement = createSkinElement(skin, category, isOwned, isEquipped);
             categoryGrid.appendChild(skinElement);
-            skinsAdded++;
         });
         
-        console.log(`[ProfileJs] Added ${skinsAdded} skins to ${category} grid`);
         categorySection.appendChild(categoryGrid);
         inventoryGrid.appendChild(categorySection);
-        sectionsCreated++;
-        console.log(`[ProfileJs] Section ${category} added to inventory grid`);
     });
     
-    console.log(`[ProfileJs] Total sections created: ${sectionsCreated}`);
-    console.log(`[ProfileJs] Final inventoryGrid HTML length: ${inventoryGrid.innerHTML.length}`);
-    
-    setupInventoryButtons(); // This function should exist in profile.js
-    console.log("[ProfileJs] ===== INVENTORY LOAD COMPLETED =====");
+    setupInventoryButtons();
   } catch (error) {
     console.error("[ProfileJs] Error loading inventory:", error);
-    console.error("[ProfileJs] Error stack:", error.stack);
     if (inventoryGrid) inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
   } finally {
     // Toujours libérer le verrou
