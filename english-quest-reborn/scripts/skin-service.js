@@ -14,7 +14,7 @@ class SkinService {
         { id: 'bear_body', name: 'Ours', price: 100, image: 'assets/avatars/bodies/bear.png' }
       ],
       accessory: [
-        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/accessories/default.png' }
+        { id: 'default', name: 'Accessoire Animé', price: 0, image: 'assets/avatars/accessories/default.gif' }
       ],
       background: [
         { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }

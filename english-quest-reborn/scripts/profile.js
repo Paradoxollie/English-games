@@ -282,11 +282,11 @@ function updateAvatarDisplay(avatarData) {
       userAvatarAccessory.style.display = 'block';
       
       if (accessoryId === 'default') {
-        // For "default" accessory, show the default.png image
-        console.log("[ProfileJs] Accessory set to 'default' - adding default image");
+        // For "default" accessory, show the animated GIF image
+        console.log("[ProfileJs] Accessory set to 'default' - adding animated GIF");
         const accessoryImg = document.createElement('img');
-        accessoryImg.src = 'assets/avatars/accessories/default.png';
-        accessoryImg.alt = 'Default Accessory';
+        accessoryImg.src = 'assets/avatars/accessories/default.gif';
+        accessoryImg.alt = 'Animated Accessory';
         accessoryImg.style.width = '100%';
         accessoryImg.style.height = '100%';
         accessoryImg.style.objectFit = 'contain';
@@ -294,12 +294,12 @@ function updateAvatarDisplay(avatarData) {
         accessoryImg.style.opacity = '1';
         
         accessoryImg.onerror = function() {
-          console.warn("[ProfileJs] Failed to load default accessory image, hiding completely");
-          this.style.display = 'none';
+          console.warn("[ProfileJs] Failed to load animated accessory, fallback to PNG");
+          this.src = 'assets/avatars/accessories/default.png';
         };
         
         accessoryImg.onload = function() {
-          console.log("[ProfileJs] Default accessory image loaded successfully");
+          console.log("[ProfileJs] Animated accessory loaded successfully");
         };
         
         userAvatarAccessory.appendChild(accessoryImg);
