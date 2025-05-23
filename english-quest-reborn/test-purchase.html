@@ -120,19 +120,32 @@
     const originalWarn = console.warn;
     const originalError = console.error;
     
+    function formatArgs(args) {
+      return args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          try {
+            return JSON.stringify(arg, null, 2);
+          } catch (e) {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+    }
+    
     console.log = function(...args) {
       originalLog.apply(console, args);
-      addLog(args.join(' '), 'info');
+      addLog(formatArgs(args), 'info');
     };
     
     console.warn = function(...args) {
       originalWarn.apply(console, args);
-      addLog(args.join(' '), 'warn');
+      addLog(formatArgs(args), 'warn');
     };
     
     console.error = function(...args) {
       originalError.apply(console, args);
-      addLog(args.join(' '), 'error');
+      addLog(formatArgs(args), 'error');
     };
     
     window.refreshUserInfo = async function() {
