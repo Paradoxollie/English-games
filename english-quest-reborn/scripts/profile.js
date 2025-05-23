@@ -187,7 +187,7 @@ async function loadProfile(profileData) {
       head: profileData.avatar?.head || 'default_boy_head',
       body: profileData.avatar?.body || 'default_boy_body', 
       background: profileData.avatar?.background || 'default_background',
-      accessory: profileData.avatar?.accessory || 'none'
+      accessory: profileData.avatar?.accessory || 'default'
     };
     
     console.log("[ProfileJs] Loading profile with avatar:", avatarToDisplay);
@@ -224,12 +224,17 @@ function updateAvatarDisplay(avatarData) {
     const defaultHeadId = 'default_boy_head';
     const defaultBodyId = 'default_boy_body';
     const defaultBackgroundId = 'default_background';
-    const defaultAccessoryId = 'none';
+    const defaultAccessoryId = 'default';
 
-    const headId = avatarData?.head || defaultHeadId;
-    const bodyId = avatarData?.body || defaultBodyId;
-    const backgroundId = avatarData?.background || defaultBackgroundId;
-    const accessoryId = avatarData?.accessory || defaultAccessoryId;
+    let headId = avatarData?.head || defaultHeadId;
+    let bodyId = avatarData?.body || defaultBodyId;
+    let backgroundId = avatarData?.background || defaultBackgroundId;
+    let accessoryId = avatarData?.accessory || defaultAccessoryId;
+    
+    // Migration: convert old "none" accessory to new "default"
+    if (accessoryId === 'none') {
+      accessoryId = 'default';
+    }
 
     console.log("[ProfileJs] Avatar parts:", { headId, bodyId, backgroundId, accessoryId });
 
@@ -276,25 +281,25 @@ function updateAvatarDisplay(avatarData) {
       // Always show the container
       userAvatarAccessory.style.display = 'block';
       
-      if (accessoryId === 'none') {
-        // For "none" accessory, show the none.png image but make it subtle
-        console.log("[ProfileJs] Accessory set to 'none' - adding none image");
+      if (accessoryId === 'default') {
+        // For "default" accessory, show the default.png image
+        console.log("[ProfileJs] Accessory set to 'default' - adding default image");
         const accessoryImg = document.createElement('img');
-        accessoryImg.src = 'assets/avatars/accessories/none.png';
-        accessoryImg.alt = 'No Accessory';
+        accessoryImg.src = 'assets/avatars/accessories/default.png';
+        accessoryImg.alt = 'Default Accessory';
         accessoryImg.style.width = '100%';
         accessoryImg.style.height = '100%';
         accessoryImg.style.objectFit = 'contain';
         accessoryImg.style.display = 'block';
-        accessoryImg.style.opacity = '1'; // Complètement visible maintenant
+        accessoryImg.style.opacity = '1';
         
         accessoryImg.onerror = function() {
-          console.warn("[ProfileJs] Failed to load none accessory image, hiding completely");
+          console.warn("[ProfileJs] Failed to load default accessory image, hiding completely");
           this.style.display = 'none';
         };
         
         accessoryImg.onload = function() {
-          console.log("[ProfileJs] None accessory image loaded successfully");
+          console.log("[ProfileJs] Default accessory image loaded successfully");
         };
         
         userAvatarAccessory.appendChild(accessoryImg);
@@ -418,6 +423,7 @@ async function loadInventory(profileData) {
                         if (item.id === 'default_girl' && category === 'body') skinId = 'default_girl_body';
                         if (item.id === 'default_boy' && category === 'body') skinId = 'default_boy_body';
                         if (item.id === 'default' && category === 'background') skinId = 'default_background';
+                        if (item.id === 'none' && category === 'accessory') skinId = 'default';
                         return skinId;
                     });
             } else if (profileData.inventory.skins && profileData.inventory.skins[category]) {

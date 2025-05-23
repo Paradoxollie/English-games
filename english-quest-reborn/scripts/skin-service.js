@@ -14,8 +14,7 @@ class SkinService {
         { id: 'bear_body', name: 'Ours', price: 100, image: 'assets/avatars/bodies/bear.png' }
       ],
       accessory: [
-        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' },
-        { id: 'test_accessory', name: 'Test', price: 50, image: 'assets/avatars/heads/bear.png' }
+        { id: 'default', name: 'Défaut', price: 0, image: 'assets/avatars/accessories/default.png' }
       ],
       background: [
         { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }
@@ -63,6 +62,7 @@ class SkinService {
           if (skinId === 'default_girl' && skinType === 'body') newSkinId = 'default_girl_body';
           if (skinId === 'default_boy' && skinType === 'body') newSkinId = 'default_boy_body';
           if (skinId === 'default' && skinType === 'background') newSkinId = 'default_background';
+          if (skinId === 'none' && skinType === 'accessory') newSkinId = 'default';
           
           if (newInventory.skins[skinType] && !newInventory.skins[skinType].includes(newSkinId)) {
             newInventory.skins[skinType].push(newSkinId);
@@ -80,7 +80,7 @@ class SkinService {
       skins: {
         head: ['default_boy_head', 'default_girl_head'],
         body: ['default_boy_body', 'default_girl_body'],
-        accessory: ['none'],
+        accessory: ['default'],
         background: ['default_background']
       },
       items: []

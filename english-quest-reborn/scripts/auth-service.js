@@ -216,14 +216,14 @@ class AuthService {
                 avatar: {
                     head: 'default_boy_head',
                     body: 'default_boy_body',
-                    accessory: 'none',
+                    accessory: 'default',
                     background: 'default_background'
                 },
                 inventory: {
                     skins: {
                         head: ['default_boy_head', 'default_girl_head'],
                         body: ['default_boy_body', 'default_girl_body'],
-                        accessory: ['none'],
+                        accessory: ['default'],
                         background: ['default_background']
                     },
                     items: []
