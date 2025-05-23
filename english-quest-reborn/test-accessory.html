@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Accessoires - English Quest</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: white;
+    }
+    
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .avatar-container {
+      position: relative;
+      width: 250px;
+      height: 440px;
+      margin: 20px auto;
+      background: url('assets/avatars/backgrounds/default.png') center center / cover no-repeat;
+      border-radius: 20px;
+      border: 3px solid #333;
+      overflow: visible;
+    }
+    
+    .avatar-body {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: auto;
+      object-fit: contain;
+      z-index: 3;
+    }
+    
+    .avatar-head {
+      position: absolute;
+      top: -140px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: auto;
+      object-fit: contain;
+      z-index: 3;
+    }
+    
+    .avatar-accessory {
+      position: absolute;
+      bottom: 125px;
+      right: -10px;
+      width: 40%;
+      height: 40%;
+      object-fit: contain;
+      z-index: 10;
+      border: 2px solid red; /* For debugging */
+    }
+    
+    .controls {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    .controls button:hover {
+      background: #27ae60;
+    }
+    
+    .debug-info {
+      margin: 20px 0;
+      padding: 10px;
+      background: #333;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>Test des Accessoires</h1>
+    
+    <div class="avatar-container" id="avatarContainer">
+      <img src="assets/avatars/bodies/default_boy.png" alt="Body" class="avatar-body" id="avatarBody">
+      <img src="assets/avatars/heads/default_boy.png" alt="Head" class="avatar-head" id="avatarHead">
+      <div class="avatar-accessory" id="avatarAccessory">
+        <!-- Accessory will be added here -->
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button onclick="setAccessory('none')">Aucun Accessoire</button>
+      <button onclick="setAccessory('test_accessory')">Test Accessoire</button>
+      <button onclick="debugAccessory()">Debug Info</button>
+    </div>
+    
+    <div class="debug-info" id="debugInfo">
+      <strong>Debug Info:</strong><br>
+      Current accessory: <span id="currentAccessory">none</span><br>
+      Container innerHTML: <span id="containerContent">empty</span><br>
+      Container style: <span id="containerStyle">-</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { skinService } from './scripts/skin-service.js';
+    
+    let currentAccessoryId = 'none';
+    
+    window.setAccessory = function(accessoryId) {
+      console.log('Setting accessory to:', accessoryId);
+      currentAccessoryId = accessoryId;
+      
+      const accessoryContainer = document.getElementById('avatarAccessory');
+      const skins = skinService.getAvailableSkins();
+      const accessorySkin = skins.accessory.find(s => s.id === accessoryId);
+      
+      console.log('Found accessory skin:', accessorySkin);
+      
+      // Clear container
+      accessoryContainer.innerHTML = '';
+      accessoryContainer.style.display = 'block';
+      
+      if (accessoryId === 'none') {
+        console.log('Setting accessory to none - leaving container empty');
+      } else if (accessorySkin && accessorySkin.image) {
+        console.log('Adding accessory image:', accessorySkin.image);
+        const img = document.createElement('img');
+        img.src = accessorySkin.image;
+        img.alt = 'Accessory';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        img.style.display = 'block';
+        
+        img.onload = function() {
+          console.log('Accessory image loaded successfully');
+          updateDebugInfo();
+        };
+        
+        img.onerror = function() {
+          console.error('Failed to load accessory image:', accessorySkin.image);
+          updateDebugInfo();
+        };
+        
+        accessoryContainer.appendChild(img);
+      }
+      
+      updateDebugInfo();
+    };
+    
+    window.debugAccessory = function() {
+      const container = document.getElementById('avatarAccessory');
+      console.log('=== ACCESSORY DEBUG ===');
+      console.log('Container:', container);
+      console.log('Container innerHTML:', container.innerHTML);
+      console.log('Container style.display:', container.style.display);
+      console.log('Container children:', container.children);
+      console.log('Current accessory ID:', currentAccessoryId);
+      
+      const skins = skinService.getAvailableSkins();
+      console.log('Available accessories:', skins.accessory);
+      
+      updateDebugInfo();
+    };
+    
+    function updateDebugInfo() {
+      const container = document.getElementById('avatarAccessory');
+      document.getElementById('currentAccessory').textContent = currentAccessoryId;
+      document.getElementById('containerContent').textContent = container.innerHTML || 'empty';
+      document.getElementById('containerStyle').textContent = `display: ${container.style.display}`;
+    }
+    
+    // Initialize
+    setAccessory('none');
+  </script>
+</body>
+</html> 

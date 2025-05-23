@@ -196,9 +196,11 @@ async function loadProfile(profileData) {
 /**
  * Mettre à jour l'affichage de l'avatar
  */
-function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar object {head: 'id', body: 'id', ...}
+function updateAvatarDisplay(avatarData) {
+  console.log("[ProfileJs] Updating avatar display with data:", avatarData);
+  
   try {
-    const skins = skinService.getAvailableSkins(); // Get all available skin details
+    const skins = skinService.getAvailableSkins();
     const defaultHeadId = 'default_boy_head';
     const defaultBodyId = 'default_boy_body';
     const defaultBackgroundId = 'default_background';
@@ -209,66 +211,86 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
     const backgroundId = avatarData?.background || defaultBackgroundId;
     const accessoryId = avatarData?.accessory || defaultAccessoryId;
 
+    console.log("[ProfileJs] Avatar parts:", { headId, bodyId, backgroundId, accessoryId });
+
     const headSkin = skins.head.find(s => s.id === headId) || skins.head.find(s => s.id === defaultHeadId);
     const bodySkin = skins.body.find(s => s.id === bodyId) || skins.body.find(s => s.id === defaultBodyId);
     const backgroundSkin = skins.background.find(s => s.id === backgroundId) || skins.background.find(s => s.id === defaultBackgroundId);
-    const accessorySkin = skins.accessory.find(s => s.id === accessoryId) || skins.accessory.find(s => s.id === defaultAccessoryId);
+    const accessorySkin = skins.accessory.find(s => s.id === accessoryId);
 
-    // Global DOM elements from file: userAvatarHead, userAvatarBody, userAvatarBackground (img), userAvatarAccessory (div)
-    // New code expects: userAvatarHead, userAvatarBody, avatarContainer (div for background), userAvatarAccessoryDiv, userAvatarAccessoryImg
+    // Update head
+    if (userAvatarHead && headSkin) {
+      userAvatarHead.src = headSkin.image;
+      console.log("[ProfileJs] Updated head to:", headSkin.image);
+    } else if (userAvatarHead) {
+      userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
+    }
 
-    if (userAvatarHead && headSkin) userAvatarHead.src = headSkin.image;
-    else if (userAvatarHead) userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
-
-    if (userAvatarBody && bodySkin) userAvatarBody.src = bodySkin.image;
-    else if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+    // Update body
+    if (userAvatarBody && bodySkin) {
+      userAvatarBody.src = bodySkin.image;
+      console.log("[ProfileJs] Updated body to:", bodySkin.image);
+    } else if (userAvatarBody) {
+      userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
+    }
     
-    // Fix: Get the avatar container properly - it should be userAvatarContainer in the HTML
+    // Update background
     const avatarContainer = document.getElementById('userAvatarContainer');
     if (avatarContainer && backgroundSkin) {
-        avatarContainer.style.backgroundImage = `url('${backgroundSkin.image}')`;
+      avatarContainer.style.backgroundImage = `url('${backgroundSkin.image}')`;
+      console.log("[ProfileJs] Updated background to:", backgroundSkin.image);
     } else if (avatarContainer) {
-        avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
+      avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
     }
     
-    // Hide the original <img> tag for background (userAvatarBackground)
-    if(userAvatarBackground) userAvatarBackground.style.display = 'none';
+    // Hide the original background img element
+    if (userAvatarBackground) userAvatarBackground.style.display = 'none';
 
-    // Handle accessory display - userAvatarAccessory is the DIV container
+    // Handle accessory - completely reset and rebuild
     if (userAvatarAccessory) {
-      // Find or create the img element within the accessory container
-      let accessoryImgElement = userAvatarAccessory.querySelector('img');
-      if (!accessoryImgElement) {
-        // Create img element if it doesn't exist
-        accessoryImgElement = document.createElement('img');
-        accessoryImgElement.style.width = '100%';
-        accessoryImgElement.style.height = '100%';
-        accessoryImgElement.style.objectFit = 'contain';
-        userAvatarAccessory.appendChild(accessoryImgElement);
-      }
-
-      if (accessorySkin && accessoryId !== 'none') {
-        // Show accessory image for non-"none" accessories
-        accessoryImgElement.src = accessorySkin.image;
-        accessoryImgElement.style.display = 'block';
-        accessoryImgElement.style.opacity = '1';
-        userAvatarAccessory.style.display = 'block'; 
+      console.log("[ProfileJs] Processing accessory:", accessoryId, accessorySkin);
+      
+      // Clear any existing content
+      userAvatarAccessory.innerHTML = '';
+      
+      // Always show the container
+      userAvatarAccessory.style.display = 'block';
+      
+      if (accessoryId === 'none') {
+        // For "none" accessory, leave the container empty but visible
+        console.log("[ProfileJs] Accessory set to 'none' - container empty");
+      } else if (accessorySkin && accessorySkin.image) {
+        // Create and add image for real accessories
+        const accessoryImg = document.createElement('img');
+        accessoryImg.src = accessorySkin.image;
+        accessoryImg.alt = 'Accessory';
+        accessoryImg.style.width = '100%';
+        accessoryImg.style.height = '100%';
+        accessoryImg.style.objectFit = 'contain';
+        accessoryImg.style.display = 'block';
+        
+        accessoryImg.onerror = function() {
+          console.warn("[ProfileJs] Failed to load accessory image:", accessorySkin.image);
+          this.style.display = 'none';
+        };
+        
+        userAvatarAccessory.appendChild(accessoryImg);
+        console.log("[ProfileJs] Added accessory image:", accessorySkin.image);
       } else {
-        // Hide accessory for "none" - make it completely invisible
-        accessoryImgElement.style.display = 'none';
-        userAvatarAccessory.style.display = 'block'; // Keep container but hide image
+        console.warn("[ProfileJs] Unknown accessory or missing image:", accessoryId);
       }
     }
+
   } catch (error) {
     console.error("[ProfileJs] Error updating avatar display:", error);
-    // Fallback
+    // Robust fallback
     if (userAvatarHead) userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
     if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     const avatarContainer = document.getElementById('userAvatarContainer');
     if (avatarContainer) avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
     if (userAvatarAccessory) {
-      const accessoryImgElement = userAvatarAccessory.querySelector('img');
-      if (accessoryImgElement) accessoryImgElement.style.display = 'none';
+      userAvatarAccessory.innerHTML = '';
+      userAvatarAccessory.style.display = 'block';
     }
   }
 }
@@ -338,7 +360,7 @@ async function loadInventory(profileData) {
           const skinItem = document.createElement('div');
           skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
           
-          // Use the skin's image or fallback for all skins including "none"
+          // Use correct path for placeholder
           const fallbackImage = 'assets/images/placeholder.webp';
           const skinImage = skin.image || fallbackImage;
           
