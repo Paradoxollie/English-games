@@ -5,54 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - English Quest</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="scripts/lib/bcrypt.min.js"></script>
     <script type="module">
-        import firebaseService from './src/core/services/firebase.service.js';
-        import { addXpToUser } from './src/core/models/user.model.js';
+        import { authService } from './scripts/auth-service.js';
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDoc,
+            getDocs, 
+            updateDoc, 
+            query, 
+            orderBy, 
+            limit 
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         console.log('Admin page loaded');
 
-        // Vérifier si l'utilisateur est admin
-        firebaseService.onAuthStateChange(async (user) => {
-            console.log('Auth state changed:', user);
-            
-            if (!user) {
-                console.log('No user found, redirecting to login');
-                window.location.href = '/login.html';
-                return;
+        let db;
+
+        // Initialize and check admin status
+        async function init() {
+            try {
+                await authService.init();
+                const user = authService.getCurrentUser();
+                
+                if (!user) {
+                    console.log('No user found, redirecting to login');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                console.log('Checking admin status for user:', user.username);
+                
+                if (!user.isAdmin) {
+                    console.log('User is not admin, redirecting to index');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                console.log('User is admin, loading data');
+                
+                // Get Firestore instance
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
+                const { firebaseConfig } = await import('./src/config/app.config.js');
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                // Load data
+                await loadUsers();
+                await loadScores();
+            } catch (error) {
+                console.error('Error during admin init:', error);
+                window.location.href = 'login.html';
             }
+        }
 
-            console.log('Checking admin status for user:', user.uid);
-            const isAdmin = await firebaseService.isUserAdmin(user.uid);
-            console.log('Is admin:', isAdmin);
-
-            if (!isAdmin) {
-                console.log('User is not admin, redirecting to index');
-                window.location.href = '/index.html';
-                return;
-            }
-
-            console.log('User is admin, loading data');
-            // Charger les données
-            loadUsers();
-            loadScores();
-        });
-
-        // Charger les utilisateurs
+        // Load all users
         async function loadUsers() {
             try {
                 console.log('Loading users...');
-                const users = await firebaseService.getAllProfiles();
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log('Users loaded:', users);
 
                 const usersTable = document.getElementById('usersTable');
                 usersTable.innerHTML = users.map(user => `
                     <tr>
-                        <td class="px-4 py-2"><input type="text" value="${user.username || 'N/A'}" id="username-${user.id}" class="border rounded px-2 py-1 w-full" ${user.username?.toLowerCase() === 'ollie' ? 'readonly' : ''}></td>
-                        <td class="px-4 py-2"><input type="number" value="${user.xp || 0}" id="xp-${user.id}" class="border rounded px-2 py-1 w-full"></td>
-                        <td class="px-4 py-2"><input type="number" value="${user.coins || 0}" id="coins-${user.id}" class="border rounded px-2 py-1 w-full"></td>
+                        <td class="px-4 py-2">
+                            <input type="text" value="${user.username || 'N/A'}" 
+                                   id="username-${user.id}" 
+                                   class="border rounded px-2 py-1 w-full" 
+                                   ${user.username?.toLowerCase() === 'ollie' ? 'readonly' : ''}>
+                        </td>
+                        <td class="px-4 py-2">
+                            <input type="number" value="${user.xp || 0}" 
+                                   id="xp-${user.id}" 
+                                   class="border rounded px-2 py-1 w-full">
+                        </td>
+                        <td class="px-4 py-2">
+                            <input type="number" value="${user.coins || 0}" 
+                                   id="coins-${user.id}" 
+                                   class="border rounded px-2 py-1 w-full">
+                        </td>
                         <td class="px-4 py-2">${user.pendingXP || 0}</td>
                         <td class="px-4 py-2">${user.pendingCoins || 0}</td>
-                        <td class="px-4 py-2">${new Date(user.lastLogin).toLocaleString()}</td>
+                        <td class="px-4 py-2">${user.lastLogin ? new Date(user.lastLogin.seconds * 1000).toLocaleString() : 'Jamais'}</td>
                         <td class="px-4 py-2">${user.isAdmin ? 'Oui' : 'Non'}</td>
                         <td class="px-4 py-2 flex flex-col space-y-1">
                             <button onclick="updateUser('${user.id}')" 
@@ -62,10 +100,6 @@
                             <button onclick="toggleAdmin('${user.id}', ${!user.isAdmin})" 
                                     class="bg-blue-500 text-white px-2 py-1 rounded text-sm">
                                 ${user.isAdmin ? 'Retirer Admin' : 'Rendre Admin'}
-                            </button>
-                            <button onclick="resetPassword('${user.id}')" 
-                                    class="bg-yellow-500 text-white px-2 py-1 rounded text-sm">
-                                Réinitialiser MDP
                             </button>
                             <button onclick="approveRewards('${user.id}')"
                                     class="bg-purple-500 text-white px-2 py-1 rounded text-sm">
@@ -77,49 +111,60 @@
                 console.log('Users table updated');
             } catch (error) {
                 console.error('Error loading users:', error);
+                document.getElementById('usersTable').innerHTML = '<tr><td colspan="8" class="px-4 py-2 text-red-500">Erreur lors du chargement des utilisateurs</td></tr>';
             }
         }
 
-        // Charger les scores
+        // Load scores (simplified)
         async function loadScores() {
             try {
                 console.log('Loading scores...');
-                const scores = await firebaseService.getAllScores();
+                const scoresQuery = query(collection(db, 'scores'), orderBy('timestamp', 'desc'), limit(50));
+                const scoresSnapshot = await getDocs(scoresQuery);
+                const scores = scoresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log('Scores loaded:', scores);
 
                 const scoresTable = document.getElementById('scoresTable');
-                scoresTable.innerHTML = scores.map(score => `
-                    <tr>
-                        <td class="px-4 py-2">${score.userId}</td>
-                        <td class="px-4 py-2">${score.gameId}</td>
-                        <td class="px-4 py-2">${score.score}</td>
-                        <td class="px-4 py-2">${new Date(score.timestamp).toLocaleString()}</td>
-                    </tr>
-                `).join('');
+                if (scores.length === 0) {
+                    scoresTable.innerHTML = '<tr><td colspan="4" class="px-4 py-2 text-center">Aucun score trouvé</td></tr>';
+                } else {
+                    scoresTable.innerHTML = scores.map(score => `
+                        <tr>
+                            <td class="px-4 py-2">${score.userId || 'Inconnu'}</td>
+                            <td class="px-4 py-2">${score.gameId || 'Inconnu'}</td>
+                            <td class="px-4 py-2">${score.score || 0}</td>
+                            <td class="px-4 py-2">${score.timestamp ? new Date(score.timestamp.seconds * 1000).toLocaleString() : 'Date inconnue'}</td>
+                        </tr>
+                    `).join('');
+                }
                 console.log('Scores table updated');
             } catch (error) {
                 console.error('Error loading scores:', error);
+                document.getElementById('scoresTable').innerHTML = '<tr><td colspan="4" class="px-4 py-2 text-red-500">Erreur lors du chargement des scores</td></tr>';
             }
         }
 
-        // Fonction pour changer le statut admin d'un utilisateur
+        // Toggle admin status
         window.toggleAdmin = async function(userId, isAdmin) {
             try {
                 console.log('Toggling admin status for user:', userId, 'to:', isAdmin);
-                await firebaseService.setUserAdmin(userId, isAdmin);
+                const userDocRef = doc(db, 'users', userId);
+                await updateDoc(userDocRef, { isAdmin });
                 console.log('Admin status updated, reloading users');
-                loadUsers(); // Recharger la liste des utilisateurs
+                await loadUsers();
             } catch (error) {
                 console.error('Error toggling admin status:', error);
+                alert('Erreur lors de la modification du statut admin');
             }
         };
 
+        // Update user
         window.updateUser = async function(userId) {
             try {
                 const usernameInput = document.getElementById(`username-${userId}`);
                 const newUsername = usernameInput.value;
                 const newXp = parseInt(document.getElementById(`xp-${userId}`).value);
-                const newCoins = parseInt(document.getElementById(`coins-${userId}`).value); // Changed gold to coins
+                const newCoins = parseInt(document.getElementById(`coins-${userId}`).value);
 
                 if (!newUsername || isNaN(newXp) || isNaN(newCoins)) {
                     alert('Veuillez vérifier les valeurs saisies.');
@@ -132,100 +177,79 @@
                 }
 
                 console.log('Updating user:', userId, updatePayload);
-                await firebaseService.updateUserProfile(userId, updatePayload);
+                const userDocRef = doc(db, 'users', userId);
+                await updateDoc(userDocRef, updatePayload);
                 console.log('User updated, reloading users');
                 alert('Utilisateur mis à jour avec succès!');
-                loadUsers();
+                await loadUsers();
             } catch (error) {
                 console.error('Error updating user:', error);
                 alert('Erreur lors de la mise à jour de l\'utilisateur.');
             }
         };
 
-        window.resetPassword = async function(userId) {
-            try {
-                if (!confirm('Voulez-vous vraiment marquer cet utilisateur pour une réinitialisation de mot de passe ? Il devra le changer à sa prochaine connexion.')) {
-                    return;
-                }
-                console.log('Flagging user for password reset:', userId);
-                await firebaseService.flagUserForPasswordReset(userId);
-                console.log('User flagged for password reset');
-                alert('Utilisateur marqué pour la réinitialisation du mot de passe.');
-            } catch (error) {
-                console.error('Error flagging user for password reset:', error);
-                alert('Erreur lors du marquage pour la réinitialisation du mot de passe.');
-            }
-        };
-
-        // Fonction pour déconnecter
-        window.logout = async function() {
-            try {
-                console.log('Logging out...');
-                await firebaseService.logout();
-                console.log('Logged out, redirecting to login page');
-                window.location.href = '/login.html';
-            } catch (error) {
-                console.error('Error logging out:', error);
-            }
-        };
-
+        // Approve rewards
         window.approveRewards = async function(userId) {
             try {
-                console.log(\`Approving rewards for user: \${userId}\`);
-                const userProfile = await firebaseService.getProfile(userId);
-
-                if (!userProfile) {
-                    alert('Profil utilisateur non trouvé.');
+                console.log(`Approving rewards for user: ${userId}`);
+                
+                // Get current user data
+                const userDocRef = doc(db, 'users', userId);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (!userDoc.exists()) {
+                    alert('Utilisateur non trouvé.');
                     return;
                 }
 
-                const pendingXP = userProfile.pendingXP || 0;
-                const pendingCoins = userProfile.pendingCoins || 0;
+                const userData = userDoc.data();
+                const pendingXP = userData.pendingXP || 0;
+                const pendingCoins = userData.pendingCoins || 0;
 
                 if (pendingXP === 0 && pendingCoins === 0) {
                     alert('Aucune récompense en attente à approuver.');
                     return;
                 }
 
-                // Create a mutable copy for level-up logic if needed
-                let updatedProfileData = { ...userProfile };
-
-                // Apply pending XP and handle level-ups
-                if (pendingXP > 0) {
-                    const xpResult = addXpToUser(updatedProfileData, pendingXP); // addXpToUser returns { user, leveledUp, oldLevel, newLevel }
-                    updatedProfileData = xpResult.user; // This now has updated xp and level
-                    if (xpResult.leveledUp) {
-                        alert(\`L'utilisateur \${userProfile.username} est monté au niveau \${xpResult.newLevel}!\`);
-                    }
-                }
-
-                // Apply pending coins
-                updatedProfileData.coins = (updatedProfileData.coins || 0) + pendingCoins;
+                // Calculate new values
+                const newXp = (userData.xp || 0) + pendingXP;
+                const newCoins = (userData.coins || 0) + pendingCoins;
                 
-                // Reset pending amounts
-                updatedProfileData.pendingXP = 0;
-                updatedProfileData.pendingCoins = 0;
-                
-                // Prepare payload for Firestore (only fields that changed or need to be set)
-                const finalUpdatePayload = {
-                    xp: updatedProfileData.xp,
-                    level: updatedProfileData.level,
-                    coins: updatedProfileData.coins,
+                // Simple level calculation (100 XP per level)
+                const newLevel = Math.floor(newXp / 100) + 1;
+
+                const updatePayload = {
+                    xp: newXp,
+                    coins: newCoins,
+                    level: newLevel,
                     pendingXP: 0,
-                    pendingCoins: 0,
-                    // Include stats if addXpToUser modified it and it's part of the PROFILES doc directly
-                    // If stats is a sub-object, ensure it's updated correctly:
-                    stats: updatedProfileData.stats 
+                    pendingCoins: 0
                 };
 
-                await firebaseService.updateUserProfile(userId, finalUpdatePayload);
-                alert('Récompenses approuvées et profil mis à jour !');
-                loadUsers(); // Refresh the list
+                await updateDoc(userDocRef, updatePayload);
+                
+                alert(`Récompenses approuvées! XP: +${pendingXP}, Pièces: +${pendingCoins}`);
+                await loadUsers();
             } catch (error) {
                 console.error('Error approving rewards:', error);
-                alert('Erreur lors de l'approbation des récompenses: ' + error.message);
+                alert('Erreur lors de l\'approbation des récompenses: ' + error.message);
             }
         };
+
+        // Logout function
+        window.logout = async function() {
+            try {
+                console.log('Logging out...');
+                await authService.logout();
+                console.log('Logged out, redirecting to login page');
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Error logging out:', error);
+            }
+        };
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </head>
 <body class="bg-gray-100">
@@ -246,14 +270,16 @@
                         <tr>
                             <th class="px-4 py-2">Pseudo</th>
                             <th class="px-4 py-2">XP</th>
-                            <th class="px-4 py-2">Gold</th>
+                            <th class="px-4 py-2">Pièces</th>
+                            <th class="px-4 py-2">XP en attente</th>
+                            <th class="px-4 py-2">Pièces en attente</th>
                             <th class="px-4 py-2">Dernière connexion</th>
                             <th class="px-4 py-2">Admin</th>
                             <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="usersTable">
-                        <!-- Users will be loaded here -->
+                        <tr><td colspan="8" class="px-4 py-2 text-center">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -273,7 +299,7 @@
                         </tr>
                     </thead>
                     <tbody id="scoresTable">
-                        <!-- Scores will be loaded here -->
+                        <tr><td colspan="4" class="px-4 py-2 text-center">Chargement...</td></tr>
                     </tbody>
                 </table>
             </div>

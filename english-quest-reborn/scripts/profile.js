@@ -122,23 +122,23 @@ const defaultAchievements = [
  */
 async function init() {
   try {
-    await authService.initializeAuth(); // Changed from authService.init()
-    const authState = authService.getAuthState();
+    await authService.init(); // Use the new init method
+    const user = authService.getCurrentUser(); // Use getCurrentUser instead of getAuthState
 
-    if (!authState.isAuthenticated || !authState.profile) {
-      console.warn("[ProfileJs] User not authenticated or profile missing. Redirecting to login.html");
+    if (!user) {
+      console.warn("[ProfileJs] User not authenticated. Redirecting to login.html");
       window.location.href = 'login.html';
       return;
     }
     
-    // console.log("[ProfileJs] User IS connected. Username:", authState.profile.username); // Keep console logs if desired
-    await loadProfile(authState.profile);
+    console.log("[ProfileJs] User IS connected. Username:", user.username);
+    await loadProfile(user);
     initTabs();
     setupEventListeners();
-    // console.log("[ProfileJs] Profile page initialization successful."); // Keep console logs if desired
+    console.log("[ProfileJs] Profile page initialization successful.");
   } catch (error) {
     console.error("[ProfileJs] CRITICAL ERROR during profile page init:", error);
-    // Optional: window.location.href = 'login.html'; 
+    window.location.href = 'login.html'; 
   }
 }
 
@@ -171,7 +171,7 @@ async function loadProfile(profileData) {
     updateAvatarDisplay(profileData.avatar); 
     await loadInventory(profileData); // loadInventory will also take profileData
     loadAchievements(profileData.achievements || []);
-    updateSettings(profileData.settings); // Adjusted to call existing updateSettings function
+    updateSettingsUI(profileData.settings); // Fixed function name
 
     // Assuming adminPanelLinkContainer is defined globally or fetched if needed
     const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
@@ -213,8 +213,8 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
     if (userAvatarBody && bodySkin) userAvatarBody.src = bodySkin.image;
     else if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     
-    // Assuming 'avatarContainer' is a new global const that should point to the main avatar display div
-    const avatarContainer = document.getElementById('avatarContainer'); // Attempt to get it if not global
+    // Fix: Get the avatar container properly - it should be userAvatarContainer in the HTML
+    const avatarContainer = document.getElementById('userAvatarContainer');
     if (avatarContainer && backgroundSkin) {
         avatarContainer.style.backgroundImage = `url('${backgroundSkin.image}')`;
     } else if (avatarContainer) {
@@ -242,7 +242,7 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
     // Fallback
     if (userAvatarHead) userAvatarHead.src = 'assets/avatars/heads/default_boy.png';
     if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
-    const avatarContainer = document.getElementById('avatarContainer');
+    const avatarContainer = document.getElementById('userAvatarContainer');
     if (avatarContainer) avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
     const accessoryImgElement = userAvatarAccessory ? userAvatarAccessory.querySelector('img') : null;
     if (accessoryImgElement) accessoryImgElement.style.display = 'none';
@@ -365,8 +365,8 @@ function setupInventoryButtons() {
       try {
         const result = await skinService.buySkin(skinId, skinType);
         if (result.success) {
-          alert(\`Achat réussi: \${result.skin.name}\`);
-          const latestProfile = authService.getAuthState().profile;
+          alert(`Achat réussi: ${result.skin.name}`);
+          const latestProfile = authService.getCurrentUser();
           if (latestProfile) {
             await loadProfile(latestProfile); 
           } else {
@@ -394,7 +394,7 @@ function setupInventoryButtons() {
       try {
         const result = await skinService.equipSkin(skinId, skinType);
         if (result.success) {
-           const latestProfile = authService.getAuthState().profile;
+           const latestProfile = authService.getCurrentUser();
            if (latestProfile) {
             await loadProfile(latestProfile);
            } else {
@@ -436,15 +436,15 @@ function loadAchievements(userAchievements = []) {
 
     achievementsToDisplay.forEach(ach => {
       const item = document.createElement('div');
-      item.className = \`achievement-card \${ach.unlocked ? 'unlocked' : 'locked'}\`;
-      item.innerHTML = \`
-        <div class="achievement-icon"><i class="\${ach.icon || 'fas fa-question-circle'}"></i></div>
+      item.className = `achievement-card ${ach.unlocked ? 'unlocked' : 'locked'}`;
+      item.innerHTML = `
+        <div class="achievement-icon"><i class="${ach.icon || 'fas fa-question-circle'}"></i></div>
         <div class="achievement-info">
-          <h3>\${ach.title}</h3><p>\${ach.description}</p>
-          \${ach.unlocked && ach.unlockedAt ? \`<span class="achievement-date">Débloqué le \${new Date(ach.unlockedAt).toLocaleDateString()}</span>\` : ''}
+          <h3>${ach.title}</h3><p>${ach.description}</p>
+          ${ach.unlocked && ach.unlockedAt ? `<span class="achievement-date">Débloqué le ${new Date(ach.unlockedAt).toLocaleDateString()}</span>` : ''}
         </div>
-        \${!ach.unlocked ? '<div class="achievement-locked"><i class="fas fa-lock"></i></div>' : ''}
-      \`;
+        ${!ach.unlocked ? '<div class="achievement-locked"><i class="fas fa-lock"></i></div>' : ''}
+      `;
       achievementList.appendChild(item);
     });
   } catch (error) {
@@ -474,29 +474,29 @@ function setupEventListeners() {
   try {
     if(themeToggle) themeToggle.addEventListener('change', async () => {
       const newTheme = themeToggle.checked ? 'dark' : 'light';
-      const profile = authService.getAuthState().profile;
+      const profile = authService.getCurrentUser();
       if(profile?.settings) {
         try {
-          await authService.updateUserProfile({ settings: { ...profile.settings, theme: newTheme } });
+          await authService.updateProfile({ settings: { ...profile.settings, theme: newTheme } });
           document.body.classList.toggle('light-theme', !themeToggle.checked);
         } catch (e) { console.error('Error saving theme', e); /* Revert UI? */ }
       }
     });
     
     if(notificationsToggle) notificationsToggle.addEventListener('change', async () => {
-       const profile = authService.getAuthState().profile;
+       const profile = authService.getCurrentUser();
        if(profile?.settings) {
          try {
-          await authService.updateUserProfile({ settings: { ...profile.settings, notifications: notificationsToggle.checked } });
+          await authService.updateProfile({ settings: { ...profile.settings, notifications: notificationsToggle.checked } });
          } catch (e) { console.error('Error saving notification settings', e); /* Revert UI? */ }
        }
     });
     
     if(soundToggle) soundToggle.addEventListener('change', async () => {
-      const profile = authService.getAuthState().profile;
+      const profile = authService.getCurrentUser();
       if(profile?.settings) {
         try {
-          await authService.updateUserProfile({ settings: { ...profile.settings, sound: soundToggle.checked } });
+          await authService.updateProfile({ settings: { ...profile.settings, sound: soundToggle.checked } });
         } catch (e) { console.error('Error saving sound settings', e); /* Revert UI? */ }
       }
     });

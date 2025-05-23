@@ -211,20 +211,23 @@ class AuthService {
                 level: 1,
                 xp: 0,
                 coins: 100,
+                pendingXP: 0,
+                pendingCoins: 0,
                 avatar: {
-                    head: 'default_boy',
-                    body: 'default_boy',
+                    head: 'default_boy_head',
+                    body: 'default_boy_body',
                     accessory: 'none',
-                    background: 'default'
+                    background: 'default_background'
                 },
-                inventory: [
-                    { id: 'default_boy', type: 'head' },
-                    { id: 'default_girl', type: 'head' },
-                    { id: 'default_boy', type: 'body' },
-                    { id: 'default_girl', type: 'body' },
-                    { id: 'none', type: 'accessory' },
-                    { id: 'default', type: 'background' }
-                ],
+                inventory: {
+                    skins: {
+                        head: ['default_boy_head', 'default_girl_head'],
+                        body: ['default_boy_body', 'default_girl_body'],
+                        accessory: ['none'],
+                        background: ['default_background']
+                    },
+                    items: []
+                },
                 achievements: [],
                 settings: {
                     theme: 'dark',

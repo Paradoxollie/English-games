@@ -6,28 +6,18 @@ class SkinService {
       head: [
         { id: 'default_boy_head', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png' },
         { id: 'default_girl_head', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png' },
-        { id: 'bear', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' },
-        { id: 'fox', name: 'Renard', price: 150, image: 'assets/avatars/heads/fox.png' },
-        { id: 'cat', name: 'Chat', price: 200, image: 'assets/avatars/heads/cat.png' }
+        { id: 'bear_head', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' }
       ],
       body: [
         { id: 'default_boy_body', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png' },
         { id: 'default_girl_body', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png' },
-        { id: 'knight', name: 'Chevalier', price: 200, image: 'assets/avatars/bodies/knight.png' },
-        { id: 'wizard', name: 'Magicien', price: 250, image: 'assets/avatars/bodies/wizard.png' },
-        { id: 'ninja', name: 'Ninja', price: 300, image: 'assets/avatars/bodies/ninja.png' }
+        { id: 'bear_body', name: 'Ours', price: 100, image: 'assets/avatars/bodies/bear.png' }
       ],
       accessory: [
-        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' },
-        { id: 'hat', name: 'Chapeau', price: 100, image: 'assets/avatars/accessories/hat.png' },
-        { id: 'glasses', name: 'Lunettes', price: 150, image: 'assets/avatars/accessories/glasses.png' },
-        { id: 'crown', name: 'Couronne', price: 500, image: 'assets/avatars/accessories/crown.png' }
+        { id: 'none', name: 'Aucun', price: 0, image: 'assets/avatars/accessories/none.png' }
       ],
       background: [
-        { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' },
-        { id: 'forest', name: 'Forêt', price: 200, image: 'assets/avatars/backgrounds/forest.png' },
-        { id: 'castle', name: 'Château', price: 300, image: 'assets/avatars/backgrounds/castle.png' },
-        { id: 'space', name: 'Espace', price: 400, image: 'assets/avatars/backgrounds/space.png' }
+        { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }
       ]
     };
   }
