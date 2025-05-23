@@ -507,41 +507,5 @@
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>
   <script type="module" src="scripts/profile.js"></script>
-  
-  <!-- Script pour gérer le background de la carte avatar -->
-  <script>
-    // Attendre que le document soit chargé
-    document.addEventListener('DOMContentLoaded', function() {
-      // Observer les changements d'attributs sur l'élément de background
-      const backgroundImg = document.getElementById('userAvatarBackground');
-      const avatarContainer = document.getElementById('userAvatarContainer');
-      
-      // Fonction pour mettre à jour le background
-      function updateAvatarBackground() {
-        if (backgroundImg && avatarContainer) {
-          // Obtenir l'URL de l'image de background
-          const bgUrl = backgroundImg.getAttribute('src');
-          // Appliquer comme fond du conteneur
-          avatarContainer.style.backgroundImage = `url('${bgUrl}')`;
-        }
-      }
-      
-      // Observer les changements sur l'image de fond
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
-            updateAvatarBackground();
-          }
-        });
-      });
-      
-      // Configurer l'observation
-      if (backgroundImg) {
-        observer.observe(backgroundImg, { attributes: true });
-        // Initialiser avec l'image actuelle
-        updateAvatarBackground();
-      }
-    });
-  </script>
 </body>
 </html>

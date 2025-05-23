@@ -6,6 +6,10 @@
 import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
 
+// État pour éviter les boucles infinies
+let isUpdatingAvatar = false;
+let isLoadingInventory = false;
+
 // Éléments du DOM
 const userAvatarHead = document.getElementById('userAvatarHead');
 const userAvatarBody = document.getElementById('userAvatarBody');
@@ -197,6 +201,13 @@ async function loadProfile(profileData) {
  * Mettre à jour l'affichage de l'avatar
  */
 function updateAvatarDisplay(avatarData) {
+  // Protection contre les appels multiples simultanés
+  if (isUpdatingAvatar) {
+    console.log("[ProfileJs] updateAvatarDisplay already in progress, skipping");
+    return;
+  }
+  
+  isUpdatingAvatar = true;
   console.log("[ProfileJs] Updating avatar display with data:", avatarData);
   
   try {
@@ -292,6 +303,9 @@ function updateAvatarDisplay(avatarData) {
       userAvatarAccessory.innerHTML = '';
       userAvatarAccessory.style.display = 'block';
     }
+  } finally {
+    // Toujours libérer le verrou
+    isUpdatingAvatar = false;
   }
 }
 
@@ -322,6 +336,14 @@ function initTabs() {
  * Chargement de l'inventaire
  */
 async function loadInventory(profileData) {
+  // Protection contre les chargements multiples simultanés
+  if (isLoadingInventory) {
+    console.log("[ProfileJs] loadInventory already in progress, skipping");
+    return;
+  }
+  
+  isLoadingInventory = true;
+  
   try {
     // Ensure global DOM element 'inventoryGrid' is used
     if (!inventoryGrid) {
@@ -383,6 +405,9 @@ async function loadInventory(profileData) {
   } catch (error) {
     console.error("[ProfileJs] Error loading inventory:", error);
     if (inventoryGrid) inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
+  } finally {
+    // Toujours libérer le verrou
+    isLoadingInventory = false;
   }
 }
 
@@ -403,23 +428,50 @@ function getTypeName(type) {
  * Configuration des boutons d'inventaire
  */
 function setupInventoryButtons() {
+  // Supprimer les anciens event listeners pour éviter les doublons
+  document.querySelectorAll('.btn-buy').forEach(button => {
+    // Cloner le bouton pour supprimer tous les event listeners existants
+    const newButton = button.cloneNode(true);
+    button.parentNode.replaceChild(newButton, button);
+  });
+  
+  document.querySelectorAll('.btn-equip').forEach(button => {
+    // Cloner le bouton pour supprimer tous les event listeners existants
+    const newButton = button.cloneNode(true);
+    button.parentNode.replaceChild(newButton, button);
+  });
+
+  // Ajouter les nouveaux event listeners
   document.querySelectorAll('.btn-buy').forEach(button => {
     button.addEventListener('click', async (e) => {
       const targetButton = e.currentTarget;
+      
+      // Protection contre les clics multiples
+      if (targetButton.disabled || targetButton.dataset.processing) {
+        console.log("[ProfileJs] Button already processing, ignoring click");
+        return;
+      }
+      
       targetButton.disabled = true;
+      targetButton.dataset.processing = 'true';
+      const originalText = targetButton.textContent;
+      targetButton.textContent = 'Achat en cours...';
+      
       const skinId = targetButton.dataset.skinId;
       const skinType = targetButton.dataset.skinType;
+      
       try {
+        console.log("[ProfileJs] Buying skin:", skinId, skinType);
         const result = await skinService.buySkin(skinId, skinType);
         if (result.success) {
           alert(`Achat réussi: ${result.skin.name}`);
-          const latestProfile = authService.getCurrentUser();
-          if (latestProfile) {
-            await loadProfile(latestProfile); 
-          } else {
-            console.warn('[ProfileJs] Profile data not immediately available after buy, re-initializing.');
-            await init(); 
-          }
+          // Attendre un moment avant de recharger pour éviter les conflits
+          setTimeout(async () => {
+            const latestProfile = authService.getCurrentUser();
+            if (latestProfile) {
+              await loadProfile(latestProfile); 
+            }
+          }, 500);
         } else {
           alert(result.error || "Erreur lors de l'achat.");
         }
@@ -427,7 +479,9 @@ function setupInventoryButtons() {
         console.error('[ProfileJs] Exception during buy:', error);
         alert("Exception lors de l'achat: " + error.message);
       } finally {
-        if (targetButton) targetButton.disabled = false;
+        targetButton.disabled = false;
+        targetButton.textContent = originalText;
+        delete targetButton.dataset.processing;
       }
     });
   });
@@ -435,19 +489,32 @@ function setupInventoryButtons() {
   document.querySelectorAll('.btn-equip').forEach(button => {
     button.addEventListener('click', async (e) => {
       const targetButton = e.currentTarget;
+      
+      // Protection contre les clics multiples
+      if (targetButton.disabled || targetButton.dataset.processing) {
+        console.log("[ProfileJs] Button already processing, ignoring click");
+        return;
+      }
+      
       targetButton.disabled = true;
+      targetButton.dataset.processing = 'true';
+      const originalText = targetButton.textContent;
+      targetButton.textContent = 'Équipement...';
+      
       const skinId = targetButton.dataset.skinId;
       const skinType = targetButton.dataset.skinType;
+      
       try {
+        console.log("[ProfileJs] Equipping skin:", skinId, skinType);
         const result = await skinService.equipSkin(skinId, skinType);
         if (result.success) {
-           const latestProfile = authService.getCurrentUser();
-           if (latestProfile) {
-            await loadProfile(latestProfile);
-           } else {
-            console.warn('[ProfileJs] Profile data not immediately available after equip, re-initializing.');
-            await init();
-           }
+           // Attendre un moment avant de recharger pour éviter les conflits
+           setTimeout(async () => {
+             const latestProfile = authService.getCurrentUser();
+             if (latestProfile) {
+              await loadProfile(latestProfile);
+             }
+           }, 500);
         } else {
           alert(result.error || "Erreur lors de l'équipement.");
         }
@@ -455,7 +522,9 @@ function setupInventoryButtons() {
         console.error('[ProfileJs] Exception during equip:', error);
         alert("Exception lors de l'équipement: " + error.message);
       } finally {
-        if (targetButton) targetButton.disabled = false;
+        targetButton.disabled = false;
+        targetButton.textContent = originalText;
+        delete targetButton.dataset.processing;
       }
     });
   });
