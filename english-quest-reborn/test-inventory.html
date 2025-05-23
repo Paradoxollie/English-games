@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Inventaire - English Quest</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+        .inventory-item { 
+            border: 1px solid #ddd; 
+            margin: 5px; 
+            padding: 10px; 
+            display: inline-block; 
+        }
+        .owned { border-color: green; }
+        .equipped { background-color: #e8f5e8; }
+    </style>
+</head>
+<body>
+    <h1>Test Inventaire - English Quest</h1>
+    
+    <div class="test-section">
+        <h2>État d'authentification</h2>
+        <div id="auth-status">Vérification...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Service de skins</h2>
+        <div id="skin-service-status">Test du service...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Inventaire utilisateur</h2>
+        <div id="inventory-status">Chargement...</div>
+        <div id="inventory-display"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test d'achat de skin</h2>
+        <button id="test-buy-btn" disabled>Tester achat (Ours - 100 pièces)</button>
+        <div id="buy-result"></div>
+    </div>
+
+    <script src="scripts/lib/bcrypt.min.js"></script>
+    <script type="module">
+        import { authService } from './scripts/auth-service.js';
+        import { skinService } from './scripts/skin-service.js';
+
+        let currentUser = null;
+
+        async function testAuth() {
+            try {
+                await authService.init();
+                currentUser = authService.getCurrentUser();
+                
+                if (currentUser) {
+                    document.getElementById('auth-status').innerHTML = 
+                        `<span class="success">✓ Utilisateur connecté: ${currentUser.username}</span><br>
+                         Niveau: ${currentUser.level || 1}, XP: ${currentUser.xp || 0}, Pièces: ${currentUser.coins || 0}`;
+                    return true;
+                } else {
+                    document.getElementById('auth-status').innerHTML = 
+                        `<span class="error">✗ Aucun utilisateur connecté</span>`;
+                    return false;
+                }
+            } catch (error) {
+                document.getElementById('auth-status').innerHTML = 
+                    `<span class="error">✗ Erreur d'authentification: ${error.message}</span>`;
+                return false;
+            }
+        }
+
+        function testSkinService() {
+            try {
+                const skins = skinService.getAvailableSkins();
+                const headCount = skins.head?.length || 0;
+                const bodyCount = skins.body?.length || 0;
+                const accessoryCount = skins.accessory?.length || 0;
+                const backgroundCount = skins.background?.length || 0;
+                
+                document.getElementById('skin-service-status').innerHTML = 
+                    `<span class="success">✓ Service de skins chargé</span><br>
+                     Têtes: ${headCount}, Corps: ${bodyCount}, Accessoires: ${accessoryCount}, Arrière-plans: ${backgroundCount}`;
+                
+                return true;
+            } catch (error) {
+                document.getElementById('skin-service-status').innerHTML = 
+                    `<span class="error">✗ Erreur service skins: ${error.message}</span>`;
+                return false;
+            }
+        }
+
+        function displayInventory() {
+            if (!currentUser) {
+                document.getElementById('inventory-status').innerHTML = 
+                    `<span class="error">✗ Utilisateur requis pour afficher l'inventaire</span>`;
+                return;
+            }
+
+            try {
+                const skins = skinService.getAvailableSkins();
+                const userInventory = currentUser.inventory?.skins || {};
+                const userAvatar = currentUser.avatar || {};
+                
+                let inventoryHtml = '';
+                
+                Object.entries(skins).forEach(([type, skinsInCategory]) => {
+                    inventoryHtml += `<h3>${getTypeName(type)}</h3>`;
+                    
+                    skinsInCategory.forEach(skin => {
+                        const ownedSkinsForType = userInventory[type] || [];
+                        const owned = ownedSkinsForType.includes(skin.id) || skin.price === 0;
+                        const equipped = userAvatar[type] === skin.id;
+                        
+                        const statusClass = owned ? 'owned' : '';
+                        const equippedClass = equipped ? 'equipped' : '';
+                        
+                        inventoryHtml += `
+                            <div class="inventory-item ${statusClass} ${equippedClass}">
+                                <strong>${skin.name}</strong><br>
+                                Prix: ${skin.price} pièces<br>
+                                Possédé: ${owned ? 'Oui' : 'Non'}<br>
+                                Équipé: ${equipped ? 'Oui' : 'Non'}
+                            </div>
+                        `;
+                    });
+                });
+                
+                document.getElementById('inventory-display').innerHTML = inventoryHtml;
+                document.getElementById('inventory-status').innerHTML = 
+                    `<span class="success">✓ Inventaire affiché</span>`;
+
+                // Enable buy test button if user has enough coins
+                const testBtn = document.getElementById('test-buy-btn');
+                if (currentUser.coins >= 100) {
+                    testBtn.disabled = false;
+                } else {
+                    testBtn.disabled = true;
+                    document.getElementById('buy-result').innerHTML = 
+                        `<span class="warning">Pas assez de pièces pour tester l'achat (${currentUser.coins}/100)</span>`;
+                }
+                
+            } catch (error) {
+                document.getElementById('inventory-status').innerHTML = 
+                    `<span class="error">✗ Erreur affichage inventaire: ${error.message}</span>`;
+            }
+        }
+
+        function getTypeName(type) {
+            const typeNames = {
+                'head': 'Têtes',
+                'body': 'Corps', 
+                'accessory': 'Accessoires',
+                'background': 'Arrière-plans'
+            };
+            return typeNames[type] || type;
+        }
+
+        async function testBuy() {
+            const testBtn = document.getElementById('test-buy-btn');
+            testBtn.disabled = true;
+            
+            try {
+                const result = await skinService.buySkin('bear_head', 'head');
+                
+                if (result.success) {
+                    document.getElementById('buy-result').innerHTML = 
+                        `<span class="success">✓ Achat réussi: ${result.skin.name}</span>`;
+                    
+                    // Refresh user data and display
+                    currentUser = authService.getCurrentUser();
+                    displayInventory();
+                } else {
+                    document.getElementById('buy-result').innerHTML = 
+                        `<span class="error">✗ Échec achat: ${result.error}</span>`;
+                }
+            } catch (error) {
+                document.getElementById('buy-result').innerHTML = 
+                    `<span class="error">✗ Exception lors de l'achat: ${error.message}</span>`;
+            } finally {
+                testBtn.disabled = false;
+            }
+        }
+
+        // Setup event listeners
+        document.getElementById('test-buy-btn').addEventListener('click', testBuy);
+
+        // Run all tests
+        async function runAllTests() {
+            const authOk = await testAuth();
+            const skinServiceOk = testSkinService();
+            
+            if (authOk && skinServiceOk) {
+                displayInventory();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', runAllTests);
+    </script>
+</body>
+</html> 
