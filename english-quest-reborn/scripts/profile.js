@@ -234,20 +234,29 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
     // Hide the original <img> tag for background (userAvatarBackground)
     if(userAvatarBackground) userAvatarBackground.style.display = 'none';
 
-    // userAvatarAccessory is the DIV. We need to find the IMG tag within it.
-    const accessoryImgElement = userAvatarAccessory ? userAvatarAccessory.querySelector('img') : null;
+    // Handle accessory display - userAvatarAccessory is the DIV container
+    if (userAvatarAccessory) {
+      // Find or create the img element within the accessory container
+      let accessoryImgElement = userAvatarAccessory.querySelector('img');
+      if (!accessoryImgElement) {
+        // Create img element if it doesn't exist
+        accessoryImgElement = document.createElement('img');
+        accessoryImgElement.style.width = '100%';
+        accessoryImgElement.style.height = '100%';
+        accessoryImgElement.style.objectFit = 'contain';
+        userAvatarAccessory.appendChild(accessoryImgElement);
+      }
 
-    if (userAvatarAccessory && accessoryImgElement) { // userAvatarAccessory is the Div
-      if (accessorySkin && accessorySkin.id !== 'none' && accessorySkin.image) {
+      if (accessorySkin && accessoryId !== 'none') {
         // Show accessory image for non-"none" accessories
         accessoryImgElement.src = accessorySkin.image;
         accessoryImgElement.style.display = 'block';
+        accessoryImgElement.style.opacity = '1';
         userAvatarAccessory.style.display = 'block'; 
       } else {
-        // Hide accessory for "none" or missing accessories
+        // Hide accessory for "none" - make it completely invisible
         accessoryImgElement.style.display = 'none';
-        // Keep the container visible but hide the image
-        userAvatarAccessory.style.display = 'block';
+        userAvatarAccessory.style.display = 'block'; // Keep container but hide image
       }
     }
   } catch (error) {
@@ -257,8 +266,10 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
     if (userAvatarBody) userAvatarBody.src = 'assets/avatars/bodies/default_boy.png';
     const avatarContainer = document.getElementById('userAvatarContainer');
     if (avatarContainer) avatarContainer.style.backgroundImage = `url('assets/avatars/backgrounds/default.png')`;
-    const accessoryImgElement = userAvatarAccessory ? userAvatarAccessory.querySelector('img') : null;
-    if (accessoryImgElement) accessoryImgElement.style.display = 'none';
+    if (userAvatarAccessory) {
+      const accessoryImgElement = userAvatarAccessory.querySelector('img');
+      if (accessoryImgElement) accessoryImgElement.style.display = 'none';
+    }
   }
 }
 
@@ -327,11 +338,12 @@ async function loadInventory(profileData) {
           const skinItem = document.createElement('div');
           skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
           
-          // Consider a more specific fallback or ensure skin.image is always valid
-          const fallbackImage = 'assets/images/placeholder.webp'; 
+          // Use the skin's image or fallback for all skins including "none"
+          const fallbackImage = 'assets/images/placeholder.webp';
+          const skinImage = skin.image || fallbackImage;
           
           skinItem.innerHTML = `
-            <img src="${skin.image}" alt="${skin.name}" onerror="this.src='${fallbackImage}'">
+            <img src="${skinImage}" alt="${skin.name}" onerror="this.src='${fallbackImage}'" style="${skin.id === 'none' ? 'opacity: 0.5; filter: grayscale(100%);' : ''}">
             <h4>${skin.name}</h4>
             <p>${skin.price} pièces</p>
             ${owned ? 
