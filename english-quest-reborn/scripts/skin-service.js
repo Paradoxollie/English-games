@@ -27,6 +27,66 @@ class SkinService {
     return this.defaultSkins;
   }
 
+  // Migration function to convert old inventory format to new format
+  migrateInventoryFormat(oldInventory) {
+    console.log(`[SkinService] Migrating inventory from old format to new format`);
+    console.log(`[SkinService] Old inventory:`, JSON.stringify(oldInventory, null, 2));
+    
+    // If already in new format, return as is
+    if (oldInventory && typeof oldInventory === 'object' && oldInventory.skins) {
+      console.log(`[SkinService] Inventory already in new format`);
+      return oldInventory;
+    }
+    
+    // If old format (array), convert to new format
+    if (Array.isArray(oldInventory)) {
+      const newInventory = {
+        skins: {
+          head: [],
+          body: [],
+          accessory: [],
+          background: []
+        },
+        items: []
+      };
+      
+      // Convert old array format to new object format
+      oldInventory.forEach(item => {
+        if (item.type && item.id) {
+          const skinType = item.type;
+          const skinId = item.id;
+          
+          // Map old IDs to new IDs
+          let newSkinId = skinId;
+          if (skinId === 'default_girl' && skinType === 'head') newSkinId = 'default_girl_head';
+          if (skinId === 'default_boy' && skinType === 'head') newSkinId = 'default_boy_head';
+          if (skinId === 'default_girl' && skinType === 'body') newSkinId = 'default_girl_body';
+          if (skinId === 'default_boy' && skinType === 'body') newSkinId = 'default_boy_body';
+          if (skinId === 'default' && skinType === 'background') newSkinId = 'default_background';
+          
+          if (newInventory.skins[skinType] && !newInventory.skins[skinType].includes(newSkinId)) {
+            newInventory.skins[skinType].push(newSkinId);
+          }
+        }
+      });
+      
+      console.log(`[SkinService] Migrated inventory:`, JSON.stringify(newInventory, null, 2));
+      return newInventory;
+    }
+    
+    // If null/undefined or other format, return default inventory
+    console.log(`[SkinService] Creating default inventory`);
+    return {
+      skins: {
+        head: ['default_boy_head', 'default_girl_head'],
+        body: ['default_boy_body', 'default_girl_body'],
+        accessory: ['none'],
+        background: ['default_background']
+      },
+      items: []
+    };
+  }
+
   async buySkin(skinId, skinType) {
     try {
       console.log(`[SkinService] ===== STARTING PURCHASE =====`);
@@ -48,8 +108,11 @@ class SkinService {
       }
       console.log(`[SkinService] Skin to buy:`, skinToBuy);
 
-      const currentInventory = JSON.parse(JSON.stringify(user.inventory || { skins: {}, items: [] }));
-      console.log(`[SkinService] Initial inventory copy:`, JSON.stringify(currentInventory, null, 2));
+      // Migrate inventory if needed
+      const migratedInventory = this.migrateInventoryFormat(user.inventory);
+      const currentInventory = JSON.parse(JSON.stringify(migratedInventory));
+      
+      console.log(`[SkinService] Migrated inventory copy:`, JSON.stringify(currentInventory, null, 2));
       
       if (!currentInventory.skins) {
         console.log(`[SkinService] Creating skins object`);
@@ -119,7 +182,9 @@ class SkinService {
         return { success: false, error: 'Utilisateur non connecté' };
       }
 
-      const ownedSkinsForType = user.inventory?.skins?.[skinType] || [];
+      // Migrate inventory if needed
+      const migratedInventory = this.migrateInventoryFormat(user.inventory);
+      const ownedSkinsForType = migratedInventory?.skins?.[skinType] || [];
       const isDefaultFreeSkin = this.defaultSkins[skinType]?.find(s => s.id === skinId && s.price === 0);
 
       if (!ownedSkinsForType.includes(skinId) && !isDefaultFreeSkin) {

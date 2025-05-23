@@ -156,8 +156,23 @@
         if (user) {
           document.getElementById('userName').textContent = user.username || 'Unknown';
           document.getElementById('userCoins').textContent = user.coins || 0;
-          document.getElementById('userAccessories').textContent = JSON.stringify(user.inventory?.skins?.accessory || []);
-          addLog(`User info refreshed: ${user.username}, ${user.coins} coins`, 'info');
+          
+          // Handle both old and new inventory formats
+          let accessoryInventory = [];
+          if (user.inventory) {
+            if (Array.isArray(user.inventory)) {
+              // Old format: array of objects
+              accessoryInventory = user.inventory
+                .filter(item => item.type === 'accessory')
+                .map(item => item.id);
+            } else if (user.inventory.skins && user.inventory.skins.accessory) {
+              // New format: object with skins
+              accessoryInventory = user.inventory.skins.accessory;
+            }
+          }
+          
+          document.getElementById('userAccessories').textContent = JSON.stringify(accessoryInventory);
+          addLog(`User info refreshed: ${user.username}, ${user.coins} coins, accessories: ${JSON.stringify(accessoryInventory)}`, 'info');
         } else {
           document.getElementById('userName').textContent = 'Non connecté';
           document.getElementById('userCoins').textContent = '0';
@@ -201,11 +216,26 @@
               addLog(`Refreshed user data:`, 'info');
               addLog(`- Username: ${refreshedUser.username}`, 'info');
               addLog(`- Coins: ${refreshedUser.coins}`, 'info');
-              addLog(`- Accessory inventory: ${JSON.stringify(refreshedUser.inventory?.skins?.accessory || [])}`, 'info');
+              
+              // Handle both old and new inventory formats for logging
+              let accessoryInventory = [];
+              if (refreshedUser.inventory) {
+                if (Array.isArray(refreshedUser.inventory)) {
+                  // Old format: array of objects
+                  accessoryInventory = refreshedUser.inventory
+                    .filter(item => item.type === 'accessory')
+                    .map(item => item.id);
+                } else if (refreshedUser.inventory.skins && refreshedUser.inventory.skins.accessory) {
+                  // New format: object with skins
+                  accessoryInventory = refreshedUser.inventory.skins.accessory;
+                }
+              }
+              
+              addLog(`- Accessory inventory: ${JSON.stringify(accessoryInventory)}`, 'info');
               
               refreshUserInfo();
               
-              const hasTestAccessory = refreshedUser.inventory?.skins?.accessory?.includes('test_accessory');
+              const hasTestAccessory = accessoryInventory.includes('test_accessory');
               addLog(`Test accessory owned after refresh: ${hasTestAccessory}`, hasTestAccessory ? 'info' : 'error');
             } else {
               addLog('Failed to refresh user data', 'error');
