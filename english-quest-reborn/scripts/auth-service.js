@@ -267,21 +267,37 @@ class AuthService {
     }
 
     async updateProfile(data) {
+        console.log("[AuthService] updateProfile() CALLED with data:", data);
         if (!this.currentUser || !this.currentUser.uid) {
+            console.warn("[AuthService] updateProfile() - Not authenticated");
             return { success: false, error: 'Not authenticated' };
         }
         try {
+            console.log(`[AuthService] updateProfile() - Updating document for user: ${this.currentUser.uid}`);
             await updateDoc(doc(this.db, 'users', this.currentUser.uid), data);
+            console.log("[AuthService] updateProfile() - Firebase document updated successfully");
+            
             // Re-fetch or merge data to update local state
+            console.log("[AuthService] updateProfile() - Reloading user data from Firebase...");
             const updatedUserData = await this.loadUserData(this.currentUser.uid);
+            console.log("[AuthService] updateProfile() - Fresh data loaded:", updatedUserData);
+            
             if (updatedUserData) {
+                const oldInventory = this.currentUser.inventory;
                 this.currentUser = { uid: this.currentUser.uid, ...updatedUserData };
                 this.userData = updatedUserData;
+                
+                console.log("[AuthService] updateProfile() - Old inventory:", oldInventory);
+                console.log("[AuthService] updateProfile() - New inventory:", updatedUserData.inventory);
+                
                 // Update isAdmin in localStorage if it changed (though not typical via this method)
                 if (typeof updatedUserData.isAdmin !== 'undefined') {
                     localStorage.setItem(IS_ADMIN_KEY, updatedUserData.isAdmin ? 'true' : 'false');
                 }
                 this.notifyListeners();
+                console.log("[AuthService] updateProfile() - Local state updated and listeners notified");
+            } else {
+                console.warn("[AuthService] updateProfile() - Failed to reload user data after update");
             }
             console.log("Profile updated for:", this.currentUser.username);
             return { success: true, userData: this.currentUser };

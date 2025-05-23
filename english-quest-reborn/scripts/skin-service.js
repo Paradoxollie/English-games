@@ -29,38 +29,60 @@ class SkinService {
 
   async buySkin(skinId, skinType) {
     try {
+      console.log(`[SkinService] Starting purchase: ${skinId} (${skinType})`);
+      
       const user = authService.getCurrentUser();
       if (!user) {
         return { success: false, error: 'Utilisateur non connecté' };
       }
+      console.log(`[SkinService] Current user coins: ${user.coins}`);
+      console.log(`[SkinService] Current inventory:`, user.inventory);
 
       const skinToBuy = this.defaultSkins[skinType]?.find(s => s.id === skinId);
       if (!skinToBuy) {
         return { success: false, error: 'Skin non trouvé' };
       }
+      console.log(`[SkinService] Skin to buy:`, skinToBuy);
 
       const currentInventory = JSON.parse(JSON.stringify(user.inventory || { skins: {}, items: [] }));
       if (!currentInventory.skins) currentInventory.skins = {};
       if (!currentInventory.skins[skinType]) currentInventory.skins[skinType] = [];
 
+      console.log(`[SkinService] Current inventory for ${skinType}:`, currentInventory.skins[skinType]);
+
       const alreadyOwned = currentInventory.skins[skinType].includes(skinId);
       if (alreadyOwned) {
+        console.log(`[SkinService] Already owned: ${skinId}`);
         return { success: false, error: 'Vous possédez déjà ce skin' };
       }
 
       if (user.coins < skinToBuy.price) {
+        console.log(`[SkinService] Not enough coins: ${user.coins} < ${skinToBuy.price}`);
         return { success: false, error: 'Pas assez de pièces' };
       }
 
       currentInventory.skins[skinType].push(skinId);
       const newCoins = user.coins - skinToBuy.price;
 
-      await authService.updateProfile({
+      console.log(`[SkinService] New inventory for ${skinType}:`, currentInventory.skins[skinType]);
+      console.log(`[SkinService] New coins: ${newCoins}`);
+
+      const updateData = {
         inventory: currentInventory,
         coins: newCoins
-      });
+      };
+      console.log(`[SkinService] Updating profile with:`, updateData);
+
+      const updateResult = await authService.updateProfile(updateData);
+      console.log(`[SkinService] Update result:`, updateResult);
       
-      return { success: true, skin: skinToBuy };
+      if (updateResult.success) {
+        console.log(`[SkinService] Purchase successful for ${skinId}`);
+        return { success: true, skin: skinToBuy };
+      } else {
+        console.error(`[SkinService] Update failed:`, updateResult);
+        return { success: false, error: updateResult.error || 'Erreur lors de la mise à jour' };
+      }
 
     } catch (error) {
       console.error('SkinService Buy Error:', error);
