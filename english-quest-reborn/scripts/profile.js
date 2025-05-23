@@ -286,7 +286,7 @@ function updateAvatarDisplay(avatarData) {
         accessoryImg.style.height = '100%';
         accessoryImg.style.objectFit = 'contain';
         accessoryImg.style.display = 'block';
-        accessoryImg.style.opacity = '0.3'; // Très subtle pour "none"
+        accessoryImg.style.opacity = '1'; // Complètement visible maintenant
         
         accessoryImg.onerror = function() {
           console.warn("[ProfileJs] Failed to load none accessory image, hiding completely");
@@ -502,22 +502,53 @@ function setupInventoryButtons() {
           // Attendre et forcer un rafraîchissement complet des données
           setTimeout(async () => {
             console.log("[ProfileJs] Refreshing user data after purchase...");
-            try {
-              // Forcer authService à recharger les données depuis Firebase
-              const refreshedProfile = await authService.refreshUser();
-              console.log("[ProfileJs] Refreshed profile data:", refreshedProfile);
+            
+            // Essayer plusieurs fois si nécessaire pour s'assurer que les données sont synchronisées
+            let attempts = 0;
+            const maxAttempts = 3;
+            let refreshedProfile = null;
+            
+            while (attempts < maxAttempts && !refreshedProfile) {
+              attempts++;
+              console.log(`[ProfileJs] Refresh attempt ${attempts}/${maxAttempts}`);
               
-              if (refreshedProfile) {
-                await loadProfile(refreshedProfile); 
-              } else {
-                console.warn("[ProfileJs] No refreshed profile data, reloading page");
-                window.location.reload();
+              try {
+                refreshedProfile = await authService.refreshUser();
+                
+                if (refreshedProfile) {
+                  // Vérifier si l'objet acheté est maintenant dans l'inventaire
+                  const ownedSkinsForType = refreshedProfile.inventory?.skins?.[skinType] || [];
+                  const isNowOwned = ownedSkinsForType.includes(skinId);
+                  
+                  console.log("[ProfileJs] After refresh - owned skins for", skinType, ":", ownedSkinsForType);
+                  console.log("[ProfileJs] Is", skinId, "now owned?", isNowOwned);
+                  
+                  if (isNowOwned) {
+                    console.log("[ProfileJs] Purchase confirmed in inventory, updating display");
+                    await loadProfile(refreshedProfile);
+                    break; // Sortir de la boucle, mission accomplie
+                  } else if (attempts < maxAttempts) {
+                    console.warn("[ProfileJs] Purchase not yet reflected in inventory, retrying...");
+                    refreshedProfile = null; // Forcer une nouvelle tentative
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde supplémentaire
+                  }
+                } else if (attempts < maxAttempts) {
+                  console.warn("[ProfileJs] Failed to refresh user data, retrying...");
+                  await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde supplémentaire
+                }
+              } catch (error) {
+                console.error("[ProfileJs] Error during refresh attempt", attempts, ":", error);
+                if (attempts < maxAttempts) {
+                  await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre avant de réessayer
+                }
               }
-            } catch (error) {
-              console.error("[ProfileJs] Error refreshing after purchase:", error);
+            }
+            
+            if (!refreshedProfile) {
+              console.warn("[ProfileJs] All refresh attempts failed, reloading page");
               window.location.reload();
             }
-          }, 1000); // Augmenté à 1 seconde pour laisser temps à Firebase
+          }, 2000); // Augmenté à 2 secondes pour laisser plus de temps à Firebase
         } else {
           alert(result.error || "Erreur lors de l'achat.");
         }
@@ -557,22 +588,53 @@ function setupInventoryButtons() {
            // Attendre et forcer un rafraîchissement complet des données
            setTimeout(async () => {
              console.log("[ProfileJs] Refreshing user data after equip...");
-             try {
-               // Forcer authService à recharger les données depuis Firebase
-               const refreshedProfile = await authService.refreshUser();
-               console.log("[ProfileJs] Refreshed profile data:", refreshedProfile);
+             
+             // Essayer plusieurs fois si nécessaire pour s'assurer que les données sont synchronisées
+             let attempts = 0;
+             const maxAttempts = 3;
+             let refreshedProfile = null;
+             
+             while (attempts < maxAttempts && !refreshedProfile) {
+               attempts++;
+               console.log(`[ProfileJs] Refresh attempt ${attempts}/${maxAttempts}`);
                
-               if (refreshedProfile) {
-                await loadProfile(refreshedProfile);
-               } else {
-                 console.warn("[ProfileJs] No refreshed profile data, reloading page");
-                 window.location.reload();
+               try {
+                 refreshedProfile = await authService.refreshUser();
+                 
+                 if (refreshedProfile) {
+                   // Vérifier si l'objet est maintenant équipé
+                   const equippedSkin = refreshedProfile.avatar?.[skinType];
+                   const isNowEquipped = equippedSkin === skinId;
+                   
+                   console.log("[ProfileJs] After refresh - equipped", skinType, ":", equippedSkin);
+                   console.log("[ProfileJs] Is", skinId, "now equipped?", isNowEquipped);
+                   
+                   if (isNowEquipped) {
+                     console.log("[ProfileJs] Equipment confirmed, updating display");
+                     await loadProfile(refreshedProfile);
+                     break; // Sortir de la boucle, mission accomplie
+                   } else if (attempts < maxAttempts) {
+                     console.warn("[ProfileJs] Equipment not yet reflected, retrying...");
+                     refreshedProfile = null; // Forcer une nouvelle tentative
+                     await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde supplémentaire
+                   }
+                 } else if (attempts < maxAttempts) {
+                   console.warn("[ProfileJs] Failed to refresh user data, retrying...");
+                   await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre 1 seconde supplémentaire
+                 }
+               } catch (error) {
+                 console.error("[ProfileJs] Error during refresh attempt", attempts, ":", error);
+                 if (attempts < maxAttempts) {
+                   await new Promise(resolve => setTimeout(resolve, 1000)); // Attendre avant de réessayer
+                 }
                }
-             } catch (error) {
-               console.error("[ProfileJs] Error refreshing after equip:", error);
+             }
+             
+             if (!refreshedProfile) {
+               console.warn("[ProfileJs] All refresh attempts failed, reloading page");
                window.location.reload();
              }
-           }, 1000); // Augmenté à 1 seconde pour laisser temps à Firebase
+           }, 2000); // Augmenté à 2 secondes pour laisser plus de temps à Firebase
         } else {
           alert(result.error || "Erreur lors de l'équipement.");
         }
