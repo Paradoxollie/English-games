@@ -371,6 +371,37 @@ function initTabs() {
 }
 
 /**
+ * Créer un élément de skin pour l'inventaire
+ */
+function createSkinElement(skin, category, isOwned, isEquipped = false) {
+  const user = authService.getCurrentUser();
+  const equippedSkinId = user?.avatar?.[category] || 'default';
+  isEquipped = isEquipped || (skin.id === equippedSkinId);
+
+  const skinElement = document.createElement('div');
+  skinElement.className = `inventory-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}`;
+  
+  skinElement.innerHTML = `
+    <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/default.png'">
+    <h4>${skin.name}</h4>
+    <p>${skin.price === 0 ? 'Gratuit' : `${skin.price} pièces`}</p>
+    ${!isOwned 
+      ? `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${category}">
+           Acheter (${skin.price} pièces)
+         </button>`
+      : `<button class="btn-equip ${isEquipped ? 'disabled' : ''}" 
+                 data-skin-id="${skin.id}" 
+                 data-skin-type="${category}"
+                 ${isEquipped ? 'disabled' : ''}>
+           ${isEquipped ? 'Équipé' : 'Équiper'}
+         </button>`
+    }
+  `;
+  
+  return skinElement;
+}
+
+/**
  * Chargement de l'inventaire
  */
 async function loadInventory(profileData) {
@@ -403,11 +434,20 @@ async function loadInventory(profileData) {
     
     inventoryGrid.innerHTML = ''; // Clear loading message
 
-    // Load and display owned skins for each category
+    // Create sections for each skin category
     Object.keys(allSkinCategories).forEach(category => {
-        const container = document.getElementById(`${category}-options`);
-        if (!container) return;
-
+        // Create a section for this category
+        const categorySection = document.createElement('div');
+        categorySection.className = 'inventory-section';
+        
+        const categoryTitle = document.createElement('h3');
+        categoryTitle.textContent = getTypeName(category);
+        categorySection.appendChild(categoryTitle);
+        
+        const categoryGrid = document.createElement('div');
+        categoryGrid.className = 'skin-grid';
+        categoryGrid.id = `${category}-options`;
+        
         // Get user's inventory - handle both old and new formats
         let ownedSkins = [];
         if (profileData.inventory) {
@@ -434,9 +474,13 @@ async function loadInventory(profileData) {
 
         allSkinCategories[category].forEach(skin => {
             const isOwned = ownedSkins.includes(skin.id) || skin.price === 0;
-            const skinElement = createSkinElement(skin, category, isOwned);
-            container.appendChild(skinElement);
+            const isEquipped = userEquippedSkins[category] === skin.id;
+            const skinElement = createSkinElement(skin, category, isOwned, isEquipped);
+            categoryGrid.appendChild(skinElement);
         });
+        
+        categorySection.appendChild(categoryGrid);
+        inventoryGrid.appendChild(categorySection);
     });
     
     setupInventoryButtons(); // This function should exist in profile.js
