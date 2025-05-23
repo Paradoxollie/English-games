@@ -151,12 +151,16 @@ async function init() {
  */
 async function loadProfile(profileData) {
   try {
+    console.log("[ProfileJs] ===== STARTING LOAD PROFILE =====");
+    console.log("[ProfileJs] loadProfile called with profileData:", profileData);
+    
     if (!profileData) {
       console.warn("[ProfileJs] loadProfile called without profileData. Redirecting.");
       window.location.href = 'login.html'; 
       return;
     }
 
+    console.log("[ProfileJs] Setting up basic profile info...");
     // Ensure global DOM element variables are used (username, userEmail, etc.)
     // DOM elements are: username, userEmail, userLevel, userXP, userCoins
     if (username) username.textContent = profileData.username || 'Aventurier';
@@ -182,6 +186,8 @@ async function loadProfile(profileData) {
     if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;
     if (userPendingCoins) userPendingCoins.textContent = `${profileData.pendingCoins || 0} pièces`;
     
+    console.log("[ProfileJs] Basic profile info set, preparing avatar...");
+    
     // S'assurer que l'avatar a des valeurs par défaut si pas définies
     const avatarToDisplay = {
       head: profileData.avatar?.head || 'default_boy_head',
@@ -191,18 +197,29 @@ async function loadProfile(profileData) {
     };
     
     console.log("[ProfileJs] Loading profile with avatar:", avatarToDisplay);
+    console.log("[ProfileJs] About to call updateAvatarDisplay...");
     updateAvatarDisplay(avatarToDisplay); 
+    console.log("[ProfileJs] updateAvatarDisplay completed, about to call loadInventory...");
+    
     await loadInventory(profileData); // loadInventory will also take profileData
+    console.log("[ProfileJs] loadInventory completed, loading achievements...");
+    
     loadAchievements(profileData.achievements || []);
+    console.log("[ProfileJs] loadAchievements completed, updating settings...");
+    
     updateSettingsUI(profileData.settings); // Fixed function name
+    console.log("[ProfileJs] updateSettingsUI completed, setting up admin panel...");
 
     // Assuming adminPanelLinkContainer is defined globally or fetched if needed
     const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
     if (adminPanelLinkContainer) {
       adminPanelLinkContainer.style.display = profileData.isAdmin ? 'block' : 'none';
     }
+    
+    console.log("[ProfileJs] ===== LOAD PROFILE COMPLETED =====");
   } catch (error) {
-    console.error("[ProfileJs] Error loading profile:", error);
+    console.error("[ProfileJs] CRITICAL ERROR in loadProfile:", error);
+    console.error("[ProfileJs] Error stack:", error.stack);
   }
 }
 
