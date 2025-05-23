@@ -64,7 +64,7 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
       lastLogin: admin.firestore.FieldValue.serverTimestamp(),
       level: 1,
       xp: 0,
-      coins: 100, // Default coins
+      coins: 0, // Default coins
       avatar: {
         head: "default_boy",
         body: "default_boy",

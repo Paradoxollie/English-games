@@ -97,7 +97,7 @@ export const userStructure = {
     // Progression
     level: 1,                  // Niveau de l'utilisateur
     xp: 0,                     // Points d'expérience
-    coins: 100,                // Pièces d'or
+    coins: 0,                // Pièces d'or
     
     // Statistiques
     stats: {

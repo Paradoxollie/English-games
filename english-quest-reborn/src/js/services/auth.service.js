@@ -110,7 +110,7 @@ async function createUserProfile(username, password) {
             lastLogin: serverTimestamp(),
             level: 1,
             xp: 0,
-            coins: 100,
+            coins: 0,
             isAdmin: false,
             avatar: {
                 head: 'default_boy',

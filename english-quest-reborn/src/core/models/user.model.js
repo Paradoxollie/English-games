@@ -35,7 +35,7 @@ export function createNewUser(userId, username) {
     isAdmin: username.toLowerCase() === 'ollie', // Seul Ollie est administrateur
     level: 1,
     xp: 0,
-    coins: 100,
+    coins: 0,
     pendingXP: 0, // Added field
     pendingCoins: 0, // Added field
     stats: {

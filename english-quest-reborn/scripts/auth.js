@@ -301,7 +301,7 @@ async function handleRegister(e) {
       lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
       level: 1,
       xp: 0,
-      coins: 100,
+      coins: 0,
       completedGames: [],
       completedCourses: []
     };

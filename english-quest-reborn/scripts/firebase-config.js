@@ -52,7 +52,7 @@ const userStructure = {
   // Progression
   level: 1,
   xp: 0,
-  coins: 100,
+  coins: 0,
 
   // Statistiques
   stats: {
