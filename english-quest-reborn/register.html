@@ -66,6 +66,11 @@
             background: var(--color-secondary);
         }
 
+        .btn-register:disabled {
+            background: var(--color-border);
+            cursor: not-allowed;
+        }
+
         .login-link {
             text-align: center;
             margin-top: 1rem;
@@ -96,6 +101,8 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    <!-- Charger bcrypt AVANT tout autre script -->
+    <script src="scripts/lib/bcrypt.min.js"></script>
 </head>
 <body>
     <div class="register-container">
@@ -134,6 +141,15 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             console.log("Initialisation du service d'authentification...");
+            
+            // Vérifier que bcrypt est disponible
+            if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+                console.error("Erreur: bcrypt n'est pas disponible. Veuillez recharger la page.");
+                document.getElementById('usernameError').textContent = 'Erreur de chargement. Veuillez recharger la page.';
+                document.getElementById('usernameError').style.display = 'block';
+                return;
+            }
+            
             await authService.init();
             console.log("Service d'authentification initialisé");
 
@@ -185,6 +201,11 @@
                     return;
                 }
 
+                if (!/^[a-zA-Z0-9]+$/.test(username)) {
+                    showError(usernameError, 'Le nom d\'utilisateur ne doit contenir que des lettres et des chiffres');
+                    return;
+                }
+
                 if (password.length < 6) {
                     showError(passwordError, 'Le mot de passe doit contenir au moins 6 caractères');
                     return;
@@ -197,13 +218,13 @@
 
                 try {
                     setLoading(true, buttonText, loadingSpinner);
-                    console.log("Tentative d'inscription basique pour:", username);
+                    console.log("Tentative d'inscription pour:", username);
                     
-                    // Updated line: username passed as first and third argument
-                    const result = await authService.register(username, password, username);
+                    const result = await authService.register(username, password);
                     
                     if (result.success) {
                         console.log("Inscription réussie, redirection...");
+                        alert('Compte créé avec succès ! Bienvenue dans English Quest !');
                         window.location.href = 'index.html';
                     } else {
                         console.error("Échec de l'inscription:", result.error);
@@ -211,10 +232,19 @@
                     }
                 } catch (error) {
                     console.error('Erreur d\'inscription:', error);
-                    showError(usernameError, 'Une erreur est survenue lors de l\'inscription');
+                    showError(usernameError, error.message || 'Une erreur est survenue lors de l\'inscription');
                 } finally {
                     setLoading(false, buttonText, loadingSpinner);
                 }
             });
         });
-        </script>        <!-- Footer -->    <footer style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 20px; margin-top: 40px; position: fixed; bottom: 0; width: 100%;">        <div class="footer-bottom">            <p>&copy; 2025 English Quest - Tous droits réservés</p>        </div>    </footer></body></html>
+    </script>
+    
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 20px; margin-top: 40px; position: fixed; bottom: 0; width: 100%;">
+        <div class="footer-bottom">
+            <p>&copy; 2025 English Quest - Tous droits réservés</p>
+        </div>
+    </footer>
+</body>
+</html>

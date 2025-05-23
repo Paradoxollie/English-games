@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="styles/animations.css">
   <link rel="stylesheet" href="styles/auth.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Charger bcrypt AVANT tout autre script -->
+  <script src="scripts/lib/bcrypt.min.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -74,8 +76,6 @@
 
             <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
           </form>
-
-          <!-- Suppression des options de connexion sociale -->
         </div>
 
         <!-- Register Form -->
@@ -123,8 +123,6 @@
 
             <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
           </form>
-
-          <!-- Suppression des options de connexion sociale -->
         </div>
       </div>
     </div>
@@ -185,7 +183,7 @@
   <!-- Scripts -->
   <script src="scripts/new-design.js"></script>
   <script type="module">
-    import { login, register, getAuthState } from './src/js/services/auth.service.js';
+    import { authService } from './scripts/auth-service.js';
 
     // Éléments DOM
     const authTabs = document.querySelectorAll('.auth-tab');
@@ -197,14 +195,23 @@
     const strengthText = document.getElementById('strengthText');
 
     // Initialiser les écouteurs d'événements
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       console.log('Initialisation des formulaires d\'authentification');
+      
+      // Vérifier que bcrypt est disponible
+      if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
+        console.error("Erreur: bcrypt n'est pas disponible. Veuillez recharger la page.");
+        document.body.innerHTML = '<div style="text-align: center; padding: 2rem; color: red; background: white;">Erreur de chargement. Veuillez recharger la page.</div>';
+        return;
+      }
+      
+      await authService.init();
       initTabs();
       initForms();
 
       // Vérifier si l'utilisateur est déjà connecté
-      const authState = getAuthState();
-      if (authState.isAuthenticated) {
+      const currentUser = authService.getCurrentUser();
+      if (currentUser) {
         console.log('Utilisateur déjà connecté, redirection vers la page d\'accueil');
         window.location.href = 'index.html';
       }
@@ -287,16 +294,20 @@
         showLoading(loginForm);
 
         // Connecter l'utilisateur
-        await login(username, password);
-
-        // Rediriger vers la page d'accueil
-        window.location.href = 'index.html';
+        const result = await authService.login(username, password);
+        
+        if (result.success) {
+          // Rediriger vers la page d'accueil
+          window.location.href = 'index.html';
+        } else {
+          showError(loginForm, result.error || 'Nom d\'utilisateur ou mot de passe incorrect');
+        }
       } catch (error) {
         // Masquer l'indicateur de chargement
         hideLoading(loginForm);
 
         // Afficher l'erreur
-        showError(loginForm, error.message);
+        showError(loginForm, error.message || 'Une erreur est survenue lors de la connexion');
       }
     }
 
@@ -344,21 +355,26 @@
         showLoading(registerForm);
 
         // Créer un nouvel utilisateur
-        await register(username, password);
+        const result = await authService.register(username, password);
 
-        // Afficher un message de succès
-        showSuccess(registerForm, 'Compte créé avec succès ! Redirection...');
+        if (result.success) {
+          // Afficher un message de succès
+          showSuccess(registerForm, 'Compte créé avec succès ! Redirection...');
 
-        // Rediriger vers la page d'accueil après 2 secondes
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 2000);
+          // Rediriger vers la page d'accueil après 2 secondes
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          hideLoading(registerForm);
+          showError(registerForm, result.error || 'Une erreur est survenue lors de l\'inscription');
+        }
       } catch (error) {
         // Masquer l'indicateur de chargement
         hideLoading(registerForm);
 
         // Afficher l'erreur
-        showError(registerForm, error.message);
+        showError(registerForm, error.message || 'Une erreur est survenue lors de l\'inscription');
       }
     }
 
@@ -423,24 +439,33 @@
       const errorElement = document.createElement('div');
       errorElement.className = 'error-message visible';
       errorElement.textContent = message;
+      errorElement.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 5px; color: white; background-color: #e74c3c; z-index: 1000; animation: fadeIn 0.3s ease-in-out;';
 
       // Ajouter le message d'erreur au formulaire
-      form.appendChild(errorElement);
+      document.body.appendChild(errorElement);
+      
+      // Supprimer le message après 5 secondes
+      setTimeout(() => {
+        if (errorElement.parentNode) {
+          errorElement.parentNode.removeChild(errorElement);
+        }
+      }, 5000);
     }
 
     // Afficher un message de succès
     function showSuccess(form, message) {
       // Supprimer les messages existants
-      const existingMessages = form.querySelectorAll('.error-message, .success-message');
+      const existingMessages = document.querySelectorAll('.error-message, .success-message');
       existingMessages.forEach(msg => msg.remove());
 
       // Créer un nouvel élément pour le message de succès
       const successElement = document.createElement('div');
       successElement.className = 'success-message visible';
       successElement.textContent = message;
+      successElement.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 5px; color: white; background-color: #2ecc71; z-index: 1000; animation: fadeIn 0.3s ease-in-out;';
 
       // Ajouter le message de succès au formulaire
-      form.prepend(successElement);
+      document.body.appendChild(successElement);
     }
 
     // Afficher un indicateur de chargement
@@ -455,6 +480,25 @@
       const loadingElement = document.createElement('div');
       loadingElement.className = 'loading-indicator';
       loadingElement.innerHTML = '<div class="spinner"></div><span>Chargement...</span>';
+      loadingElement.style.cssText = 'display: flex; align-items: center; justify-content: center; margin-top: 15px; color: var(--color-text-secondary);';
+
+      // Style pour le spinner
+      const spinnerStyle = document.createElement('style');
+      spinnerStyle.textContent = `
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(46, 204, 113, 0.3);
+          border-radius: 50%;
+          border-top-color: var(--color-primary);
+          animation: spin 1s ease-in-out infinite;
+          margin-right: 10px;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(spinnerStyle);
 
       // Ajouter l'indicateur de chargement au formulaire
       form.appendChild(loadingElement);
@@ -482,54 +526,5 @@
     }
   </script>
   <script src="scripts/debug.js"></script>
-
-  <!-- Styles pour les indicateurs de chargement -->
-  <style>
-    .loading-indicator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 15px;
-      color: var(--color-text-secondary);
-    }
-
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(46, 204, 113, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--color-primary);
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 10px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .error-message, .success-message {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      border-radius: 5px;
-      color: white;
-      z-index: 1000;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .error-message {
-      background-color: #e74c3c;
-    }
-
-    .success-message {
-      background-color: #2ecc71;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
 </body>
-</html>
+</html> 
