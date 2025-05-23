@@ -182,7 +182,16 @@ async function loadProfile(profileData) {
     if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;
     if (userPendingCoins) userPendingCoins.textContent = `${profileData.pendingCoins || 0} pièces`;
     
-    updateAvatarDisplay(profileData.avatar); 
+    // S'assurer que l'avatar a des valeurs par défaut si pas définies
+    const avatarToDisplay = {
+      head: profileData.avatar?.head || 'default_boy_head',
+      body: profileData.avatar?.body || 'default_boy_body', 
+      background: profileData.avatar?.background || 'default_background',
+      accessory: profileData.avatar?.accessory || 'none'
+    };
+    
+    console.log("[ProfileJs] Loading profile with avatar:", avatarToDisplay);
+    updateAvatarDisplay(avatarToDisplay); 
     await loadInventory(profileData); // loadInventory will also take profileData
     loadAchievements(profileData.achievements || []);
     updateSettingsUI(profileData.settings); // Fixed function name
@@ -268,8 +277,27 @@ function updateAvatarDisplay(avatarData) {
       userAvatarAccessory.style.display = 'block';
       
       if (accessoryId === 'none') {
-        // For "none" accessory, leave the container empty but visible
-        console.log("[ProfileJs] Accessory set to 'none' - container empty");
+        // For "none" accessory, show the none.png image but make it subtle
+        console.log("[ProfileJs] Accessory set to 'none' - adding none image");
+        const accessoryImg = document.createElement('img');
+        accessoryImg.src = 'assets/avatars/accessories/none.png';
+        accessoryImg.alt = 'No Accessory';
+        accessoryImg.style.width = '100%';
+        accessoryImg.style.height = '100%';
+        accessoryImg.style.objectFit = 'contain';
+        accessoryImg.style.display = 'block';
+        accessoryImg.style.opacity = '0.3'; // Très subtle pour "none"
+        
+        accessoryImg.onerror = function() {
+          console.warn("[ProfileJs] Failed to load none accessory image, hiding completely");
+          this.style.display = 'none';
+        };
+        
+        accessoryImg.onload = function() {
+          console.log("[ProfileJs] None accessory image loaded successfully");
+        };
+        
+        userAvatarAccessory.appendChild(accessoryImg);
       } else if (accessorySkin && accessorySkin.image) {
         // Create and add image for real accessories
         const accessoryImg = document.createElement('img');
@@ -279,10 +307,15 @@ function updateAvatarDisplay(avatarData) {
         accessoryImg.style.height = '100%';
         accessoryImg.style.objectFit = 'contain';
         accessoryImg.style.display = 'block';
+        accessoryImg.style.opacity = '1'; // Full opacity for real accessories
         
         accessoryImg.onerror = function() {
           console.warn("[ProfileJs] Failed to load accessory image:", accessorySkin.image);
           this.style.display = 'none';
+        };
+        
+        accessoryImg.onload = function() {
+          console.log("[ProfileJs] Accessory image loaded successfully:", accessorySkin.image);
         };
         
         userAvatarAccessory.appendChild(accessoryImg);
@@ -465,13 +498,26 @@ function setupInventoryButtons() {
         const result = await skinService.buySkin(skinId, skinType);
         if (result.success) {
           alert(`Achat réussi: ${result.skin.name}`);
-          // Attendre un moment avant de recharger pour éviter les conflits
+          
+          // Attendre et forcer un rafraîchissement complet des données
           setTimeout(async () => {
-            const latestProfile = authService.getCurrentUser();
-            if (latestProfile) {
-              await loadProfile(latestProfile); 
+            console.log("[ProfileJs] Refreshing user data after purchase...");
+            try {
+              // Forcer authService à recharger les données depuis Firebase
+              const refreshedProfile = await authService.refreshUser();
+              console.log("[ProfileJs] Refreshed profile data:", refreshedProfile);
+              
+              if (refreshedProfile) {
+                await loadProfile(refreshedProfile); 
+              } else {
+                console.warn("[ProfileJs] No refreshed profile data, reloading page");
+                window.location.reload();
+              }
+            } catch (error) {
+              console.error("[ProfileJs] Error refreshing after purchase:", error);
+              window.location.reload();
             }
-          }, 500);
+          }, 1000); // Augmenté à 1 seconde pour laisser temps à Firebase
         } else {
           alert(result.error || "Erreur lors de l'achat.");
         }
@@ -508,13 +554,25 @@ function setupInventoryButtons() {
         console.log("[ProfileJs] Equipping skin:", skinId, skinType);
         const result = await skinService.equipSkin(skinId, skinType);
         if (result.success) {
-           // Attendre un moment avant de recharger pour éviter les conflits
+           // Attendre et forcer un rafraîchissement complet des données
            setTimeout(async () => {
-             const latestProfile = authService.getCurrentUser();
-             if (latestProfile) {
-              await loadProfile(latestProfile);
+             console.log("[ProfileJs] Refreshing user data after equip...");
+             try {
+               // Forcer authService à recharger les données depuis Firebase
+               const refreshedProfile = await authService.refreshUser();
+               console.log("[ProfileJs] Refreshed profile data:", refreshedProfile);
+               
+               if (refreshedProfile) {
+                await loadProfile(refreshedProfile);
+               } else {
+                 console.warn("[ProfileJs] No refreshed profile data, reloading page");
+                 window.location.reload();
+               }
+             } catch (error) {
+               console.error("[ProfileJs] Error refreshing after equip:", error);
+               window.location.reload();
              }
-           }, 500);
+           }, 1000); // Augmenté à 1 seconde pour laisser temps à Firebase
         } else {
           alert(result.error || "Erreur lors de l'équipement.");
         }

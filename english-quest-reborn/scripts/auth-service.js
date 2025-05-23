@@ -324,6 +324,44 @@ class AuthService {
     }
 
     // No getErrorMessage needed as Firebase Auth errors are not directly exposed now
+
+    // Nouvelle méthode pour forcer le rechargement des données utilisateur
+    async refreshUser() {
+      console.log("[AuthService] refreshUser() CALLED - forcing fresh data load");
+      const localUserId = localStorage.getItem(USER_ID_KEY);
+      
+      if (!localUserId || localUserId === "undefined" || localUserId === "null") {
+        console.warn("[AuthService] refreshUser() - No valid userId in localStorage");
+        this.currentUser = null;
+        this.userData = null;
+        this.notifyListeners();
+        return null;
+      }
+
+      try {
+        console.log(`[AuthService] refreshUser() - Loading fresh data for userId: ${localUserId}`);
+        const userData = await this.loadUserData(localUserId);
+        
+        if (userData) {
+          this.currentUser = { uid: localUserId, ...userData };
+          this.userData = userData;
+          console.log("[AuthService] refreshUser() - Fresh data loaded:", this.currentUser);
+          this.notifyListeners();
+          return this.currentUser;
+        } else {
+          console.warn(`[AuthService] refreshUser() - No userData returned for userId: ${localUserId}`);
+          localStorage.removeItem(USER_ID_KEY);
+          localStorage.removeItem(IS_ADMIN_KEY);
+          this.currentUser = null;
+          this.userData = null;
+          this.notifyListeners();
+          return null;
+        }
+      } catch (error) {
+        console.error(`[AuthService] refreshUser() - Error loading fresh data:`, error);
+        return null;
+      }
+    }
 }
 
 export const authService = new AuthService(); 
