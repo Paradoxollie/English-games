@@ -412,6 +412,8 @@ async function loadInventory(profileData) {
   }
   
   isLoadingInventory = true;
+  console.log("[ProfileJs] ===== STARTING INVENTORY LOAD =====");
+  console.log("[ProfileJs] profileData:", profileData);
   
   try {
     // Ensure global DOM element 'inventoryGrid' is used
@@ -419,23 +421,34 @@ async function loadInventory(profileData) {
         console.error("[ProfileJs] inventoryGrid DOM element not found.");
         return;
     }
+    console.log("[ProfileJs] inventoryGrid element found:", inventoryGrid);
     inventoryGrid.innerHTML = '<p>Chargement de l\'inventaire...</p>';
 
     if (!profileData) {
+      console.error("[ProfileJs] No profileData provided");
       inventoryGrid.innerHTML = '<p>Erreur: Données utilisateur non disponibles pour l\'inventaire.</p>';
       return;
     }
 
     const allSkinCategories = skinService.getAvailableSkins();
+    console.log("[ProfileJs] allSkinCategories:", allSkinCategories);
+    
     // profileData.inventory.skins should be like { head: ['id1'], body: ['id2'], ... }
     const userOwnedSkinsData = profileData.inventory?.skins || {}; 
+    console.log("[ProfileJs] userOwnedSkinsData:", userOwnedSkinsData);
+    
     // profileData.avatar should be like { head: 'equippedId1', body: 'equippedId2', ... }
     const userEquippedSkins = profileData.avatar || {}; 
+    console.log("[ProfileJs] userEquippedSkins:", userEquippedSkins);
     
     inventoryGrid.innerHTML = ''; // Clear loading message
+    console.log("[ProfileJs] Cleared loading message, starting to build sections");
 
     // Create sections for each skin category
+    let sectionsCreated = 0;
     Object.keys(allSkinCategories).forEach(category => {
+        console.log(`[ProfileJs] Processing category: ${category}`);
+        
         // Create a section for this category
         const categorySection = document.createElement('div');
         categorySection.className = 'inventory-section';
@@ -443,6 +456,7 @@ async function loadInventory(profileData) {
         const categoryTitle = document.createElement('h3');
         categoryTitle.textContent = getTypeName(category);
         categorySection.appendChild(categoryTitle);
+        console.log(`[ProfileJs] Created title for ${category}: ${getTypeName(category)}`);
         
         const categoryGrid = document.createElement('div');
         categoryGrid.className = 'skin-grid';
@@ -452,6 +466,7 @@ async function loadInventory(profileData) {
         let ownedSkins = [];
         if (profileData.inventory) {
             if (Array.isArray(profileData.inventory)) {
+                console.log(`[ProfileJs] Using old inventory format for ${category}`);
                 // Old format: array of objects - convert on the fly
                 ownedSkins = profileData.inventory
                     .filter(item => item.type === category)
@@ -467,25 +482,39 @@ async function loadInventory(profileData) {
                         return skinId;
                     });
             } else if (profileData.inventory.skins && profileData.inventory.skins[category]) {
+                console.log(`[ProfileJs] Using new inventory format for ${category}`);
                 // New format: object with skins
                 ownedSkins = profileData.inventory.skins[category];
             }
         }
+        console.log(`[ProfileJs] ownedSkins for ${category}:`, ownedSkins);
 
+        let skinsAdded = 0;
         allSkinCategories[category].forEach(skin => {
             const isOwned = ownedSkins.includes(skin.id) || skin.price === 0;
             const isEquipped = userEquippedSkins[category] === skin.id;
+            console.log(`[ProfileJs] Processing skin ${skin.id}: owned=${isOwned}, equipped=${isEquipped}`);
+            
             const skinElement = createSkinElement(skin, category, isOwned, isEquipped);
             categoryGrid.appendChild(skinElement);
+            skinsAdded++;
         });
         
+        console.log(`[ProfileJs] Added ${skinsAdded} skins to ${category} grid`);
         categorySection.appendChild(categoryGrid);
         inventoryGrid.appendChild(categorySection);
+        sectionsCreated++;
+        console.log(`[ProfileJs] Section ${category} added to inventory grid`);
     });
     
+    console.log(`[ProfileJs] Total sections created: ${sectionsCreated}`);
+    console.log(`[ProfileJs] Final inventoryGrid HTML length: ${inventoryGrid.innerHTML.length}`);
+    
     setupInventoryButtons(); // This function should exist in profile.js
+    console.log("[ProfileJs] ===== INVENTORY LOAD COMPLETED =====");
   } catch (error) {
     console.error("[ProfileJs] Error loading inventory:", error);
+    console.error("[ProfileJs] Error stack:", error.stack);
     if (inventoryGrid) inventoryGrid.innerHTML = `<p>Erreur lors du chargement de l'inventaire: ${error.message}</p>`;
   } finally {
     // Toujours libérer le verrou
