@@ -267,28 +267,33 @@ class AuthService {
     }
 
     async updateProfile(data) {
-        console.log("[AuthService] updateProfile() CALLED with data:", data);
+        console.log("[AuthService] ===== UPDATE PROFILE CALLED =====");
+        console.log("[AuthService] updateProfile() CALLED with data:", JSON.stringify(data, null, 2));
         if (!this.currentUser || !this.currentUser.uid) {
             console.warn("[AuthService] updateProfile() - Not authenticated");
             return { success: false, error: 'Not authenticated' };
         }
         try {
             console.log(`[AuthService] updateProfile() - Updating document for user: ${this.currentUser.uid}`);
+            console.log(`[AuthService] updateProfile() - Current user before update:`, JSON.stringify(this.currentUser, null, 2));
+            
             await updateDoc(doc(this.db, 'users', this.currentUser.uid), data);
             console.log("[AuthService] updateProfile() - Firebase document updated successfully");
             
             // Re-fetch or merge data to update local state
             console.log("[AuthService] updateProfile() - Reloading user data from Firebase...");
             const updatedUserData = await this.loadUserData(this.currentUser.uid);
-            console.log("[AuthService] updateProfile() - Fresh data loaded:", updatedUserData);
+            console.log("[AuthService] updateProfile() - Fresh data loaded:", JSON.stringify(updatedUserData, null, 2));
             
             if (updatedUserData) {
                 const oldInventory = this.currentUser.inventory;
+                console.log("[AuthService] updateProfile() - Old inventory:", JSON.stringify(oldInventory, null, 2));
+                
                 this.currentUser = { uid: this.currentUser.uid, ...updatedUserData };
                 this.userData = updatedUserData;
                 
-                console.log("[AuthService] updateProfile() - Old inventory:", oldInventory);
-                console.log("[AuthService] updateProfile() - New inventory:", updatedUserData.inventory);
+                console.log("[AuthService] updateProfile() - New inventory:", JSON.stringify(updatedUserData.inventory, null, 2));
+                console.log("[AuthService] updateProfile() - New currentUser:", JSON.stringify(this.currentUser, null, 2));
                 
                 // Update isAdmin in localStorage if it changed (though not typical via this method)
                 if (typeof updatedUserData.isAdmin !== 'undefined') {
@@ -300,9 +305,11 @@ class AuthService {
                 console.warn("[AuthService] updateProfile() - Failed to reload user data after update");
             }
             console.log("Profile updated for:", this.currentUser.username);
+            console.log("[AuthService] ===== UPDATE PROFILE COMPLETED =====");
             return { success: true, userData: this.currentUser };
         } catch (error) {
-            console.error('Profile update error:', error);
+            console.error('[AuthService] Profile update error:', error);
+            console.error('[AuthService] Error stack:', error.stack);
             return { success: false, error: error.message || "Profile update failed." };
         }
     }
