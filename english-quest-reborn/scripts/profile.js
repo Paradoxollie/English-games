@@ -156,10 +156,20 @@ async function loadProfile(profileData) {
     // Ensure global DOM element variables are used (username, userEmail, etc.)
     // DOM elements are: username, userEmail, userLevel, userXP, userCoins
     if (username) username.textContent = profileData.username || 'Aventurier';
-    // For userEmail, it shows the internal email. This might be okay for admin,
-    // but for regular users, it might be better to show profileData.username again or hide it.
-    // For now, it displays the internal email as per previous refactor.
-    if (userEmail) userEmail.textContent = profileData.email || 'Internal ID not set'; 
+    
+    // Fix: Instead of showing "Internal ID not set", hide the email field or show username
+    if (userEmail) {
+      if (profileData.email && profileData.email !== '') {
+        userEmail.textContent = profileData.email;
+        userEmail.style.display = 'block';
+      } else {
+        // Hide the email display if no email is available
+        userEmail.style.display = 'none';
+        // Or alternatively, show the username again:
+        // userEmail.textContent = profileData.username || 'Aventurier';
+      }
+    }
+    
     if (userLevel) userLevel.textContent = profileData.level || 1;
     if (userXP) userXP.textContent = `${profileData.xp || 0} XP`;
     if (userCoins) userCoins.textContent = `${profileData.coins || 0} pièces`;
@@ -229,12 +239,15 @@ function updateAvatarDisplay(avatarData) { // avatarData is profile.avatar objec
 
     if (userAvatarAccessory && accessoryImgElement) { // userAvatarAccessory is the Div
       if (accessorySkin && accessorySkin.id !== 'none' && accessorySkin.image) {
+        // Show accessory image for non-"none" accessories
         accessoryImgElement.src = accessorySkin.image;
         accessoryImgElement.style.display = 'block';
         userAvatarAccessory.style.display = 'block'; 
       } else {
+        // Hide accessory for "none" or missing accessories
         accessoryImgElement.style.display = 'none';
-        // userAvatarAccessory.style.display = 'none'; // Optionally hide div
+        // Keep the container visible but hide the image
+        userAvatarAccessory.style.display = 'block';
       }
     }
   } catch (error) {
