@@ -398,40 +398,39 @@ async function loadInventory(profileData) {
     
     inventoryGrid.innerHTML = ''; // Clear loading message
 
-    Object.entries(allSkinCategories).forEach(([type, skinsInCategory]) => {
-      const section = document.createElement('div');
-      section.className = 'inventory-section';
-      // Ensure getTypeName is available or define it within profile.js
-      section.innerHTML = `<h3>${getTypeName(type)}</h3><div class="skin-grid" id="skin-grid-${type}"></div>`;
-      const skinGridElement = section.querySelector(`.skin-grid`);
-      
-      if (Array.isArray(skinsInCategory)) {
-        skinsInCategory.forEach(skin => {
-          const ownedSkinsForTypeArray = userOwnedSkinsData[type] || [];
-          // Items with price 0 are considered owned for equipping purposes.
-          const owned = ownedSkinsForTypeArray.includes(skin.id) || skin.price === 0; 
-          const equipped = userEquippedSkins[type] === skin.id;
-          
-          const skinItem = document.createElement('div');
-          skinItem.className = `inventory-item ${owned ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
-          
-          // Use correct path for placeholder
-          const fallbackImage = 'assets/images/placeholder.webp';
-          const skinImage = skin.image || fallbackImage;
-          
-          skinItem.innerHTML = `
-            <img src="${skinImage}" alt="${skin.name}" onerror="this.src='${fallbackImage}'" style="${skin.id === 'none' ? 'opacity: 0.5; filter: grayscale(100%);' : ''}">
-            <h4>${skin.name}</h4>
-            <p>${skin.price} pièces</p>
-            ${owned ? 
-              `<button class="btn-equip" data-skin-id="${skin.id}" data-skin-type="${type}" ${equipped ? 'disabled' : ''}>${equipped ? 'Équipé' : 'Équiper'}</button>` : 
-              `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${type}">Acheter</button>`
+    // Load and display owned skins for each category
+    Object.keys(allSkinCategories).forEach(category => {
+        const container = document.getElementById(`${category}-options`);
+        if (!container) return;
+
+        // Get user's inventory - handle both old and new formats
+        let ownedSkins = [];
+        if (profileData.inventory) {
+            if (Array.isArray(profileData.inventory)) {
+                // Old format: array of objects - convert on the fly
+                ownedSkins = profileData.inventory
+                    .filter(item => item.type === category)
+                    .map(item => {
+                        // Map old IDs to new IDs
+                        let skinId = item.id;
+                        if (item.id === 'default_girl' && category === 'head') skinId = 'default_girl_head';
+                        if (item.id === 'default_boy' && category === 'head') skinId = 'default_boy_head';
+                        if (item.id === 'default_girl' && category === 'body') skinId = 'default_girl_body';
+                        if (item.id === 'default_boy' && category === 'body') skinId = 'default_boy_body';
+                        if (item.id === 'default' && category === 'background') skinId = 'default_background';
+                        return skinId;
+                    });
+            } else if (profileData.inventory.skins && profileData.inventory.skins[category]) {
+                // New format: object with skins
+                ownedSkins = profileData.inventory.skins[category];
             }
-          `;
-          if (skinGridElement) skinGridElement.appendChild(skinItem);
+        }
+
+        allSkinCategories[category].forEach(skin => {
+            const isOwned = ownedSkins.includes(skin.id) || skin.price === 0;
+            const skinElement = createSkinElement(skin, category, isOwned);
+            container.appendChild(skinElement);
         });
-      }
-      inventoryGrid.appendChild(section);
     });
     
     setupInventoryButtons(); // This function should exist in profile.js
