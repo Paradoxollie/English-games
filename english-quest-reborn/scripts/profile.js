@@ -5,6 +5,7 @@
 
 import { authService } from './auth-service.js';
 import { skinService } from './skin-service.js';
+import { levelService } from './level-service.js';
 
 // État pour éviter les boucles infinies
 let isUpdatingAvatar = false;
@@ -28,6 +29,17 @@ const notificationsToggle = document.getElementById('notificationsToggle');
 const soundToggle = document.getElementById('soundToggle');
 const userPendingXP = document.getElementById('userPendingXP'); // Added
 const userPendingCoins = document.getElementById('userPendingCoins'); // Added
+
+// Nouveaux éléments pour le système de niveaux
+const levelBadge = document.getElementById('levelBadge');
+const xpText = document.getElementById('xpText');
+const xpProgressFill = document.getElementById('xpProgressFill');
+const nextLevelInfo = document.getElementById('nextLevelInfo');
+const xpSimulatorInput = document.getElementById('xpSimulatorInput');
+const simulateXPButton = document.getElementById('simulateXPButton');
+const simulationResult = document.getElementById('simulationResult');
+const milestonesList = document.getElementById('milestonesList');
+const levelChart = document.getElementById('levelChart');
 
 // Onglets
 const tabs = document.querySelectorAll('.profile-tab');
@@ -174,13 +186,20 @@ async function loadProfile(profileData) {
       }
     }
     
-    if (userLevel) userLevel.textContent = profileData.level || 1;
-    if (userXP) userXP.textContent = `${profileData.xp || 0} XP`;
+    // Mise à jour des statistiques avec le système de niveaux
+    const currentXP = profileData.xp || 0;
+    const progressInfo = levelService.getXPForNextLevel(currentXP);
+    
+    if (userLevel) userLevel.textContent = progressInfo.currentLevel;
+    if (userXP) userXP.textContent = `${currentXP} XP`;
     if (userCoins) userCoins.textContent = `${profileData.coins || 0} pièces`;
     
     // Add these lines:
     if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;
     if (userPendingCoins) userPendingCoins.textContent = `${profileData.pendingCoins || 0} pièces`;
+    
+    // Mise à jour de l'affichage de progression XP
+    updateXPDisplay(currentXP, progressInfo);
     
     // S'assurer que l'avatar a des valeurs par défaut si pas définies
     const avatarToDisplay = {
@@ -195,6 +214,10 @@ async function loadProfile(profileData) {
     await loadInventory(profileData); // loadInventory will also take profileData
     loadAchievements(profileData.achievements || []);
     updateSettingsUI(profileData.settings); // Fixed function name
+    
+    // Charger les données de progression
+    loadMilestones(progressInfo.currentLevel);
+    loadLevelChart();
 
     // Assuming adminPanelLinkContainer is defined globally or fetched if needed
     const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
@@ -348,6 +371,152 @@ function updateAvatarDisplay(avatarData) {
 }
 
 /**
+ * Mettre à jour l'affichage de progression XP
+ */
+function updateXPDisplay(currentXP, progressInfo) {
+  if (!progressInfo) return;
+  
+  try {
+    // Mise à jour du badge de niveau
+    if (levelBadge) {
+      levelBadge.textContent = `Niveau ${progressInfo.currentLevel}`;
+    }
+    
+    // Mise à jour du texte XP
+    if (xpText) {
+      if (progressInfo.isMaxLevel) {
+        xpText.textContent = `${currentXP} XP (Niveau Max)`;
+      } else {
+        xpText.textContent = `${progressInfo.xpProgress} / ${progressInfo.xpNeeded} XP`;
+      }
+    }
+    
+    // Mise à jour de la barre de progression
+    if (xpProgressFill) {
+      const percentage = progressInfo.isMaxLevel ? 100 : progressInfo.progressPercentage;
+      xpProgressFill.style.width = `${percentage}%`;
+    }
+    
+    // Mise à jour du texte niveau suivant
+    if (nextLevelInfo) {
+      if (progressInfo.isMaxLevel) {
+        nextLevelInfo.textContent = 'Niveau maximum atteint !';
+        nextLevelInfo.style.color = 'var(--color-primary)';
+      } else {
+        nextLevelInfo.textContent = `${progressInfo.xpRemaining} XP pour le niveau ${progressInfo.nextLevel}`;
+        nextLevelInfo.style.color = 'var(--color-text-secondary)';
+      }
+    }
+    
+    console.log('[ProfileJs] XP Display updated:', progressInfo);
+  } catch (error) {
+    console.error('[ProfileJs] Error updating XP display:', error);
+  }
+}
+
+/**
+ * Charger les paliers de déblocage
+ */
+function loadMilestones(currentLevel) {
+  if (!milestonesList) return;
+  
+  const milestones = levelService.getUnlockMilestones();
+  milestonesList.innerHTML = '';
+  
+  milestones.forEach(milestone => {
+    const milestoneCard = document.createElement('div');
+    
+    let cardClass = 'milestone-card';
+    if (currentLevel >= milestone.level) {
+      cardClass += ' unlocked';
+    } else if (currentLevel === milestone.level - 1) {
+      cardClass += ' current';
+    } else {
+      cardClass += ' locked';
+    }
+    
+    milestoneCard.className = cardClass;
+    milestoneCard.innerHTML = `
+      <div class="milestone-level">Niveau ${milestone.level}</div>
+      <div class="milestone-description">${milestone.description}</div>
+    `;
+    
+    milestonesList.appendChild(milestoneCard);
+  });
+}
+
+/**
+ * Charger le tableau des niveaux
+ */
+function loadLevelChart() {
+  if (!levelChart) return;
+  
+  const chart = levelService.getLevelChart(20);
+  
+  let tableHTML = `
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: var(--color-primary); color: white;">
+          <th style="padding: 0.5rem; border: 1px solid #ddd;">Niveau</th>
+          <th style="padding: 0.5rem; border: 1px solid #ddd;">XP Total</th>
+          <th style="padding: 0.5rem; border: 1px solid #ddd;">XP pour ce niveau</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  chart.forEach(row => {
+    tableHTML += `
+      <tr style="background: ${row.level % 2 === 0 ? 'var(--color-background)' : 'transparent'};">
+        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center; font-weight: bold;">${row.level}</td>
+        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">${row.totalXP.toLocaleString()}</td>
+        <td style="padding: 0.5rem; border: 1px solid #ddd; text-align: center;">${row.xpForThisLevel.toLocaleString()}</td>
+      </tr>
+    `;
+  });
+  
+  tableHTML += '</tbody></table>';
+  levelChart.innerHTML = tableHTML;
+}
+
+/**
+ * Simuler un gain d'XP
+ */
+function simulateXPGain() {
+  const xpToAdd = parseInt(xpSimulatorInput?.value || 0);
+  if (xpToAdd <= 0) {
+    if (simulationResult) {
+      simulationResult.textContent = 'Veuillez entrer un montant d\'XP valide';
+      simulationResult.style.color = '#e74c3c';
+    }
+    return;
+  }
+  
+  const user = authService.getCurrentUser();
+  if (!user) return;
+  
+  const currentXP = user.xp || 0;
+  const simulation = levelService.simulateXPGain(currentXP, xpToAdd);
+  
+  if (simulationResult) {
+    let resultText = `${xpToAdd} XP → `;
+    
+    if (simulation.leveledUp) {
+      resultText += `🎉 Niveau ${simulation.beforeLevel} → ${simulation.afterLevel}`;
+      if (simulation.levelsGained > 1) {
+        resultText += ` (+${simulation.levelsGained} niveaux !)`;
+      }
+      simulationResult.style.color = 'var(--color-primary)';
+    } else {
+      resultText += `Reste niveau ${simulation.afterLevel}`;
+      simulationResult.style.color = 'var(--color-text-secondary)';
+    }
+    
+    simulationResult.textContent = resultText;
+  }
+}
+
+/**
  * Initialiser les onglets
  */
 function initTabs() {
@@ -378,24 +547,40 @@ function createSkinElement(skin, category, isOwned, isEquipped = false) {
   const equippedSkinId = user?.avatar?.[category] || 'default';
   isEquipped = isEquipped || (skin.id === equippedSkinId);
 
+  // Vérifier le niveau requis
+  const userLevel = levelService.calculateLevel(user?.xp || 0);
+  const requiredLevel = skin.minLevel || 1;
+  const isLocked = userLevel < requiredLevel;
+
   const skinElement = document.createElement('div');
-  skinElement.className = `inventory-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}`;
+  let className = `inventory-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}`;
+  if (isLocked) {
+    className += ' locked';
+  }
+  skinElement.className = className;
+  
+  let buttonHTML = '';
+  if (isLocked) {
+    buttonHTML = `<div class="level-requirement">Niveau ${requiredLevel} requis</div>`;
+  } else if (!isOwned) {
+    buttonHTML = `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${category}">
+                    Acheter (${skin.price} pièces)
+                  </button>`;
+  } else {
+    buttonHTML = `<button class="btn-equip ${isEquipped ? 'disabled' : ''}" 
+                           data-skin-id="${skin.id}" 
+                           data-skin-type="${category}"
+                           ${isEquipped ? 'disabled' : ''}>
+                    ${isEquipped ? 'Équipé' : 'Équiper'}
+                  </button>`;
+  }
   
   skinElement.innerHTML = `
+    ${isLocked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : ''}
     <img src="${skin.image}" alt="${skin.name}" onerror="this.src='assets/avatars/default.png'">
     <h4>${skin.name}</h4>
     <p>${skin.price === 0 ? 'Gratuit' : `${skin.price} pièces`}</p>
-    ${!isOwned 
-      ? `<button class="btn-buy" data-skin-id="${skin.id}" data-skin-type="${category}">
-           Acheter (${skin.price} pièces)
-         </button>`
-      : `<button class="btn-equip ${isEquipped ? 'disabled' : ''}" 
-                 data-skin-id="${skin.id}" 
-                 data-skin-type="${category}"
-                 ${isEquipped ? 'disabled' : ''}>
-           ${isEquipped ? 'Équipé' : 'Équiper'}
-         </button>`
-    }
+    ${buttonHTML}
   `;
   
   return skinElement;
@@ -784,6 +969,19 @@ function setupEventListeners() {
         } catch (e) { console.error('Error saving sound settings', e); /* Revert UI? */ }
       }
     });
+    
+    // Event listener pour le simulateur XP
+    if (simulateXPButton) {
+      simulateXPButton.addEventListener('click', simulateXPGain);
+    }
+    
+    if (xpSimulatorInput) {
+      xpSimulatorInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          simulateXPGain();
+        }
+      });
+    }
   } catch (error) {
     console.error("[ProfileJs] Error setting up settings listeners:", error);
   }

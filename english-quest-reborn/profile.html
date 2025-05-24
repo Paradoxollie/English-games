@@ -266,12 +266,12 @@
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
       border-color: var(--color-primary);
     }
-
+    
     .inventory-item.owned {
       border-color: var(--color-primary);
       background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), rgba(52, 152, 219, 0.05));
     }
-
+    
     .inventory-item.equipped {
       background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
       border-color: var(--color-secondary);
@@ -284,23 +284,23 @@
       margin-bottom: 1rem;
       transition: transform 0.3s ease;
     }
-
+    
     .inventory-item:hover img {
       transform: scale(1.1);
     }
-
+    
     .inventory-item h4 {
       margin: 0 0 0.5rem 0;
       font-size: 1rem;
       color: var(--color-text);
     }
-
+    
     .inventory-item p {
       margin: 0 0 1rem 0;
       font-size: 0.9rem;
       color: var(--color-text-secondary);
     }
-
+    
     /* Buttons */
     .btn-buy, .btn-equip {
       width: 100%;
@@ -312,23 +312,23 @@
       font-weight: 600;
       font-size: 0.9rem;
     }
-
+    
     .btn-buy {
       background: var(--color-primary);
       color: white;
     }
-
+    
     .btn-buy:hover {
       background: #27ae60;
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
     }
-
+    
     .btn-equip {
       background: var(--color-secondary);
       color: white;
     }
-
+    
     .btn-equip:hover {
       background: #2980b9;
       transform: translateY(-2px);
@@ -340,6 +340,88 @@
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+    }
+
+    /* Styles pour les éléments verrouillés */
+    .inventory-item.locked {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(192, 57, 43, 0.05));
+      border-color: #e74c3c;
+    }
+
+    .inventory-item.locked:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .inventory-item.locked img {
+      filter: grayscale(70%);
+    }
+
+    .inventory-item.locked:hover img {
+      transform: none;
+    }
+
+    .lock-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e74c3c;
+      color: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    .level-requirement {
+      background: #e74c3c;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    /* Styles pour les paliers de déblocage */
+    .milestone-card {
+      background: var(--color-background);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .milestone-card.unlocked {
+      border-color: var(--color-primary);
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), rgba(52, 152, 219, 0.05));
+    }
+
+    .milestone-card.current {
+      border-color: var(--color-secondary);
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1));
+    }
+
+    .milestone-card.locked {
+      opacity: 0.6;
+      border-color: #95a5a6;
+    }
+
+    .milestone-level {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .milestone-description {
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
     }
 
     /* Achievement Styles */
@@ -651,19 +733,34 @@
       <!-- Avatar Section -->
       <div class="avatar-section">
         <h2>Mon Avatar</h2>
-        <div class="avatar-container" id="userAvatarContainer">
-          <img src="assets/avatars/backgrounds/default.png" alt="Background" class="avatar-background" id="userAvatarBackground" style="display: none;">
-          <img src="assets/avatars/bodies/default_boy.png" alt="Body" class="avatar-body" id="userAvatarBody" onerror="this.src='assets/avatars/bodies/default_boy.png'">
-          <img src="assets/avatars/heads/default_boy.png" alt="Head" class="avatar-head" id="userAvatarHead" onerror="this.src='assets/avatars/heads/default_boy.png'">
-          <div class="avatar-accessory" id="userAvatarAccessory">
+      <div class="avatar-container" id="userAvatarContainer">
+        <img src="assets/avatars/backgrounds/default.png" alt="Background" class="avatar-background" id="userAvatarBackground" style="display: none;">
+        <img src="assets/avatars/bodies/default_boy.png" alt="Body" class="avatar-body" id="userAvatarBody" onerror="this.src='assets/avatars/bodies/default_boy.png'">
+        <img src="assets/avatars/heads/default_boy.png" alt="Head" class="avatar-head" id="userAvatarHead" onerror="this.src='assets/avatars/heads/default_boy.png'">
+        <div class="avatar-accessory" id="userAvatarAccessory">
             <img alt="Accessory" width="100%" height="100%" style="display: none;">
           </div>
         </div>
-      </div>
+    </div>
 
       <!-- Stats Section -->
       <div class="stats-section">
         <h2>Mes Statistiques</h2>
+        
+        <!-- Barre de progression XP -->
+        <div class="xp-progress-section" style="margin-bottom: 2rem;">
+          <div class="xp-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span class="level-badge" id="levelBadge" style="background: var(--color-primary); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold;">Niveau 1</span>
+            <span class="xp-text" id="xpText" style="color: var(--color-text-secondary); font-size: 0.9rem;">0 / 100 XP</span>
+          </div>
+          <div class="xp-progress-bar" style="background: var(--color-background); border-radius: 10px; height: 12px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+            <div class="xp-progress-fill" id="xpProgressFill" style="background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 10px;"></div>
+          </div>
+          <div class="next-level-info" id="nextLevelInfo" style="text-align: center; margin-top: 0.5rem; font-size: 0.8rem; color: var(--color-text-secondary);">
+            100 XP pour le niveau suivant
+          </div>
+        </div>
+        
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-value" id="userLevel">1</div>
@@ -671,7 +768,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userXP">0</div>
-            <div class="stat-label">XP</div>
+            <div class="stat-label">XP Total</div>
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userCoins">0</div>
@@ -686,59 +783,90 @@
             <div class="stat-label">Pièces en attente</div>
           </div>
         </div>
-      </div>
-    </div>
+          </div>
+        </div>
 
     <!-- Tabs Section -->
     <div class="tabs-section">
-      <div class="profile-tabs">
+        <div class="profile-tabs">
         <button class="profile-tab active" data-tab="inventory">Inventaire</button>
         <button class="profile-tab" data-tab="achievements">Succès</button>
+        <button class="profile-tab" data-tab="progression">Progression</button>
         <button class="profile-tab" data-tab="settings">Paramètres</button>
-      </div>
+        </div>
 
       <!-- Tab Content -->
-      <div class="tab-content active" id="inventory">
-        <h2>Mon Inventaire</h2>
-        <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
-        <div class="inventory-grid" id="inventoryGrid">
-          <p>Chargement de votre inventaire...</p>
+        <div class="tab-content active" id="inventory">
+          <h2>Mon Inventaire</h2>
+          <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
+          <div class="inventory-grid" id="inventoryGrid">
+            <p>Chargement de votre inventaire...</p>
+          </div>
         </div>
-      </div>
 
-      <div class="tab-content" id="achievements">
-        <h2>Mes Succès</h2>
-        <div class="achievement-list" id="achievementList">
-          <!-- Les succès seront ajoutés dynamiquement -->
+        <div class="tab-content" id="achievements">
+          <h2>Mes Succès</h2>
+          <div class="achievement-list" id="achievementList">
+            <!-- Les succès seront ajoutés dynamiquement -->
+          </div>
         </div>
-      </div>
 
-      <div class="tab-content" id="settings">
-        <h2>Paramètres</h2>
-        <form class="settings-form" id="settingsForm">
-          <div class="form-group">
+        <div class="tab-content" id="progression">
+          <h2>Progression et Déblocages</h2>
+          
+          <!-- Simulateur XP -->
+          <div class="xp-simulator" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Simulateur XP</h3>
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+              <input type="number" id="xpSimulatorInput" placeholder="XP à ajouter" min="1" max="10000" style="padding: 0.5rem; border: 1px solid var(--color-primary); border-radius: 0.5rem; background: white;">
+              <button id="simulateXPButton" style="padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Simuler</button>
+              <div id="simulationResult" style="font-size: 0.9rem; color: var(--color-text-secondary);"></div>
+            </div>
+          </div>
+          
+          <!-- Paliers de déblocage -->
+          <div class="unlock-milestones" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Paliers de Déblocage</h3>
+            <div id="milestonesList" class="milestones-grid" style="display: grid; gap: 1rem;">
+              <!-- Les paliers seront ajoutés dynamiquement -->
+            </div>
+          </div>
+          
+          <!-- Tableau des niveaux -->
+          <div class="level-chart" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem;">
+            <h3 style="margin-bottom: 1rem;">Tableau des Niveaux</h3>
+            <div id="levelChart" style="max-height: 300px; overflow-y: auto;">
+              <!-- Le tableau sera ajouté dynamiquement -->
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="settings">
+          <h2>Paramètres</h2>
+          <form class="settings-form" id="settingsForm">
+            <div class="form-group">
             <label for="themeToggle">Thème sombre</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="themeToggle" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="form-group">
+              <label class="toggle-switch">
+                <input type="checkbox" id="themeToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
             <label for="notificationsToggle">Notifications</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="notificationsToggle" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="form-group">
+              <label class="toggle-switch">
+                <input type="checkbox" id="notificationsToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
             <label for="soundToggle">Son</label>
-            <label class="toggle-switch">
-              <input type="checkbox" id="soundToggle" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </form>
-      </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="soundToggle" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </form>
+        </div>
     </div>
 
     <!-- Admin Panel Section -->
@@ -765,6 +893,7 @@
 
   <!-- Scripts -->
   <script src="scripts/lib/bcrypt.min.js"></script>
+  <script type="module" src="scripts/level-service.js"></script>
   <script type="module" src="scripts/skin-service.js"></script>
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>

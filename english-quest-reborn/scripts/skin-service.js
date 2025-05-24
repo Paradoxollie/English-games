@@ -1,29 +1,57 @@
 import { authService } from './auth-service.js';
+import { levelService } from './level-service.js';
 
 class SkinService {
   constructor() {
     this.defaultSkins = {
       head: [
-        { id: 'default_boy_head', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png' },
-        { id: 'default_girl_head', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png' },
-        { id: 'bear_head', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png' }
+        { id: 'default_boy_head', name: 'Garçon', price: 0, image: 'assets/avatars/heads/default_boy.png', minLevel: 1 },
+        { id: 'default_girl_head', name: 'Fille', price: 0, image: 'assets/avatars/heads/default_girl.png', minLevel: 1 },
+        { id: 'bear_head', name: 'Ours', price: 100, image: 'assets/avatars/heads/bear.png', minLevel: 5 }
       ],
       body: [
-        { id: 'default_boy_body', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png' },
-        { id: 'default_girl_body', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png' },
-        { id: 'bear_body', name: 'Ours', price: 100, image: 'assets/avatars/bodies/bear.png' }
+        { id: 'default_boy_body', name: 'Garçon', price: 0, image: 'assets/avatars/bodies/default_boy.png', minLevel: 1 },
+        { id: 'default_girl_body', name: 'Fille', price: 0, image: 'assets/avatars/bodies/default_girl.png', minLevel: 1 },
+        { id: 'bear_body', name: 'Ours', price: 100, image: 'assets/avatars/bodies/bear.png', minLevel: 5 }
       ],
       accessory: [
-        { id: 'default', name: 'Accessoire Animé', price: 0, image: 'assets/avatars/accessories/default.gif' }
+        { id: 'default', name: 'Accessoire Animé', price: 0, image: 'assets/avatars/accessories/default.gif', minLevel: 1 }
       ],
       background: [
-        { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png' }
+        { id: 'default_background', name: 'Défaut', price: 0, image: 'assets/avatars/backgrounds/default.png', minLevel: 1 }
       ]
     };
   }
 
   getAvailableSkins() {
     return this.defaultSkins;
+  }
+
+  /**
+   * Retourne les skins disponibles pour un niveau donné
+   */
+  getSkinsForLevel(userLevel) {
+    const availableSkins = {};
+    
+    for (const [skinType, skins] of Object.entries(this.defaultSkins)) {
+      availableSkins[skinType] = skins.map(skin => ({
+        ...skin,
+        isLocked: userLevel < (skin.minLevel || 1),
+        canBuy: userLevel >= (skin.minLevel || 1)
+      }));
+    }
+    
+    return availableSkins;
+  }
+
+  /**
+   * Vérifie si un skin est débloqué pour un niveau donné
+   */
+  isSkinUnlocked(skinId, skinType, userLevel) {
+    const skin = this.defaultSkins[skinType]?.find(s => s.id === skinId);
+    if (!skin) return false;
+    
+    return userLevel >= (skin.minLevel || 1);
   }
 
   // Migration function to convert old inventory format to new format
@@ -107,6 +135,20 @@ class SkinService {
         return { success: false, error: 'Skin non trouvé' };
       }
       console.log(`[SkinService] Skin to buy:`, skinToBuy);
+
+      // Vérifier le niveau requis
+      const userLevel = levelService.calculateLevel(user.xp || 0);
+      const requiredLevel = skinToBuy.minLevel || 1;
+      
+      if (!levelService.hasRequiredLevel(userLevel, requiredLevel)) {
+        console.log(`[SkinService] ERROR: Insufficient level: ${userLevel} < ${requiredLevel}`);
+        return { 
+          success: false, 
+          error: `Niveau ${requiredLevel} requis (vous êtes niveau ${userLevel})`,
+          requiredLevel,
+          userLevel
+        };
+      }
 
       // Migrate inventory if needed
       const migratedInventory = this.migrateInventoryFormat(user.inventory);
