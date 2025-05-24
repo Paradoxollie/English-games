@@ -37,19 +37,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
 
-  // Fonction pour mettre à jour l'interface
+  // Fonction pour nettoyer et mettre à jour l'interface
   function updateUI(user) {
     console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || user.username || "Utilisateur connecté") : "Déconnecté");
     
+        // Supprimer les boutons de déconnexion existants pour éviter les doublons    const existingLogoutButton = document.getElementById('logoutButton');    if (existingLogoutButton) {      existingLogoutButton.remove();    }
+    
     if (user) {
-      // L'utilisateur est connecté
+      // L'utilisateur est connecté - MASQUER le bouton de connexion
       if (loginButton) {
         loginButton.style.display = 'none';
-        console.log("Bouton de connexion masqué");
+        console.log("✅ Bouton de connexion masqué");
       }
       
       if (profileButton) {
-        profileButton.style.display = 'inline-block';
+        profileButton.style.display = 'inline-flex';
         
         // Mettre à jour le texte du bouton (nom d'utilisateur ou texte par défaut)
         if (user.displayName) {
@@ -62,44 +64,35 @@ document.addEventListener('DOMContentLoaded', async function() {
           profileButton.textContent = 'Mon Profil';
         }
         
-        console.log("Bouton de profil affiché avec le texte:", profileButton.textContent);
+        console.log("✅ Bouton de profil affiché avec le texte:", profileButton.textContent);
         
-        // Ajouter un bouton de déconnexion si nécessaire
-        if (!document.getElementById('logoutButton')) {
-          const logoutButton = document.createElement('a');
-          logoutButton.id = 'logoutButton';
-          logoutButton.className = 'btn-logout';
-          logoutButton.style.marginLeft = '10px';
-          logoutButton.textContent = 'Déconnexion';
-          logoutButton.href = '#';
-          logoutButton.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log("Clic sur le bouton de déconnexion");
-            await authService.logout();
-            window.location.href = '../index.html';
-          });
-          
-          userMenu.appendChild(logoutButton);
-          console.log("Bouton de déconnexion ajouté");
-        }
+        // Ajouter un bouton de déconnexion
+        const logoutButton = document.createElement('a');
+        logoutButton.id = 'logoutButton';
+        logoutButton.className = 'btn-login';
+        logoutButton.style.cssText = 'margin-left: 10px; background: linear-gradient(135deg, #e74c3c, #c0392b); border-color: #e74c3c;';
+        logoutButton.textContent = 'Déconnexion';
+        logoutButton.href = '#';
+        logoutButton.addEventListener('click', async (e) => {
+          e.preventDefault();
+          console.log("Clic sur le bouton de déconnexion");
+          await authService.logout();
+          window.location.reload(); // Recharger pour nettoyer l'état
+        });
+        
+        userMenu.appendChild(logoutButton);
+        console.log("✅ Bouton de déconnexion ajouté");
       }
     } else {
-      // L'utilisateur n'est pas connecté
+      // L'utilisateur n'est pas connecté - AFFICHER le bouton de connexion
       if (loginButton) {
-        loginButton.style.display = 'inline-block';
-        console.log("Bouton de connexion affiché");
+        loginButton.style.display = 'inline-flex';
+        console.log("✅ Bouton de connexion affiché");
       }
       
       if (profileButton) {
         profileButton.style.display = 'none';
-        console.log("Bouton de profil masqué");
-      }
-      
-      // Supprimer le bouton de déconnexion s'il existe
-      const logoutButton = document.getElementById('logoutButton');
-      if (logoutButton) {
-        logoutButton.remove();
-        console.log("Bouton de déconnexion supprimé");
+        console.log("✅ Bouton de profil masqué");
       }
     }
   }
