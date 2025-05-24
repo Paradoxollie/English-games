@@ -33,26 +33,6 @@
       padding-top: 80px;
     }
 
-    /* Assurer que les boutons d'authentification ont la même taille sur toutes les pages */
-    .btn-login, .btn-profile {
-      min-width: 80px;
-      text-align: center;
-      color: var(--color-text);
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-login:hover, .btn-profile:hover {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
-    }
-
     /* Correction des couleurs du titre */
     .section-title.text-gradient {
       background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
@@ -600,176 +580,11 @@
       color: var(--color-primary);
       transform: scale(1.1);
     }
-    :root {
-      /* Palette de couleurs vert, bleu et blanc */
-      --color-primary: #2ecc71 !important; /* Vert */
-      --color-primary-dark: #27ae60 !important;
-      --color-primary-light: #58d68d !important;
 
-      --color-secondary: #3498db !important; /* Bleu */
-      --color-secondary-dark: #2980b9 !important;
-      --color-secondary-light: #5dade2 !important;
-
-      --color-tertiary: #ffffff !important; /* Blanc */
-      --color-tertiary-dark: #f5f5f5 !important;
-      --color-tertiary-light: #ffffff !important;
-
-      --color-accent: #3498db !important; /* Bleu comme accent également */
-      --color-accent-dark: #2980b9 !important;
-      --color-accent-light: #5dade2 !important;
-
-      --color-background: #121212 !important;
-      --color-surface: #1a1a1a !important;
-      --color-surface-light: #252525 !important;
-
-      --color-text: #ffffff !important;
-      --color-text-secondary: #b0bec5 !important;
-    }
 
     /* Ajout d'un espace pour compenser le header fixe */
     body {
       padding-top: 80px;
-    }
-
-    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
-    .btn-login {
-      min-width: 80px;
-      text-align: center;
-      background-color: transparent !important;
-      border: 2px solid #2ecc71 !important;
-      color: #2ecc71 !important;
-    }
-
-    .btn-login:hover {
-      background-color: #2ecc71 !important;
-      color: #121212 !important;
-    }
-
-    /* Correction des couleurs du titre */
-    .section-title.text-gradient {
-      background: linear-gradient(90deg, #2ecc71, #3498db) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      color: transparent !important;
-      font-weight: 900 !important;
-      font-size: 2.5rem !important;
-      margin-bottom: 1rem !important;
-    }
-
-    /* Correction de la couleur du sous-titre */
-    .game-subtitle {
-      color: #3498db !important;
-      font-size: 1.2rem !important;
-      margin-bottom: 2rem !important;
-    }
-
-    /* Assurer que le container a la même largeur que sur les autres pages */
-    .container {
-      width: 90% !important;
-      max-width: 1200px !important;
-      margin: 0 auto !important;
-      padding: 0 var(--spacing-sm) !important;
-    }
-
-    /* Styles pour le header exactement comme sur index.html */
-    .header {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      background-color: rgba(18, 18, 18, 0.9) !important;
-      backdrop-filter: blur(10px) !important;
-      z-index: 1000 !important;
-      padding: var(--spacing-sm) 0 !important;
-      border-bottom: 1px solid rgba(0, 229, 255, 0.2) !important;
-    }
-
-    .header-container {
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-    }
-
-    .logo {
-      font-family: 'Cinzel', serif !important;
-      font-size: 1.8rem !important;
-      font-weight: 700 !important;
-      color: #2ecc71 !important;
-      display: flex !important;
-      align-items: center !important;
-    }
-
-    .logo span {
-      color: #ffffff !important;
-    }
-
-    .nav {
-      display: none !important;
-    }
-
-    .nav-list {
-      display: flex !important;
-      gap: var(--spacing-md) !important;
-    }
-
-    .nav-link {
-      font-weight: 500 !important;
-      position: relative !important;
-      padding: var(--spacing-xs) 0 !important;
-      transition: color 0.3s ease !important;
-      color: #ffffff !important;
-    }
-
-    .nav-link::after {
-      content: '' !important;
-      position: absolute !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      width: 0 !important;
-      height: 2px !important;
-      background-color: #2ecc71 !important;
-      transition: width 0.3s ease !important;
-    }
-
-    .nav-link:hover {
-      color: #2ecc71 !important;
-    }
-
-    .nav-link:hover::after {
-      width: 100% !important;
-    }
-
-    .nav-link.active {
-      color: #2ecc71 !important;
-    }
-
-    .nav-link.active::after {
-      width: 100% !important;
-    }
-
-    .user-menu {
-      display: flex !important;
-      align-items: center !important;
-      gap: var(--spacing-sm) !important;
-    }
-
-    .menu-toggle {
-      display: block !important;
-      background: none !important;
-      border: none !important;
-      color: #ffffff !important;
-      font-size: 1.5rem !important;
-      cursor: pointer !important;
-    }
-
-    @media (min-width: 768px) {
-      .nav {
-        display: block !important;
-      }
-
-      .menu-toggle {
-        display: none !important;
-      }
     }
 
     /* Styles pour le leaderboard */
@@ -1619,9 +1434,9 @@
         </ul>
       </nav>
 
-      <div id="userMenu" class="user-menu">
-        <a id="loginButton" href="../auth.html" class="btn-login">Connexion</a>
-        <a id="profileButton" href="../profile.html" class="btn-profile" style="display: none;">Mon Profil</a>
+      <div class="user-menu" id="userMenu">
+        <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
         <button class="menu-toggle">☰</button>
       </div>
     </div>
@@ -1997,8 +1812,6 @@
   <script src="../src/js/firebase-service-adapter.js"></script>
 
   <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
-  <script type="module" src="../scripts/auth-service.js"></script>
-  <script src="../scripts/auth-header.js" defer></script>
   <script src="../scripts/auth-local.js" defer></script>
   <script src="../src/js/auth-state.js" defer></script>
   <script src="../src/js/reward-system.js" defer></script>
@@ -2326,25 +2139,8 @@
           modal.style.visibility = 'hidden';
         });
 
-        // Vérifier si un utilisateur est connecté dans localStorage
-        const userJson = localStorage.getItem('english_quest_current_user');
-        if (userJson) {
-          const user = JSON.parse(userJson);
-
-          if (user && user.username) {
-            console.log("Utilisateur connecté au jeu");
-
-            // Mettre à jour l'interface utilisateur
-            if (typeof window.updateUI === 'function') {
-              window.updateUI();
-            }
-
-            // Ne pas mettre à jour le texte du bouton de connexion
-            // Garder "Profil" comme sur les autres pages
-          }
-        } else {
-          console.log("Aucun utilisateur connecté");
-        }
+        // L'authentification est maintenant gérée par auth-header.js
+        console.log("Authentification gérée par auth-header.js");
 
         // Initialiser le menu mobile
         const menuToggle = document.querySelector('.menu-toggle');
@@ -2361,6 +2157,23 @@
         console.error("Erreur lors de la vérification de l'utilisateur:", error);
       }
     });
+
+    // Supprimer tout overlay potentiel 
+    const overlays = document.querySelectorAll('.modal-backdrop, .overlay');
+    overlays.forEach(overlay => {
+      if (overlay) {
+        overlay.style.display = 'none';
+        overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '-9999';
+      }
+    });
   </script>
+
+  <!-- Scripts -->
+  <script src="../scripts/new-design.js"></script>
+  <script type="module" src="../scripts/auth-header.js"></script>
+  <script src="../scripts/debug.js"></script>
 </body>
 </html>
