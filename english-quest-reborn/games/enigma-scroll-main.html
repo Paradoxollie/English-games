@@ -218,13 +218,21 @@
 
     /* Écran de connexion obligatoire */
     .auth-required {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
       text-align: center;
       padding: 2rem;
+      transition: all 0.3s ease;
     }
 
     .auth-required h1 {
@@ -506,7 +514,7 @@
       display: block;
     }
 
-    .difficulty-btn:hover {
+    .difficulty-btn:hover:not([style*="pointer-events: none"]) {
       border-color: var(--color-primary);
       background: var(--color-surface-hover);
       transform: translateY(-2px);
@@ -516,6 +524,10 @@
     .difficulty-btn.active {
       border-color: var(--color-primary);
       background: rgba(46, 204, 113, 0.1);
+    }
+
+    .difficulty-btn[style*="pointer-events: none"] {
+      cursor: not-allowed;
     }
 
     .difficulty-title {
@@ -710,7 +722,7 @@
         grid-template-columns: 1fr;
         gap: var(--spacing-md);
       }
-
+      
       .game-sidebar {
         order: -1;
       }
@@ -767,7 +779,7 @@
   <main>
     <!-- Écran de connexion obligatoire -->
     <div id="authRequired" class="auth-required hidden">
-      <div class="container">
+    <div class="container">
         <div style="text-align: center; margin-bottom: 2rem;">
           <i class="fas fa-lock" style="font-size: 4rem; color: var(--color-primary); margin-bottom: 1rem;"></i>
           <h1>🔒 Accès Restreint</h1>
@@ -787,9 +799,9 @@
               <li style="margin-bottom: 0.5rem;">🎯 Suivi de vos performances</li>
               <li style="margin-bottom: 0.5rem;">🎮 Accès à tous les jeux</li>
             </ul>
-          </div>
-        </div>
-        
+                  </div>
+                </div>
+
         <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
           <a href="../login.html" class="btn btn-lg" style="min-width: 200px;">
             <i class="fas fa-sign-in-alt"></i>
@@ -799,13 +811,13 @@
             <i class="fas fa-user-plus"></i>
             Créer un compte
           </a>
-        </div>
+                </div>
         
         <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--color-text-disabled);">
           Pas encore de compte ? L'inscription est gratuite et prend moins d'une minute !
         </p>
-      </div>
-    </div>
+              </div>
+            </div>
 
     <!-- Écran d'accueil du jeu -->
     <div id="welcomeScreen" class="welcome-screen hidden">
@@ -813,22 +825,22 @@
         <div class="game-header">
           <h1 class="game-title">Enigma Scroll</h1>
           <p class="game-subtitle">Déchiffrez les parchemins mystérieux et devinez des mots cachés en anglais</p>
-        </div>
+                </div>
 
         <div class="difficulty-selection">
           <div class="difficulty-btn" data-difficulty="easy">
             <div class="difficulty-title">Facile</div>
             <div class="difficulty-desc">Mots de 4 lettres<br>6 tentatives</div>
-          </div>
+                </div>
           <div class="difficulty-btn" data-difficulty="medium">
             <div class="difficulty-title">Moyen</div>
             <div class="difficulty-desc">Mots de 5 lettres<br>6 tentatives</div>
-          </div>
+                </div>
           <div class="difficulty-btn" data-difficulty="hard">
             <div class="difficulty-title">Difficile</div>
             <div class="difficulty-desc">Mots de 6 lettres<br>6 tentatives</div>
-          </div>
-        </div>
+                </div>
+              </div>
 
         <button id="startGameButton" class="btn btn-lg" disabled>
           <i class="fas fa-play"></i>
@@ -840,70 +852,70 @@
     <!-- Zone de jeu -->
     <div id="gameArea" class="game-area hidden">
       <div class="game-main">
-        <!-- Power-ups -->
+              <!-- Power-ups -->
         <div class="power-ups">
           <div class="power-up" data-type="hint">
-            <div class="power-up-icon">💡</div>
+                  <div class="power-up-icon">💡</div>
             <div class="power-up-name">Indice (1)</div>
-          </div>
+                </div>
           <div class="power-up" data-type="time">
-            <div class="power-up-icon">⏰</div>
+                  <div class="power-up-icon">⏰</div>
             <div class="power-up-name">+15s (2)</div>
-          </div>
+                </div>
           <div class="power-up" data-type="skip">
-            <div class="power-up-icon">⏭️</div>
+                  <div class="power-up-icon">⏭️</div>
             <div class="power-up-name">Passer (3)</div>
-          </div>
-        </div>
+                </div>
+              </div>
 
-        <!-- Grille de jeu -->
+              <!-- Grille de jeu -->
         <div id="gameGrid" class="game-grid"></div>
 
-        <!-- Clavier virtuel -->
+              <!-- Clavier virtuel -->
         <div class="keyboard">
-          <div class="keyboard-row">
-            <button class="key-btn">Q</button>
-            <button class="key-btn">W</button>
-            <button class="key-btn">E</button>
-            <button class="key-btn">R</button>
-            <button class="key-btn">T</button>
-            <button class="key-btn">Y</button>
-            <button class="key-btn">U</button>
-            <button class="key-btn">I</button>
-            <button class="key-btn">O</button>
-            <button class="key-btn">P</button>
-          </div>
-          <div class="keyboard-row">
-            <button class="key-btn">A</button>
-            <button class="key-btn">S</button>
-            <button class="key-btn">D</button>
-            <button class="key-btn">F</button>
-            <button class="key-btn">G</button>
-            <button class="key-btn">H</button>
-            <button class="key-btn">J</button>
-            <button class="key-btn">K</button>
-            <button class="key-btn">L</button>
-          </div>
-          <div class="keyboard-row">
-            <button class="key-btn key-enter">ENTER</button>
-            <button class="key-btn">Z</button>
-            <button class="key-btn">X</button>
-            <button class="key-btn">C</button>
-            <button class="key-btn">V</button>
-            <button class="key-btn">B</button>
-            <button class="key-btn">N</button>
-            <button class="key-btn">M</button>
-            <button class="key-btn key-delete">⌫</button>
-          </div>
-        </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete">⌫</button>
+                </div>
+              </div>
 
         <div class="text-center">
           <button id="newGameButton" class="btn btn-secondary" style="display: none;">
             <i class="fas fa-redo"></i>
             Nouvelle Partie
-          </button>
-        </div>
-      </div>
+                </button>
+              </div>
+            </div>
 
       <div class="game-sidebar">
         <!-- Statistiques -->
@@ -912,15 +924,15 @@
           <div class="stat-item">
             <span>Score:</span>
             <span class="stat-value" id="currentScore">0</span>
-          </div>
+            </div>
           <div class="stat-item">
             <span>Combo:</span>
             <span class="stat-value" id="currentCombo">1</span>
-          </div>
+            </div>
           <div class="stat-item">
             <span>Mots trouvés:</span>
             <span class="stat-value" id="wordsFound">0</span>
-          </div>
+            </div>
           <div class="stat-item">
             <span>Temps restant:</span>
             <span class="stat-value" id="timeLeft">90</span>
@@ -933,30 +945,30 @@
             <span>XP:</span>
             <span class="stat-value" id="playerXP">0</span>
           </div>
-        </div>
-
+            </div>
+            
         <!-- Classement -->
         <div class="leaderboard-card">
           <h3 class="card-title">Meilleurs Scores</h3>
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
+              <table class="leaderboard-table">
+                <thead>
+                  <tr>
                 <th class="rank">#</th>
                 <th class="player">Joueur</th>
                 <th class="score">Score</th>
-              </tr>
-            </thead>
+                  </tr>
+                </thead>
             <tbody id="leaderboardBody">
-              <tr>
+                  <tr>
                 <td colspan="3" style="text-align: center; color: var(--color-text-secondary);">
                   Chargement...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
       </div>
-    </div>
   </main>
 
   <!-- Message de notification -->
@@ -1007,8 +1019,60 @@
 
     let gameTimer = null;
     let randomEventTimer = null;
+    let authCheckTimer = null;
     let currentUser = null;
     let userProfile = null;
+
+    // Fonction de polling pour vérifier l'authentification
+    function startAuthPolling() {
+      if (authCheckTimer) clearInterval(authCheckTimer);
+      
+      authCheckTimer = setInterval(async () => {
+        const wasAuthenticated = !!currentUser;
+        await checkAuthentication();
+        const isAuthenticated = !!currentUser;
+        
+        // Si l'état d'authentification a changé
+        if (wasAuthenticated !== isAuthenticated) {
+          if (isAuthenticated) {
+            // L'utilisateur vient de se connecter
+            console.log('🎉 Utilisateur connecté détecté !');
+            
+            // Réactiver l'interface
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+              btn.style.pointerEvents = 'auto';
+              btn.style.opacity = '1';
+            });
+            
+            // Masquer l'écran d'authentification avec animation
+            const authScreen = document.getElementById('authRequired');
+            authScreen.style.opacity = '0';
+            authScreen.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              authScreen.classList.add('hidden');
+              authScreen.style.opacity = '1';
+              authScreen.style.transform = 'scale(1)';
+            }, 300);
+            
+            showMessage('🎉 Connexion détectée ! Bienvenue !', 'success');
+          } else {
+            // L'utilisateur vient de se déconnecter
+            console.log('👋 Déconnexion détectée');
+            document.getElementById('authRequired').classList.remove('hidden');
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            // Désactiver l'interface
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+              btn.style.pointerEvents = 'none';
+              btn.style.opacity = '0.5';
+            });
+            
+            showMessage('Vous avez été déconnecté.', 'warning');
+          }
+        }
+      }, 2000); // Vérifier toutes les 2 secondes
+    }
 
     // ===========================================
     // SYSTÈME D'AUTHENTIFICATION ET PROFIL
@@ -1017,10 +1081,27 @@
     async function checkAuthentication() {
       console.log('Vérification de l\'authentification...');
       
-      // Attendre que les services soient prêts
+      // Attendre que les services soient prêts avec un timeout plus long
       await new Promise(resolve => {
+        let attempts = 0;
+        const maxAttempts = 50; // 5 secondes max
+        
         const checkServices = () => {
-          if (window.authService || localStorage.getItem('userSession')) {
+          attempts++;
+          
+          // Vérifier les différentes méthodes d'authentification du reborn
+          const authMethods = [
+            window.authService?.getCurrentUser(),
+            localStorage.getItem('userSession'),
+            localStorage.getItem('currentUser'),
+            sessionStorage.getItem('userSession'),
+            window.currentUser,
+            window.user
+          ];
+          
+          const foundUser = authMethods.find(method => method && method !== 'null');
+          
+          if (foundUser || attempts >= maxAttempts) {
             resolve();
           } else {
             setTimeout(checkServices, 100);
@@ -1029,25 +1110,80 @@
         checkServices();
       });
 
-      // Utiliser le système d'authentification du reborn
-      if (window.authService) {
-        await window.authService.init();
-        currentUser = window.authService.getCurrentUser();
-      } else {
-        // Fallback vers le système simple
+      // Essayer différentes méthodes de récupération de l'utilisateur
+      currentUser = null;
+      
+      // Méthode 1: authService du reborn
+      if (window.authService && typeof window.authService.getCurrentUser === 'function') {
+        try {
+          await window.authService.init();
+          currentUser = window.authService.getCurrentUser();
+          console.log('Utilisateur trouvé via authService:', currentUser);
+        } catch (error) {
+          console.log('Erreur authService:', error);
+        }
+      }
+      
+      // Méthode 2: localStorage userSession
+      if (!currentUser) {
         const userData = localStorage.getItem('userSession');
-        currentUser = userData ? JSON.parse(userData) : null;
+        if (userData && userData !== 'null') {
+          try {
+            currentUser = JSON.parse(userData);
+            console.log('Utilisateur trouvé via localStorage userSession:', currentUser);
+          } catch (error) {
+            console.log('Erreur parsing userSession:', error);
+          }
+        }
+      }
+      
+      // Méthode 3: localStorage currentUser
+      if (!currentUser) {
+        const userData = localStorage.getItem('currentUser');
+        if (userData && userData !== 'null') {
+          try {
+            currentUser = JSON.parse(userData);
+            console.log('Utilisateur trouvé via localStorage currentUser:', currentUser);
+          } catch (error) {
+            console.log('Erreur parsing currentUser:', error);
+          }
+        }
+      }
+      
+      // Méthode 4: sessionStorage
+      if (!currentUser) {
+        const userData = sessionStorage.getItem('userSession');
+        if (userData && userData !== 'null') {
+          try {
+            currentUser = JSON.parse(userData);
+            console.log('Utilisateur trouvé via sessionStorage:', currentUser);
+          } catch (error) {
+            console.log('Erreur parsing sessionStorage:', error);
+          }
+        }
+      }
+      
+      // Méthode 5: variables globales
+      if (!currentUser) {
+        currentUser = window.currentUser || window.user || null;
+        if (currentUser) {
+          console.log('Utilisateur trouvé via variables globales:', currentUser);
+        }
       }
 
-      console.log('Utilisateur actuel:', currentUser);
+      console.log('Utilisateur final détecté:', currentUser);
       updateAuthUI();
       
+      // Toujours afficher le jeu, mais avec des restrictions si pas connecté
       if (!currentUser) {
         document.getElementById('authRequired').classList.remove('hidden');
+        document.getElementById('welcomeScreen').classList.add('hidden');
+        document.getElementById('gameArea').classList.add('hidden');
         return false;
       }
-
+      
       await loadUserProfile();
+      document.getElementById('authRequired').classList.add('hidden');
       document.getElementById('welcomeScreen').classList.remove('hidden');
       return true;
     }
@@ -1066,15 +1202,18 @@
         profileButton.style.display = 'inline-flex';
         
         // Mettre à jour le texte du bouton profil
+        let displayName = 'Mon Profil';
         if (currentUser.displayName) {
-          profileButton.textContent = currentUser.displayName;
+          displayName = currentUser.displayName;
         } else if (currentUser.username) {
-          profileButton.textContent = currentUser.username;
+          displayName = currentUser.username;
+        } else if (currentUser.name) {
+          displayName = currentUser.name;
         } else if (currentUser.email) {
-          profileButton.textContent = currentUser.email.split('@')[0];
-        } else {
-          profileButton.textContent = 'Mon Profil';
+          displayName = currentUser.email.split('@')[0];
         }
+        
+        profileButton.textContent = displayName;
 
         // Ajouter le bouton de déconnexion
         const logoutButton = document.createElement('a');
@@ -1180,7 +1319,7 @@
       if (isTopScore) {
         rewardText.textContent = `🏆 Top Score! +${gold} or, +${xp} XP`;
         notification.style.background = 'linear-gradient(135deg, #f1c40f, #e67e22)';
-      } else {
+                  } else {
         rewardText.textContent = `🎮 Partie terminée! +${gold} or, +${xp} XP`;
         notification.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
       }
@@ -1195,7 +1334,7 @@
     // ===========================================
     // SYSTÈME DE SCORES ET CLASSEMENT
     // ===========================================
-
+    
     async function saveScore(finalScore, wordsCount, difficulty) {
       if (!currentUser) return;
 
@@ -1277,7 +1416,7 @@
     // ===========================================
     // LOGIQUE DE JEU
     // ===========================================
-
+    
     function createGrid() {
       const gameGrid = document.getElementById('gameGrid');
       gameGrid.innerHTML = '';
@@ -1330,7 +1469,7 @@
         }
       }
     }
-
+    
     function addLetter(letter) {
       if (!gameState.gameActive || gameState.currentCol >= gameState.wordLength) return;
       
@@ -1340,7 +1479,7 @@
       gameState.currentCol++;
       updateDisplay();
     }
-
+    
     function deleteLetter() {
       if (!gameState.gameActive || gameState.currentCol <= 0) return;
       
@@ -1350,7 +1489,7 @@
       gameState.boardState[gameState.currentRow][gameState.currentCol].letter = '';
       updateDisplay();
     }
-
+    
     async function submitWord() {
       if (!gameState.gameActive || gameState.validatingWord) return;
       if (gameState.currentCol < gameState.wordLength) {
@@ -1376,7 +1515,7 @@
           const row = document.querySelector(`[data-row="${gameState.currentRow}"]`);
           if (row) {
             row.style.animation = 'shake 0.5s ease';
-            setTimeout(() => row.style.animation = '', 500);
+          setTimeout(() => row.style.animation = '', 500);
           }
           gameState.validatingWord = false;
           return;
@@ -1498,7 +1637,7 @@
       
       showMessage(`Nouvelle partie ! Mot de ${gameState.wordLength} lettres`, 'success');
     }
-
+    
     function startTimer() {
       if (gameTimer) clearInterval(gameTimer);
       
@@ -1511,7 +1650,7 @@
         }
       }, 1000);
     }
-
+    
     function stopTimer() {
       if (gameTimer) {
         clearInterval(gameTimer);
@@ -1535,7 +1674,7 @@
         randomEventTimer = null;
       }
     }
-
+    
     function triggerRandomEvent() {
       if (!gameState.gameActive) return;
       
@@ -1560,7 +1699,7 @@
       randomEvent.action();
       updateDisplay();
     }
-
+    
     function endGame(won, message) {
       gameState.gameActive = false;
       gameState.validatingWord = false;
@@ -1615,7 +1754,7 @@
       
       updateDisplay();
     }
-
+    
     function newGame() {
       document.getElementById('newGameButton').style.display = 'none';
       gameState.score = 0;
@@ -1693,13 +1832,25 @@
     // ===========================================
     // GESTIONNAIRES D'ÉVÉNEMENTS
     // ===========================================
-
+    
     document.addEventListener('DOMContentLoaded', async function() {
       console.log('🎮 Initialisation d\'Enigma Scroll...');
+      
+      // Démarrer le polling d'authentification
+      startAuthPolling();
+      
+      // Afficher toujours l'écran d'accueil du jeu en premier
+      document.getElementById('welcomeScreen').classList.remove('hidden');
       
       // Vérifier l'authentification
       const isAuthenticated = await checkAuthentication();
       if (!isAuthenticated) {
+        // Désactiver les interactions du jeu
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.5';
+        });
+        document.getElementById('startGameButton').disabled = true;
         return;
       }
       
@@ -1709,6 +1860,11 @@
       // Sélection de difficulté
       document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.addEventListener('click', function() {
+          if (!currentUser) {
+            showMessage('Veuillez vous connecter d\'abord !', 'warning');
+            return;
+          }
+          
           document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
           this.classList.add('active');
           
@@ -1721,6 +1877,11 @@
       
       // Bouton commencer
       document.getElementById('startGameButton').addEventListener('click', function() {
+        if (!currentUser) {
+          showMessage('Veuillez vous connecter d\'abord !', 'warning');
+          return;
+        }
+        
         if (!gameState.selectedDifficulty) {
           showMessage('Veuillez sélectionner une difficulté !', 'warning');
           return;
@@ -1731,6 +1892,7 @@
       // Power-ups
       document.querySelectorAll('.power-up').forEach(item => {
         item.addEventListener('click', function() {
+          if (!currentUser || !gameState.gameActive) return;
           const type = this.dataset.type;
           usePowerUp(type);
         });
@@ -1739,6 +1901,7 @@
       // Clavier virtuel
       document.querySelectorAll('.key-btn').forEach(key => {
         key.addEventListener('click', function() {
+          if (!currentUser) return;
           const keyText = this.textContent;
           handleKeyPress(keyText);
         });
@@ -1746,6 +1909,8 @@
       
       // Clavier physique
       document.addEventListener('keydown', function(e) {
+        if (!currentUser) return;
+        
         const key = e.key.toUpperCase();
         
         // Power-ups avec touches numériques
@@ -1757,11 +1922,14 @@
       });
       
       // Nouveau jeu
-      document.getElementById('newGameButton').addEventListener('click', newGame);
+      document.getElementById('newGameButton').addEventListener('click', function() {
+        if (!currentUser) return;
+        newGame();
+      });
       
       console.log('✅ Enigma Scroll initialisé avec succès !');
     });
-
+    
     function handleKeyPress(key) {
       if (!gameState.gameActive || gameState.validatingWord) return;
       
