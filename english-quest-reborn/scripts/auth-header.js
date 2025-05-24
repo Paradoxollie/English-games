@@ -2,10 +2,27 @@
  * Script pour gérer l'affichage du header en fonction de l'état d'authentification
  */
 
-import { authService } from './auth-service.js';
-
 document.addEventListener('DOMContentLoaded', async function() {
   console.log("Initialisation du header d'authentification...");
+  
+  // Attendre que authService soit disponible (il sera chargé par auth-service.js)
+  let authService = null;
+  let attempts = 0;
+  const maxAttempts = 50;
+  
+  while (!authService && attempts < maxAttempts) {
+    if (window.authService) {
+      authService = window.authService;
+      break;
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+  
+  if (!authService) {
+    console.error("authService non disponible après", maxAttempts, "tentatives");
+    return;
+  }
   
   // Initialiser le service d'authentification
   await authService.init();
@@ -22,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Fonction pour mettre à jour l'interface
   function updateUI(user) {
-    console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || "Utilisateur connecté") : "Déconnecté");
+    console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || user.username || "Utilisateur connecté") : "Déconnecté");
     
     if (user) {
       // L'utilisateur est connecté
@@ -37,6 +54,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Mettre à jour le texte du bouton (nom d'utilisateur ou texte par défaut)
         if (user.displayName) {
           profileButton.textContent = user.displayName;
+        } else if (user.username) {
+          profileButton.textContent = user.username;
         } else if (user.email) {
           profileButton.textContent = user.email.split('@')[0];
         } else {
@@ -57,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             e.preventDefault();
             console.log("Clic sur le bouton de déconnexion");
             await authService.logout();
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
           });
           
           userMenu.appendChild(logoutButton);

@@ -387,4 +387,7 @@ class AuthService {
     }
 }
 
-export const authService = new AuthService(); 
+export const authService = new AuthService();
+
+// Expose globally for non-module scripts
+window.authService = authService; 

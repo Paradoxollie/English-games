@@ -33,10 +33,24 @@
       padding-top: 80px;
     }
 
-    /* Assurer que le bouton de profil a la même taille sur toutes les pages */
-    .btn-login {
+    /* Assurer que les boutons d'authentification ont la même taille sur toutes les pages */
+    .btn-login, .btn-profile {
       min-width: 80px;
       text-align: center;
+      color: var(--color-text);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-login:hover, .btn-profile:hover {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
     }
 
     /* Correction des couleurs du titre */
@@ -1605,8 +1619,9 @@
         </ul>
       </nav>
 
-      <div class="user-menu">
-        <a href="../auth.html" class="btn-login">Connexion</a>
+      <div id="userMenu" class="user-menu">
+        <a id="loginButton" href="../auth.html" class="btn-login">Connexion</a>
+        <a id="profileButton" href="../profile.html" class="btn-profile" style="display: none;">Mon Profil</a>
         <button class="menu-toggle">☰</button>
       </div>
     </div>
@@ -1982,6 +1997,8 @@
   <script src="../src/js/firebase-service-adapter.js"></script>
 
   <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script src="../scripts/auth-header.js" defer></script>
   <script src="../scripts/auth-local.js" defer></script>
   <script src="../src/js/auth-state.js" defer></script>
   <script src="../src/js/reward-system.js" defer></script>
