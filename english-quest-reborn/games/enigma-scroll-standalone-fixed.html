@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
+  <meta name="theme-color" content="#121212">
+  <title>Enigma Scroll | English Quest</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- TOUS LES STYLES AUTONOMES - AUCUNE DÉPENDANCE EXTERNE -->
+  <style>
+    /* Reset complet */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Variables CSS */
+    :root {
+      /* Couleurs principales */
+      --color-primary: #2ecc71;
+      --color-secondary: #27ae60;
+      --color-info: #3498db;
+      --color-danger: #e74c3c;
+      --color-warning: #f39c12;
+      
+      /* Couleurs de fond */
+      --color-background: #121212;
+      --color-surface: #1e1e1e;
+      
+      /* Couleurs de texte */
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.7);
+      
+      /* Couleurs spécifiques au jeu */
+      --word-correct: #2ecc71;
+      --word-present: #f39c12;
+      --word-absent: #7f8c8d;
+    }
+
+    /* Base */
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background-color: #121212 !important;
+      color: #ffffff !important;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      padding-top: 80px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 1000 !important;
+      background: #121212 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 1rem 0 !important;
+      backdrop-filter: blur(10px) !important;
+    }
+
+    .header-container {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      width: 90% !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+      padding: 0 1rem !important;
+    }
+
+    .logo {
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.8rem !important;
+      font-weight: 700 !important;
+      color: #2ecc71 !important;
+      text-decoration: none !important;
+      letter-spacing: 1px !important;
+    }
+
+    .logo span {
+      color: #ffffff !important;
+    }
+
+    .nav {
+      display: flex !important;
+    }
+
+    .nav-list {
+      display: flex !important;
+      list-style: none !important;
+      gap: 2rem !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      text-decoration: none !important;
+      font-weight: 500 !important;
+      transition: color 0.3s ease !important;
+      position: relative !important;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #2ecc71 !important;
+    }
+
+    .nav-link::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: -5px !important;
+      left: 0 !important;
+      width: 0 !important;
+      height: 2px !important;
+      background: #2ecc71 !important;
+      transition: width 0.3s ease !important;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100% !important;
+    }
+
+    .user-menu {
+      display: flex !important;
+      align-items: center !important;
+      gap: 1rem !important;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #2ecc71, #3498db) !important;
+      color: white !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 6px !important;
+      text-decoration: none !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+      border: none !important;
+      cursor: pointer !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3) !important;
+      color: white !important;
+    }
+
+    .menu-toggle {
+      display: none !important;
+      background: none !important;
+      border: none !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-size: 1.5rem !important;
+      cursor: pointer !important;
+    }
+
+    /* Responsive navigation */
+    @media (max-width: 768px) {
+      .nav {
+        display: none !important;
+      }
+      
+      .menu-toggle {
+        display: block !important;
+      }
+    }
+
+    /* Loading overlay - MODIFIÉ pour être plus facilement supprimable */
+    .loading-overlay {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background-color: rgba(18, 18, 18, 0.95) !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 9999 !important;
+      transition: opacity 0.3s ease !important;
+      cursor: pointer !important;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    .loading-content {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 1.5rem !important;
+      text-align: center !important;
+    }
+
+    .loading-spinner {
+      width: 50px !important;
+      height: 50px !important;
+      border: 3px solid rgba(46, 204, 113, 0.2) !important;
+      border-top-color: #2ecc71 !important;
+      border-radius: 50% !important;
+      animation: spin 1s linear infinite !important;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: #ffffff !important;
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.2rem !important;
+      text-align: center !important;
+    }
+
+    /* Interface du jeu */
+    .game-universe {
+      min-height: 100vh !important;
+      background: #121212 !important;
+      padding-bottom: 50px !important;
+    }
+
+    .game-interface {
+      max-width: 1400px !important;
+      margin: 0 auto !important;
+      padding: 2rem !important;
+      text-align: center !important;
+    }
+
+    /* Header du jeu */
+    .game-header-content {
+      margin-bottom: 2rem !important;
+    }
+
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, #2ecc71, #3498db) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      font-weight: 900 !important;
+      font-size: 2.5rem !important;
+      margin-bottom: 1rem !important;
+      font-family: 'Cinzel', serif !important;
+    }
+
+    .game-subtitle {
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 1.2rem !important;
+      margin-bottom: 2rem !important;
+      font-family: 'Spectral', serif !important;
+    }
+
+    /* Sections du jeu */
+    .game-sections {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2rem !important;
+      padding: 1rem !important;
+      max-width: 1200px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (min-width: 1024px) {
+      .game-sections {
+        flex-direction: row !important;
+      }
+
+      .main-panel {
+        flex: 2 !important;
+      }
+
+      .leaderboard-panel {
+        flex: 1 !important;
+      }
+    }
+
+    /* Panneaux du jeu */
+    .game-panel {
+      background: rgba(26, 26, 26, 0.95) !important;
+      border-radius: 1rem !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+      overflow: hidden !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .game-panel:hover {
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3) !important;
+      border-color: rgba(46, 204, 113, 0.3) !important;
+    }
+
+    /* États du jeu */
+    .game-state {
+      display: none !important;
+      padding: 2rem !important;
+    }
+
+    .game-state.active {
+      display: block !important;
+      animation: fadeIn 0.5s ease-out !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Écran d'accueil */
+    .welcome-content {
+      text-align: center !important;
+      max-width: 800px !important;
+      margin: 0 auto !important;
+    }
+
+    .welcome-text {
+      font-size: 1.2rem !important;
+      line-height: 1.6 !important;
+      margin-bottom: 2rem !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* Sélection de difficulté */
+    .difficulty-selection {
+      margin: 2rem 0 !important;
+    }
+
+    .difficulty-selection h3 {
+      font-size: 1.3rem !important;
+      margin-bottom: 1rem !important;
+      color: #ffffff !important;
+      font-family: 'Cinzel', serif !important;
+    }
+
+    .difficulty-options {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1rem !important;
+      max-width: 500px !important;
+      margin: 0 auto !important;
+    }
+
+    .difficulty-btn {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      padding: 1.2rem 1rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 10px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      gap: 0.7rem !important;
+      width: 100% !important;
+      color: inherit !important;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(46, 204, 113, 0.1) !important;
+      border-color: #2ecc71 !important;
+      transform: translateY(-5px) !important;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3) !important;
+    }
+
+    .difficulty-btn.active {
+      background: #2ecc71 !important;
+      color: #121212 !important;
+      box-shadow: 0 0 20px rgba(46, 204, 113, 0.5) !important;
+    }
+
+    .difficulty-icon {
+      font-size: 1.8rem !important;
+      color: #2ecc71 !important;
+      transition: transform 0.3s ease !important;
+    }
+
+    .difficulty-btn:hover .difficulty-icon {
+      transform: scale(1.2) !important;
+    }
+
+    .difficulty-name {
+      font-family: 'Cinzel', serif !important;
+      font-weight: 600 !important;
+      font-size: 1.1rem !important;
+      letter-spacing: 0.5px !important;
+    }
+
+    .difficulty-desc {
+      font-size: 0.9rem !important;
+      opacity: 0.8 !important;
+    }
+
+    /* Boutons du jeu */
+    .game-buttons {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1rem !important;
+      margin-top: 1.5rem !important;
+      align-items: center !important;
+    }
+
+    @media (min-width: 768px) {
+      .game-buttons {
+        flex-direction: row !important;
+        justify-content: center !important;
+      }
+    }
+
+    .game-button {
+      position: relative !important;
+      padding: 12px 24px !important;
+      border: none !important;
+      border-radius: 8px !important;
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      overflow: hidden !important;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.5rem !important;
+      min-height: 50px !important;
+      outline: none !important;
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+      border: 1px solid #58d68d !important;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5) !important;
+      font-size: 1.3rem !important;
+      padding: 15px 30px !important;
+    }
+
+    .secondary-button {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      font-size: 1.2rem !important;
+      padding: 12px 25px !important;
+    }
+
+    .game-button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* HUD du jeu */
+    .game-hud {
+      display: flex !important;
+      justify-content: space-between !important;
+      margin-bottom: 1.5rem !important;
+      flex-wrap: wrap !important;
+      gap: 0.5rem !important;
+    }
+
+    .hud-item {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      padding: 0.75rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 0.5rem !important;
+      min-width: 80px !important;
+    }
+
+    .hud-icon {
+      font-size: 1.2rem !important;
+      margin-bottom: 0.25rem !important;
+      color: #58d68d !important;
+    }
+
+    .hud-label {
+      font-size: 0.8rem !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      margin-bottom: 0.25rem !important;
+    }
+
+    .hud-value {
+      font-size: 1.5rem !important;
+      font-weight: bold !important;
+      color: #ffffff !important;
+    }
+
+    /* Grille de mots */
+    .word-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      margin: 2rem 0 !important;
+      width: 100% !important;
+      max-width: 500px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .grid-row {
+      display: flex !important;
+      gap: 0.5rem !important;
+      width: 100% !important;
+      justify-content: center !important;
+    }
+
+    .grid-cell {
+      width: 3.5rem !important;
+      height: 3.5rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 2px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 4px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.5rem !important;
+      font-weight: bold !important;
+      color: #ffffff !important;
+      text-transform: uppercase !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .grid-cell.filled {
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      animation: cellFill 0.2s ease-in-out !important;
+    }
+
+    @keyframes cellFill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* États des cellules avec couleurs forcées */
+    .grid-cell.correct {
+      background-color: #2ecc71 !important;
+      border-color: #2ecc71 !important;
+      color: #121212 !important;
+      animation: correctCell 0.5s ease-in-out !important;
+    }
+
+    .grid-cell.present {
+      background-color: #f39c12 !important;
+      border-color: #f39c12 !important;
+      color: #121212 !important;
+      animation: presentCell 0.5s ease-in-out !important;
+    }
+
+    .grid-cell.absent {
+      background-color: #7f8c8d !important;
+      border-color: #7f8c8d !important;
+      color: #ffffff !important;
+      animation: absentCell 0.5s ease-in-out !important;
+    }
+
+    @keyframes correctCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); }
+      100% { transform: rotateY(0); }
+    }
+
+    @keyframes presentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); }
+      100% { transform: rotateY(0); }
+    }
+
+    @keyframes absentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); }
+      100% { transform: rotateY(0); }
+    }
+
+    /* Clavier */
+    .keyboard {
+      margin: 1.5rem 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0.4rem !important;
+      max-width: 800px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      width: 100% !important;
+      padding: 0 0.5rem !important;
+    }
+
+    .keyboard-row {
+      display: flex !important;
+      justify-content: center !important;
+      gap: 0.25rem !important;
+      width: 100% !important;
+    }
+
+    .key-btn {
+      flex: 1 !important;
+      min-width: 2.2rem !important;
+      height: 3.2rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 4px !important;
+      color: #ffffff !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      touch-action: manipulation !important;
+    }
+
+    .key-btn:hover {
+      background: rgba(46, 204, 113, 0.1) !important;
+      border-color: #2ecc71 !important;
+      transform: translateY(-2px) !important;
+    }
+
+    .key-enter, .key-delete {
+      min-width: 3.5rem !important;
+      font-size: 0.85rem !important;
+      flex: 1.5 !important;
+    }
+
+    /* États des touches avec couleurs forcées */
+    .key-btn.correct {
+      background-color: #2ecc71 !important;
+      border-color: #2ecc71 !important;
+      color: #121212 !important;
+    }
+
+    .key-btn.present {
+      background-color: #f39c12 !important;
+      border-color: #f39c12 !important;
+      color: #121212 !important;
+    }
+
+    .key-btn.absent {
+      background-color: #7f8c8d !important;
+      border-color: #7f8c8d !important;
+      color: #ffffff !important;
+    }
+
+    /* Power-ups */
+    .power-ups-container {
+      display: flex !important;
+      justify-content: center !important;
+      gap: 1.5rem !important;
+      margin: 2rem 0 !important;
+    }
+
+    .power-up {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      padding: 1rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      width: 80px !important;
+    }
+
+    .power-up:hover {
+      background: rgba(46, 204, 113, 0.1) !important;
+      border-color: #2ecc71 !important;
+      transform: translateY(-3px) !important;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3) !important;
+    }
+
+    .power-up-icon {
+      font-size: 1.5rem !important;
+      color: #2ecc71 !important;
+    }
+
+    .power-up-name {
+      font-size: 0.9rem !important;
+      color: #ffffff !important;
+    }
+
+    .power-up-count {
+      font-size: 1.2rem !important;
+      font-weight: bold !important;
+      color: #ffffff !important;
+    }
+
+    /* Leaderboard */
+    .leaderboard-container {
+      max-width: 800px !important;
+      margin: 2rem auto !important;
+      padding: 1.5rem !important;
+      background-color: rgba(18, 18, 18, 0.9) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid #2ecc71 !important;
+    }
+
+    .leaderboard-title {
+      color: #2ecc71 !important;
+      text-align: center !important;
+      margin-bottom: 1.5rem !important;
+      font-family: 'Cinzel', serif !important;
+      font-size: 1.8rem !important;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.6) !important;
+    }
+
+    .leaderboard-toggle {
+      display: flex !important;
+      gap: 0.5rem !important;
+      margin-bottom: 1rem !important;
+      justify-content: center !important;
+    }
+
+    .toggle-btn {
+      padding: 0.75rem 1.5rem !important;
+      background: rgba(15, 23, 42, 0.7) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 8px !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      font-size: 0.9rem !important;
+      font-weight: 500 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(46, 204, 113, 0.1) !important;
+      border-color: #2ecc71 !important;
+      color: #ffffff !important;
+    }
+
+    .toggle-btn.active {
+      background: #2ecc71 !important;
+      color: #121212 !important;
+      border-color: #2ecc71 !important;
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3) !important;
+    }
+
+    .leaderboard-table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin-top: 1rem !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-family: 'Spectral', serif !important;
+    }
+
+    .leaderboard-table th {
+      padding: 0.8rem !important;
+      text-align: left !important;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.5) !important;
+      font-family: 'Cinzel', serif !important;
+      font-weight: 600 !important;
+      color: #2ecc71 !important;
+    }
+
+    .leaderboard-table td {
+      padding: 0.8rem !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .leaderboard-table tr:hover {
+      background-color: rgba(46, 204, 113, 0.1) !important;
+    }
+
+    /* Modal */
+    .modal {
+      display: none !important;
+    }
+
+    .modal.show {
+      display: flex !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background-color: rgba(0, 0, 0, 0.8) !important;
+      z-index: 9999 !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .modal-content {
+      background-color: rgba(26, 26, 26, 0.95) !important;
+      border-radius: 12px !important;
+      width: 90% !important;
+      max-width: 600px !important;
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+      box-shadow: 0 0 30px rgba(46, 204, 113, 0.4) !important;
+      border: 1px solid #2ecc71 !important;
+      position: relative !important;
+    }
+
+    .modal-header {
+      padding: 1.2rem !important;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.3) !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+
+    .modal-title {
+      color: #2ecc71 !important;
+      margin: 0 !important;
+      font-size: 1.6rem !important;
+      font-family: 'Cinzel', serif !important;
+    }
+
+    .modal-close {
+      background: none !important;
+      border: none !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 1.5rem !important;
+      cursor: pointer !important;
+      width: 40px !important;
+      height: 40px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .modal-body {
+      padding: 1.5rem !important;
+      color: #ffffff !important;
+      font-family: 'Spectral', serif !important;
+      line-height: 1.6 !important;
+    }
+
+    .modal-footer {
+      padding: 1.2rem !important;
+      border-top: 1px solid rgba(46, 204, 113, 0.3) !important;
+      display: flex !important;
+      justify-content: center !important;
+      gap: 1rem !important;
+    }
+
+    .modal-button {
+      background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+      color: #121212 !important;
+      border: none !important;
+      padding: 0.75rem 1.5rem !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      font-family: 'Exo 2', sans-serif !important;
+      min-width: 120px !important;
+    }
+
+    .modal-button:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4) !important;
+    }
+
+    /* Couleurs des exemples dans les règles */
+    .example-correct {
+      background-color: #2ecc71 !important;
+      color: #121212 !important;
+      padding: 0.1rem 0.3rem !important;
+      border-radius: 3px !important;
+      font-weight: 600 !important;
+    }
+
+    .example-present {
+      background-color: #f39c12 !important;
+      color: #121212 !important;
+      padding: 0.1rem 0.3rem !important;
+      border-radius: 3px !important;
+      font-weight: 600 !important;
+    }
+
+    .example-absent {
+      background-color: #7f8c8d !important;
+      color: #ffffff !important;
+      padding: 0.1rem 0.3rem !important;
+      border-radius: 3px !important;
+      font-weight: 600 !important;
+    }
+
+    /* Test des couleurs - Indicateur visuel */
+    .color-test-indicator {
+      position: fixed !important;
+      top: 100px !important;
+      right: 20px !important;
+      background: rgba(0, 0, 0, 0.9) !important;
+      border: 1px solid #2ecc71 !important;
+      border-radius: 8px !important;
+      padding: 10px !important;
+      z-index: 10000 !important;
+      font-size: 12px !important;
+    }
+
+    .color-test-sample {
+      width: 20px !important;
+      height: 20px !important;
+      display: inline-block !important;
+      margin: 2px !important;
+      border-radius: 3px !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .game-sections {
+        flex-direction: column !important;
+      }
+
+      .difficulty-options {
+        flex-direction: column !important;
+      }
+
+      .game-buttons {
+        flex-direction: column !important;
+        gap: 1rem !important;
+      }
+
+      .game-hud {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+      }
+
+      .keyboard {
+        padding: 0 0.5rem !important;
+        margin: 1rem 0 !important;
+      }
+
+      .key-btn {
+        min-width: 2rem !important;
+        height: 3rem !important;
+        font-size: 0.9rem !important;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 3.5rem !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .game-interface {
+        padding: 1rem !important;
+      }
+
+      .keyboard {
+        margin: 0.8rem 0 !important;
+        gap: 0.3rem !important;
+        padding: 0 0.3rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .keyboard-row {
+        gap: 0.2rem !important;
+      }
+
+      .key-btn {
+        min-width: 0 !important;
+        width: auto !important;
+        height: 2.8rem !important;
+        font-size: 0.8rem !important;
+        padding: 0.1rem !important;
+        border-radius: 3px !important;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 0 !important;
+        font-size: 0.7rem !important;
+      }
+
+      .grid-cell {
+        width: 2.8rem !important;
+        height: 2.8rem !important;
+        font-size: 1.2rem !important;
+      }
+    }
+
+    /* Corrections supplémentaires */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Cinzel', serif !important;
+      color: #ffffff !important;
+    }
+
+    .game-hud h2 {
+      color: #2ecc71 !important;
+      margin-bottom: 1rem !important;
+    }
+
+    /* Force tous les titres et textes à être visibles */
+    * {
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Test des couleurs -->
+  <div class="color-test-indicator">
+    <div>Test couleurs:</div>
+    <div class="color-test-sample" style="background-color: #2ecc71 !important;"></div>
+    <div class="color-test-sample" style="background-color: #f39c12 !important;"></div>
+    <div class="color-test-sample" style="background-color: #7f8c8d !important;"></div>
+  </div>
+
+  <!-- Overlay de chargement -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Chargement...<br><small style="opacity: 0.7; font-size: 0.8rem;">Cliquez ici si l'écran reste bloqué</small></p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html" class="nav-link">Accueil</a></li>
+          <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+          <li><a href="../courses.html" class="nav-link">Cours</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Game container -->
+  <div class="game-universe">
+    <!-- Game UI -->
+    <main class="game-interface">
+      <!-- Game header -->
+      <div class="game-header-content">
+        <h1 class="section-title text-gradient">Enigma Scroll</h1>
+        <p class="game-subtitle">Les Parchemins Mystérieux</p>
+      </div>
+
+      <!-- Game sections -->
+      <div class="game-sections">
+        <!-- Main game panel -->
+        <div class="game-panel main-panel">
+          <!-- Game states -->
+          <div class="game-states">
+            <!-- Welcome screen -->
+            <div id="welcome-screen" class="game-state active">
+              <div class="welcome-content">
+                <p class="welcome-text">
+                  Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+                  Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+                </p>
+
+                <div class="difficulty-selection">
+                  <h3>Choisissez votre niveau de difficulté :</h3>
+                  <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="beginner">
+                      <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+                      <span class="difficulty-name">Débutant</span>
+                      <span class="difficulty-desc">Mots de 4 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate">
+                      <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+                      <span class="difficulty-name">Intermédiaire</span>
+                      <span class="difficulty-desc">Mots de 5 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="advanced">
+                      <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+                      <span class="difficulty-name">Avancé</span>
+                      <span class="difficulty-desc">Mots de 7 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="expert">
+                      <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+                      <span class="difficulty-name">Expert</span>
+                      <span class="difficulty-desc">Mots de 9 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="legendary">
+                      <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+                      <span class="difficulty-name">Légendaire</span>
+                      <span class="difficulty-desc">Mots de 10 lettres</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="game-buttons">
+                  <button id="start-game-button" class="game-button primary-button">
+                    <span class="button-text">Commencer l'aventure</span>
+                    <span class="action-icon">✦</span>
+                  </button>
+                  <button id="show-rules-button" class="game-button secondary-button">
+                    <span class="button-text">Règles du jeu</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game area -->
+            <div id="game-area" class="game-state" style="display: none;">
+              <!-- Game HUD -->
+              <div class="game-hud">
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-scroll"></i></span>
+                  <span class="hud-label">Niveau</span>
+                  <span id="level-display" class="hud-value">1</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-star"></i></span>
+                  <span class="hud-label">Score</span>
+                  <span id="score-display" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-hourglass-half"></i></span>
+                  <span class="hud-label">Temps</span>
+                  <span id="time-display" class="hud-value">60</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-bolt"></i></span>
+                  <span class="hud-label">Combo</span>
+                  <span id="combo-display" class="hud-value">x1</span>
+                </div>
+              </div>
+
+              <!-- Grille de jeu -->
+              <div id="word-grid" class="word-grid"></div>
+
+              <!-- Clavier virtuel -->
+              <div id="keyboard" class="keyboard">
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+                </div>
+              </div>
+
+              <!-- Power-ups -->
+              <div id="power-ups-container" class="power-ups-container">
+                <div class="power-up" data-power="hint">
+                  <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+                  <div class="power-up-name">Indice</div>
+                  <div class="power-up-count" id="hint-count">3</div>
+                </div>
+                <div class="power-up" data-power="time">
+                  <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+                  <div class="power-up-name">Temps</div>
+                  <div class="power-up-count" id="time-count">2</div>
+                </div>
+                <div class="power-up" data-power="skip">
+                  <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+                  <div class="power-up-name">Passer</div>
+                  <div class="power-up-count" id="skip-count">1</div>
+                </div>
+              </div>
+
+              <!-- Bouton des règles en jeu -->
+              <button id="in-game-rules-button" class="secondary-button" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #3498db; font-size: 1.5rem; cursor: pointer; transition: all 0.3s ease; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Règles du jeu">
+                <i class="fas fa-question-circle"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard panel -->
+        <div class="game-panel leaderboard-panel">
+          <div class="game-hud">
+            <h2>Meilleurs Scores</h2>
+          </div>
+          
+          <!-- Boutons de bascule entre scores locaux et en ligne -->
+          <div class="leaderboard-toggle">
+            <button id="local-scores-btn" class="toggle-btn active">
+              <i class="fas fa-user"></i> Mes Scores
+            </button>
+            <button id="online-scores-btn" class="toggle-btn">
+              <i class="fas fa-globe"></i> Scores Globaux
+            </button>
+          </div>
+          
+          <div id="enigma-scroll-leaderboard" class="leaderboard-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="rank-header">Rang</th>
+                  <th class="player-header">Joueur</th>
+                  <th class="score-header">Score</th>
+                  <th class="date-header">Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="4" style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.7);">Chargement des scores...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modale des règles -->
+  <div id="rulesModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Règles du jeu</h2>
+        <button class="modal-close" id="closeRulesModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
+
+        <h3>Objectif :</h3>
+        <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
+
+        <h3>Comment jouer :</h3>
+        <ul>
+          <li>Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li>Les lettres changeront de couleur pour vous guider :
+            <ul style="margin-top: 0.5rem;">
+              <li><span class="example-correct">Vert</span> : La lettre est correcte et bien placée</li>
+              <li><span class="example-present">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li><span class="example-absent">Gris</span> : La lettre n'est pas dans le mot</li>
+            </ul>
+          </li>
+          <li>Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li>Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
+        </ul>
+
+        <h3>Astuces :</h3>
+        <ul>
+          <li>Commencez par des mots contenant des voyelles courantes</li>
+          <li>Faites attention aux lettres qui se répètent</li>
+          <li>Utilisez les informations des essais précédents</li>
+        </ul>
+
+        <p>Bonne chance dans votre quête linguistique !</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="closeRulesButton">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="../src/js/firebase-init.js"></script>
+  <script src="../src/js/firebase-service-adapter.js"></script>
+
+  <!-- Scripts du jeu -->
+  <script src="../scripts/auth-local.js"></script>
+  <script src="../src/js/auth-state.js"></script>
+  <script src="../src/js/reward-system.js"></script>
+  <script src="../src/js/admin-scores.js"></script>
+  <script src="../src/js/enigma-scroll/firebase-helpers.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js"></script>
+  <script src="../src/js/enigma-scroll/word-lists.js"></script>
+  <script src="../src/js/enigma-scroll/game-effects.js"></script>
+  <script src="../src/js/enigma-scroll/game-ui.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll.js"></script>
+  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>
+
+  <!-- Scripts d'authentification et navigation -->
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script src="../scripts/auth-header.js"></script>
+  <script src="../scripts/new-design.js"></script>
+  <script src="../scripts/debug.js"></script>
+
+  <!-- Script d'initialisation CORRIGÉ -->
+  <script>
+    // FONCTION IMMÉDIATE POUR SUPPRIMER L'OVERLAY
+    (function() {
+      console.log('🚀 Suppression immédiate de l\'overlay de chargement...');
+      
+      function removeLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          console.log('✅ Overlay trouvé, suppression en cours...');
+          overlay.classList.add('hidden');
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            console.log('🎯 Overlay complètement supprimé');
+          }, 300);
+        } else {
+          console.log('⚠️ Overlay non trouvé');
+        }
+      }
+
+      // Suppression immédiate
+      setTimeout(removeLoadingOverlay, 100);
+
+      // Event listeners pour plusieurs événements
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          console.log('📄 DOM Content Loaded');
+          setTimeout(removeLoadingOverlay, 50);
+        });
+      } else {
+        console.log('📄 DOM déjà chargé');
+        removeLoadingOverlay();
+      }
+
+      window.addEventListener('load', () => {
+        console.log('🌐 Window Load');
+        setTimeout(removeLoadingOverlay, 50);
+      });
+
+      // TIMEOUT DE SÉCURITÉ ABSOLU
+      setTimeout(() => {
+        console.log('⏰ TIMEOUT DE SÉCURITÉ - Force suppression overlay');
+        removeLoadingOverlay();
+      }, 1000);
+
+      // Click pour supprimer manuellement
+      setTimeout(() => {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          overlay.addEventListener('click', () => {
+            console.log('👆 Click manuel sur overlay');
+            removeLoadingOverlay();
+          });
+        }
+      }, 100);
+    })();
+
+    // Test des couleurs immédiat
+    console.log('🎨 VERSION STANDALONE FIXED - Test des couleurs au chargement...');
+    
+    // Fonction pour tester les couleurs
+    function testColorsStandalone() {
+      console.log('=== TEST COULEURS STANDALONE ===');
+      
+      // Test d'application des couleurs sur des éléments de test
+      const testDiv = document.createElement('div');
+      testDiv.className = 'grid-cell correct';
+      testDiv.style.cssText = 'background-color: #2ecc71 !important; color: #121212 !important;';
+      document.body.appendChild(testDiv);
+      
+      const computedStyle = getComputedStyle(testDiv);
+      console.log('Couleur de fond (correct):', computedStyle.backgroundColor);
+      console.log('Couleur de texte (correct):', computedStyle.color);
+      
+      document.body.removeChild(testDiv);
+      
+      // Test des variables CSS
+      const root = document.documentElement;
+      const rootStyle = getComputedStyle(root);
+      console.log('Variable --word-correct:', rootStyle.getPropertyValue('--word-correct'));
+      console.log('Variable --word-present:', rootStyle.getPropertyValue('--word-present'));
+      console.log('Variable --word-absent:', rootStyle.getPropertyValue('--word-absent'));
+    }
+
+    // Gestion de la modale des règles
+    document.addEventListener('DOMContentLoaded', function() {
+      const showRulesButton = document.getElementById('show-rules-button');
+      const inGameRulesButton = document.getElementById('in-game-rules-button');
+      const rulesModal = document.getElementById('rulesModal');
+      const closeRulesModal = document.getElementById('closeRulesModal');
+      const closeRulesButton = document.getElementById('closeRulesButton');
+
+      function showRules() {
+        if (rulesModal) {
+          rulesModal.classList.add('show');
+        }
+      }
+
+      function hideRules() {
+        if (rulesModal) {
+          rulesModal.classList.remove('show');
+        }
+      }
+
+      if (showRulesButton) {
+        showRulesButton.addEventListener('click', showRules);
+      }
+
+      if (inGameRulesButton) {
+        inGameRulesButton.addEventListener('click', showRules);
+      }
+
+      if (closeRulesModal) {
+        closeRulesModal.addEventListener('click', hideRules);
+      }
+
+      if (closeRulesButton) {
+        closeRulesButton.addEventListener('click', hideRules);
+      }
+
+      // Fermer en cliquant en dehors
+      if (rulesModal) {
+        rulesModal.addEventListener('click', function(e) {
+          if (e.target === rulesModal) {
+            hideRules();
+          }
+        });
+      }
+
+      // Menu mobile
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navList = document.querySelector('.nav-list');
+
+      if (menuToggle && navList) {
+        menuToggle.addEventListener('click', function() {
+          navList.classList.toggle('active');
+        });
+      }
+
+      // Test des couleurs
+      setTimeout(() => {
+        testColorsStandalone();
+      }, 500);
+    });
+
+    // Fonction globale pour forcer les couleurs (utilisée par le jeu)
+    window.forceGameColors = function() {
+      console.log('🎨 Forçage des couleurs du jeu...');
+      
+      // Forcer les couleurs sur tous les éléments de grille
+      document.querySelectorAll('.grid-cell.correct').forEach(cell => {
+        cell.style.cssText += 'background-color: #2ecc71 !important; border-color: #2ecc71 !important; color: #121212 !important;';
+      });
+      
+      document.querySelectorAll('.grid-cell.present').forEach(cell => {
+        cell.style.cssText += 'background-color: #f39c12 !important; border-color: #f39c12 !important; color: #121212 !important;';
+      });
+      
+      document.querySelectorAll('.grid-cell.absent').forEach(cell => {
+        cell.style.cssText += 'background-color: #7f8c8d !important; border-color: #7f8c8d !important; color: #ffffff !important;';
+      });
+      
+      // Forcer les couleurs sur les touches du clavier
+      document.querySelectorAll('.key-btn.correct').forEach(key => {
+        key.style.cssText += 'background-color: #2ecc71 !important; border-color: #2ecc71 !important; color: #121212 !important;';
+      });
+      
+      document.querySelectorAll('.key-btn.present').forEach(key => {
+        key.style.cssText += 'background-color: #f39c12 !important; border-color: #f39c12 !important; color: #121212 !important;';
+      });
+      
+      document.querySelectorAll('.key-btn.absent').forEach(key => {
+        key.style.cssText += 'background-color: #7f8c8d !important; border-color: #7f8c8d !important; color: #ffffff !important;';
+      });
+    };
+
+    // Appeler le forçage des couleurs à intervalles réguliers pour s'assurer qu'elles restent appliquées
+    setInterval(window.forceGameColors, 1000);
+  </script>
+</body>
+</html> 

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des Boutons Modernes - English Quest</title>
+    <link href="styles/new-design.css" rel="stylesheet">
+    <link href="styles/gradient-buttons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Exo 2', sans-serif;
+            padding: 2rem;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2ecc71;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+            font-family: 'Cinzel', serif;
+        }
+
+        .test-section {
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .test-section h2 {
+            color: #3498db;
+            margin-bottom: 1.5rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .button-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .button-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .before, .after {
+            text-align: center;
+        }
+
+        .before h3 {
+            color: #e74c3c;
+        }
+
+        .after h3 {
+            color: #2ecc71;
+        }
+
+        .old-button {
+            background-color: transparent !important;
+            border: 2px solid var(--color-primary) !important;
+            color: var(--color-primary) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 4px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .old-button:hover {
+            background-color: var(--color-primary) !important;
+            color: #121212 !important;
+        }
+
+        /* Démo du logo */
+        .logo-demo {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary, #2ecc71);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--color-text-primary, #ffffff);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            color: #2ecc71;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-magic"></i> Boutons Modernes English Quest</h1>
+        
+        <p style="text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; margin-bottom: 2rem;">
+            Démonstration du nouveau système de boutons avec gradients et effets modernes
+        </p>
+
+        <!-- Comparaison Avant/Après -->
+        <div class="test-section">
+            <h2><i class="fas fa-exchange-alt"></i> Comparaison Avant / Après</h2>
+            <div class="before-after">
+                <div class="before">
+                    <h3>❌ Avant (Style plat)</h3>
+                    <button class="old-button">Connexion</button>
+                    <p style="color: rgba(255, 255, 255, 0.6); margin-top: 1rem;">
+                        Boutons plats sans personnalité, bordures simples
+                    </p>
+                </div>
+                <div class="after">
+                    <h3>✅ Après (Style gradient)</h3>
+                    <button class="btn-login">Connexion</button>
+                    <p style="color: rgba(255, 255, 255, 0.6); margin-top: 1rem;">
+                        Gradients modernes, effets de profondeur, animations
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logo amélioré -->
+        <div class="test-section">
+            <h2><i class="fas fa-palette"></i> Logo Corrigé</h2>
+            <div class="logo-demo">
+                <a href="#" class="logo">ENGLISH<span>QUEST</span></a>
+                <p style="color: rgba(255, 255, 255, 0.6); margin-top: 1rem;">
+                    "ENGLISH" en vert et "QUEST" en blanc (corrigé du bleu)
+                </p>
+            </div>
+        </div>
+
+        <!-- Boutons principaux -->
+        <div class="test-section">
+            <h2><i class="fas fa-star"></i> Boutons Principaux</h2>
+            <div class="buttons-grid">
+                <div class="button-demo">
+                    <div class="button-label">Bouton Primary</div>
+                    <button class="btn-primary"><i class="fas fa-play"></i> Jouer</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Login</div>
+                    <button class="btn-login"><i class="fas fa-user"></i> Connexion</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Play</div>
+                    <button class="btn-play"><i class="fas fa-gamepad"></i> Lancer le jeu</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Large</div>
+                    <button class="btn-primary btn-lg"><i class="fas fa-rocket"></i> Commencer l'aventure</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons secondaires -->
+        <div class="test-section">
+            <h2><i class="fas fa-layer-group"></i> Boutons Secondaires</h2>
+            <div class="buttons-grid">
+                <div class="button-demo">
+                    <div class="button-label">Bouton Secondary</div>
+                    <button class="btn-secondary"><i class="fas fa-info"></i> Règles</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Toggle Inactif</div>
+                    <button class="toggle-btn"><i class="fas fa-globe"></i> Scores Globaux</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Toggle Actif</div>
+                    <button class="toggle-btn active"><i class="fas fa-user"></i> Mes Scores</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Filter Button</div>
+                    <button class="filter-btn"><i class="fas fa-filter"></i> Filtrer</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons de difficulté -->
+        <div class="test-section">
+            <h2><i class="fas fa-chart-line"></i> Boutons de Difficulté</h2>
+            <div class="buttons-grid">
+                <div class="button-demo">
+                    <div class="button-label">Difficulté Normal</div>
+                    <button class="difficulty-btn">
+                        <i class="fas fa-seedling"></i>
+                        <span>Débutant</span>
+                    </button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Difficulté Sélectionnée</div>
+                    <button class="difficulty-btn active">
+                        <i class="fas fa-leaf"></i>
+                        <span>Intermédiaire</span>
+                    </button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Difficulté Expert</div>
+                    <button class="difficulty-btn">
+                        <i class="fas fa-mountain"></i>
+                        <span>Expert</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons spéciaux -->
+        <div class="test-section">
+            <h2><i class="fas fa-magic"></i> Boutons Spéciaux</h2>
+            <div class="buttons-grid">
+                <div class="button-demo">
+                    <div class="button-label">Bouton Danger</div>
+                    <button class="btn-danger"><i class="fas fa-trash"></i> Supprimer</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Modal</div>
+                    <button class="modal-button"><i class="fas fa-window-restore"></i> Ouvrir Modal</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Pulsant</div>
+                    <button class="btn-primary btn-pulse"><i class="fas fa-heart"></i> Pulse</button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Désactivé</div>
+                    <button class="btn-primary" disabled><i class="fas fa-ban"></i> Désactivé</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons de jeu -->
+        <div class="test-section">
+            <h2><i class="fas fa-gamepad"></i> Boutons de Jeu</h2>
+            <div class="buttons-grid">
+                <div class="button-demo">
+                    <div class="button-label">Bouton Game</div>
+                    <button class="game-button primary-button">
+                        <span>Commencer l'aventure</span>
+                        <span>✦</span>
+                    </button>
+                </div>
+                <div class="button-demo">
+                    <div class="button-label">Bouton Game Secondaire</div>
+                    <button class="game-button secondary-button">
+                        <span>Règles du jeu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="test-section">
+            <h2><i class="fas fa-list-check"></i> Améliorations Apportées</h2>
+            <ul class="features-list">
+                <li><strong>Gradients modernes :</strong> Tous les boutons utilisent des dégradés vert-bleu attrayants</li>
+                <li><strong>Effets de profondeur :</strong> Ombres et transformations au survol</li>
+                <li><strong>Animations fluides :</strong> Transitions de 0.3s pour tous les effets</li>
+                <li><strong>Style unifié :</strong> Cohérence visuelle sur tout le site</li>
+                <li><strong>Responsive design :</strong> Adaptation automatique aux écrans mobiles</li>
+                <li><strong>Accessibilité :</strong> Focus visible et support clavier</li>
+                <li><strong>États multiples :</strong> Normal, hover, active, disabled</li>
+                <li><strong>Logo corrigé :</strong> "QUEST" en blanc au lieu de bleu</li>
+                <li><strong>Effets spéciaux :</strong> Animation de pulsation et effets de brillance</li>
+                <li><strong>Cross-browser :</strong> Compatible avec tous les navigateurs modernes</li>
+            </ul>
+        </div>
+
+        <!-- Instructions d'utilisation -->
+        <div class="test-section">
+            <h2><i class="fas fa-code"></i> Comment Utiliser</h2>
+            <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                <strong>1. Incluez le fichier CSS :</strong><br>
+                <code style="background: rgba(255, 255, 255, 0.1); padding: 0.2rem 0.5rem; border-radius: 3px;">
+                    &lt;link href="styles/gradient-buttons.css" rel="stylesheet"&gt;
+                </code>
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; margin-top: 1rem;">
+                <strong>2. Utilisez les classes standard :</strong><br>
+                <code style="background: rgba(255, 255, 255, 0.1); padding: 0.2rem 0.5rem; border-radius: 3px;">
+                    .btn-primary, .btn-secondary, .btn-login, .btn-play, etc.
+                </code>
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.8); line-height: 1.6; margin-top: 1rem;">
+                <strong>3. Les styles s'appliquent automatiquement :</strong> Tous les boutons existants sont mis à jour sans modification du HTML
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem; padding: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <p style="color: rgba(255, 255, 255, 0.6);">
+                🎨 Système de boutons modernes pour English Quest - Design cohérent et professionnel
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Démo des interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎨 Système de boutons modernes chargé !');
+            
+            // Ajouter des listeners pour la démo
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log(`✨ Clic sur bouton : ${this.textContent.trim()}`);
+                    
+                    // Effet visuel temporaire
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+            
+            // Animation d'entrée
+            const sections = document.querySelectorAll('.test-section');
+            sections.forEach((section, index) => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    section.style.transition = 'all 0.5s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html> 

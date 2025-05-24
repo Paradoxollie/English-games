@@ -322,20 +322,26 @@ p {
 }
 
 .btn-login {
-  background-color: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+  color: white;
   padding: 0.5rem 1rem;
-  border-radius: var(--border-radius-md);
+  border-radius: 6px;
+  border: none;
   font-weight: 600;
   transition: all 0.3s ease;
   min-width: 80px;
   text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-login:hover {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+  color: white;
 }
 
 .menu-toggle {
@@ -544,13 +550,15 @@ p {
 }
 
 .btn-primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-primary);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+  color: white;
+  box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: var(--color-secondary);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+  color: white;
 }
 
 .btn-secondary {
@@ -832,8 +840,8 @@ p {
 }
 
 .btn-play {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+  color: white;
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius-md);
   font-weight: 600;
@@ -843,6 +851,10 @@ p {
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
 }
 
 @media (min-width: 768px) {
@@ -852,8 +864,9 @@ p {
 }
 
 .btn-play:hover {
-  background-color: var(--color-primary-dark);
-  box-shadow: none;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+  color: white;
 }
 
 .game-stats {

@@ -1,0 +1,230 @@
+/* Système de boutons modernes avec gradients pour English Quest */
+
+/* Boutons avec style gradient unifié */
+.btn, .game-button, .primary-button, .secondary-button, 
+.btn-primary, .btn-login, .btn-play, .modal-button, 
+.difficulty-btn.active, .buy-btn, .nav-btn.active,
+.toggle-btn.active, button[type="submit"], input[type="submit"] {
+  background: linear-gradient(135deg, var(--color-primary, #2ecc71), var(--color-info, #3498db)) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3) !important;
+  outline: none !important;
+}
+
+.btn:hover, .game-button:hover, .primary-button:hover, 
+.btn-primary:hover, .btn-login:hover, .btn-play:hover, 
+.modal-button:hover, .buy-btn:hover, .nav-btn.active:hover,
+.toggle-btn.active:hover, button[type="submit"]:hover, 
+input[type="submit"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4) !important;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+/* Boutons secondaires avec bordure gradient */
+.btn-secondary, .secondary-button, .toggle-btn:not(.active),
+.filter-btn:not(.active), .nav-btn:not(.active) {
+  background: transparent !important;
+  color: var(--color-primary, #2ecc71) !important;
+  border: 2px solid !important;
+  border-image: linear-gradient(135deg, var(--color-primary, #2ecc71), var(--color-info, #3498db)) 1 !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  outline: none !important;
+}
+
+.btn-secondary:hover, .secondary-button:hover, 
+.toggle-btn:not(.active):hover, .filter-btn:not(.active):hover,
+.nav-btn:not(.active):hover {
+  background: linear-gradient(135deg, var(--color-primary, #2ecc71), var(--color-info, #3498db)) !important;
+  color: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3) !important;
+  text-decoration: none !important;
+}
+
+/* Boutons de difficulté avec style spécial */
+.difficulty-btn {
+  background: rgba(15, 23, 42, 0.7) !important;
+  color: inherit !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+.difficulty-btn:hover {
+  background: rgba(46, 204, 113, 0.1) !important;
+  border-color: #2ecc71 !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3) !important;
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #2ecc71, #3498db) !important;
+  color: #121212 !important;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.5) !important;
+}
+
+/* Boutons de danger avec gradient rouge */
+.btn-danger, .delete-btn, .danger-button {
+  background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3) !important;
+}
+
+.btn-danger:hover, .delete-btn:hover, .danger-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4) !important;
+  color: white !important;
+}
+
+/* Styles spéciaux pour les boutons de jeu */
+.game-buttons .game-button {
+  min-height: 50px !important;
+  padding: 12px 24px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 1px !important;
+  gap: 0.5rem !important;
+}
+
+.game-buttons .primary-button {
+  font-size: 1.3rem !important;
+  padding: 15px 30px !important;
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.5) !important;
+}
+
+/* Boutons de taille large */
+.btn-lg, .btn-large {
+  padding: 1rem 2rem !important;
+  font-size: 1.1rem !important;
+  min-height: 50px !important;
+}
+
+/* Boutons de taille petite */
+.btn-sm, .btn-small {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  min-height: 35px !important;
+}
+
+/* Boutons désactivés */
+.btn:disabled, .game-button:disabled, .btn-primary:disabled,
+.btn-secondary:disabled, .btn-play:disabled, .buy-btn:disabled {
+  background: #7f8c8d !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  border: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn:disabled:hover, .game-button:disabled:hover, 
+.btn-primary:disabled:hover, .btn-secondary:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn, .game-button, .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.25rem !important;
+    font-size: 1rem !important;
+  }
+  
+  .btn-lg, .btn-large {
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn, .game-button, .btn-primary, .btn-secondary {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .game-buttons .game-button {
+    font-size: 1rem !important;
+    padding: 10px 20px !important;
+  }
+}
+
+/* Effets spéciaux pour les boutons d'appel à l'action */
+.cta-button, .hero-button, .main-action {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.cta-button::before, .hero-button::before, .main-action::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+  transition: left 0.5s ease !important;
+}
+
+.cta-button:hover::before, .hero-button:hover::before, .main-action:hover::before {
+  left: 100% !important;
+}
+
+/* Animation de pulsation pour les boutons importants */
+@keyframes buttonPulse {
+  0% { box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3); }
+  50% { box-shadow: 0 6px 20px rgba(46, 204, 113, 0.5); }
+  100% { box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3); }
+}
+
+.btn-pulse, .pulse-button {
+  animation: buttonPulse 2s ease-in-out infinite !important;
+}
+
+/* Corrections spécifiques pour certains éléments */
+.modal .btn, .modal .modal-button {
+  background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+  color: #121212 !important;
+  min-width: 120px !important;
+}
+
+.leaderboard .toggle-btn.active {
+  background: #2ecc71 !important;
+  color: #121212 !important;
+  border-color: #2ecc71 !important;
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.3) !important;
+}
+
+/* Focus accessibility */
+.btn:focus, .game-button:focus, .btn-primary:focus, 
+.btn-secondary:focus, .btn-play:focus {
+  outline: 2px solid rgba(46, 204, 113, 0.5) !important;
+  outline-offset: 2px !important;
+} 
