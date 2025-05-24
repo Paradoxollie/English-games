@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
   <meta name="theme-color" content="#121212">
-  <title>Enigma Scroll | English Quest</title>
+  <title>Enigma Scroll - Jeu de Mots Mystérieux | English Quest</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
@@ -1398,7 +1398,7 @@
   <div id="loading-overlay" class="loading-overlay">
     <div class="loading-content">
       <div class="loading-spinner"></div>
-      <p class="loading-text">Chargement...</p>
+      <p class="loading-text">Chargement...<br><small style="opacity: 0.7; font-size: 0.8rem;">Cliquez ici si l'écran reste bloqué</small></p>
     </div>
   </div>
 
@@ -1794,31 +1794,235 @@
   <script src="../src/js/firebase-init.js"></script>
   <script src="../src/js/firebase-service-adapter.js"></script>
 
-  <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
-  <script src="../scripts/auth-local.js" defer></script>
-  <script src="../src/js/auth-state.js" defer></script>
-  <script src="../src/js/reward-system.js" defer></script>
-  <script src="../src/js/admin-scores.js" defer></script>
-  <script src="../src/js/enigma-scroll/firebase-helpers.js" defer></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll-firebase.js" defer></script>
-  <script src="../src/js/enigma-scroll/word-lists.js" defer></script>
-  <script src="../src/js/enigma-scroll/game-effects.js" defer></script>
-  <script src="../src/js/enigma-scroll/game-ui.js" defer></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll.js" defer></script>
-  <script src="../src/js/enigma-scroll/enigma-scroll-leaderboard.js" defer></script>
-
-  <!-- Script pour s'assurer que la modale des règles est masquée au chargement -->
+  <!-- Scripts du jeu avec chargement robuste -->
   <script>
-    // Script qui s'exécute immédiatement pour masquer la modale des règles
-    (function() {
-      // Masquer explicitement la modale des règles
-      var rulesModal = document.getElementById('enigmaRulesModal');
-      if (rulesModal) {
-        rulesModal.style.display = 'none !important';
-        rulesModal.style.opacity = '0 !important';
-        rulesModal.style.visibility = 'hidden !important';
-        rulesModal.setAttribute('aria-hidden', 'true');
+    // Fonction pour charger un script avec fallback
+    function loadScript(src, callback) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = callback || function() { console.log('Loaded:', src); };
+      script.onerror = function() { 
+        console.warn('Failed to load:', src);
+        if (callback) callback();
+      };
+      document.head.appendChild(script);
+    }
+
+    // Configuration Firebase robuste
+    window.FIREBASE_CONFIG = {
+      apiKey: "AIzaSyB_9nPBDNNhKNFdBjPAvL_AYOzKPn3xWn4",
+      authDomain: "english-quest-db.firebaseapp.com",
+      projectId: "english-quest-db",
+      storageBucket: "english-quest-db.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
+    };
+
+    // Charger les scripts nécessaires avec fallbacks
+    setTimeout(() => {
+      loadScript('../scripts/auth-local.js');
+      loadScript('../src/js/auth-state.js');
+      loadScript('../src/js/reward-system.js');
+      loadScript('../src/js/admin-scores.js');
+      loadScript('../src/js/enigma-scroll/firebase-helpers.js');
+      loadScript('../src/js/enigma-scroll/enigma-scroll-firebase.js');
+      loadScript('../src/js/enigma-scroll/word-lists.js');
+      loadScript('../src/js/enigma-scroll/game-effects.js');
+      loadScript('../src/js/enigma-scroll/game-ui.js');
+      loadScript('../src/js/enigma-scroll/enigma-scroll.js');
+      loadScript('../src/js/enigma-scroll/enigma-scroll-leaderboard.js');
+    }, 500);
+
+    // Fonction globale pour forcer les couleurs
+    window.forceGameColors = function() {
+      console.log('🎨 Forçage des couleurs du jeu...');
+      
+      // CSS variables FORCÉES
+      document.documentElement.style.setProperty('--word-correct', '#2ecc71', 'important');
+      document.documentElement.style.setProperty('--word-present', '#f39c12', 'important');
+      document.documentElement.style.setProperty('--word-absent', '#7f8c8d', 'important');
+      
+      // Forcer sur les éléments existants
+      document.querySelectorAll('.grid-cell.correct, .key-btn.correct').forEach(el => {
+        el.style.setProperty('background-color', '#2ecc71', 'important');
+        el.style.setProperty('border-color', '#2ecc71', 'important');
+        el.style.setProperty('color', '#121212', 'important');
+      });
+      
+      document.querySelectorAll('.grid-cell.present, .key-btn.present').forEach(el => {
+        el.style.setProperty('background-color', '#f39c12', 'important');
+        el.style.setProperty('border-color', '#f39c12', 'important');
+        el.style.setProperty('color', '#121212', 'important');
+      });
+      
+      document.querySelectorAll('.grid-cell.absent, .key-btn.absent').forEach(el => {
+        el.style.setProperty('background-color', '#7f8c8d', 'important');
+        el.style.setProperty('border-color', '#7f8c8d', 'important');
+        el.style.setProperty('color', '#ffffff', 'important');
+      });
+    };
+
+    // Appliquer les couleurs à intervalles réguliers
+    setInterval(window.forceGameColors, 500);
+    
+    // Système d'authentification local simple
+    window.simpleAuth = {
+      getCurrentUser: function() {
+        try {
+          const userData = localStorage.getItem('userSession');
+          return userData ? JSON.parse(userData) : null;
+        } catch (e) {
+          return null;
+        }
+      },
+      saveScore: function(gameType, score) {
+        try {
+          const key = `${gameType}Scores`;
+          const scores = JSON.parse(localStorage.getItem(key) || '[]');
+          const user = this.getCurrentUser();
+          const newScore = {
+            score: score,
+            date: new Date().toISOString(),
+            player: user?.username || user?.displayName || 'Joueur'
+          };
+          scores.push(newScore);
+          scores.sort((a, b) => b.score - a.score);
+          localStorage.setItem(key, JSON.stringify(scores.slice(0, 10)));
+          console.log('Score sauvegardé localement:', newScore);
+          return newScore;
+        } catch (e) {
+          console.warn('Erreur sauvegarde score local:', e);
+          return null;
+        }
+      },
+      getScores: function(gameType) {
+        try {
+          const key = `${gameType}Scores`;
+          return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (e) {
+          return [];
+        }
       }
+    };
+  </script>
+
+  <!-- Script d'amélioration de l'overlay et forçage des couleurs -->
+  <script>
+    // FONCTION IMMÉDIATE pour améliorer l'expérience utilisateur
+    (function() {
+      console.log('🚀 Initialisation améliorée...');
+      
+      // CSS forcé pour les couleurs du jeu - INJECTÉ DIRECTEMENT
+      const forcedStyles = document.createElement('style');
+      forcedStyles.innerHTML = `
+        /* COULEURS FORCÉES POUR LE JEU */
+        :root {
+          --word-correct: #2ecc71 !important;
+          --word-present: #f39c12 !important;
+          --word-absent: #7f8c8d !important;
+        }
+        
+        /* Grille - États des cellules FORCÉS */
+        .grid-cell.correct {
+          background-color: #2ecc71 !important;
+          border-color: #2ecc71 !important;
+          color: #121212 !important;
+        }
+        
+        .grid-cell.present {
+          background-color: #f39c12 !important;
+          border-color: #f39c12 !important;
+          color: #121212 !important;
+        }
+        
+        .grid-cell.absent {
+          background-color: #7f8c8d !important;
+          border-color: #7f8c8d !important;
+          color: #ffffff !important;
+        }
+        
+        /* Clavier - États des touches FORCÉS */
+        .key-btn.correct {
+          background-color: #2ecc71 !important;
+          border-color: #2ecc71 !important;
+          color: #121212 !important;
+        }
+        
+        .key-btn.present {
+          background-color: #f39c12 !important;
+          border-color: #f39c12 !important;
+          color: #121212 !important;
+        }
+        
+        .key-btn.absent {
+          background-color: #7f8c8d !important;
+          border-color: #7f8c8d !important;
+          color: #ffffff !important;
+        }
+        
+        /* Overlay amélioré */
+        .loading-overlay {
+          cursor: pointer !important;
+        }
+        
+        .loading-overlay.hidden {
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(forcedStyles);
+      console.log('✅ Styles forcés injectés');
+      
+      // Fonction de suppression d'overlay améliorée
+      function removeLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          console.log('✅ Overlay trouvé, suppression en cours...');
+          overlay.classList.add('hidden');
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            console.log('🎯 Overlay complètement supprimé');
+          }, 300);
+        }
+      }
+
+      // Suppression immédiate
+      setTimeout(removeLoadingOverlay, 100);
+
+      // Event listeners
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(removeLoadingOverlay, 50);
+        });
+      } else {
+        removeLoadingOverlay();
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(removeLoadingOverlay, 50);
+      });
+
+      // TIMEOUT DE SÉCURITÉ ABSOLU
+      setTimeout(removeLoadingOverlay, 1000);
+
+      // Click pour supprimer manuellement
+      setTimeout(() => {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          overlay.addEventListener('click', removeLoadingOverlay);
+        }
+      }, 100);
+      
+      // Masquer les modales au démarrage
+      setTimeout(() => {
+        var rulesModal = document.getElementById('enigmaRulesModal') || document.getElementById('rulesModal');
+        if (rulesModal) {
+          rulesModal.style.display = 'none';
+          rulesModal.style.opacity = '0';
+          rulesModal.style.visibility = 'hidden';
+        }
+      }, 100);
     })();
   </script>
 
