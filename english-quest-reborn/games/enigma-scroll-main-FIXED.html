@@ -1,0 +1,271 @@
+<!-- Version corrigée rapide - copier le contenu original et ajouter les corrections ici -->
+
+<script>
+// CORRECTIF RAPIDE POUR LES POWER-UPS
+console.log('🔧 Chargement du correctif power-ups...');
+
+// Attendre que la page soit chargée
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    // Fonction showGameMessage robuste
+    window.showGameMessage = function(message, type = 'info', duration = 3000) {
+      try {
+        console.log(`📢 ${type}: ${message}`);
+        
+        // Créer ou réutiliser l'élément de message
+        let messageEl = document.getElementById('game-message-fixed');
+        if (!messageEl) {
+          messageEl = document.createElement('div');
+          messageEl.id = 'game-message-fixed';
+          messageEl.style.cssText = `
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 10000;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+          `;
+          document.body.appendChild(messageEl);
+        }
+        
+        // Couleurs selon le type
+        const colors = {
+          error: '#e74c3c',
+          success: '#27ae60',
+          info: '#3498db',
+          warning: '#f39c12'
+        };
+        
+        messageEl.style.backgroundColor = colors[type] || colors.info;
+        messageEl.style.color = 'white';
+        messageEl.textContent = message;
+        messageEl.style.display = 'block';
+        messageEl.style.opacity = '1';
+        
+        // Auto-hide
+        setTimeout(() => {
+          if (messageEl) {
+            messageEl.style.opacity = '0';
+            setTimeout(() => {
+              if (messageEl) messageEl.style.display = 'none';
+            }, 300);
+          }
+        }, duration);
+        
+      } catch (e) {
+        console.error('Erreur showGameMessage:', e);
+        alert(message); // Fallback
+      }
+    };
+    
+    // Fonction usePowerUp corrigée
+    window.usePowerUp = function(type) {
+      console.log(`🚀 Power-up ${type} activé`);
+      
+      try {
+        if (!window.gameActive) {
+          console.log('❌ Jeu non actif');
+          window.showGameMessage('Le jeu n\'est pas actif !', 'error');
+          return;
+        }
+        
+        if (!window.gameStats || !window.gameStats.powerUps || window.gameStats.powerUps[type] <= 0) {
+          console.log('❌ Power-up non disponible');
+          window.showGameMessage(`Aucun "${type}" disponible !`, 'error');
+          return;
+        }
+        
+        // Consommer
+        window.gameStats.powerUps[type]--;
+        console.log(`✅ ${type} consommé, restant: ${window.gameStats.powerUps[type]}`);
+        
+        // Mettre à jour l'affichage
+        if (window.displayPowerUps) {
+          window.displayPowerUps();
+        }
+        
+        // Actions selon le type
+        if (type === 'hint') {
+          console.log('💡 Utilisation indice');
+          window.showGameMessage('💡 Indice utilisé !', 'success');
+          
+          // Révéler une lettre
+          if (window.revealRandomLetter) {
+            window.revealRandomLetter();
+          } else if (window.currentGameWord && window.currentRow !== undefined) {
+            // Version simplifiée
+            const word = window.currentGameWord;
+            const row = window.currentRow;
+            
+            for (let i = 1; i < word.length; i++) {
+              const cell = document.querySelector(`[data-row="${row}"][data-col="${i}"]`);
+              if (cell && !cell.textContent) {
+                cell.textContent = word[i];
+                cell.classList.add('filled', 'hint');
+                cell.style.background = '#f39c12';
+                cell.style.color = '#121212';
+                break;
+              }
+            }
+          }
+          
+        } else if (type === 'time') {
+          console.log('⏰ Bonus temps');
+          window.gameStats.timeRemaining += 30;
+          window.showGameMessage('⏰ +30 secondes !', 'success');
+          
+          // Animation du timer
+          const timer = document.getElementById('time-display');
+          if (timer) {
+            timer.style.color = '#2ecc71';
+            timer.style.fontWeight = 'bold';
+            timer.textContent = window.gameStats.timeRemaining;
+            setTimeout(() => {
+              timer.style.color = '';
+              timer.style.fontWeight = '';
+            }, 2000);
+          }
+          
+        } else if (type === 'skip') {
+          console.log('⏭️ Passage mot');
+          window.showGameMessage('⏭️ Mot passé !', 'info');
+          
+          if (window.skipCurrentWord) {
+            window.skipCurrentWord();
+          } else if (window.initSimpleGame && window.selectedDifficulty) {
+            setTimeout(() => {
+              window.initSimpleGame(window.selectedDifficulty);
+            }, 1000);
+          }
+        }
+        
+        console.log(`✅ Power-up ${type} exécuté`);
+        
+      } catch (error) {
+        console.error(`❌ Erreur power-up ${type}:`, error);
+        window.showGameMessage(`Erreur: ${error.message}`, 'error');
+      }
+    };
+    
+    // Fonction handleEnterInput corrigée
+    window.handleEnterInput = function() {
+      console.log('🚀 Validation du mot...');
+      
+      try {
+        if (!window.gameActive) {
+          console.log('❌ Jeu non actif');
+          return;
+        }
+        
+        if (!window.currentGuess || !window.currentGameWord) {
+          console.log('❌ Données manquantes');
+          window.showGameMessage('Erreur: données manquantes', 'error');
+          return;
+        }
+        
+        const guess = window.currentGuess.toUpperCase();
+        const target = window.currentGameWord.toUpperCase();
+        
+        console.log(`🔍 "${guess}" vs "${target}"`);
+        
+        if (guess.length !== target.length) {
+          window.showGameMessage('Completez le mot !', 'warning');
+          return;
+        }
+        
+        // Validation simple pour debug
+        const isCorrect = guess === target;
+        
+        if (isCorrect) {
+          console.log('🎉 Mot trouvé !');
+          window.showGameMessage(`🎉 Bravo ! "${target}" trouvé !`, 'success');
+          
+          // Mettre à jour le score
+          if (window.gameStats) {
+            window.gameStats.wordsFound = (window.gameStats.wordsFound || 0) + 1;
+            window.gameStats.totalScore = (window.gameStats.totalScore || 0) + 100;
+            window.gameStats.combo = (window.gameStats.combo || 0) + 1;
+          }
+          
+          // Nouveau mot après 2 secondes
+          setTimeout(() => {
+            if (window.initSimpleGame && window.selectedDifficulty) {
+              window.initSimpleGame(window.selectedDifficulty);
+            }
+          }, 2000);
+          
+        } else {
+          console.log('❌ Mot incorrect');
+          window.showGameMessage('Mot incorrect !', 'error');
+          
+          // Passer à la ligne suivante
+          if (window.currentRow !== undefined) {
+            window.currentRow++;
+            window.currentCol = 1;
+            window.currentGuess = target[0];
+            
+            // Remettre la première lettre
+            const firstCell = document.querySelector(`[data-row="${window.currentRow}"][data-col="0"]`);
+            if (firstCell && target[0]) {
+              firstCell.textContent = target[0];
+              firstCell.classList.add('filled', 'hint');
+            }
+          }
+        }
+        
+      } catch (error) {
+        console.error('❌ Erreur handleEnterInput:', error);
+        window.showGameMessage(`Erreur: ${error.message}`, 'error');
+      }
+    };
+    
+    // Surcharger les event listeners des power-ups
+    setTimeout(() => {
+      document.querySelectorAll('.power-up-item, [data-power], [id*="power"]').forEach(el => {
+        const type = el.dataset.type || el.dataset.power || 
+          (el.id.includes('hint') ? 'hint' : 
+           el.id.includes('time') ? 'time' : 
+           el.id.includes('skip') ? 'skip' : null);
+        
+        if (type) {
+          el.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log(`🖱️ Clic power-up ${type}`);
+            window.usePowerUp(type);
+          });
+        }
+      });
+      
+      // Event listeners clavier
+      document.addEventListener('keydown', function(e) {
+        if (e.key === '1') {
+          e.preventDefault();
+          window.usePowerUp('hint');
+        } else if (e.key === '2') {
+          e.preventDefault();
+          window.usePowerUp('time');
+        } else if (e.key === '3') {
+          e.preventDefault();
+          window.usePowerUp('skip');
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          window.handleEnterInput();
+        }
+      });
+      
+    }, 1000);
+    
+    console.log('✅ Correctif power-ups installé !');
+    console.log('🎮 Raccourcis: 1=indice, 2=temps, 3=passer, Entrée=valider');
+    
+  }, 2000);
+});
+</script> 

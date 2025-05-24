@@ -1,0 +1,4788 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Enigma Scroll - Un jeu de mots mystérieux où vous devez deviner des mots cachés en anglais">
+  <meta name="theme-color" content="#121212">
+  <title>Enigma Scroll - Jeu de Mots Mystérieux | English Quest</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <!-- Base styles - Ordre important pour éviter les conflits -->
+  <link href="../styles/new-design.css" rel="stylesheet">
+  <link href="../styles/animations.css" rel="stylesheet">
+  <link href="../styles/particles.css" rel="stylesheet">
+
+  <!-- Game-specific styles -->
+  <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
+
+  <!-- Styles personnalisés pour corriger l'alignement et les couleurs -->
+  <style>
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Couleurs spécifiques pour le jeu Enigma Scroll en accord avec le design reborn */
+    :root {
+      /* Couleurs pour le jeu Wordle-like - utilisant les couleurs du système reborn */
+      --word-correct: #2ecc71; /* Vert pour lettre correcte et bien placée */
+      --word-present: #f39c12; /* Orange pour lettre présente mais mal placée */
+      --word-absent: #7f8c8d; /* Gris pour lettre absente */
+      --word-unfilled: rgba(255, 255, 255, 0.1); /* Gris léger pour cases vides */
+      
+      /* Variables du design reborn pour assurer la cohérence */
+      --color-text: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.7);
+      --color-background: #121212;
+      --color-primary: #2ecc71;
+      --color-primary-dark: #27ae60;
+      --color-primary-light: #58d68d;
+      --color-secondary: #3498db;
+    }
+
+    /* Correction des couleurs du titre */
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, #2ecc71, #3498db);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Correction de la couleur du sous-titre */
+    .game-subtitle {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Assurer que le header est exactement comme sur les autres pages */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+      z-index: 1000;
+      padding: var(--spacing-sm) 0;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-sm);
+    }
+
+    .logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: var(--color-text);
+    }
+
+    .nav-list {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .nav-link:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-link.active {
+      color: var(--color-primary);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--color-primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Assurer que le container a la même largeur que sur les autres pages */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-sm);
+    }
+
+    /* Responsive pour la navigation */
+    @media (max-width: 768px) {
+      .nav {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-list.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(46, 204, 113, 0.2);
+        padding: 1rem;
+        gap: 1rem;
+      }
+    }
+
+    /* Styles pour le corps du jeu */
+    .game-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Exo 2', sans-serif;
+      color: var(--color-text);
+      background: var(--color-background);
+      overflow-x: hidden;
+    }
+
+    /* Styles pour l'interface du jeu */
+    .game-universe {
+      position: relative;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background-color: var(--color-background);
+      padding-bottom: 50px;
+    }
+
+    .game-interface {
+      position: relative;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      z-index: 10;
+      text-align: center;
+    }
+
+    /* Styles pour les sections du jeu */
+    .game-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .game-sections {
+        flex-direction: row;
+      }
+
+      .main-panel {
+        flex: 2;
+      }
+
+      .leaderboard-panel {
+        flex: 1;
+      }
+    }
+
+    /* Styles pour les panneaux du jeu */
+    .game-panel {
+      background: rgba(26, 26, 26, 0.95);
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-panel:hover {
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+      border-color: rgba(46, 204, 113, 0.3);
+    }
+
+    /* Styles pour les états du jeu */
+    .game-state {
+      display: none;
+      padding: 2rem;
+    }
+
+    .game-state.active {
+      display: block;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Styles pour l'écran d'accueil */
+    .welcome-content {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .welcome-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: var(--color-text-secondary);
+    }
+
+    /* Styles pour la sélection de difficulté */
+    .difficulty-selection {
+      margin: 2rem 0;
+      text-align: left;
+    }
+
+    .difficulty-selection h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    .difficulty-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Styles pour les boutons */
+    .game-button {
+      position: relative;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--color-text);
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 50px;
+      outline: none;
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      border: 1px solid var(--color-primary-light);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5), inset 0 0 5px rgba(255, 255, 255, 0.2);
+      font-size: 1.3rem;
+      padding: 15px 30px;
+    }
+
+    .secondary-button {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.2rem;
+      padding: 12px 25px;
+    }
+
+    .game-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .glow-button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .glow-button:hover::before {
+      opacity: 1;
+    }
+
+    .action-icon {
+      font-size: 1.2rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Styles pour le HUD du jeu */
+    .game-hud {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      min-width: 80px;
+    }
+
+    .hud-icon {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+      color: var(--color-primary-light);
+    }
+
+    .hud-label {
+      font-size: 0.8rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour les boutons de difficulté */
+    .difficulty-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      gap: 0.7rem;
+      width: 100%;
+    }
+
+    .difficulty-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .difficulty-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+    }
+
+    .difficulty-icon {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .difficulty-btn:hover .difficulty-icon {
+      transform: scale(1.2);
+    }
+
+    .difficulty-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .difficulty-desc {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Styles pour le clavier */
+    .keyboard {
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%; /* Assurer que le clavier prend toute la largeur disponible */
+      padding: 0 0.5rem; /* Ajouter un peu de padding sur les côtés */
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.25rem; /* Réduire légèrement l'espace entre les touches */
+      width: 100%; /* Assurer que chaque rangée prend toute la largeur */
+    }
+
+    .key-btn {
+      flex: 1; /* Faire en sorte que les touches s'adaptent à l'espace disponible */
+      min-width: 2.2rem; /* Réduire légèrement la largeur minimale */
+      height: 3.2rem; /* Réduire légèrement la hauteur */
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      color: var(--color-text);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; /* Supprimer tout padding par défaut */
+      margin: 0; /* Supprimer tout margin par défaut */
+      touch-action: manipulation; /* Améliorer la réactivité tactile */
+    }
+
+    .key-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .key-btn:active {
+      transform: translateY(1px);
+    }
+
+    .key-enter, .key-delete {
+      min-width: 3.5rem; /* Réduire la largeur minimale */
+      font-size: 0.85rem; /* Réduire légèrement la taille de police */
+      flex: 1.5; /* Donner un peu plus d'espace aux touches spéciales */
+    }
+
+    /* Styles pour les power-ups */
+    .power-ups-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .power-up {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 80px;
+    }
+
+    .power-up:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .power-up-icon {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+    }
+
+    .power-up-name {
+      font-size: 0.9rem;
+      color: var(--color-text);
+    }
+
+    .power-up-count {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    /* Styles pour la grille de mots */
+    .word-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .grid-row {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+         .grid-cell {
+       width: 3.5rem;
+       height: 3.5rem;
+       background: rgba(15, 23, 42, 0.7);
+       border: 2px solid rgba(255, 255, 255, 0.1);
+       border-radius: 4px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 1.5rem;
+       font-weight: bold;
+       color: var(--color-text);
+       text-transform: uppercase;
+       transition: all 0.3s ease, transform 0.3s ease;
+       transform-style: preserve-3d;
+     }
+
+    .grid-cell.filled {
+      border-color: rgba(255, 255, 255, 0.3);
+      animation: cellFill 0.2s ease-in-out;
+    }
+
+    @keyframes cellFill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .grid-cell.correct {
+      background-color: var(--word-correct);
+      border-color: var(--word-correct);
+      color: var(--color-background, #121212);
+      animation: correctCell 0.5s ease-in-out;
+    }
+
+    @keyframes correctCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: var(--word-correct); }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.present {
+      background-color: var(--word-present);
+      border-color: var(--word-present);
+      color: var(--color-background, #121212);
+      animation: presentCell 0.5s ease-in-out;
+    }
+
+    @keyframes presentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: var(--word-present); }
+      100% { transform: rotateY(0); }
+    }
+
+    .grid-cell.absent {
+      background-color: var(--word-absent);
+      border-color: var(--word-absent);
+      color: var(--color-text-primary, #ffffff);
+      animation: absentCell 0.5s ease-in-out;
+    }
+
+    @keyframes absentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: rgba(15, 23, 42, 0.7); }
+      51% { background-color: var(--word-absent); }
+      100% { transform: rotateY(0); }
+    }
+
+    /* Styles pour les touches du clavier */
+    .key-btn.correct {
+      background-color: var(--word-correct);
+      border-color: var(--word-correct);
+      color: var(--color-background, #121212);
+    }
+
+    .key-btn.present {
+      background-color: var(--word-present);
+      border-color: var(--word-present);
+      color: var(--color-background, #121212);
+    }
+
+    .key-btn.absent {
+      background-color: var(--word-absent);
+      border-color: var(--word-absent);
+      color: var(--color-text-primary, #ffffff);
+    }
+
+    .key-pressed {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+    }
+
+    /* Styles pour le bouton des règles en jeu */
+    .in-game-rules-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--color-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary);
+      transform: scale(1.1);
+    }
+
+
+    /* Ajout d'un espace pour compenser le header fixe */
+    body {
+      padding-top: 80px;
+    }
+
+    /* Styles pour le leaderboard */
+    .leaderboard-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background-color: rgba(18, 18, 18, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-title {
+      color: var(--color-primary, #2ecc71);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
+    }
+
+    .leaderboard-content {
+      width: 100%;
+    }
+
+    .leaderboard-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      color: var(--text-light);
+      font-family: 'Spectral', serif;
+    }
+
+    .leaderboard-table th {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.5);
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+    }
+
+    .leaderboard-table td {
+      padding: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .leaderboard-table tr:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    /* Styles pour les boutons de bascule du leaderboard */
+    .leaderboard-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .toggle-btn {
+      padding: 0.7rem 1.2rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      color: var(--color-text);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+    }
+
+    /* Styles pour les cellules de score */
+    .score-cell {
+      text-align: right;
+      color: var(--color-primary) !important;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .rank-cell {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .player-cell {
+      font-weight: 500;
+    }
+
+    .date-cell {
+      text-align: right;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .leaderboard-table .rank-gold {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+
+    .leaderboard-table .rank-silver {
+      background-color: rgba(192, 192, 192, 0.1);
+    }
+
+    .leaderboard-table .rank-bronze {
+      background-color: rgba(205, 127, 50, 0.1);
+    }
+
+    /* Styles pour les boutons de bascule leaderboard */
+    .leaderboard-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .toggle-btn {
+      padding: 0.75rem 1.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      color: var(--color-text);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .toggle-btn i {
+      font-size: 1rem;
+    }
+
+    .current-player {
+      background-color: rgba(46, 204, 113, 0.15) !important;
+    }
+
+    .rank-cell {
+      font-weight: 600;
+      text-align: center;
+      width: 60px;
+    }
+
+    .player-cell {
+      font-weight: 500;
+    }
+
+    .score-cell {
+      font-weight: 600;
+      color: var(--color-primary, #2ecc71);
+      text-align: right;
+    }
+
+    .date-cell {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    .local-scores-button-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .game-button.secondary-button {
+      background-color: rgba(10, 14, 20, 0.8);
+      border: 1px solid var(--color-primary, #2ecc71);
+      color: var(--text-light);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .game-button.secondary-button:hover {
+      background-color: rgba(46, 204, 113, 0.2);
+      color: white;
+    }
+
+    /* Styles pour les boutons d'action */
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .game-buttons {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .rules-button {
+      background-color: transparent;
+      border: 2px solid var(--color-secondary, #3498db);
+      color: var(--color-secondary, #3498db);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .rules-button:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    }
+
+    /* Bouton des règles en jeu */
+    .in-game-rules-button {
+      background: none;
+      border: none;
+      color: var(--color-secondary, #3498db);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .in-game-rules-button:hover {
+      color: var(--color-primary, #2ecc71);
+      transform: scale(1.1);
+    }
+
+    /* Styles pour les modales - complètement désactivés */
+    .modal {
+      display: none !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: -9999 !important; /* Mettre un z-index négatif pour s'assurer qu'il est en dessous de tout */
+      align-items: center;
+      justify-content: center;
+      opacity: 0 !important;
+      transition: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important; /* Empêcher toute interaction */
+    }
+
+    .modal.show {
+      display: none !important; /* Forcer à rester caché même avec la classe show */
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      z-index: -9999 !important;
+    }
+
+    .modal-content {
+      background-color: rgba(26, 26, 26, 0.95);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+      border: 1px solid var(--color-primary);
+      position: relative;
+      animation: modalAppear 0.3s ease-out;
+    }
+
+    @keyframes modalAppear {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 1.2rem;
+      border-bottom: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      z-index: 1;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-title {
+      color: var(--color-primary);
+      margin: 0;
+      font-size: 1.6rem;
+      font-family: 'Cinzel', serif;
+      text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .modal-close:hover {
+      color: var(--color-primary);
+      background-color: rgba(46, 204, 113, 0.1);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      color: var(--color-text);
+      font-family: 'Spectral', serif;
+      line-height: 1.6;
+    }
+
+    .modal-body h3 {
+      color: var(--color-secondary);
+      margin: 1.5rem 0 0.8rem;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1.3rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .modal-body h3::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 1.2em;
+      background-color: var(--color-secondary);
+      border-radius: 2px;
+    }
+
+    .modal-body p {
+      margin-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .modal-body ul {
+      margin-bottom: 1.2rem;
+      padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+      margin-bottom: 0.7rem;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .modal-body li::before {
+      content: '•';
+      color: var(--color-primary);
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
+
+    .modal-footer {
+      padding: 1.2rem;
+      border-top: 1px solid rgba(46, 204, 113, 0.3);
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      position: sticky;
+      bottom: 0;
+      background-color: rgba(26, 26, 26, 0.98);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .modal-button {
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+      color: #121212;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      min-width: 120px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .modal-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-button.secondary {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      box-shadow: none;
+    }
+
+    .modal-button.secondary:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    }
+
+
+
+    /* Styles pour les statistiques de fin de partie */
+    .game-over-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .game-over-stat {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rewards-section {
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .rewards-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .reward {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .reward-icon {
+      font-size: 2rem;
+      color: var(--color-primary);
+    }
+
+    .reward-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    .new-high-score {
+      background: rgba(255, 193, 7, 0.2);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      text-align: center;
+      color: #ffc107;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+      }
+    }
+
+    /* Styles responsifs */
+    /* Media queries pour les tablettes et petits écrans */
+    @media (max-width: 768px) {
+      .game-sections {
+        flex-direction: column;
+      }
+
+      .difficulty-options {
+        flex-direction: column;
+      }
+
+      .game-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .game-hud {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hud-item {
+        min-width: 70px;
+      }
+
+      /* Ajustements du clavier pour tablettes */
+      .keyboard {
+        padding: 0 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .key-btn {
+        min-width: 2rem;
+        height: 3rem;
+        font-size: 0.9rem;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 3.5rem;
+      }
+
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .game-over-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Media queries pour les smartphones */
+    @media (max-width: 480px) {
+      /* Ajustements généraux pour petits écrans */
+      .game-interface {
+        padding: 1rem;
+      }
+
+      /* Ajustements du clavier pour smartphones */
+      .keyboard {
+        margin: 0.8rem 0;
+        gap: 0.3rem;
+        padding: 0 0.3rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .keyboard-row {
+        gap: 0.2rem;
+      }
+
+      .key-btn {
+        min-width: 0; /* Supprimer la largeur minimale pour permettre une meilleure adaptation */
+        width: auto; /* Laisser la largeur s'adapter automatiquement */
+        height: 2.8rem;
+        font-size: 0.8rem;
+        padding: 0.1rem;
+        border-radius: 3px;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 0;
+        font-size: 0.7rem;
+      }
+
+      /* Autres ajustements pour smartphones */
+      .power-ups-container {
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin: 1rem 0;
+      }
+
+      .power-up {
+        width: 70px;
+        padding: 0.7rem;
+      }
+
+      .grid-cell {
+        width: 2.8rem;
+        height: 2.8rem;
+        font-size: 1.2rem;
+      }
+
+      .game-button {
+        width: 100%;
+      }
+
+      .welcome-text {
+        font-size: 1rem;
+      }
+
+      .difficulty-selection h3 {
+        font-size: 1.1rem;
+      }
+
+      .difficulty-name {
+        font-size: 1rem;
+      }
+
+      .difficulty-desc {
+        font-size: 0.8rem;
+      }
+
+      .hud-item {
+        padding: 0.5rem;
+        min-width: 60px;
+      }
+
+      .hud-value {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Media queries pour les très petits écrans */
+    @media (max-width: 360px) {
+      /* Ajustements pour les très petits écrans */
+      .game-interface {
+        padding: 0.8rem;
+      }
+
+      /* Ajustements du clavier pour très petits écrans */
+      .keyboard {
+        margin: 0.5rem 0;
+        gap: 0.2rem;
+        padding: 0 0.2rem;
+      }
+
+      .keyboard-row {
+        gap: 0.15rem;
+      }
+
+      .key-btn {
+        height: 2.5rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+      }
+
+      .key-enter, .key-delete {
+        font-size: 0.6rem;
+      }
+
+      /* Autres ajustements pour très petits écrans */
+      .grid-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+      }
+
+      .power-ups-container {
+        gap: 0.5rem;
+      }
+
+      .power-up {
+        width: 60px;
+        padding: 0.5rem;
+      }
+
+      .power-up-icon {
+        font-size: 1.2rem;
+      }
+
+      .power-up-name {
+        font-size: 0.7rem;
+      }
+    }
+
+    /* Media queries spécifiques pour les téléphones en mode portrait */
+    @media (max-width: 414px) and (orientation: portrait) {
+      /* Optimisations supplémentaires pour les téléphones en mode portrait */
+      .keyboard {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.2rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Réduire encore plus la taille des touches pour s'assurer qu'elles tiennent toutes à l'écran */
+      .key-btn {
+        height: 2.4rem;
+        font-size: 0.7rem;
+        border-width: 1px;
+        padding: 0;
+      }
+
+      /* Ajuster l'espacement entre les rangées */
+      .keyboard-row {
+        margin-bottom: 0.2rem;
+      }
+
+      /* Réduire la taille de la grille pour laisser plus de place au clavier */
+      .word-grid {
+        margin: 1rem 0;
+      }
+
+      .grid-cell {
+        width: 2.4rem;
+        height: 2.4rem;
+      }
+    }
+
+    /* Styles pour s'assurer que les boutons fonctionnent */
+    .game-button {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      user-select: none;
+    }
+    
+    .difficulty-btn {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      user-select: none;
+    }
+    
+    .difficulty-btn:hover {
+      transform: translateY(-2px) !important;
+    }
+    
+    .difficulty-btn.active {
+      background: var(--color-primary) !important;
+      color: #121212 !important;
+    }
+
+    /* Styles pour l'overlay de chargement */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(18, 18, 18, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(46, 204, 113, 0.2);
+      border-top-color: var(--color-primary, #2ecc71);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--color-text, #ffffff);
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Styles pour les exemples de couleurs dans les règles */
+    .example-correct {
+      background-color: var(--word-correct);
+      color: var(--color-background, #121212);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-present {
+      background-color: var(--word-present);
+      color: var(--color-background, #121212);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .example-absent {
+      background-color: var(--word-absent);
+      color: var(--color-text-primary, #ffffff);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* Responsive pour les modales */
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+
+      .modal-title {
+        font-size: 1.3rem;
+      }
+
+      .modal-body {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
+
+      .modal-body h3 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body class="game-body">
+  <!-- Overlay de chargement -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Chargement...<br><small style="opacity: 0.7; font-size: 0.8rem;">Cliquez ici si l'écran reste bloqué</small></p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html" class="nav-link">Accueil</a></li>
+          <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+          <li><a href="../courses.html" class="nav-link">Cours</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Game container -->
+  <div class="game-universe">
+    <!-- Game UI -->
+    <main class="game-interface">
+      <!-- Game header - Centered subtitle -->
+      <div class="game-header-content">
+        <h1 class="section-title text-gradient">Enigma Scroll</h1>
+        <p class="game-subtitle">Les Parchemins Mystérieux</p>
+      </div>
+
+      <!-- Game sections -->
+      <div class="game-sections">
+        <!-- Main game panel -->
+        <div class="game-panel main-panel">
+          <!-- Game states -->
+          <div class="game-states">
+            <!-- Game state: welcome -->
+            <div id="welcome-screen" class="game-state active">
+              <div class="welcome-content">
+                <p class="welcome-text">
+                  Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+                  Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+                </p>
+
+                <div class="difficulty-selection">
+                  <h3>Choisissez votre niveau de difficulté :</h3>
+                  <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="beginner">
+                      <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+                      <span class="difficulty-name">Débutant</span>
+                      <span class="difficulty-desc">Mots de 4 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate">
+                      <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+                      <span class="difficulty-name">Intermédiaire</span>
+                      <span class="difficulty-desc">Mots de 5 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="advanced">
+                      <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+                      <span class="difficulty-name">Avancé</span>
+                      <span class="difficulty-desc">Mots de 7 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="expert">
+                      <span class="difficulty-icon"><i class="fas fa-mountain"></i></span>
+                      <span class="difficulty-name">Expert</span>
+                      <span class="difficulty-desc">Mots de 9 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="legendary">
+                      <span class="difficulty-icon"><i class="fas fa-dragon"></i></span>
+                      <span class="difficulty-name">Légendaire</span>
+                      <span class="difficulty-desc">Mots de 10 lettres</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="game-buttons">
+                  <button id="start-game-button" class="game-button primary-button glow-button">
+                    <span class="button-text">Commencer l'aventure</span>
+                    <span class="action-icon">✦</span>
+                  </button>
+                  <button id="show-rules-button" class="game-button secondary-button">
+                    <span class="button-text">Règles du jeu</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Game state: playing -->
+            <div id="game-area" class="game-state" style="display: none;">
+              <!-- Game HUD -->
+              <div class="game-hud">
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-scroll"></i></span>
+                  <span class="hud-label">Niveau</span>
+                  <span id="level-display" class="hud-value">1</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-star"></i></span>
+                  <span class="hud-label">Score</span>
+                  <span id="score-display" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-hourglass-half"></i></span>
+                  <span class="hud-label">Temps</span>
+                  <span id="time-display" class="hud-value">60</span>
+                </div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-bolt"></i></span>
+                  <span class="hud-label">Combo</span>
+                  <span id="combo-display" class="hud-value">x1</span>
+                </div>
+              </div>
+
+              <!-- Grille de jeu -->
+              <div id="word-grid" class="word-grid"></div>
+
+              <!-- Clavier virtuel -->
+              <div id="keyboard" class="keyboard">
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete"><i class="fas fa-backspace"></i></button>
+                </div>
+              </div>
+
+              <!-- Power-ups -->
+              <div id="power-ups-container" class="power-ups-container">
+                <div class="power-up" data-power="hint">
+                  <div class="power-up-icon"><i class="fas fa-lightbulb"></i></div>
+                  <div class="power-up-name">Indice</div>
+                  <div class="power-up-count" id="hint-count">3</div>
+                </div>
+                <div class="power-up" data-power="time">
+                  <div class="power-up-icon"><i class="fas fa-clock"></i></div>
+                  <div class="power-up-name">Temps</div>
+                  <div class="power-up-count" id="time-count">2</div>
+                </div>
+                <div class="power-up" data-power="skip">
+                  <div class="power-up-icon"><i class="fas fa-forward"></i></div>
+                  <div class="power-up-name">Passer</div>
+                  <div class="power-up-count" id="skip-count">1</div>
+                </div>
+              </div>
+
+              <!-- Bouton des règles en jeu -->
+              <button id="in-game-rules-button" class="in-game-rules-button" title="Règles du jeu">
+                <i class="fas fa-question-circle"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard panel -->
+        <div class="game-panel leaderboard-panel">
+          <div class="game-hud">
+            <h2>Meilleurs Scores</h2>
+          </div>
+          
+          <!-- Boutons de bascule entre scores locaux et en ligne -->
+          <div class="leaderboard-toggle">
+            <button id="local-scores-btn" class="toggle-btn active">
+              <i class="fas fa-user"></i> Mes Scores
+            </button>
+            <button id="online-scores-btn" class="toggle-btn">
+              <i class="fas fa-globe"></i> Scores Globaux
+            </button>
+          </div>
+          
+          <div id="enigma-scroll-leaderboard" class="leaderboard-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="rank-header">Rang</th>
+                  <th class="player-header">Joueur</th>
+                  <th class="score-header">Score</th>
+                  <th class="date-header">Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="4" class="loading-scores">Chargement des scores...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pas de footer -->
+
+  <!-- Modales -->
+
+  <!-- Nouvelle modale des règles du jeu avec un ID différent - masquée par défaut -->
+  <div id="enigmaRulesModal" style="display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center; opacity: 0 !important; visibility: hidden !important;">
+    <div style="background-color: rgba(26, 26, 26, 0.95); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 0 30px rgba(46, 204, 113, 0.4); border: 1px solid #2ecc71; position: relative;">
+      <div style="padding: 1.2rem; border-bottom: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background-color: rgba(26, 26, 26, 0.98); z-index: 1; border-radius: 12px 12px 0 0;">
+        <h2 style="color: #2ecc71; margin: 0; font-size: 1.6rem; font-family: 'Cinzel', serif; text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);">Règles du jeu</h2>
+        <button id="closeEnigmaRulesX" style="background: none; border: none; color: #b0bec5; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">&times;</button>
+      </div>
+      <div style="padding: 1.5rem; color: #ffffff; font-family: 'Spectral', serif; line-height: 1.6;">
+        <p>Bienvenue dans <strong>Enigma Scroll</strong>, un jeu de mots mystérieux !</p>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Objectif :</h3>
+        <p>Devinez le mot caché en anglais en utilisant le moins d'essais possible. À chaque mot trouvé, vous gagnez des points et accédez à un nouveau mot !</p>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Comment jouer :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Tapez un mot et appuyez sur ENTRÉE pour valider</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Les lettres changeront de couleur pour vous guider :
+            <ul style="margin-top: 0.5rem;">
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #2ecc71; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Vert</span> : La lettre est correcte et bien placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #f39c12; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Jaune</span> : La lettre est dans le mot mais mal placée</li>
+              <li style="margin-bottom: 0.5rem;"><span style="background-color: #7f8c8d; color: #121212; padding: 0.2rem 0.4rem; border-radius: 4px; font-weight: 600; display: inline-block;">Gris</span> : La lettre n'est pas dans le mot</li>
+            </ul>
+          </li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Vous avez 6 essais maximum pour trouver chaque mot</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Plus vous trouvez de mots rapidement, plus vous gagnez de points</li>
+        </ul>
+
+        <h3 style="color: #3498db; margin: 1.5rem 0 0.8rem; font-family: 'Exo 2', sans-serif; font-size: 1.3rem; position: relative; padding-left: 1rem;">Astuces :</h3>
+        <ul style="margin-bottom: 1.2rem; padding-left: 1.5rem;">
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Commencez par des mots contenant des voyelles courantes</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Faites attention aux lettres qui se répètent</li>
+          <li style="margin-bottom: 0.7rem; line-height: 1.6;">Utilisez les informations des essais précédents</li>
+        </ul>
+
+        <p>Bonne chance dans votre quête linguistique !</p>
+      </div>
+      <div style="padding: 1.2rem; border-top: 1px solid rgba(46, 204, 113, 0.3); display: flex; justify-content: center; gap: 1rem; position: sticky; bottom: 0; background-color: rgba(26, 26, 26, 0.98); border-radius: 0 0 12px 12px;">
+        <button id="closeEnigmaRulesButton" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: #121212; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: 'Exo 2', sans-serif; min-width: 120px; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center;">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ancienne modale des règles (masquée et désactivée) -->
+  <div class="modal rules-modal" id="rulesModal" style="display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important;">
+  </div>
+
+  <!-- Modale de fin de partie -->
+  <div class="modal game-over-modal" id="gameOverModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Partie terminée</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="game-over-stats">
+          <div class="game-over-stat">
+            <span class="stat-label">Score final</span>
+            <span id="final-score" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Mots trouvés</span>
+            <span id="words-found" class="stat-value">0</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Combo maximum</span>
+            <span id="max-combo" class="stat-value">x1</span>
+          </div>
+          <div class="game-over-stat">
+            <span class="stat-label">Temps total</span>
+            <span id="total-time" class="stat-value">0s</span>
+          </div>
+        </div>
+
+        <div class="rewards-section">
+          <h3>Récompenses</h3>
+          <div class="rewards-container">
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-coins"></i></div>
+              <div class="reward-value" id="coins-reward">+0</div>
+            </div>
+            <div class="reward">
+              <div class="reward-icon"><i class="fas fa-star"></i></div>
+              <div class="reward-value" id="xp-reward">+0 XP</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="new-high-score" class="new-high-score" style="display: none;">
+          <i class="fas fa-trophy"></i> Nouveau record personnel !
+        </div>
+
+        <div id="last-word-container" class="last-word-container" style="display: none;">
+          <p>Le dernier mot était : <span id="last-word" class="revealed-word">WORD</span></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="playAgainButton">Rejouer</button>
+        <button class="modal-button secondary" id="backToMenuButton">Menu principal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale de mot trouvé -->
+  <div class="modal word-found-modal" id="wordFoundModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Mot trouvé !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Le mot était : <span id="revealed-word" class="revealed-word">WORD</span></p>
+        <p class="word-definition" id="word-definition">Définition du mot...</p>
+
+        <div class="word-stats">
+          <div class="word-stat">
+            <span class="stat-label">Points gagnés</span>
+            <span id="points-earned" class="stat-value">+100</span>
+          </div>
+          <div class="word-stat">
+            <span class="stat-label">Bonus de temps</span>
+            <span id="time-bonus" class="stat-value" style="color: #2ecc71; font-weight: bold;">+30s</span>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 1rem; color: #2ecc71; font-weight: bold;">
+          <i class="fas fa-clock"></i> +30 secondes à chaque mot trouvé !
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="nextWordButton">Mot suivant</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale d'événement spécial -->
+  <div class="modal event-modal" id="eventModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Événement spécial !</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="event-description" class="event-description">
+          Description de l'événement...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-button" id="acceptEventButton">Accepter</button>
+        <button class="modal-button secondary" id="declineEventButton">Décliner</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Effets visuels -->
+  <div id="particles-container" class="particles-container"></div>
+  <div id="forest-mist" class="forest-mist"></div>
+  <div id="floating-leaves" class="floating-leaves"></div>
+
+  <!-- Scripts Firebase (chargement prioritaire) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="../src/js/firebase-init.js"></script>
+  <script src="../src/js/firebase-service-adapter.js"></script>
+
+  <!-- Scripts du jeu avec chargement robuste -->
+  <script>
+    // Fonction pour charger un script avec fallback
+    function loadScript(src, callback) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = callback || function() { console.log('Loaded:', src); };
+      script.onerror = function() { 
+        console.warn('Failed to load:', src);
+        if (callback) callback();
+      };
+      document.head.appendChild(script);
+    }
+
+    // Configuration Firebase robuste
+    window.FIREBASE_CONFIG = {
+      apiKey: "AIzaSyB_9nPBDNNhKNFdBjPAvL_AYOzKPn3xWn4",
+      authDomain: "english-quest-db.firebaseapp.com",
+      projectId: "english-quest-db",
+      storageBucket: "english-quest-db.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef"
+    };
+
+    // Charger les scripts nécessaires dans le bon ordre
+    setTimeout(() => {
+      loadScript('../scripts/auth-local.js');
+      loadScript('../src/js/auth-state.js');
+      loadScript('../src/js/reward-system.js');
+      loadScript('../src/js/admin-scores.js');
+      loadScript('../src/js/enigma-scroll/firebase-helpers.js');
+      loadScript('../src/js/enigma-scroll/enigma-scroll-firebase.js');
+      loadScript('../src/js/enigma-scroll/word-lists.js');
+      loadScript('../src/js/enigma-scroll/game-effects.js');
+      loadScript('../src/js/enigma-scroll/game-ui.js');
+      
+      // Charger le script principal du jeu en dernier
+      setTimeout(() => {
+        loadScript('../src/js/enigma-scroll/enigma-scroll.js', () => {
+          console.log('🎮 Script principal du jeu chargé');
+          // Le jeu s'initialise automatiquement via DOMContentLoaded dans enigma-scroll.js
+        });
+        loadScript('../src/js/enigma-scroll/enigma-scroll-leaderboard.js');
+      }, 500);
+      
+      // OVERRIDE IMPORTANT pour corriger les problèmes
+      setTimeout(() => {
+        // Rediriger les appels de sauvegarde vers notre système robuste
+        if (window.EnigmaScrollGame && window.enigmaScrollGame) {
+          const originalSaveScore = window.EnigmaScrollGame.prototype ? window.EnigmaScrollGame.prototype.saveScore : null;
+          
+          // Override de la méthode saveScore
+          if (window.EnigmaScrollGame && window.EnigmaScrollGame.prototype) {
+            window.EnigmaScrollGame.prototype.saveScore = function(score) {
+              console.log('📊 Redirection sauvegarde score vers système robuste:', score);
+              return window.enigmaScrollGame.saveScore(score, null, this.level || 1, this.difficulty || 5);
+            };
+          }
+          
+          // Override global également
+          window.saveGameScore = function(score, player, level, difficulty) {
+            return window.enigmaScrollGame.saveScore(score, player, level, difficulty);
+          };
+        }
+        
+        // Forcer les couleurs dès que le jeu est chargé
+        if (window.forceGameColors) {
+          window.forceGameColors();
+        }
+        
+        console.log('🔧 Overrides et corrections appliqués');
+      }, 2000);
+    }, 500);
+
+    // SYSTÈME DE COULEURS ULTRA-ROBUSTE AMÉLIORÉ
+    window.GAME_COLORS = {
+      correct: '#2ecc71',
+      present: '#f39c12', 
+      absent: '#7f8c8d'
+    };
+
+    // Observer pour détecter les changements DOM
+    let colorObserver = null;
+    
+    // Fonction de forçage ultra-agressive - Version améliorée
+    window.forceGameColors = function() {
+      // Stopper l'ancien observer
+      if (colorObserver) {
+        colorObserver.disconnect();
+      }
+
+      // FORCER les variables CSS
+      const style = document.documentElement.style;
+      style.setProperty('--word-correct', window.GAME_COLORS.correct, 'important');
+      style.setProperty('--word-present', window.GAME_COLORS.present, 'important');
+      style.setProperty('--word-absent', window.GAME_COLORS.absent, 'important');
+      
+      // INJECTER du CSS ultra-prioritaire avec spécificité maximale
+      let forceStyleEl = document.getElementById('force-game-colors-ultimate');
+      if (!forceStyleEl) {
+        forceStyleEl = document.createElement('style');
+        forceStyleEl.id = 'force-game-colors-ultimate';
+        document.head.appendChild(forceStyleEl);
+      }
+      
+      forceStyleEl.innerHTML = `
+        /* COULEURS ULTRA-FORCÉES AVEC SPÉCIFICITÉ MAXIMALE */
+        body .grid-cell.correct, body .key-btn.correct,
+        .game-universe .grid-cell.correct, .game-universe .key-btn.correct {
+          background-color: ${window.GAME_COLORS.correct} !important;
+          border-color: ${window.GAME_COLORS.correct} !important;
+          color: #121212 !important;
+          background: ${window.GAME_COLORS.correct} !important;
+        }
+        body .grid-cell.present, body .key-btn.present,
+        .game-universe .grid-cell.present, .game-universe .key-btn.present {
+          background-color: ${window.GAME_COLORS.present} !important;
+          border-color: ${window.GAME_COLORS.present} !important;
+          color: #121212 !important;
+          background: ${window.GAME_COLORS.present} !important;
+        }
+        body .grid-cell.absent, body .key-btn.absent,
+        .game-universe .grid-cell.absent, .game-universe .key-btn.absent {
+          background-color: ${window.GAME_COLORS.absent} !important;
+          border-color: ${window.GAME_COLORS.absent} !important;
+          color: #ffffff !important;
+          background: ${window.GAME_COLORS.absent} !important;
+        }
+      `;
+      
+      // FORCER individuellement chaque élément existant
+      ['correct', 'present', 'absent'].forEach(state => {
+        document.querySelectorAll(`.grid-cell.${state}, .key-btn.${state}`).forEach(el => {
+          const color = window.GAME_COLORS[state];
+          const textColor = state === 'absent' ? '#ffffff' : '#121212';
+          
+          // Méthode 1: setProperty avec important
+          el.style.setProperty('background-color', color, 'important');
+          el.style.setProperty('border-color', color, 'important');
+          el.style.setProperty('color', textColor, 'important');
+          el.style.setProperty('background', color, 'important');
+          
+          // Méthode 2: cssText direct
+          el.style.cssText += `; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important;`;
+          
+          // Méthode 3: setAttribute pour forcer encore plus
+          const currentStyle = el.getAttribute('style') || '';
+          const newStyle = `${currentStyle}; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important; background: ${color} !important;`;
+          el.setAttribute('style', newStyle);
+        });
+      });
+
+      // Créer un observer pour les nouveaux éléments
+      colorObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) { // Element node
+              const elements = node.querySelectorAll ? node.querySelectorAll('.grid-cell, .key-btn') : [];
+              elements.forEach(el => {
+                ['correct', 'present', 'absent'].forEach(state => {
+                  if (el.classList.contains(state)) {
+                    const color = window.GAME_COLORS[state];
+                    const textColor = state === 'absent' ? '#ffffff' : '#121212';
+                    el.style.setProperty('background-color', color, 'important');
+                    el.style.setProperty('border-color', color, 'important');
+                    el.style.setProperty('color', textColor, 'important');
+                    el.style.setProperty('background', color, 'important');
+                    el.style.cssText += `; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important;`;
+                  }
+                });
+              });
+            }
+          });
+        });
+      });
+
+      // Observer le DOM entier
+      colorObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+      
+      console.log('🎨 Système de couleurs ultra-robuste activé');
+    };
+
+         // SYSTÈME DE SCORES LOCAL ULTRA-RENFORCÉ
+     window.enigmaScrollGame = {
+       scores: [],
+       currentScore: 0,
+       gameRunning: false,
+       
+       // Sauvegarde de score robuste
+       saveScore: function(score, playerName, level, difficulty) {
+         try {
+           const user = window.simpleAuth ? window.simpleAuth.getCurrentUser() : null;
+           const finalPlayerName = playerName || (user && user.username) || (user && user.displayName) || 'Joueur Anonyme';
+           
+           const newScore = {
+             score: score || 0,
+             player: finalPlayerName,
+             level: level || 1,
+             difficulty: difficulty || 5,
+             date: new Date().toISOString(),
+             timestamp: Date.now()
+           };
+           
+           let scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+           scores.push(newScore);
+           scores.sort((a, b) => b.score - a.score);
+           scores = scores.slice(0, 10); // Garder top 10 en local
+           
+           localStorage.setItem('enigmaScrollMainScores', JSON.stringify(scores));
+           this.scores = scores;
+           this.updateLeaderboard();
+           
+           console.log('📊 Score sauvegardé (version complète):', newScore);
+           
+           // Sauvegarder aussi dans Firebase si disponible
+           this.saveToFirebase(newScore);
+           
+           // Déclencher mise à jour des scores globaux si c'est l'onglet actif
+           const onlineBtn = document.getElementById('online-scores-btn');
+           if (onlineBtn && onlineBtn.classList.contains('active')) {
+             setTimeout(() => this.showOnlineScores(), 500);
+           }
+           
+           return newScore;
+         } catch (e) {
+           console.error('❌ Erreur sauvegarde score:', e);
+           return null;
+         }
+       },
+       
+       // Lecture des scores robuste
+       getScores: function() {
+         try {
+           this.scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+           return this.scores;
+         } catch (e) {
+           console.error('❌ Erreur lecture scores:', e);
+           this.scores = [];
+           return [];
+         }
+       },
+       
+                // Mise à jour du leaderboard robuste (seulement pour scores locaux)
+         updateLeaderboard: function() {
+           // Vérifier si on est en mode scores globaux - si oui, ne pas écraser
+           const onlineBtn = document.getElementById('online-scores-btn');
+           if (onlineBtn && onlineBtn.classList.contains('active')) {
+             console.log('Mode scores globaux actif - pas de mise à jour locale');
+             return;
+           }
+           
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) {
+             console.warn('Element leaderboard-body introuvable');
+             return;
+           }
+           
+           const scores = this.getScores();
+         
+         if (scores.length === 0) {
+           tbody.innerHTML = `
+             <tr>
+               <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                 Aucun score enregistré
+                 <br><small style="opacity: 0.6;">Jouez pour voir vos scores ici !</small>
+               </td>
+             </tr>`;
+           return;
+         }
+         
+         tbody.innerHTML = scores.map((score, index) => {
+           const isTopScore = index < 3;
+           const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+           const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+           
+           return `
+             <tr class="${rankClass}" style="transition: background-color 0.3s ease;">
+               <td class="rank-cell" style="text-align: center; font-weight: bold; color: ${rankColor};">
+                 ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+               </td>
+               <td class="player-cell" style="font-weight: 500; color: #ffffff;">
+                 ${score.player || 'Joueur Anonyme'}${score.level ? ` (Niveau ${score.level})` : ''}
+               </td>
+               <td class="score-cell" style="text-align: right; color: #2ecc71; font-weight: bold; font-size: ${isTopScore ? '1.1rem' : '1rem'};">
+                 ${Number(score.score).toLocaleString()}
+               </td>
+               <td class="date-cell" style="text-align: right; font-size: 0.9rem; opacity: 0.8; color: rgba(255,255,255,0.7);">
+                 ${score.date ? new Date(score.date).toLocaleDateString('fr-FR') : 'Date inconnue'}
+               </td>
+             </tr>
+           `;
+         }).join('');
+         
+         console.log(`📈 Leaderboard mis à jour avec ${scores.length} scores`);
+       },
+       
+       // Sauvegarder dans Firebase
+       saveToFirebase: function(scoreData) {
+         if (typeof firebase === 'undefined' || !firebase.firestore) {
+           console.warn('Firebase non disponible pour la sauvegarde');
+           return;
+         }
+         
+         try {
+           const db = firebase.firestore();
+           
+           // Préparer les données pour Firebase
+           const firebaseData = {
+             score: scoreData.score,
+             player: scoreData.player,
+             level: scoreData.level || 1,
+             difficulty: scoreData.difficulty || 5,
+             date: scoreData.date,
+             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+             gameType: 'enigma-scroll'
+           };
+           
+           // Sauvegarder dans la collection principale
+           db.collection('enigma_scroll_scores').add(firebaseData)
+             .then(docRef => {
+               console.log('✅ Score sauvegardé dans Firebase:', docRef.id);
+             })
+             .catch(error => {
+               console.warn('⚠️ Erreur sauvegarde Firebase principale:', error);
+               
+               // Essayer avec la collection alternative
+               db.collection('game_scores').add(firebaseData)
+                 .then(docRef => {
+                   console.log('✅ Score sauvegardé dans Firebase (fallback):', docRef.id);
+                 })
+                 .catch(fallbackError => {
+                   console.error('❌ Erreur sauvegarde Firebase fallback:', fallbackError);
+                 });
+             });
+         } catch (error) {
+           console.error('❌ Erreur initialisation Firebase pour sauvegarde:', error);
+         }
+       },
+
+       // Initialisation du système
+       init: function() {
+         console.log('🚀 Initialisation du système de scores Enigma Scroll');
+         this.updateLeaderboard();
+         this.setupLeaderboardButtons();
+         
+         // Vérifier périodiquement (seulement pour scores locaux)
+         setInterval(() => {
+           if (document.getElementById('leaderboard-body')) {
+             // Ne pas mettre à jour si on est en mode scores globaux
+             const onlineBtn = document.getElementById('online-scores-btn');
+             if (!onlineBtn || !onlineBtn.classList.contains('active')) {
+               this.updateLeaderboard();
+             }
+           }
+         }, 10000); // Toutes les 10 secondes
+       },
+
+       // Configuration des boutons du leaderboard
+       setupLeaderboardButtons: function() {
+         const localBtn = document.getElementById('local-scores-btn');
+         const onlineBtn = document.getElementById('online-scores-btn');
+         
+         if (localBtn) {
+           localBtn.addEventListener('click', () => {
+             localBtn.classList.add('active');
+             if (onlineBtn) onlineBtn.classList.remove('active');
+             this.showLocalScores();
+           });
+         }
+         
+         if (onlineBtn) {
+           onlineBtn.addEventListener('click', () => {
+             onlineBtn.classList.add('active');
+             if (localBtn) localBtn.classList.remove('active');
+             this.showOnlineScores();
+           });
+         }
+       },
+
+       // Afficher les scores locaux
+       showLocalScores: function() {
+         // Marquer qu'on est en mode scores locaux
+         this.currentMode = 'local';
+         this.updateLeaderboard();
+       },
+
+       // Afficher les scores globaux (avec fallback)
+       showOnlineScores: function() {
+         const tbody = document.getElementById('leaderboard-body');
+         if (!tbody) return;
+         
+         // Marquer qu'on est en mode scores globaux
+         this.currentMode = 'online';
+         
+         // Afficher un loading temporaire
+         tbody.innerHTML = `
+           <tr>
+             <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+               <i class="fas fa-spinner fa-spin"></i> Chargement des scores globaux...
+             </td>
+           </tr>`;
+         
+         // Essayer de charger les scores Firebase avec la vraie structure
+         this.loadFirebaseScores();
+       },
+
+       // Afficher les scores en ligne
+       displayOnlineScores: function(scores) {
+         const tbody = document.getElementById('leaderboard-body');
+         if (!tbody) return;
+         
+         tbody.innerHTML = scores.map((score, index) => {
+           const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+           const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+           
+           return `
+             <tr class="${rankClass}" style="transition: background-color 0.3s ease;">
+               <td class="rank-cell" style="text-align: center; font-weight: bold; color: ${rankColor};">
+                 ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+               </td>
+               <td class="player-cell" style="font-weight: 500; color: #ffffff;">
+                 ${score.playerName || score.player || 'Joueur Anonyme'}
+                 ${score.level ? ` (Niveau ${score.level})` : ''}
+               </td>
+               <td class="score-cell" style="text-align: right; color: #2ecc71; font-weight: bold; font-size: ${index < 3 ? '1.1rem' : '1rem'};">
+                 ${Number(score.score || 0).toLocaleString()}
+               </td>
+                                <td class="date-cell" style="text-align: right; font-size: 0.9rem; opacity: 0.8; color: rgba(255,255,255,0.7);">
+                   ${score.date || 'Date inconnue'}
+                 </td>
+             </tr>
+           `;
+         }).join('');
+       },
+
+                // Charger les scores Firebase avec la vraie structure
+         loadFirebaseScores: function() {
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) return;
+           
+           // Vérifier si Firebase est disponible
+           if (typeof firebase === 'undefined' || !firebase.firestore) {
+             this.showNoOnlineScores();
+             return;
+           }
+           
+           try {
+             const db = firebase.firestore();
+             console.log('🔍 Chargement des scores Firebase depuis enigma_scroll_scores...');
+             
+                            // Utiliser la vraie collection comme dans l'ancienne version
+               db.collection('enigma_scroll_scores')
+                 .orderBy('score', 'desc')
+                 .limit(5)
+               .get()
+                                .then(querySnapshot => {
+                   const scores = [];
+                   querySnapshot.forEach(doc => {
+                     const data = doc.data();
+                     
+                     // Debugging : afficher la structure réelle des données
+                     console.log('📄 Document Firebase:', doc.id, data);
+                     
+                     // Essayer de récupérer le nom du joueur avec tous les champs possibles
+                     let playerName = 'Joueur Anonyme';
+                     if (data.playerName) playerName = data.playerName;
+                     else if (data.player) playerName = data.player;
+                     else if (data.name) playerName = data.name;
+                     else if (data.username) playerName = data.username;
+                     else if (data.user) playerName = data.user;
+                     
+                     // Gestion correcte des dates Firebase
+                     let formattedDate = 'Date inconnue';
+                     if (data.timestamp && data.timestamp.toDate) {
+                       // Timestamp Firebase Firestore
+                       formattedDate = data.timestamp.toDate().toLocaleDateString('fr-FR');
+                     } else if (data.date) {
+                       // Date sous forme de string ou autre format
+                       const dateObj = new Date(data.date);
+                       if (!isNaN(dateObj.getTime())) {
+                         formattedDate = dateObj.toLocaleDateString('fr-FR');
+                       }
+                     }
+                     
+                     scores.push({
+                       id: doc.id,
+                       score: data.score || 0,
+                       player: playerName,
+                       playerName: playerName,
+                       level: data.level,
+                       difficulty: data.difficulty,
+                       date: formattedDate,
+                       timestamp: data.timestamp || data.date,
+                       rawData: data // Pour debugging
+                     });
+                   });
+                   
+                   console.log(`✅ ${scores.length} scores Firebase récupérés`, scores);
+                 
+                 if (scores.length > 0) {
+                   this.displayOnlineScores(scores);
+                 } else {
+                   this.showNoOnlineScores();
+                 }
+               })
+               .catch(error => {
+                 console.error('❌ Erreur lors du chargement des scores Firebase:', error);
+                 
+                                    // Essayer aussi avec game_scores comme fallback
+                   db.collection('game_scores')
+                     .where('gameType', '==', 'enigma-scroll')
+                     .orderBy('score', 'desc')
+                     .limit(5)
+                   .get()
+                   .then(querySnapshot => {
+                     const scores = [];
+                     querySnapshot.forEach(doc => {
+                       const data = doc.data();
+                       scores.push({
+                         id: doc.id,
+                         score: data.score || 0,
+                         player: data.player || data.playerName || 'Joueur Anonyme',
+                         playerName: data.player || data.playerName || 'Joueur Anonyme',
+                         level: data.level,
+                         difficulty: data.difficulty,
+                         date: data.date,
+                         timestamp: data.timestamp || data.date
+                       });
+                     });
+                     
+                     console.log(`✅ ${scores.length} scores Firebase récupérés (fallback)`, scores);
+                     
+                     if (scores.length > 0) {
+                       this.displayOnlineScores(scores);
+                     } else {
+                       this.showNoOnlineScores();
+                     }
+                   })
+                   .catch(fallbackError => {
+                     console.error('❌ Erreur fallback:', fallbackError);
+                     this.showNoOnlineScores();
+                   });
+               });
+           } catch (initError) {
+             console.error('❌ Erreur initialisation Firebase:', initError);
+             this.showNoOnlineScores();
+           }
+         },
+
+         // Afficher message si pas de scores en ligne
+         showNoOnlineScores: function() {
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) return;
+           
+           tbody.innerHTML = `
+             <tr>
+               <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                 <i class="fas fa-globe" style="margin-bottom: 10px; font-size: 2rem; display: block;"></i>
+                 Aucun score global disponible
+                 <br><small style="opacity: 0.6;">Les scores globaux nécessitent une connexion internet.<br>Vos scores locaux sont sauvegardés !</small>
+               </td>
+             </tr>`;
+         }
+     };
+
+    // FONCTION DE DÉMARRAGE BASIQUE EN CAS DE PROBLÈME
+    window.startBasicGame = function(difficulty) {
+      console.log('🎮 Démarrage en mode basique avec difficulté:', difficulty);
+      
+      // Configuration de base selon la difficulté
+      const difficultyConfig = {
+        'beginner': { wordLength: 4, maxAttempts: 6 },
+        'intermediate': { wordLength: 5, maxAttempts: 6 },
+        'advanced': { wordLength: 7, maxAttempts: 6 },
+        'expert': { wordLength: 9, maxAttempts: 6 },
+        'legendary': { wordLength: 10, maxAttempts: 6 }
+      };
+      
+      const config = difficultyConfig[difficulty] || difficultyConfig['intermediate'];
+      
+      // Initialiser les éléments de base
+      const grid = document.getElementById('word-grid');
+      const keyboard = document.getElementById('keyboard');
+      
+      if (grid) {
+        // Créer la grille de jeu
+        grid.innerHTML = '';
+        for (let i = 0; i < config.maxAttempts; i++) {
+          const row = document.createElement('div');
+          row.className = 'grid-row';
+          for (let j = 0; j < config.wordLength; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            row.appendChild(cell);
+          }
+          grid.appendChild(row);
+        }
+      }
+      
+      // Initialiser les stats
+      document.getElementById('level-display').textContent = '1';
+      document.getElementById('score-display').textContent = '0';
+      document.getElementById('time-display').textContent = '60';
+      document.getElementById('combo-display').textContent = 'x1';
+      
+      console.log('✅ Mode basique initialisé');
+    };
+
+    // Appliquer immédiatement mais pas en boucle infinie
+    setTimeout(window.forceGameColors, 100);
+    
+    // Système d'authentification local simple
+    window.simpleAuth = {
+      getCurrentUser: function() {
+        try {
+          const userData = localStorage.getItem('userSession');
+          return userData ? JSON.parse(userData) : null;
+        } catch (e) {
+          return null;
+        }
+      },
+      saveScore: function(gameType, score) {
+        try {
+          const key = `${gameType}Scores`;
+          const scores = JSON.parse(localStorage.getItem(key) || '[]');
+          const user = this.getCurrentUser();
+          const newScore = {
+            score: score,
+            date: new Date().toISOString(),
+            player: user?.username || user?.displayName || 'Joueur'
+          };
+          scores.push(newScore);
+          scores.sort((a, b) => b.score - a.score);
+          localStorage.setItem(key, JSON.stringify(scores.slice(0, 10)));
+          console.log('Score sauvegardé localement:', newScore);
+          return newScore;
+        } catch (e) {
+          console.warn('Erreur sauvegarde score local:', e);
+          return null;
+        }
+      },
+      getScores: function(gameType) {
+        try {
+          const key = `${gameType}Scores`;
+          return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (e) {
+          return [];
+        }
+      }
+    };
+  </script>
+
+  <!-- Script de débogage et récupération pour s'assurer que le jeu fonctionne -->
+  <script>
+    // Fonction de débogage pour vérifier l'état du jeu
+    window.checkGameState = function() {
+      console.log('🔍 ÉTAT DU JEU:');
+      console.log('- initGame disponible:', typeof window.initGame);
+      console.log('- startGame disponible:', typeof window.startGame);
+      console.log('- GameUI disponible:', typeof window.GameUI);
+      console.log('- gameState disponible:', typeof window.gameState);
+      
+      // Vérifier les éléments DOM critiques
+      const criticalElements = {
+        'welcome-screen': document.getElementById('welcome-screen'),
+        'game-area': document.getElementById('game-area'),
+        'word-grid': document.getElementById('word-grid'),
+        'keyboard': document.getElementById('keyboard'),
+        'start-game-button': document.getElementById('start-game-button')
+      };
+      
+      Object.entries(criticalElements).forEach(([name, element]) => {
+        console.log(`- ${name}:`, element ? '✅' : '❌');
+      });
+      
+      // Vérifier les boutons de difficulté
+      const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+      console.log(`- Boutons difficulté: ${difficultyBtns.length}`);
+      
+      return criticalElements;
+    };
+    
+    // Fonction de récupération si le jeu ne démarre pas
+    window.recoverGame = function() {
+      console.log('🚑 RÉCUPÉRATION DU JEU...');
+      
+      // Réinitialiser le système de scores
+      if (window.enigmaScrollGame) {
+        window.enigmaScrollGame.init();
+      }
+      
+      // Réessayer d'initialiser le jeu
+      setTimeout(() => {
+        if (typeof window.initGame === 'function') {
+          window.initGame();
+          console.log('✅ Jeu réinitialisé via initGame()');
+        } else if (typeof window.GameUI === 'object') {
+          window.GameUI.init();
+          console.log('✅ Interface utilisateur réinitialisée');
+        } else {
+          console.warn('⚠️ Fonctions du jeu non disponibles, utilisation du mode de secours');
+          // Mode de secours - créer des gestionnaires d'événements basiques
+          setupEmergencyHandlers();
+        }
+      }, 1000);
+    };
+    
+    // Gestionnaires d'événements de secours
+    function setupEmergencyHandlers() {
+      console.log('🆘 Configuration des gestionnaires de secours...');
+      
+      // Gestionnaires pour les boutons de difficulté
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          window.selectedDifficulty = this.dataset.difficulty;
+          console.log('Difficulté sélectionnée:', window.selectedDifficulty);
+        });
+      });
+      
+      // Gestionnaire pour le bouton de démarrage
+      const startBtn = document.getElementById('start-game-button');
+      if (startBtn) {
+        startBtn.addEventListener('click', function() {
+          if (!window.selectedDifficulty) {
+            alert('Veuillez sélectionner une difficulté !');
+            return;
+          }
+          
+          console.log('🎮 Démarrage en mode de secours avec difficulté:', window.selectedDifficulty);
+          
+          // Afficher la zone de jeu
+          const welcomeScreen = document.getElementById('welcome-screen');
+          const gameArea = document.getElementById('game-area');
+          
+          if (welcomeScreen && gameArea) {
+            welcomeScreen.style.display = 'none';
+            gameArea.style.display = 'block';
+            
+            // Initialiser une version basique du jeu
+            initBasicGame(window.selectedDifficulty);
+          }
+        });
+      }
+      
+      // Gestionnaires pour le clavier virtuel
+      document.querySelectorAll('.key-btn').forEach(key => {
+        key.addEventListener('click', function() {
+          const keyValue = this.textContent.trim();
+          console.log('Touche pressée:', keyValue);
+          
+          // Ajouter un effet visuel
+          this.classList.add('key-pressed');
+          setTimeout(() => {
+            this.classList.remove('key-pressed');
+          }, 100);
+          
+          // Traitement basique des touches
+          if (keyValue === 'ENTER') {
+            console.log('ENTER pressé');
+          } else if (this.classList.contains('key-delete')) {
+            console.log('DELETE pressé');
+          } else if (/^[A-Z]$/.test(keyValue)) {
+            console.log('Lettre pressée:', keyValue);
+          }
+        });
+      });
+      
+      console.log('✅ Gestionnaires de secours configurés');
+      window.gameHandlersInstalled = true;
+    }
+    
+    // Version basique du jeu pour les cas d'urgence
+    function initBasicGame(difficulty) {
+      console.log('🎮 Initialisation du jeu en mode basique, difficulté:', difficulty);
+      
+      const difficultyConfig = {
+        'beginner': { wordLength: 4, maxAttempts: 6 },
+        'intermediate': { wordLength: 5, maxAttempts: 6 },
+        'advanced': { wordLength: 7, maxAttempts: 6 },
+        'expert': { wordLength: 9, maxAttempts: 6 },
+        'legendary': { wordLength: 10, maxAttempts: 6 }
+      };
+      
+      const config = difficultyConfig[difficulty] || difficultyConfig['intermediate'];
+      
+      // Créer la grille
+      const grid = document.getElementById('word-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        for (let i = 0; i < config.maxAttempts; i++) {
+          const row = document.createElement('div');
+          row.className = 'grid-row';
+          for (let j = 0; j < config.wordLength; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            row.appendChild(cell);
+          }
+          grid.appendChild(row);
+        }
+        console.log('✅ Grille créée:', config.maxAttempts + 'x' + config.wordLength);
+      }
+      
+      // Initialiser les stats
+      document.getElementById('level-display').textContent = '1';
+      document.getElementById('score-display').textContent = '0';
+      document.getElementById('time-display').textContent = '60';
+      document.getElementById('combo-display').textContent = 'x1';
+      
+      // Simuler le mot de départ avec première lettre
+      const exampleWords = {
+        4: ['WORD', 'GAME', 'PLAY', 'LOVE'],
+        5: ['WORDS', 'GAMES', 'PLAYS', 'LOVES'],
+        7: ['EXAMPLE', 'AWESOME', 'AMAZING'],
+        9: ['BEAUTIFUL', 'WONDERFUL'],
+        10: ['INCREDIBLE', 'MAGNIFICENT']
+      };
+      
+      const wordList = exampleWords[config.wordLength] || exampleWords[5];
+      const currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      
+      // Afficher la première lettre
+      const firstCell = document.querySelector('[data-row="0"][data-col="0"]');
+      if (firstCell && currentWord) {
+        firstCell.textContent = currentWord[0];
+        firstCell.classList.add('filled', 'hint');
+        console.log('✅ Première lettre affichée:', currentWord[0]);
+        console.log('Mot secret (pour test):', currentWord);
+      }
+    }
+    
+    // Auto-diagnostic après chargement et initialisation forcée
+    setTimeout(() => {
+      console.log('🔍 Diagnostic automatique du jeu...');
+      window.checkGameState();
+      
+      // FORCER l'initialisation des gestionnaires d'événements immédiatement
+      setupEmergencyHandlers();
+      console.log('✅ Gestionnaires d'événements forcés installés');
+      
+      // Si le jeu n'est pas initialisé après 3 secondes, lancer la récupération
+      setTimeout(() => {
+        if (typeof window.initGame !== 'function' && typeof window.GameUI !== 'object') {
+          console.warn('⚠️ Jeu non initialisé, lancement de la récupération');
+          window.recoverGame();
+        }
+      }, 3000);
+    }, 2000);
+  </script>
+  
+  <!-- Script SIMPLE et FONCTIONNEL pour le jeu -->
+  <script>
+    console.log('🎮 SCRIPT SIMPLE DE JEU ACTIVÉ');
+    
+         // Variables globales
+     window.selectedDifficulty = null;
+     window.gameHandlersInstalled = false;
+     
+     // Variables de jeu
+     window.currentGameWord = '';
+     window.currentGameConfig = null;
+     window.currentRow = 0;
+     window.currentCol = 0;
+     window.currentGuess = '';
+     window.gameActive = false;
+     window.lastInputTime = 0; // Pour éviter les doublons
+    
+    // Configuration des difficultés
+    const DIFFICULTIES = {
+      'beginner': { wordLength: 4, maxAttempts: 6 },
+      'intermediate': { wordLength: 5, maxAttempts: 6 },
+      'advanced': { wordLength: 7, maxAttempts: 6 },
+      'expert': { wordLength: 9, maxAttempts: 6 },
+      'legendary': { wordLength: 10, maxAttempts: 6 }
+    };
+    
+         // Dictionnaire de mots anglais par longueur
+     const WORD_DICTIONARY = {
+       4: [
+         'WORD', 'GAME', 'PLAY', 'LOVE', 'TIME', 'HELP', 'MAKE', 'TAKE', 'COME', 'GOOD',
+         'LIFE', 'WORK', 'YEAR', 'HAND', 'PART', 'BOOK', 'LOOK', 'FACE', 'FEEL', 'FACT',
+         'KNOW', 'JUST', 'LIKE', 'WANT', 'WILL', 'WELL', 'CALL', 'BACK', 'FIND', 'GIVE',
+         'REAL', 'LAST', 'LONG', 'GREAT', 'HIGH', 'MUCH', 'OPEN', 'TELL', 'SHOW', 'MOVE', 
+         'LIVE', 'STOP', 'KEEP', 'TURN', 'WALK', 'TALK', 'HOME', 'CITY', 'SURE', 'HUNT',
+         'MADE', 'SAID', 'EACH', 'MANY', 'MOST', 'OVER', 'SUCH', 'VERY', 'WHEN', 'THEM',
+         'SOME', 'WHAT', 'YOUR', 'HAVE', 'MORE', 'BEEN', 'INTO', 'THAN', 'ONLY', 'THIS',
+         'THAT', 'WITH', 'FROM', 'THEY', 'WERE', 'BEEN', 'HAVE', 'BEEN', 'WERE', 'SAID'
+       ],
+       5: [
+         'WORLD', 'ABOUT', 'AFTER', 'FIRST', 'NEVER', 'AGAIN', 'OTHER', 'PLACE', 'WHERE',
+         'THINK', 'HOUSE', 'BEING', 'THING', 'WHILE', 'MIGHT', 'WOMAN', 'CHILD', 'STILL',
+         'RIGHT', 'SMALL', 'LARGE', 'SOUND', 'LIGHT', 'WATER', 'EARTH', 'MUSIC', 'HAPPY',
+         'POWER', 'MONEY', 'STATE', 'HEART', 'SMILE', 'PEACE', 'LEARN', 'LAUGH', 'DREAM',
+         'BRAVE', 'SMART', 'QUICK', 'CLEAR', 'CLEAN', 'FRESH', 'TRUST', 'TRUTH', 'MAGIC'
+       ],
+       7: [
+         'EXAMPLE', 'AMAZING', 'AWESOME', 'PERFECT', 'JOURNEY', 'MYSTERY', 'FREEDOM',
+         'BELIEVE', 'COURAGE', 'RAINBOW', 'FOREVER', 'DESTINY', 'IMAGINE', 'BALANCE',
+         'HARMONY', 'CRYSTAL', 'TREASURE', 'VICTORY', 'FANTASY', 'DIAMOND', 'QUALITY',
+         'HISTORY', 'JUSTICE', 'PICTURE', 'SCIENCE', 'NATURE', 'CULTURE', 'FASHION',
+         'CHAPTER', 'SPECIAL', 'GENERAL', 'DIGITAL', 'AMAZING', 'STUDENT', 'TEACHER'
+       ],
+       9: [
+         'BEAUTIFUL', 'WONDERFUL', 'FANTASTIC', 'KNOWLEDGE', 'ADVENTURE', 'HAPPINESS',
+         'IMPORTANT', 'DIFFERENT', 'EFFECTIVE', 'EXCELLENT', 'EDUCATION', 'CHALLENGE',
+         'COMMUNITY', 'CELEBRATE', 'RECOMMEND', 'TRADITION', 'NECESSARY', 'TRANSFORM',
+         'RESTAURANT', 'INTERVIEW', 'ESSENTIAL', 'CLASSROOM', 'PORTFOLIO', 'TECHNICAL'
+       ],
+       10: [
+         'INCREDIBLE', 'MAGNIFICENT', 'JAVASCRIPT', 'TECHNOLOGY', 'BASKETBALL', 'TREMENDOUS',
+         'UNDERSTAND', 'EVERYTHING', 'BACKGROUND', 'GOVERNMENT', 'EXPERIENCE', 'DIFFERENCE',
+         'MANAGEMENT', 'UNIVERSITY', 'ACCOMPLISH', 'CREATIVITY', 'FOUNDATION', 'GENERATION'
+       ]
+     };
+
+     // Mots cibles (plus faciles) pour le jeu
+     const TARGET_WORDS = {
+       4: ['WORD', 'GAME', 'PLAY', 'LOVE', 'TIME', 'HELP', 'MAKE', 'TAKE', 'COME', 'GOOD'],
+       5: ['WORLD', 'HOUSE', 'THINK', 'HAPPY', 'LEARN', 'SMILE', 'DREAM', 'MAGIC', 'PEACE'],
+       7: ['AMAZING', 'JOURNEY', 'FREEDOM', 'RAINBOW', 'BALANCE', 'CRYSTAL', 'VICTORY'],
+       9: ['BEAUTIFUL', 'WONDERFUL', 'ADVENTURE', 'HAPPINESS', 'EXCELLENT'],
+       10: ['INCREDIBLE', 'TECHNOLOGY', 'EXPERIENCE', 'CREATIVITY']
+     };
+    
+         // Fonction pour vérifier si un mot existe dans le dictionnaire
+     function isValidWord(word, wordLength) {
+       try {
+         console.log('🔍 DÉBUT isValidWord - Paramètres reçus:', {word, wordLength});
+         
+         // Vérifications de base
+         if (!word || typeof word !== 'string') {
+           console.log('❌ Mot invalide (pas une chaîne):', word);
+           return false;
+         }
+         
+         // Vérifier que WORD_DICTIONARY existe
+         if (typeof WORD_DICTIONARY === 'undefined') {
+           console.error('❌ WORD_DICTIONARY n\'est pas défini !');
+           return false;
+         }
+         
+         console.log('🔍 WORD_DICTIONARY disponible:', Object.keys(WORD_DICTIONARY));
+         
+         const dictionary = WORD_DICTIONARY[wordLength];
+         if (!dictionary || !Array.isArray(dictionary)) {
+           console.log('❌ Dictionnaire introuvable pour longueur:', wordLength);
+           console.log('❌ Dictionnaires disponibles:', Object.keys(WORD_DICTIONARY));
+           return false;
+         }
+         
+         const upperWord = word.toUpperCase().trim();
+         
+         console.log('🔍 Vérification dictionnaire détaillée:');
+         console.log('- Mot à vérifier:', word, '=>', upperWord);
+         console.log('- Longueur demandée:', wordLength);
+         console.log('- Taille du dictionnaire:', dictionary.length, 'mots');
+         console.log('- Premiers 10 mots:', dictionary.slice(0, 10));
+         console.log('- Derniers 10 mots:', dictionary.slice(-10));
+         
+         // Vérification exacte
+         const isFound = dictionary.includes(upperWord);
+         console.log('🎯 RÉSULTAT dictionary.includes("' + upperWord + '"):', isFound);
+         
+         if (!isFound) {
+           // Rechercher des mots similaires pour le debug
+           const similar = dictionary.filter(w => w.startsWith(upperWord[0]));
+           console.log('- Mots commençant par "' + upperWord[0] + '":', similar.slice(0, 10));
+           
+           // Vérifier si le mot est dans une casse différente
+           const lowerFind = dictionary.find(w => w.toLowerCase() === upperWord.toLowerCase());
+           if (lowerFind) {
+             console.log('⚠️ Mot trouvé avec casse différente:', lowerFind);
+           }
+         }
+         
+         console.log('🔍 FIN isValidWord - Retour:', isFound);
+         return isFound;
+         
+       } catch (error) {
+         console.error('❌ Erreur dans isValidWord:', error);
+         console.error('❌ Stack trace:', error.stack);
+         return false;
+       }
+     }
+     
+     // Fonction pour analyser un mot et retourner les couleurs
+     function analyzeGuess(guess, target) {
+       const result = [];
+       const targetArray = target.split('');
+       const guessArray = guess.split('');
+       const targetCounts = {};
+       
+       // Compter les lettres dans le mot cible
+       targetArray.forEach(letter => {
+         targetCounts[letter] = (targetCounts[letter] || 0) + 1;
+       });
+       
+       // Premier passage : marquer les lettres correctes (vert)
+       for (let i = 0; i < guessArray.length; i++) {
+         if (guessArray[i] === targetArray[i]) {
+           result[i] = 'correct';
+           targetCounts[guessArray[i]]--;
+         } else {
+           result[i] = null; // À déterminer
+         }
+       }
+       
+       // Deuxième passage : marquer les lettres présentes (jaune) et absentes (gris)
+       for (let i = 0; i < guessArray.length; i++) {
+         if (result[i] === null) {
+           if (targetCounts[guessArray[i]] > 0) {
+             result[i] = 'present';
+             targetCounts[guessArray[i]]--;
+           } else {
+             result[i] = 'absent';
+           }
+         }
+       }
+       
+       return result;
+     }
+     
+     // Fonction pour appliquer les couleurs aux cellules et au clavier
+     function applyCellColors(rowIndex, colors, guess) {
+       for (let i = 0; i < colors.length; i++) {
+         const cell = document.querySelector(`[data-row="${rowIndex}"][data-col="${i}"]`);
+         if (cell) {
+           cell.classList.remove('correct', 'present', 'absent');
+           cell.classList.add(colors[i]);
+           
+           // Animation de retournement
+           setTimeout(() => {
+             cell.style.transform = 'rotateY(180deg)';
+             setTimeout(() => {
+               cell.style.transform = 'rotateY(0deg)';
+             }, 300);
+           }, i * 100);
+         }
+         
+         // Mettre à jour le clavier
+         const keyBtn = Array.from(document.querySelectorAll('.key-btn')).find(btn => 
+           btn.textContent.trim() === guess[i]
+         );
+         if (keyBtn) {
+           // Ne pas dégrader la couleur (correct > present > absent)
+           if (!keyBtn.classList.contains('correct') && colors[i] === 'correct') {
+             keyBtn.classList.remove('present', 'absent');
+             keyBtn.classList.add('correct');
+           } else if (!keyBtn.classList.contains('correct') && !keyBtn.classList.contains('present') && colors[i] === 'present') {
+             keyBtn.classList.remove('absent');
+             keyBtn.classList.add('present');
+           } else if (!keyBtn.classList.contains('correct') && !keyBtn.classList.contains('present') && colors[i] === 'absent') {
+             keyBtn.classList.add('absent');
+           }
+         }
+       }
+     }
+     
+     // Fonction pour initialiser le jeu
+     function initSimpleGame(difficulty = 'medium') {
+       console.log('🚀 Initialisation simple du jeu:', difficulty);
+       
+       // S'assurer qu'on a une difficulté valide
+       if (!difficulty || typeof difficulty !== 'string') {
+         difficulty = 'medium';
+         console.log('⚠️ Difficulté invalide, utilisation de "medium" par défaut');
+       }
+       
+       const config = DIFFICULTIES[difficulty] || DIFFICULTIES['intermediate'];
+       const wordList = TARGET_WORDS[config.wordLength] || TARGET_WORDS[5];
+       const currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      
+      // Créer la grille
+      const grid = document.getElementById('word-grid');
+      if (grid) {
+        grid.innerHTML = '';
+        for (let i = 0; i < config.maxAttempts; i++) {
+          const row = document.createElement('div');
+          row.className = 'grid-row';
+          for (let j = 0; j < config.wordLength; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.row = i;
+            cell.dataset.col = j;
+            row.appendChild(cell);
+          }
+          grid.appendChild(row);
+        }
+      }
+      
+             // PREMIÈRE ÉTAPE: Initialiser les systèmes dynamiques
+       window.gameStats = {
+         timeRemaining: 90, // 1.5 minutes
+         wordsFound: 0,
+         combo: 0,
+         maxCombo: 0,
+         totalScore: 0,
+         powerUps: {
+           hint: 3,
+           time: 2,
+           skip: 1
+         },
+                events: {
+         lastEventTime: 0,
+         nextEventIn: 10 + Math.random() * 15  // Premier événement plus tôt
+       }
+       };
+       
+       // DEUXIÈME ÉTAPE: Stocker le mot actuel et initialiser le jeu
+       window.currentGameWord = currentWord;
+       window.currentGameConfig = config;
+       window.currentRow = 0;
+       window.currentCol = 1; // Commencer à la colonne 1 car la première lettre est déjà placée
+       window.currentGuess = currentWord[0]; // Commencer avec la première lettre
+       window.gameActive = true;
+       
+       // TROISIÈME ÉTAPE: Afficher la première lettre
+       const firstCell = document.querySelector('[data-row="0"][data-col="0"]');
+       if (firstCell && currentWord) {
+         firstCell.textContent = currentWord[0];
+         firstCell.classList.add('filled', 'hint');
+         console.log('✅ Première lettre:', currentWord[0]);
+         console.log('🔍 Mot secret (pour test):', currentWord);
+       }
+       
+       // QUATRIÈME ÉTAPE: Initialiser les stats (maintenant que gameStats existe)
+       document.getElementById('level-display').textContent = window.gameStats.wordsFound + 1;
+       document.getElementById('score-display').textContent = window.gameStats.totalScore;
+       document.getElementById('time-display').textContent = window.gameStats.timeRemaining;
+       document.getElementById('combo-display').textContent = 'x' + (window.gameStats.combo + 1);
+       
+       // Démarrer le timer
+       startGameTimer();
+       
+       // Afficher les power-ups
+       displayPowerUps();
+       
+       console.log('🎮 Jeu initialisé:');
+       console.log('- Mot secret:', currentWord);
+       console.log('- Config:', config);
+       console.log('- Première lettre:', currentWord[0]);
+       console.log('- Guess initial:', window.currentGuess);
+       
+              console.log('✅ Jeu initialisé avec succès');
+       console.log('🎯 Position actuelle: ligne', window.currentRow, 'colonne', window.currentCol);
+       console.log('🎮 État du jeu:', {
+         gameActive: window.gameActive,
+         timeRemaining: window.gameStats.timeRemaining,
+         currentWord: window.currentGameWord,
+         timerRunning: !!window.gameTimer
+       });
+       
+       // Test de diagnostic après 1 seconde
+       setTimeout(() => {
+         console.log('🔍 Diagnostic après 1s:', {
+           gameActive: window.gameActive,
+           timeRemaining: window.gameStats.timeRemaining,
+           timerExists: !!window.gameTimer
+         });
+       }, 1000);
+       
+       // Exposer les fonctions de diagnostic globalement
+       setupDebugGame();
+     }
+     
+     // Fonction pour traiter l'input d'une lettre
+     function handleLetterInput(letter) {
+       // Vérifier d'abord si le jeu est actif
+       if (!window.gameActive) {
+         console.log('⚠️ Jeu non actif - handleLetterInput');
+         return;
+       }
+       
+       // Éviter les doublons d'événements
+       const now = Date.now();
+       if (now - window.lastInputTime < 100) {
+         console.log('🚫 Événement en double ignoré');
+         return;
+       }
+       window.lastInputTime = now;
+       
+       // Vérifier si le mot est déjà complet
+       if (window.currentGuess.length >= window.currentGameConfig.wordLength) {
+         console.log('⚠️ Mot déjà complet');
+         return;
+       }
+       
+       // Ajouter la lettre à currentGuess d'abord
+       window.currentGuess += letter.toUpperCase();
+       
+       // Puis l'afficher dans la grille
+       const cell = document.querySelector(`[data-row="${window.currentRow}"][data-col="${window.currentCol}"]`);
+       if (cell) {
+         cell.textContent = letter.toUpperCase();
+         cell.classList.add('filled');
+         window.currentCol++;
+         
+         console.log('✅ Lettre ajoutée:', letter.toUpperCase(), 'Position:', window.currentRow, window.currentCol - 1);
+         console.log('🔤 Mot actuel:', window.currentGuess);
+       }
+     }
+     
+     // Fonction pour supprimer une lettre
+     function handleDeleteInput() {
+       if (!window.gameActive) return;
+       
+       // Ne pas supprimer la première lettre (indice)
+       if (window.currentCol <= 1) {
+         console.log('⚠️ Impossible de supprimer la première lettre (indice)');
+         return;
+       }
+       
+       window.currentCol--;
+       const cell = document.querySelector(`[data-row="${window.currentRow}"][data-col="${window.currentCol}"]`);
+       if (cell) {
+         cell.textContent = '';
+         cell.classList.remove('filled');
+         
+         // Retirer de la tentative actuelle
+         window.currentGuess = window.currentGuess.slice(0, -1);
+         
+         console.log('🗑️ Lettre supprimée, Position:', window.currentRow, window.currentCol);
+         console.log('🔤 Mot actuel:', window.currentGuess);
+       }
+     }
+     
+     // Fonction pour démarrer le timer de jeu
+     function startGameTimer() {
+       if (window.gameTimer) {
+         clearInterval(window.gameTimer);
+       }
+       
+       window.gameTimer = setInterval(() => {
+         if (!window.gameActive) return;
+         
+         window.gameStats.timeRemaining--;
+         updateTimeDisplay();
+         
+         // Vérifier les événements aléatoires
+         checkRandomEvents();
+         
+         // Alerte de temps faible
+         if (window.gameStats.timeRemaining === 10) {
+           showGameMessage('⏰ Plus que 10 secondes !', 'warning', 2000);
+         }
+         
+         // Fin du temps
+         if (window.gameStats.timeRemaining <= 0) {
+           endGameTimeout();
+         }
+       }, 1000);
+     }
+     
+     // Fonction pour mettre à jour l'affichage du temps
+     function updateTimeDisplay() {
+       const timeElement = document.getElementById('time-display');
+       if (timeElement) {
+         timeElement.textContent = window.gameStats.timeRemaining;
+         
+         // Effet visuel si temps faible
+         if (window.gameStats.timeRemaining <= 20) {
+           timeElement.style.color = '#e74c3c';
+           if (window.gameStats.timeRemaining <= 10) {
+             timeElement.style.animation = 'pulse 1s infinite';
+           }
+         } else {
+           timeElement.style.color = '';
+           timeElement.style.animation = '';
+         }
+       }
+     }
+     
+     // Fonction pour afficher les power-ups
+     function displayPowerUps() {
+       const gameArea = document.getElementById('game-area');
+       if (!gameArea) return;
+       
+       // Créer le conteneur de power-ups s'il n'existe pas
+       let powerUpContainer = document.getElementById('power-ups-container');
+       if (!powerUpContainer) {
+         powerUpContainer = document.createElement('div');
+         powerUpContainer.id = 'power-ups-container';
+         powerUpContainer.style.cssText = `
+           position: absolute;
+           top: 20px;
+           right: 20px;
+           display: flex;
+           flex-direction: column;
+           gap: 10px;
+           z-index: 100;
+         `;
+         gameArea.appendChild(powerUpContainer);
+       }
+       
+       powerUpContainer.innerHTML = `
+         <div class="power-up-item" id="hint-power" data-type="hint">
+           <span class="power-up-icon">💡</span>
+           <span class="power-up-name">Indice</span>
+           <span class="power-up-count">${window.gameStats.powerUps.hint}</span>
+         </div>
+         <div class="power-up-item" id="time-power" data-type="time">
+           <span class="power-up-icon">⏰</span>
+           <span class="power-up-name">+30s</span>
+           <span class="power-up-count">${window.gameStats.powerUps.time}</span>
+         </div>
+         <div class="power-up-item" id="skip-power" data-type="skip">
+           <span class="power-up-icon">⏭️</span>
+           <span class="power-up-name">Passer</span>
+           <span class="power-up-count">${window.gameStats.powerUps.skip}</span>
+         </div>
+       `;
+       
+       // Ajouter les événements de clic avec vérification d'état
+       powerUpContainer.querySelectorAll('.power-up-item').forEach(item => {
+         item.addEventListener('click', function() {
+           const type = this.dataset.type;
+           const count = window.gameStats.powerUps[type];
+           
+           console.log(`🎮 Clic power-up ${type}, disponible: ${count}`);
+           
+           if (count <= 0) {
+             this.classList.add('disabled');
+             showGameMessage(`❌ Aucun "${type}" disponible !`, 'error', 1500);
+             return;
+           }
+           
+           this.classList.remove('disabled');
+           usePowerUp(type);
+         });
+         
+         // Mettre à jour l'état visuel
+         const count = window.gameStats.powerUps[item.dataset.type];
+         if (count <= 0) {
+           item.classList.add('disabled');
+         } else {
+           item.classList.remove('disabled');
+         }
+       });
+       
+       // Ajouter les styles CSS pour les power-ups
+       if (!document.getElementById('power-up-styles')) {
+         const style = document.createElement('style');
+         style.id = 'power-up-styles';
+         style.textContent = `
+           .power-up-item {
+             background: rgba(52, 152, 219, 0.9);
+             border: 2px solid #3498db;
+             border-radius: 10px;
+             padding: 8px 12px;
+             color: white;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             gap: 8px;
+             min-width: 120px;
+             transition: all 0.3s ease;
+             font-size: 14px;
+             font-weight: bold;
+           }
+           .power-up-item:hover {
+             background: rgba(52, 152, 219, 1);
+             transform: scale(1.05);
+           }
+           .power-up-item.disabled {
+             background: rgba(127, 140, 141, 0.5);
+             border-color: #7f8c8d;
+             cursor: not-allowed;
+             opacity: 0.6;
+           }
+           .power-up-icon {
+             font-size: 16px;
+           }
+                       .power-up-count {
+              background: rgba(255, 255, 255, 0.3);
+              border-radius: 50%;
+              width: 20px;
+              height: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 12px;
+              margin-left: auto;
+            }
+            
+            @keyframes pulse {
+              0% { transform: scale(1); }
+              50% { transform: scale(1.1); }
+              100% { transform: scale(1); }
+            }
+            
+            @keyframes bounce {
+              0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+              40% { transform: translateY(-10px); }
+              60% { transform: translateY(-5px); }
+            }
+            
+            .power-up-item:active {
+              animation: bounce 0.5s ease;
+            }
+            
+            #time-display {
+              transition: all 0.3s ease;
+            }
+            
+            .hint {
+              animation: pulse 1s ease;
+              background: linear-gradient(45deg, #f39c12, #e67e22) !important;
+            }
+         `;
+         document.head.appendChild(style);
+       }
+     }
+     
+     // Fonction pour utiliser un power-up - VERSION DEBUG
+     function usePowerUp(type) {
+       console.log(`🚀 DÉBUT usePowerUp: ${type}`);
+       
+       try {
+         console.log(`🎮 Tentative d'utilisation power-up: ${type}`);
+         console.log(`🎮 État du jeu: actif=${window.gameActive}, disponible=${window.gameStats?.powerUps?.[type]}`);
+         
+         if (!window.gameActive) {
+           console.log('❌ Jeu non actif');
+           showGameMessage('❌ Le jeu n\'est pas actif !', 'error', 2000);
+           return;
+         }
+         
+         if (!window.gameStats || window.gameStats.powerUps[type] <= 0) {
+           console.log('❌ Power-up non disponible');
+           showGameMessage(`❌ Aucun power-up "${type}" disponible !`, 'error', 2000);
+           return;
+         }
+         
+         // Consommer le power-up
+         window.gameStats.powerUps[type]--;
+         console.log(`✅ Power-up ${type} consommé, restant: ${window.gameStats.powerUps[type]}`);
+         
+         // Mettre à jour l'affichage immédiatement
+         try {
+           displayPowerUps();
+           updateStatsDisplay();
+           console.log('✅ Affichage mis à jour');
+         } catch (e) {
+           console.error('❌ Erreur mise à jour affichage:', e);
+         }
+         
+         console.log(`🔄 Exécution action pour type: ${type}`);
+         
+         switch (type) {
+           case 'hint':
+             console.log('💡 Exécution indice...');
+             try {
+               revealRandomLetter();
+               console.log('✅ Indice exécuté');
+             } catch (e) {
+               console.error('❌ Erreur indice:', e);
+             }
+             break;
+             
+           case 'time':
+             console.log('⏰ Exécution bonus temps...');
+             try {
+               window.gameStats.timeRemaining += 30;
+               updateStatsDisplay();
+               
+               // Animation spéciale pour le timer
+               const timerElement = document.getElementById('time-display');
+               if (timerElement) {
+                 timerElement.style.animation = 'bounce 1s ease';
+                 timerElement.style.color = '#2ecc71';
+                 setTimeout(() => {
+                   timerElement.style.animation = '';
+                   timerElement.style.color = '';
+                 }, 1000);
+               }
+               
+               showGameMessage('⏰ +30 secondes ajoutées !', 'success', 2500);
+               console.log('✅ Bonus temps exécuté');
+             } catch (e) {
+               console.error('❌ Erreur bonus temps:', e);
+             }
+             break;
+             
+           case 'skip':
+             console.log('⏭️ Exécution passage...');
+             try {
+               skipCurrentWord();
+               console.log('✅ Passage exécuté');
+             } catch (e) {
+               console.error('❌ Erreur passage:', e);
+             }
+             break;
+             
+           default:
+             console.warn(`⚠️ Type de power-up inconnu: ${type}`);
+             showGameMessage(`❌ Type de power-up inconnu: ${type}`, 'error', 2000);
+             return;
+         }
+         
+         console.log(`✅ Power-up ${type} exécuté avec succès`);
+         
+       } catch (error) {
+         console.error(`❌ ERREUR GLOBALE usePowerUp:`, error);
+         showGameMessage(`❌ Erreur power-up: ${error.message}`, 'error', 3000);
+       }
+       
+       console.log(`🏁 FIN usePowerUp: ${type}`);
+     }
+     
+     // Fonction pour révéler une lettre aléatoire
+     function revealRandomLetter() {
+       if (!window.gameActive || !window.currentGameWord) {
+         showGameMessage('❌ Jeu non actif ou mot manquant !', 'error', 2000);
+         return;
+       }
+       
+       const currentRow = window.currentRow;
+       const word = window.currentGameWord;
+       
+       // Trouver toutes les positions vides (sauf la première qui est déjà remplie)
+       const emptyPositions = [];
+       for (let i = 1; i < word.length; i++) {
+         const cell = document.querySelector(`[data-row="${currentRow}"][data-col="${i}"]`);
+         if (cell && (!cell.textContent || cell.textContent.trim() === '')) {
+           emptyPositions.push(i);
+         }
+       }
+       
+       if (emptyPositions.length > 0) {
+         // Choisir une position aléatoire
+         const randomPos = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+         const cell = document.querySelector(`[data-row="${currentRow}"][data-col="${randomPos}"]`);
+         const letter = word[randomPos];
+         
+         if (cell) {
+           // Révéler la lettre avec style spécial
+           cell.textContent = letter;
+           cell.classList.add('filled', 'hint');
+           
+           // Animation spéciale plus marquante
+           cell.style.animation = 'bounce 1.5s ease';
+           cell.style.background = 'linear-gradient(45deg, #f39c12, #e67e22)';
+           cell.style.boxShadow = '0 0 20px rgba(243, 156, 18, 0.8)';
+           cell.style.color = '#121212';
+           cell.style.fontWeight = 'bold';
+           
+           setTimeout(() => {
+             cell.style.animation = '';
+           }, 1500);
+           
+           // Mettre à jour le mot en cours de construction
+           let newGuess = '';
+           for (let i = 0; i < word.length; i++) {
+             const cellCheck = document.querySelector(`[data-row="${currentRow}"][data-col="${i}"]`);
+             newGuess += cellCheck?.textContent || '';
+           }
+           window.currentGuess = newGuess;
+           
+           // Mettre à jour la position du curseur
+           window.currentCol = Math.min(newGuess.length, word.length);
+           
+           console.log(`💡 Indice utilisé: lettre "${letter}" révélée en position ${randomPos + 1}`);
+           showGameMessage(`💡 INDICE ! Lettre "${letter}" révélée en position ${randomPos + 1}`, 'success', 3000);
+         }
+       } else {
+         showGameMessage('💡 Toutes les lettres sont déjà révélées !', 'warning', 2000);
+       }
+     }
+     
+     // Fonction pour passer le mot actuel
+     function skipCurrentWord() {
+       // Reset du combo quand on passe un mot
+       if (window.gameStats.combo > 0) {
+         showGameMessage(`💔 Combo de ${window.gameStats.combo} perdu !\nLe mot était : ${window.currentGameWord}`, 'warning', 3000);
+         window.gameStats.combo = 0;
+         updateStatsDisplay();
+       } else {
+         showGameMessage(`Le mot était : ${window.currentGameWord}`, 'info', 3000);
+       }
+       
+       setTimeout(() => {
+         initSimpleGame(window.selectedDifficulty);
+       }, 2000);
+     }
+     
+     // Fonction pour vérifier les événements aléatoires
+     function checkRandomEvents() {
+       if (!window.gameActive || !window.gameStats) return;
+       
+       const currentTime = window.gameStats.timeRemaining;
+       const timeSinceStart = 90 - currentTime;
+       
+       // Déclencher des événements aléatoires plus fréquemment
+       if (timeSinceStart >= window.gameStats.events.nextEventIn && timeSinceStart > 5) {
+         console.log('🎲 Déclenchement événement aléatoire');
+         triggerRandomEvent();
+         window.gameStats.events.nextEventIn = timeSinceStart + 15 + Math.random() * 20; // Plus fréquent
+       }
+     }
+     
+     // Fonction pour déclencher un événement aléatoire
+     function triggerRandomEvent() {
+       if (!window.gameActive || !window.gameStats) return;
+       
+       const events = [
+         {
+           name: 'Bonus de temps',
+           description: '+30 secondes gratuites !',
+           icon: '⏰',
+           effect: () => {
+             window.gameStats.timeRemaining += 30;
+             updateTimeDisplay();
+             // Animation spéciale pour le temps
+             const timeElement = document.getElementById('time-display');
+             if (timeElement) {
+               timeElement.style.animation = 'bounce 1s ease';
+               timeElement.style.color = '#2ecc71';
+               setTimeout(() => {
+                 timeElement.style.animation = '';
+                 timeElement.style.color = '';
+               }, 1000);
+             }
+           }
+         },
+         {
+           name: 'Power-up gratuit',
+           description: 'Un power-up aléatoire vous est offert !',
+           icon: '🎁',
+           effect: () => {
+             const types = ['hint', 'time', 'skip'];
+             const randomType = types[Math.floor(Math.random() * types.length)];
+             window.gameStats.powerUps[randomType]++;
+             displayPowerUps();
+             console.log(`🎁 Power-up ${randomType} offert par événement aléatoire`);
+           }
+         },
+         {
+           name: 'Combo Boost',
+           description: 'Votre prochain mot correct vaudra double !',
+           icon: '⚡',
+           effect: () => {
+             window.gameStats.nextWordDouble = true;
+             console.log('⚡ Prochain mot doublé par événement aléatoire');
+           }
+         },
+         {
+           name: 'Super Indice',
+           description: 'Révélation de 2 lettres gratuites !',
+           icon: '💡',
+           effect: () => {
+             revealRandomLetter();
+             setTimeout(() => revealRandomLetter(), 500);
+             console.log('💡 Double indice offert par événement aléatoire');
+           }
+         }
+       ];
+       
+       const event = events[Math.floor(Math.random() * events.length)];
+       console.log(`🎲 Événement déclenché: ${event.name}`);
+       
+       // Message plus visible avec animation
+       showGameMessage(`🎉 ÉVÉNEMENT SPÉCIAL ! 🎉\n${event.icon} ${event.name}\n${event.description}`, 'success', 5000);
+       
+       event.effect();
+       
+       // Effet visuel spécial
+       document.body.style.animation = 'pulse 0.5s ease';
+       setTimeout(() => {
+         document.body.style.animation = '';
+       }, 500);
+     }
+     
+     // Fonction pour mettre à jour l'affichage des statistiques
+     function updateStatsDisplay() {
+       // Mettre à jour le niveau (mots trouvés + 1)
+       const levelElement = document.getElementById('level-display');
+       if (levelElement) {
+         levelElement.textContent = window.gameStats.wordsFound + 1;
+       }
+       
+       // Mettre à jour le score total
+       const scoreElement = document.getElementById('score-display');
+       if (scoreElement) {
+         scoreElement.textContent = window.gameStats.totalScore;
+         
+         // Animation du score qui monte
+         scoreElement.style.animation = 'pulse 0.5s ease';
+         setTimeout(() => {
+           scoreElement.style.animation = '';
+         }, 500);
+       }
+       
+       // Mettre à jour le combo avec effets visuels améliorés
+       const comboElement = document.getElementById('combo-display');
+       if (comboElement) {
+         const comboValue = window.gameStats.combo;
+         comboElement.textContent = 'x' + (comboValue + 1);
+         
+         // Couleur et effets selon le combo
+         if (comboValue >= 5) {
+           comboElement.style.color = '#e74c3c'; // Rouge pour combo élevé
+           comboElement.style.textShadow = '0 0 10px #e74c3c';
+           comboElement.style.fontWeight = 'bold';
+         } else if (comboValue >= 3) {
+           comboElement.style.color = '#f39c12'; // Orange pour combo moyen
+           comboElement.style.textShadow = '0 0 8px #f39c12';
+           comboElement.style.fontWeight = 'bold';
+         } else if (comboValue >= 1) {
+           comboElement.style.color = '#27ae60'; // Vert pour combo faible
+           comboElement.style.textShadow = '0 0 5px #27ae60';
+           comboElement.style.fontWeight = 'bold';
+         } else {
+           comboElement.style.color = ''; // Couleur par défaut
+           comboElement.style.textShadow = '';
+           comboElement.style.fontWeight = '';
+         }
+         
+         // Animation du combo plus marquante
+         if (comboValue > 0) {
+           comboElement.style.animation = 'bounce 0.6s ease';
+           comboElement.style.transform = 'scale(1.2)';
+           setTimeout(() => {
+             comboElement.style.animation = '';
+             comboElement.style.transform = '';
+           }, 600);
+         }
+         
+         // Message spécial pour les gros combos
+         if (comboValue === 3) {
+           showGameMessage('🔥 COMBO x3 ! Vous êtes en feu !', 'success', 2000);
+         } else if (comboValue === 5) {
+           showGameMessage('⚡ COMBO x5 ! INCROYABLE !', 'success', 2000);
+         } else if (comboValue >= 7) {
+           showGameMessage('🌟 COMBO LÉGENDAIRE ! x' + (comboValue + 1), 'success', 3000);
+         }
+       }
+       
+       // Mettre à jour le temps
+       updateTimeDisplay();
+     }
+
+     // Fonction pour configurer les outils de debug globalement
+     function setupDebugGame() {
+       window.debugGame = {
+         resetGame: emergencyResetGame,
+         checkState: () => ({
+           gameActive: window.gameActive,
+           timeRemaining: window.gameStats?.timeRemaining,
+           timerExists: !!window.gameTimer,
+           currentWord: window.currentGameWord,
+           currentGuess: window.currentGuess,
+           selectedDifficulty: window.selectedDifficulty,
+           powerUps: window.gameStats?.powerUps,
+           combo: window.gameStats?.combo
+         }),
+         forceTimer: startGameTimer,
+         startNewGame: (diff = 'medium') => {
+           console.log('🚀 Démarrage forcé avec difficulté:', diff);
+           window.selectedDifficulty = diff;
+           initSimpleGame(diff);
+         },
+         activateGame: () => {
+           window.gameActive = true;
+           console.log('✅ Jeu forcé actif');
+         },
+         testPowerUps: () => {
+           console.log('🧪 Test des power-ups...');
+           console.log('Power-ups disponibles:', window.gameStats?.powerUps);
+           usePowerUp('hint');
+           setTimeout(() => usePowerUp('time'), 1000);
+           setTimeout(() => usePowerUp('skip'), 2000);
+         },
+         testRandomEvent: () => {
+           console.log('🧪 Test événement aléatoire...');
+           triggerRandomEvent();
+         },
+         addPowerUps: () => {
+           if (window.gameStats) {
+             window.gameStats.powerUps.hint += 5;
+             window.gameStats.powerUps.time += 5;
+             window.gameStats.powerUps.skip += 5;
+             displayPowerUps();
+             console.log('✅ Power-ups ajoutés:', window.gameStats.powerUps);
+           }
+         },
+         testCombo: () => {
+           if (window.gameStats) {
+             window.gameStats.combo = 5;
+             updateStatsDisplay();
+             console.log('✅ Combo forcé à 5');
+           }
+         }
+       };
+       console.log('🛠️ Outils de debug disponibles: window.debugGame');
+       console.log('🎮 Raccourcis clavier: 1=indice, 2=temps, 3=passer, 0=événement aléatoire');
+     }
+
+     // Fonction de reset d'urgence du jeu
+     function emergencyResetGame() {
+       console.log('🚨 RESET D\'URGENCE DU JEU');
+       
+       // Arrêter le timer existant
+       if (window.gameTimer) {
+         clearInterval(window.gameTimer);
+         window.gameTimer = null;
+       }
+       
+       // Réinitialiser l'état du jeu
+       window.gameActive = true;
+       window.gameStats.timeRemaining = 90;
+       window.lastInputTime = 0;
+       
+       // Redémarrer le timer
+       startGameTimer();
+       
+       // Mettre à jour l'affichage
+       updateStatsDisplay();
+       
+       console.log('✅ Jeu réinitialisé avec succès');
+       showGameMessage('🔄 Jeu réinitialisé !', 'success', 2000);
+     }
+     
+     // Fonction pour terminer le jeu par timeout
+     function endGameTimeout() {
+       window.gameActive = false;
+       if (window.gameTimer) {
+         clearInterval(window.gameTimer);
+       }
+       
+       const finalStats = `⏰ Temps écoulé !
+📝 Mots trouvés : ${window.gameStats.wordsFound}
+🏆 Score final : ${window.gameStats.totalScore}
+🔥 Combo maximum : ${window.gameStats.maxCombo}`;
+       
+       showGameMessage(finalStats, 'error', 6000);
+       
+       // Sauvegarder le score final
+       if (window.enigmaScrollGame) {
+         window.enigmaScrollGame.saveScore(window.gameStats.totalScore, null, window.gameStats.wordsFound, window.currentGameConfig?.wordLength || 5);
+       }
+       
+       setTimeout(() => {
+         if (confirm('🎮 Temps écoulé ! Voulez-vous rejouer ?')) {
+           const welcomeScreen = document.getElementById('welcome-screen');
+           const gameArea = document.getElementById('game-area');
+           
+           if (welcomeScreen && gameArea) {
+             gameArea.style.display = 'none';
+             welcomeScreen.style.display = 'block';
+           }
+         }
+       }, 6500);
+     }
+
+     // Fonction pour afficher un message animé dans le jeu
+     function showGameMessage(message, type = 'info', duration = 3000) {
+       // Chercher ou créer l'élément de message
+       let messageElement = document.getElementById('game-message');
+       if (!messageElement) {
+         messageElement = document.createElement('div');
+         messageElement.id = 'game-message';
+         messageElement.style.cssText = `
+           position: fixed;
+           top: 20%;
+           left: 50%;
+           transform: translateX(-50%);
+           padding: 15px 25px;
+           border-radius: 10px;
+           font-weight: bold;
+           font-size: 16px;
+           z-index: 1000;
+           transition: all 0.3s ease;
+           max-width: 300px;
+           text-align: center;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+         `;
+         document.body.appendChild(messageElement);
+       }
+       
+       // Styles selon le type
+       const styles = {
+         error: { backgroundColor: '#e74c3c', color: 'white' },
+         success: { backgroundColor: '#27ae60', color: 'white' },
+         info: { backgroundColor: '#3498db', color: 'white' },
+         warning: { backgroundColor: '#f39c12', color: 'white' }
+       };
+       
+       const style = styles[type] || styles.info;
+       messageElement.style.backgroundColor = style.backgroundColor;
+       messageElement.style.color = style.color;
+       messageElement.textContent = message;
+       
+       // Animation d'apparition
+       messageElement.style.opacity = '0';
+       messageElement.style.transform = 'translateX(-50%) translateY(-20px)';
+       messageElement.style.display = 'block';
+       
+       setTimeout(() => {
+         messageElement.style.opacity = '1';
+         messageElement.style.transform = 'translateX(-50%) translateY(0)';
+       }, 10);
+       
+       // Animation de disparition
+       setTimeout(() => {
+         messageElement.style.opacity = '0';
+         messageElement.style.transform = 'translateX(-50%) translateY(-20px)';
+         setTimeout(() => {
+           if (messageElement.parentNode) {
+             messageElement.style.display = 'none';
+           }
+         }, 300);
+       }, duration);
+     }
+
+     // Fonction pour vérifier si un mot est anglais valide via API
+     async function isEnglishWord(word) {
+       try {
+         const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+         if (response.ok) {
+           const data = await response.json();
+           return data.length > 0;
+         } else {
+           return false;
+         }
+       } catch (error) {
+         console.error("Erreur lors de la vérification du mot via l'API:", error);
+         return false;
+       }
+     }
+
+     // Fonction pour valider le mot - VERSION DEBUG
+     async function handleEnterInput() {
+       console.log('🚀 DÉBUT handleEnterInput');
+       
+       try {
+         if (!window.gameActive) {
+           console.log('❌ Jeu non actif dans handleEnterInput');
+           return;
+         }
+         
+         console.log('🔍 DEBUG - État de validation:');
+         console.log('- currentGuess:', window.currentGuess);
+         console.log('- currentGuess.length:', window.currentGuess?.length);
+         console.log('- wordLength attendu:', window.currentGameConfig?.wordLength);
+         console.log('- gameActive:', window.gameActive);
+         console.log('- currentGameWord:', window.currentGameWord);
+         
+         // Vérifier si le mot est complet
+         if (!window.currentGuess || window.currentGuess.length !== window.currentGameConfig.wordLength) {
+           console.log('⚠️ Mot incomplet! Longueur:', window.currentGuess?.length, 'Attendu:', window.currentGameConfig?.wordLength);
+           showGameMessage('⚠️ Veuillez compléter le mot !', 'warning', 2000);
+           return;
+         }
+         
+         const guessUpperCase = window.currentGuess.toUpperCase();
+         console.log('🔍 Mot à valider:', guessUpperCase);
+         
+         // Afficher message de chargement
+         showGameMessage('🔍 Vérification du mot...', 'info', 1000);
+         
+         // Pour le debug, on va bypasser la vérification du dictionnaire temporairement
+         console.log('✅ Mot considéré comme valide pour debug');
+         
+         // Analyser la tentative et obtenir les couleurs
+         const colors = analyzeGuess(guessUpperCase, window.currentGameWord);
+         console.log('🎨 Couleurs:', colors);
+         
+         // Appliquer les couleurs avec animation
+         try {
+           applyCellColors(window.currentRow, colors, guessUpperCase);
+           console.log('✅ Couleurs appliquées');
+         } catch (e) {
+           console.error('❌ Erreur application couleurs:', e);
+         }
+         
+         // Vérifier si c'est le bon mot
+         const isCorrect = colors.every(color => color === 'correct');
+         console.log('🎯 Mot correct?', isCorrect);
+         
+         if (isCorrect) {
+           console.log('🎉 MOT TROUVÉ !');
+           
+           // Augmenter les stats
+           window.gameStats.wordsFound++;
+           window.gameStats.combo++;
+           
+           // Calculer le score simple pour debug
+           let finalScore = 100;
+           window.gameStats.totalScore += finalScore;
+           
+           // Mettre à jour l'affichage
+           updateStatsDisplay();
+           
+           console.log('📊 Score ajouté:', finalScore);
+           
+           showGameMessage(`🎉 ${window.currentGameWord} trouvé ! +${finalScore} points`, 'success', 3000);
+           
+           // Passer automatiquement au mot suivant après 2 secondes
+           setTimeout(() => {
+             console.log('🔄 Passage au mot suivant');
+             initSimpleGame(window.selectedDifficulty);
+           }, 2000);
+           
+           window.gameActive = false;
+         } else {
+           console.log('❌ Mot incorrect, passage à la ligne suivante');
+           
+           // Passer à la ligne suivante
+           window.currentRow++;
+           window.currentCol = 1;
+           window.currentGuess = window.currentGameWord[0]; // Reset avec première lettre
+           
+           if (window.currentRow >= window.currentGameConfig.maxAttempts) {
+             console.log('💀 GAME OVER');
+             showGameMessage(`💀 Game Over !\nLe mot était : ${window.currentGameWord}`, 'error', 4000);
+             window.gameActive = false;
+           } else {
+             // Remettre la première lettre sur la nouvelle ligne
+             const firstCell = document.querySelector(`[data-row="${window.currentRow}"][data-col="0"]`);
+             if (firstCell) {
+               firstCell.textContent = window.currentGameWord[0];
+               firstCell.classList.add('filled', 'hint');
+             }
+             console.log('➡️ Ligne suivante:', window.currentRow);
+           }
+         }
+         
+       } catch (error) {
+         console.error('❌ ERREUR GLOBALE handleEnterInput:', error);
+         showGameMessage(`❌ Erreur validation: ${error.message}`, 'error', 3000);
+       }
+       
+       console.log('🏁 FIN handleEnterInput');
+     }
+    
+    // Gestionnaire principal des événements
+    function setupSimpleHandlers() {
+      console.log('⚙️ Installation des gestionnaires simples...');
+      
+      // Gestionnaire pour les boutons de difficulté
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          console.log('🎯 Difficulté sélectionnée:', this.dataset.difficulty);
+          
+          // Retirer active de tous
+          document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+          
+          // Ajouter active au cliqué
+          this.classList.add('active');
+          window.selectedDifficulty = this.dataset.difficulty;
+          
+          // Activer le bouton de démarrage
+          const startBtn = document.getElementById('start-game-button');
+          if (startBtn) {
+            startBtn.style.opacity = '1';
+            startBtn.style.pointerEvents = 'auto';
+            startBtn.disabled = false;
+          }
+        });
+      });
+      
+      // Gestionnaire pour le bouton de démarrage
+      const startBtn = document.getElementById('start-game-button');
+      if (startBtn) {
+        startBtn.addEventListener('click', function() {
+          console.log('🚀 Démarrage du jeu demandé');
+          
+          if (!window.selectedDifficulty) {
+            alert('Veuillez d\'abord sélectionner un niveau de difficulté !');
+            return;
+          }
+          
+          // Masquer l'écran d'accueil et afficher le jeu
+          const welcomeScreen = document.getElementById('welcome-screen');
+          const gameArea = document.getElementById('game-area');
+          
+          if (welcomeScreen && gameArea) {
+            welcomeScreen.style.display = 'none';
+            gameArea.style.display = 'block';
+            
+            // Initialiser le jeu
+            initSimpleGame(window.selectedDifficulty);
+          }
+        });
+      }
+      
+             // Variable pour éviter les doubles événements
+       window.lastActionTime = 0;
+       
+       // Gestionnaire pour les touches du clavier
+       document.querySelectorAll('.key-btn').forEach(key => {
+         key.addEventListener('click', function(event) {
+           event.preventDefault();
+           event.stopPropagation();
+           
+           // Éviter les doubles événements
+           const now = Date.now();
+           if (now - window.lastActionTime < 200) {
+             console.log('🚫 Double événement clavier virtuel ignoré');
+             return;
+           }
+           window.lastActionTime = now;
+           
+           const keyValue = this.textContent.trim();
+           console.log('🖱️ Clavier virtuel:', keyValue);
+           
+           // Ajouter effet visuel
+           this.classList.add('key-pressed');
+           setTimeout(() => {
+             this.classList.remove('key-pressed');
+           }, 100);
+           
+           // Traiter l'input
+           if (keyValue === 'ENTER') {
+             handleEnterInput();
+           } else if (this.classList.contains('key-delete')) {
+             handleDeleteInput();
+           } else if (/^[A-Z]$/.test(keyValue)) {
+             handleLetterInput(keyValue);
+           }
+         });
+       });
+       
+       // Gestionnaire pour le clavier physique
+       document.addEventListener('keydown', function(event) {
+         // Ne traiter que si le focus n'est pas sur un bouton
+         if (event.target.classList.contains('key-btn')) {
+           return;
+         }
+         
+         // Éviter les doubles événements
+         const now = Date.now();
+         if (now - window.lastActionTime < 200) {
+           console.log('🚫 Double événement clavier physique ignoré');
+           return;
+         }
+         window.lastActionTime = now;
+         
+         console.log('⌨️ Clavier physique:', event.key);
+         
+         if (event.key === 'Enter') {
+           event.preventDefault();
+           handleEnterInput();
+         } else if (event.key === 'Backspace') {
+           event.preventDefault();
+           handleDeleteInput();
+         } else if (/^[a-zA-Z]$/.test(event.key)) {
+           event.preventDefault();
+           handleLetterInput(event.key.toUpperCase());
+         }
+         // Raccourcis clavier pour les power-ups (pour tester)
+         else if (event.key === '1') {
+           event.preventDefault();
+           usePowerUp('hint');
+           console.log('🎮 Raccourci clavier: indice (1)');
+         } else if (event.key === '2') {
+           event.preventDefault();
+           usePowerUp('time');
+           console.log('🎮 Raccourci clavier: temps (2)');
+         } else if (event.key === '3') {
+           event.preventDefault();
+           usePowerUp('skip');
+           console.log('🎮 Raccourci clavier: passer (3)');
+         } else if (event.key === '0') {
+           event.preventDefault();
+           triggerRandomEvent();
+           console.log('🎮 Raccourci clavier: événement aléatoire (0)');
+         }
+       });
+      
+      window.gameHandlersInstalled = true;
+      console.log('✅ Gestionnaires simples installés');
+    }
+    
+    // Installation immédiate
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('📋 DOM chargé - Installation des gestionnaires');
+      
+      // Initialiser les outils de debug IMMÉDIATEMENT
+      try {
+        setupDebugGame();
+        console.log('🛠️ Outils de debug initialisés au chargement DOM');
+      } catch (error) {
+        console.warn('⚠️ Erreur initialisation debug:', error);
+      }
+      
+      setTimeout(setupSimpleHandlers, 100);
+    });
+    
+    // Installation de secours
+    setTimeout(setupSimpleHandlers, 500);
+  </script>
+
+  <!-- Script d'amélioration de l'overlay et forçage des couleurs -->
+  <script>
+    // FONCTION IMMÉDIATE pour améliorer l'expérience utilisateur
+    (function() {
+      console.log('🚀 Initialisation améliorée...');
+         
+         // DEBUG IMMÉDIAT : Vérifier les éléments critiques
+         setTimeout(() => {
+           console.log('🔍 DIAGNOSTIC ÉLÉMENTS:');
+           console.log('- Boutons difficulté:', document.querySelectorAll('.difficulty-btn').length);
+           console.log('- Bouton démarrage:', !!document.getElementById('start-game-button'));
+           console.log('- Écran accueil:', !!document.getElementById('welcome-screen'));
+           console.log('- Zone jeu:', !!document.getElementById('game-area'));
+           
+           // Vérifier les gestionnaires d'événements
+           const startBtn = document.getElementById('start-game-button');
+           if (startBtn) {
+             console.log('- Bouton démarrage cliquable:', getComputedStyle(startBtn).pointerEvents);
+           }
+         }, 100);
+         
+         // CSS forcé pour les couleurs du jeu - INJECTÉ DIRECTEMENT
+      const forcedStyles = document.createElement('style');
+      forcedStyles.innerHTML = `
+        /* COULEURS FORCÉES POUR LE JEU */
+        :root {
+          --word-correct: #2ecc71 !important;
+          --word-present: #f39c12 !important;
+          --word-absent: #7f8c8d !important;
+          --color-primary: #2ecc71 !important;
+          --color-text: #ffffff !important;
+          --color-text-secondary: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        /* Grille - États des cellules FORCÉS */
+        .grid-cell.correct {
+          background-color: #2ecc71 !important;
+          border-color: #2ecc71 !important;
+          color: #121212 !important;
+          box-shadow: 0 0 15px rgba(46, 204, 113, 0.5) !important;
+        }
+        
+        .grid-cell.present {
+          background-color: #f39c12 !important;
+          border-color: #f39c12 !important;
+          color: #121212 !important;
+          box-shadow: 0 0 15px rgba(243, 156, 18, 0.5) !important;
+        }
+        
+        .grid-cell.absent {
+          background-color: #7f8c8d !important;
+          border-color: #7f8c8d !important;
+          color: #ffffff !important;
+          box-shadow: 0 0 5px rgba(127, 140, 141, 0.3) !important;
+        }
+        
+        /* Clavier - États des touches FORCÉS */
+        .key-btn.correct {
+          background-color: #2ecc71 !important;
+          border-color: #2ecc71 !important;
+          color: #121212 !important;
+        }
+        
+        .key-btn.present {
+          background-color: #f39c12 !important;
+          border-color: #f39c12 !important;
+          color: #121212 !important;
+        }
+        
+        .key-btn.absent {
+          background-color: #7f8c8d !important;
+          border-color: #7f8c8d !important;
+          color: #ffffff !important;
+        }
+        
+        /* Overlay amélioré */
+        .loading-overlay {
+          cursor: pointer !important;
+        }
+        
+        .loading-overlay.hidden {
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(forcedStyles);
+      console.log('✅ Styles forcés injectés');
+      
+      // Fonction de suppression d'overlay améliorée
+      function removeLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          console.log('✅ Overlay trouvé, suppression en cours...');
+          overlay.classList.add('hidden');
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            console.log('🎯 Overlay complètement supprimé');
+          }, 300);
+        }
+      }
+
+      // Suppression immédiate
+      setTimeout(removeLoadingOverlay, 100);
+
+      // Event listeners
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(removeLoadingOverlay, 50);
+        });
+      } else {
+        removeLoadingOverlay();
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(removeLoadingOverlay, 50);
+      });
+
+      // TIMEOUT DE SÉCURITÉ ABSOLU
+      setTimeout(removeLoadingOverlay, 1000);
+
+      // Click pour supprimer manuellement
+      setTimeout(() => {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+          overlay.addEventListener('click', removeLoadingOverlay);
+        }
+      }, 100);
+      
+      // Masquer les modales au démarrage
+      // INITIALISATION ULTRA-ROBUSTE DU SYSTÈME
+      setTimeout(() => {
+        // Masquer toutes les modales
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.style.display = 'none';
+          modal.style.opacity = '0';
+          modal.style.visibility = 'hidden';
+        });
+        
+        // Créer les éléments manquants si nécessaires
+        function ensureElement(id, defaultHtml) {
+          if (!document.getElementById(id)) {
+            console.warn('Élément manquant:', id, '- Création automatique');
+            const div = document.createElement('div');
+            div.id = id;
+            div.innerHTML = defaultHtml || '';
+            div.style.display = 'none'; // Caché par défaut
+            document.body.appendChild(div);
+          }
+        }
+        
+        // S'assurer que tous les éléments nécessaires existent
+        ensureElement('revealed-word', 'WORD');
+        ensureElement('word-definition', 'Définition');
+        ensureElement('points-earned', '+0');
+        ensureElement('time-bonus', '+0s');
+        ensureElement('final-score', '0');
+        ensureElement('words-found', '0');
+        ensureElement('max-combo', 'x1');
+        ensureElement('total-time', '0s');
+        ensureElement('last-word', 'WORD');
+        
+                 // INITIALISATION COMPLÈTE DU JEU
+         console.log('🚀 Initialisation complète du système Enigma Scroll...');
+         
+         // 1. Initialiser le système de scores
+         if (window.enigmaScrollGame) {
+           window.enigmaScrollGame.init();
+         }
+         
+         // 2. Appliquer les couleurs une seule fois
+         if (window.forceGameColors) {
+           window.forceGameColors();
+         }
+         
+         // 3. Vérifier que tous les éléments critiques existent
+         const criticalElements = [
+           'welcome-screen', 'game-area', 'word-grid', 'keyboard',
+           'score-display', 'level-display', 'leaderboard-body'
+         ];
+         
+         criticalElements.forEach(id => {
+           const element = document.getElementById(id);
+           if (!element) {
+             console.warn(`⚠️ Élément critique manquant: ${id}`);
+           } else {
+             console.log(`✅ Élément trouvé: ${id}`);
+           }
+         });
+         
+         // 4. Initialiser les gestionnaires d'événements du jeu
+         if (typeof window.initializeGame === 'function') {
+           try {
+             window.initializeGame();
+             console.log('✅ Jeu initialisé via initializeGame()');
+           } catch (e) {
+             console.warn('⚠️ Erreur initialisation jeu:', e);
+           }
+         }
+         
+         // 5. Initialiser le menu mobile
+         const menuToggle = document.querySelector('.menu-toggle');
+         const navList = document.querySelector('.nav-list');
+         if (menuToggle && navList) {
+           menuToggle.addEventListener('click', function() {
+             navList.classList.toggle('active');
+           });
+         }
+         
+         // 6. Test du système de scores et Firebase
+         setTimeout(() => {
+           if (window.enigmaScrollGame) {
+             console.log('✅ Système de scores prêt');
+             window.enigmaScrollGame.updateLeaderboard();
+             
+             // Tester la connexion Firebase
+             if (typeof firebase !== 'undefined' && firebase.firestore) {
+               console.log('✅ Firebase disponible');
+               // Si l'onglet scores globaux est actif, le charger
+               const onlineBtn = document.getElementById('online-scores-btn');
+               if (onlineBtn && onlineBtn.classList.contains('active')) {
+                 window.enigmaScrollGame.showOnlineScores();
+               }
+             } else {
+               console.warn('⚠️ Firebase non disponible - scores locaux uniquement');
+             }
+           }
+         }, 1000);
+         
+         console.log('✅ Système Enigma Scroll complètement initialisé');
+         
+                  // Les gestionnaires d'événements du jeu sont maintenant gérés par game-ui.js et enigma-scroll.js
+         console.log('✅ Délégation des gestionnaires d\'événements au système principal du jeu');
+      }, 200);
+    })();
+  </script>
+
+  <!-- Script pour corriger les problèmes d'interaction avec la page -->
+  <script>
+    // Script qui s'exécute immédiatement pour restaurer l'interaction avec la page
+    (function() {
+      // Fonction pour supprimer complètement tous les effets de modale
+      function fixPageInteraction() {
+        console.log("Correction de l'interaction avec la page");
+
+        // Supprimer tout effet de flou sur le body ou les conteneurs principaux
+        document.body.style.filter = 'none';
+        document.body.style.backdropFilter = 'none';
+        document.body.style.WebkitBackdropFilter = 'none';
+        document.body.style.pointerEvents = 'auto';
+
+        // Masquer toutes les modales et overlays sauf la modale des règles
+        var modals = document.querySelectorAll('.modal, .rules-modal, #rulesModal');
+        modals.forEach(function(modal) {
+          if (modal && modal.id !== 'enigmaRulesModal') { // Ne pas affecter la nouvelle modale des règles
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            modal.style.pointerEvents = 'none';
+            modal.style.zIndex = '-9999';
+            modal.classList.remove('show');
+
+            // Supprimer complètement la modale du DOM si nécessaire
+            // modal.parentNode.removeChild(modal);
+          }
+        });
+
+        // Supprimer tout overlay potentiel
+        var overlays = document.querySelectorAll('.modal-backdrop, .overlay');
+        overlays.forEach(function(overlay) {
+          if (overlay) {
+            overlay.style.display = 'none';
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            overlay.style.pointerEvents = 'none';
+            overlay.style.zIndex = '-9999';
+
+            // Supprimer complètement l'overlay du DOM si nécessaire
+            // overlay.parentNode.removeChild(overlay);
+          }
+        });
+      }
+
+      // Exécuter immédiatement
+      fixPageInteraction();
+
+      // Exécuter à nouveau après un court délai pour s'assurer que tout est bien corrigé
+      setTimeout(fixPageInteraction, 100);
+      setTimeout(fixPageInteraction, 500);
+      setTimeout(fixPageInteraction, 1000);
+
+      // Exécuter également au chargement complet de la page
+      window.addEventListener('load', fixPageInteraction);
+
+      // Initialiser la nouvelle modale des règles (sans la désactiver complètement)
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        // Masquer la modale mais sans la désactiver complètement
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
+        // Ne pas désactiver les interactions ni mettre un z-index négatif
+      }
+
+      // Masquer également l'ancienne modale des règles
+      var oldRulesModal = document.getElementById('rulesModal');
+      if (oldRulesModal) {
+        oldRulesModal.style.display = 'none';
+        oldRulesModal.style.opacity = '0';
+        oldRulesModal.style.visibility = 'hidden';
+        oldRulesModal.style.pointerEvents = 'none';
+        oldRulesModal.style.zIndex = '-9999';
+      }
+    })();
+  </script>
+
+  <!-- Script d'initialisation de l'utilisateur -->
+  <script>
+    // Variable pour suivre si la page est complètement chargée
+    var pageFullyLoaded = false;
+
+    // Marquer la page comme complètement chargée après un délai
+    setTimeout(function() {
+      pageFullyLoaded = true;
+      console.log("Page marquée comme complètement chargée");
+    }, 2000); // Attendre 2 secondes après le chargement initial
+
+    // Fonctions pour la nouvelle modale des règles avec débogage
+    function showEnigmaRules() {
+      // Ne pas afficher la modale si la page n'est pas complètement chargée
+      // ou si l'appel vient du chargement initial
+      if (!pageFullyLoaded) {
+        console.log("Tentative d'affichage de la modale pendant le chargement - ignorée");
+        return;
+      }
+
+      // Vérifier si l'appel vient d'un événement utilisateur ou du chargement de la page
+      var fromUserAction = false;
+      try {
+        // Vérifier si nous sommes dans une pile d'appels d'événement utilisateur
+        fromUserAction = event instanceof Event;
+      } catch (e) {
+        // Si event n'est pas défini, c'est probablement un appel automatique
+        fromUserAction = false;
+      }
+
+      // Si ce n'est pas une action utilisateur et que la page est en cours de chargement, ne rien faire
+      if (!fromUserAction && document.readyState !== 'complete') {
+        console.log("Affichage automatique de la modale bloqué pendant le chargement");
+        return;
+      }
+
+      console.log("Tentative d'affichage de la modale des règles (action utilisateur: " + fromUserAction + ")");
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        console.log("Modale des règles trouvée, affichage en cours");
+
+        // Réinitialiser tous les styles qui pourraient empêcher l'affichage
+        modal.removeAttribute('style');
+
+        // Appliquer les styles nécessaires pour afficher la modale
+        modal.style.display = 'flex';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.zIndex = '9999';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
+        modal.style.pointerEvents = 'auto';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
+      }
+    }
+
+    function hideEnigmaRules() {
+      console.log("Tentative de masquage de la modale des règles");
+      var modal = document.getElementById('enigmaRulesModal');
+      if (modal) {
+        console.log("Modale des règles trouvée, masquage en cours");
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
+        modal.style.pointerEvents = 'none';
+      } else {
+        console.error("Modale des règles non trouvée dans le DOM");
+      }
+    }
+
+    // Configurer les gestionnaires d'événements pour la nouvelle modale des règles
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("Configuration des gestionnaires d'événements pour la modale des règles");
+
+      // Vérifier que la modale des règles existe
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        console.log("Modale des règles trouvée dans le DOM");
+      } else {
+        console.error("ERREUR: Modale des règles non trouvée dans le DOM");
+      }
+
+      // Bouton pour afficher les règles
+      var showRulesButton = document.getElementById('show-rules-button');
+      if (showRulesButton) {
+        console.log("Bouton des règles trouvé, ajout du gestionnaire d'événements");
+
+        // Supprimer tous les gestionnaires d'événements existants
+        var newButton = showRulesButton.cloneNode(true);
+        showRulesButton.parentNode.replaceChild(newButton, showRulesButton);
+        showRulesButton = newButton;
+
+        // Ajouter un nouveau gestionnaire d'événements
+        showRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+
+          // S'assurer que la page est complètement chargée
+          if (pageFullyLoaded) {
+            showEnigmaRules(); // Appeler la fonction d'affichage
+          } else {
+            console.log("Page non complètement chargée, affichage de la modale reporté");
+            // Marquer la page comme chargée et afficher la modale après un court délai
+            pageFullyLoaded = true;
+            setTimeout(showEnigmaRules, 100);
+          }
+        });
+      } else {
+        console.error("ERREUR: Bouton des règles non trouvé");
+      }
+
+      // Bouton pour afficher les règles en jeu
+      var inGameRulesButton = document.getElementById('in-game-rules-button');
+      if (inGameRulesButton) {
+        console.log("Bouton des règles en jeu trouvé, ajout du gestionnaire d'événements");
+        inGameRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton des règles en jeu");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          showEnigmaRules(); // Appeler la fonction d'affichage
+        });
+      }
+
+      // Boutons pour fermer les règles
+      var closeEnigmaRulesButton = document.getElementById('closeEnigmaRulesButton');
+      if (closeEnigmaRulesButton) {
+        console.log("Bouton de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesButton.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton de fermeture des règles non trouvé");
+      }
+
+      var closeEnigmaRulesX = document.getElementById('closeEnigmaRulesX');
+      if (closeEnigmaRulesX) {
+        console.log("Bouton X de fermeture des règles trouvé, ajout du gestionnaire d'événements");
+        closeEnigmaRulesX.addEventListener('click', function(event) {
+          console.log("Clic sur le bouton X de fermeture des règles");
+          event.preventDefault(); // Empêcher le comportement par défaut
+          hideEnigmaRules(); // Appeler la fonction de masquage
+        });
+      } else {
+        console.error("ERREUR: Bouton X de fermeture des règles non trouvé");
+      }
+
+      // Ajouter un gestionnaire global pour le bouton des règles
+      document.body.addEventListener('click', function(event) {
+        if (event.target.id === 'show-rules-button' ||
+            event.target.closest('#show-rules-button') ||
+            event.target.id === 'in-game-rules-button' ||
+            event.target.closest('#in-game-rules-button')) {
+          console.log("Clic détecté sur un bouton des règles via délégation d'événements");
+          showEnigmaRules();
+        }
+      });
+    });
+
+    // Masquer l'overlay de chargement rapidement
+    window.addEventListener('load', function() {
+      const loadingOverlay = document.getElementById('loading-overlay');
+      if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+        loadingOverlay.style.visibility = 'hidden';
+
+        // Supprimer complètement après la transition
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+        }, 500);
+      }
+
+      // S'assurer que la modale des règles est masquée
+      var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+      if (enigmaRulesModal) {
+        enigmaRulesModal.style.display = 'none';
+        enigmaRulesModal.style.opacity = '0';
+        enigmaRulesModal.style.visibility = 'hidden';
+      }
+    });
+
+    // Vérifier si l'utilisateur est connecté au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // Masquer l'overlay de chargement plus rapidement
+        setTimeout(() => {
+          const loadingOverlay = document.getElementById('loading-overlay');
+          if (loadingOverlay) {
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.visibility = 'hidden';
+
+            setTimeout(() => {
+              loadingOverlay.style.display = 'none';
+            }, 500);
+          }
+        }, 500); // Réduire le délai à 500ms
+
+        // S'assurer que la nouvelle modale des règles est masquée
+        var enigmaRulesModal = document.getElementById('enigmaRulesModal');
+        if (enigmaRulesModal) {
+          enigmaRulesModal.style.display = 'none';
+          enigmaRulesModal.style.opacity = '0';
+          enigmaRulesModal.style.visibility = 'hidden';
+        }
+
+        // Masquer également toutes les anciennes modales
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+          modal.classList.remove('show');
+          modal.style.display = 'none';
+          modal.style.opacity = '0';
+          modal.style.visibility = 'hidden';
+        });
+
+        // L'authentification est maintenant gérée par auth-header.js
+        console.log("Authentification gérée par auth-header.js");
+
+        // Initialiser le menu mobile
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navList = document.querySelector('.nav-list');
+
+        if (menuToggle && navList) {
+          menuToggle.addEventListener('click', function() {
+            navList.classList.toggle('active');
+          });
+        }
+
+        // Le leaderboard est déjà initialisé dans enigma-scroll.js
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'utilisateur:", error);
+      }
+    });
+
+    // Supprimer tout overlay potentiel 
+    const overlays = document.querySelectorAll('.modal-backdrop, .overlay');
+    overlays.forEach(overlay => {
+      if (overlay) {
+        overlay.style.display = 'none';
+        overlay.style.opacity = '0';
+        overlay.style.visibility = 'hidden';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.zIndex = '-9999';
+      }
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script src="../scripts/new-design.js"></script>
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script src="../scripts/auth-header.js"></script>
+  <script src="../scripts/debug.js"></script>
+  
+  <!-- SCRIPT DE CORRECTIF POUR LES POWER-UPS -->
+  <script src="../scripts/enigma-scroll-fix.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Debug - Power-ups Enigma Scroll</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      padding: 20px;
+    }
+    
+    .power-up-item {
+      background: rgba(52, 152, 219, 0.9);
+      border: 2px solid #3498db;
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: white;
+      cursor: pointer;
+      display: inline-block;
+      margin: 10px;
+      min-width: 120px;
+      text-align: center;
+    }
+    
+    .power-up-item:hover {
+      background: rgba(52, 152, 219, 1);
+    }
+    
+    .log {
+      background: #333;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-family: monospace;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Debug - Power-ups</h1>
+  
+  <div>
+    <div class="power-up-item" data-type="hint">💡 Indice (3)</div>
+    <div class="power-up-item" data-type="time">⏰ +30s (2)</div>
+    <div class="power-up-item" data-type="skip">⏭️ Passer (1)</div>
+  </div>
+  
+  <button onclick="testPowerUps()">🧪 Test Automatique</button>
+  <button onclick="clearLog()">🗑️ Vider Log</button>
+  
+  <div id="log" class="log">
+    <div>📋 Log des événements...</div>
+  </div>
+
+  <script>
+    // Simulation du state du jeu
+    window.gameActive = true;
+    window.gameStats = {
+      powerUps: {
+        hint: 3,
+        time: 2,
+        skip: 1
+      },
+      timeRemaining: 60
+    };
+    
+    // Fonction de log
+    function log(message) {
+      const logEl = document.getElementById('log');
+      const div = document.createElement('div');
+      div.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+      logEl.appendChild(div);
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(message);
+    }
+    
+    function clearLog() {
+      document.getElementById('log').innerHTML = '<div>📋 Log des événements...</div>';
+    }
+    
+    // Fonction showGameMessage simplifiée
+    function showGameMessage(message, type = 'info') {
+      log(`📢 Message ${type}: ${message}`);
+      alert(`${type.toUpperCase()}: ${message}`);
+    }
+    
+    // Fonction usePowerUp de test
+    function usePowerUp(type) {
+      log(`🚀 DÉBUT usePowerUp: ${type}`);
+      
+      try {
+        log(`🎮 État: actif=${window.gameActive}, disponible=${window.gameStats?.powerUps?.[type]}`);
+        
+        if (!window.gameActive) {
+          log('❌ Jeu non actif');
+          showGameMessage('Jeu non actif !', 'error');
+          return;
+        }
+        
+        if (!window.gameStats || window.gameStats.powerUps[type] <= 0) {
+          log('❌ Power-up non disponible');
+          showGameMessage(`Aucun "${type}" disponible !`, 'error');
+          return;
+        }
+        
+        // Consommer le power-up
+        window.gameStats.powerUps[type]--;
+        log(`✅ Power-up ${type} consommé, restant: ${window.gameStats.powerUps[type]}`);
+        
+        // Mettre à jour l'affichage
+        updateDisplay();
+        
+        switch (type) {
+          case 'hint':
+            log('💡 Exécution indice...');
+            showGameMessage('Indice utilisé !', 'success');
+            break;
+            
+          case 'time':
+            log('⏰ Exécution bonus temps...');
+            window.gameStats.timeRemaining += 30;
+            showGameMessage('+30 secondes !', 'success');
+            break;
+            
+          case 'skip':
+            log('⏭️ Exécution passage...');
+            showGameMessage('Mot passé !', 'success');
+            break;
+        }
+        
+        log(`✅ Power-up ${type} exécuté avec succès`);
+        
+      } catch (error) {
+        log(`❌ ERREUR: ${error.message}`);
+        showGameMessage(`Erreur: ${error.message}`, 'error');
+      }
+      
+      log(`🏁 FIN usePowerUp: ${type}`);
+    }
+    
+    function updateDisplay() {
+      document.querySelectorAll('.power-up-item').forEach(item => {
+        const type = item.dataset.type;
+        const count = window.gameStats.powerUps[type];
+        const icon = item.textContent.split(' ')[0];
+        const name = item.textContent.split(' ')[1];
+        item.textContent = `${icon} ${name} (${count})`;
+        
+        if (count <= 0) {
+          item.style.opacity = '0.5';
+          item.style.cursor = 'not-allowed';
+        } else {
+          item.style.opacity = '1';
+          item.style.cursor = 'pointer';
+        }
+      });
+    }
+    
+    // Event listeners
+    document.querySelectorAll('.power-up-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const type = this.dataset.type;
+        log(`🖱️ Clic détecté sur power-up: ${type}`);
+        usePowerUp(type);
+      });
+    });
+    
+    function testPowerUps() {
+      log('🧪 === DÉBUT TEST AUTOMATIQUE ===');
+      usePowerUp('hint');
+      setTimeout(() => usePowerUp('time'), 1000);
+      setTimeout(() => usePowerUp('skip'), 2000);
+      setTimeout(() => log('🧪 === FIN TEST AUTOMATIQUE ==='), 3000);
+    }
+    
+    // Raccourcis clavier
+    document.addEventListener('keydown', function(event) {
+      if (event.key === '1') {
+        event.preventDefault();
+        usePowerUp('hint');
+      } else if (event.key === '2') {
+        event.preventDefault();
+        usePowerUp('time');
+      } else if (event.key === '3') {
+        event.preventDefault();
+        usePowerUp('skip');
+      }
+    });
+    
+    log('✅ Test de debug initialisé');
+    log('🎮 Raccourcis: 1=indice, 2=temps, 3=passer');
+  </script>
+</body>
+</html> 

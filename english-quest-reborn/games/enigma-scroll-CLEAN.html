@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enigma Scroll - Version Propre</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .game-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .header {
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .difficulty-selection {
+      margin: 20px 0;
+    }
+    
+    .difficulty-btn {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .difficulty-btn:hover, .difficulty-btn.selected {
+      background: rgba(255,255,255,0.3);
+      border-color: #4CAF50;
+    }
+    
+    .game-stats {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    
+    .power-ups {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .power-up-item {
+      background: rgba(52, 152, 219, 0.8);
+      border: 2px solid #3498db;
+      border-radius: 10px;
+      padding: 10px 15px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .power-up-item:hover {
+      background: rgba(52, 152, 219, 1);
+      transform: scale(1.05);
+    }
+    
+    .power-up-item.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .power-up-item.disabled:hover {
+      transform: none;
+    }
+    
+    .game-grid {
+      display: grid;
+      gap: 5px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .grid-cell {
+      border: 2px solid #555;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      width: 50px;
+      height: 50px;
+      transition: all 0.3s ease;
+    }
+    
+    .grid-cell.filled {
+      background: rgba(255,255,255,0.2);
+      border-color: #aaa;
+    }
+    
+    .grid-cell.correct {
+      background: #4CAF50 !important;
+      border-color: #4CAF50;
+      color: white;
+    }
+    
+    .grid-cell.present {
+      background: #FF9800 !important;
+      border-color: #FF9800;
+      color: white;
+    }
+    
+    .grid-cell.absent {
+      background: #666 !important;
+      border-color: #666;
+      color: white;
+    }
+    
+    .grid-cell.hint {
+      background: linear-gradient(45deg, #f39c12, #e67e22) !important;
+      border-color: #f39c12;
+      color: #121212;
+      animation: bounceHint 1s ease;
+    }
+    
+    @keyframes bounceHint {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+    
+    .game-controls {
+      margin: 20px 0;
+    }
+    
+    .btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: background 0.3s ease;
+    }
+    
+    .btn:hover {
+      background: #45a049;
+    }
+    
+    .btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    
+    .input-field {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      margin: 5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+    
+    .message {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: bold;
+      z-index: 1000;
+      display: none;
+      animation: fadeInOut 3s ease;
+    }
+    
+    .message.success { background: #4CAF50; }
+    .message.error { background: #f44336; }
+    .message.info { background: #2196F3; }
+    .message.warning { background: #FF9800; }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      20%, 80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    
+    .game-message {
+      background: rgba(0,0,0,0.3);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      display: none;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="header">
+      <h1>🧩 Enigma Scroll</h1>
+      <p>Devinez le mot mystère en anglais !</p>
+    </div>
+    
+    <!-- Sélection de difficulté -->
+    <div class="difficulty-selection" id="difficulty-selection">
+      <h3>Choisissez votre difficulté :</h3>
+      <button class="difficulty-btn" data-difficulty="beginner">Débutant (4 lettres)</button>
+      <button class="difficulty-btn" data-difficulty="intermediate">Intermédiaire (5 lettres)</button>
+      <button class="difficulty-btn" data-difficulty="advanced">Avancé (7 lettres)</button>
+      <button class="difficulty-btn" data-difficulty="expert">Expert (9 lettres)</button>
+      <button class="difficulty-btn" data-difficulty="legendary">Légendaire (10 lettres)</button>
+    </div>
+    
+    <!-- Interface de jeu -->
+    <div class="game-interface hidden" id="game-interface">
+      <!-- Statistiques -->
+      <div class="game-stats">
+        <div class="stat-item">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="score-display">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Combo</div>
+          <div class="stat-value" id="combo-display">x1</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Temps</div>
+          <div class="stat-value" id="time-display">90</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Tentatives</div>
+          <div class="stat-value" id="attempts-display">0/6</div>
+        </div>
+      </div>
+      
+      <!-- Power-ups -->
+      <div class="power-ups">
+        <div class="power-up-item" data-type="hint" id="hint-powerup">
+          💡<br>Indice<br><span id="hint-count">3</span>
+        </div>
+        <div class="power-up-item" data-type="time" id="time-powerup">
+          ⏰<br>+30s<br><span id="time-count">2</span>
+        </div>
+        <div class="power-up-item" data-type="skip" id="skip-powerup">
+          ⏭️<br>Passer<br><span id="skip-count">1</span>
+        </div>
+      </div>
+      
+      <!-- Grille de jeu -->
+      <div class="game-grid" id="game-grid"></div>
+      
+      <!-- Contrôles -->
+      <div class="game-controls">
+        <input type="text" id="guess-input" class="input-field" placeholder="Votre mot...">
+        <button class="btn" id="submit-btn">Valider</button>
+        <button class="btn" id="new-game-btn">Nouveau mot</button>
+      </div>
+      
+      <!-- Messages -->
+      <div class="game-message" id="game-message"></div>
+    </div>
+  </div>
+  
+  <!-- Messages popup -->
+  <div class="message" id="popup-message"></div>
+  
+  <script>
+    // ===========================================
+    // CONFIGURATION DU JEU
+    // ===========================================
+    
+    const DIFFICULTIES = {
+      'beginner': { wordLength: 4, maxAttempts: 6 },
+      'intermediate': { wordLength: 5, maxAttempts: 6 },
+      'advanced': { wordLength: 7, maxAttempts: 6 },
+      'expert': { wordLength: 9, maxAttempts: 6 },
+      'legendary': { wordLength: 10, maxAttempts: 6 }
+    };
+    
+    const WORD_LISTS = {
+      4: ['WORD', 'GAME', 'PLAY', 'LOVE', 'TIME', 'HELP', 'MAKE', 'TAKE', 'COME', 'GOOD', 'LIFE', 'WORK', 'YEAR', 'HAND', 'PART', 'BOOK', 'LOOK', 'FACE', 'FEEL', 'FACT'],
+      5: ['WORLD', 'ABOUT', 'AFTER', 'FIRST', 'NEVER', 'AGAIN', 'OTHER', 'PLACE', 'WHERE', 'THINK', 'HOUSE', 'BEING', 'THING', 'WHILE', 'MIGHT', 'WOMAN', 'CHILD', 'STILL'],
+      7: ['EXAMPLE', 'AMAZING', 'AWESOME', 'PERFECT', 'JOURNEY', 'MYSTERY', 'FREEDOM', 'BELIEVE', 'COURAGE', 'RAINBOW', 'FOREVER', 'DESTINY', 'IMAGINE', 'BALANCE'],
+      9: ['BEAUTIFUL', 'WONDERFUL', 'FANTASTIC', 'KNOWLEDGE', 'ADVENTURE', 'HAPPINESS', 'IMPORTANT', 'DIFFERENT', 'EFFECTIVE', 'EXCELLENT', 'EDUCATION', 'CHALLENGE'],
+      10: ['INCREDIBLE', 'MAGNIFICENT', 'JAVASCRIPT', 'TECHNOLOGY', 'BASKETBALL', 'TREMENDOUS', 'UNDERSTAND', 'EVERYTHING', 'BACKGROUND', 'GOVERNMENT', 'EXPERIENCE']
+    };
+    
+    // ===========================================
+    // VARIABLES DE JEU
+    // ===========================================
+    
+    let gameState = {
+      selectedDifficulty: null,
+      currentWord: '',
+      currentAttempt: 0,
+      maxAttempts: 6,
+      wordLength: 5,
+      gameActive: false,
+      score: 0,
+      combo: 1,
+      timeLeft: 90,
+      wordsFound: 0,
+      powerUps: {
+        hint: 3,
+        time: 2,
+        skip: 1
+      }
+    };
+    
+    let gameTimer = null;
+    let randomEventTimer = null;
+    
+    // ===========================================
+    // FONCTIONS UTILITAIRES
+    // ===========================================
+    
+    function isValidWord(word, wordLength) {
+      return WORD_LISTS[wordLength] && WORD_LISTS[wordLength].includes(word.toUpperCase());
+    }
+    
+    function analyzeGuess(guess, target) {
+      const result = [];
+      const targetArray = target.split('');
+      const guessArray = guess.split('');
+      const targetCounts = {};
+      
+      // Compter les lettres dans le mot cible
+      targetArray.forEach(letter => {
+        targetCounts[letter] = (targetCounts[letter] || 0) + 1;
+      });
+      
+      // Premier passage : marquer les lettres correctes (vert)
+      for (let i = 0; i < guessArray.length; i++) {
+        if (guessArray[i] === targetArray[i]) {
+          result[i] = 'correct';
+          targetCounts[guessArray[i]]--;
+        } else {
+          result[i] = null;
+        }
+      }
+      
+      // Deuxième passage : marquer les lettres présentes (jaune) et absentes (gris)
+      for (let i = 0; i < guessArray.length; i++) {
+        if (result[i] === null) {
+          if (targetCounts[guessArray[i]] > 0) {
+            result[i] = 'present';
+            targetCounts[guessArray[i]]--;
+          } else {
+            result[i] = 'absent';
+          }
+        }
+      }
+      
+      return result;
+    }
+    
+    function showMessage(message, type = 'info', duration = 3000) {
+      const popup = document.getElementById('popup-message');
+      popup.textContent = message;
+      popup.className = `message ${type}`;
+      popup.style.display = 'block';
+      
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, duration);
+    }
+    
+    function updateDisplay() {
+      document.getElementById('score-display').textContent = gameState.score;
+      document.getElementById('combo-display').textContent = `x${gameState.combo}`;
+      document.getElementById('time-display').textContent = gameState.timeLeft;
+      document.getElementById('attempts-display').textContent = `${gameState.currentAttempt}/${gameState.maxAttempts}`;
+      
+      // Mettre à jour les power-ups
+      document.getElementById('hint-count').textContent = gameState.powerUps.hint;
+      document.getElementById('time-count').textContent = gameState.powerUps.time;
+      document.getElementById('skip-count').textContent = gameState.powerUps.skip;
+      
+      // Désactiver les power-ups épuisés
+      Object.keys(gameState.powerUps).forEach(type => {
+        const element = document.querySelector(`[data-type="${type}"]`);
+        if (gameState.powerUps[type] <= 0) {
+          element.classList.add('disabled');
+        } else {
+          element.classList.remove('disabled');
+        }
+      });
+    }
+    
+    // ===========================================
+    // GESTION DE LA GRILLE
+    // ===========================================
+    
+    function createGrid() {
+      const grid = document.getElementById('game-grid');
+      grid.innerHTML = '';
+      grid.style.gridTemplateColumns = `repeat(${gameState.wordLength}, 50px)`;
+      
+      for (let row = 0; row < gameState.maxAttempts; row++) {
+        for (let col = 0; col < gameState.wordLength; col++) {
+          const cell = document.createElement('div');
+          cell.className = 'grid-cell';
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          grid.appendChild(cell);
+        }
+      }
+    }
+    
+    function updateGrid(rowIndex, guess, colors) {
+      for (let i = 0; i < guess.length; i++) {
+        const cell = document.querySelector(`[data-row="${rowIndex}"][data-col="${i}"]`);
+        if (cell) {
+          cell.textContent = guess[i];
+          cell.classList.add('filled', colors[i]);
+        }
+      }
+    }
+    
+    // ===========================================
+    // POWER-UPS
+    // ===========================================
+    
+    function usePowerUp(type) {
+      console.log(`🎮 Utilisation power-up: ${type}, disponible: ${gameState.powerUps[type]}`);
+      
+      if (!gameState.gameActive) {
+        showMessage('Le jeu n\'est pas actif !', 'warning');
+        return;
+      }
+      
+      if (gameState.powerUps[type] <= 0) {
+        showMessage('Power-up épuisé !', 'warning');
+        return;
+      }
+      
+      gameState.powerUps[type]--;
+      
+      switch (type) {
+        case 'hint':
+          // Révéler une lettre aléatoire
+          const availablePositions = [];
+          for (let i = 0; i < gameState.wordLength; i++) {
+            const cell = document.querySelector(`[data-row="${gameState.currentAttempt}"][data-col="${i}"]`);
+            if (!cell.textContent) {
+              availablePositions.push(i);
+            }
+          }
+          
+          if (availablePositions.length > 0) {
+            const randomPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+            const cell = document.querySelector(`[data-row="${gameState.currentAttempt}"][data-col="${randomPos}"]`);
+            cell.textContent = gameState.currentWord[randomPos];
+            cell.classList.add('hint');
+            showMessage(`Indice révélé : ${gameState.currentWord[randomPos]}`, 'success');
+          }
+          break;
+          
+        case 'time':
+          gameState.timeLeft += 30;
+          showMessage('+30 secondes !', 'success');
+          break;
+          
+        case 'skip':
+          showMessage(`Le mot était : ${gameState.currentWord}`, 'info');
+          setTimeout(() => newGame(), 2000);
+          break;
+      }
+      
+      updateDisplay();
+    }
+    
+    // ===========================================
+    // GESTION DU TIMER
+    // ===========================================
+    
+    function startTimer() {
+      if (gameTimer) clearInterval(gameTimer);
+      
+      gameTimer = setInterval(() => {
+        gameState.timeLeft--;
+        updateDisplay();
+        
+        if (gameState.timeLeft <= 0) {
+          endGame(false, 'Temps écoulé !');
+        }
+      }, 1000);
+    }
+    
+    function stopTimer() {
+      if (gameTimer) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+      }
+    }
+    
+    // ===========================================
+    // ÉVÉNEMENTS ALÉATOIRES
+    // ===========================================
+    
+    function triggerRandomEvent() {
+      if (!gameState.gameActive) return;
+      
+      const events = [
+        {
+          name: 'Bonus Time',
+          action: () => {
+            gameState.timeLeft += 15;
+            showMessage('🎁 Événement : +15 secondes !', 'success');
+          }
+        },
+        {
+          name: 'Double Score',
+          action: () => {
+            gameState.combo = Math.min(gameState.combo * 2, 10);
+            showMessage('🎁 Événement : Combo doublé !', 'success');
+          }
+        },
+        {
+          name: 'Super Hint',
+          action: () => {
+            // Révéler 2 lettres
+            const availablePositions = [];
+            for (let i = 0; i < gameState.wordLength; i++) {
+              const cell = document.querySelector(`[data-row="${gameState.currentAttempt}"][data-col="${i}"]`);
+              if (!cell.textContent) {
+                availablePositions.push(i);
+              }
+            }
+            
+            const revealCount = Math.min(2, availablePositions.length);
+            for (let i = 0; i < revealCount; i++) {
+              const randomPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+              availablePositions.splice(availablePositions.indexOf(randomPos), 1);
+              
+              const cell = document.querySelector(`[data-row="${gameState.currentAttempt}"][data-col="${randomPos}"]`);
+              cell.textContent = gameState.currentWord[randomPos];
+              cell.classList.add('hint');
+            }
+            showMessage('🎁 Événement : 2 lettres révélées !', 'success');
+          }
+        }
+      ];
+      
+      const randomEvent = events[Math.floor(Math.random() * events.length)];
+      randomEvent.action();
+      updateDisplay();
+    }
+    
+    function startRandomEvents() {
+      if (randomEventTimer) clearInterval(randomEventTimer);
+      
+      randomEventTimer = setInterval(() => {
+        if (Math.random() < 0.3) { // 30% de chance
+          triggerRandomEvent();
+        }
+      }, 20000); // Toutes les 20 secondes
+    }
+    
+    function stopRandomEvents() {
+      if (randomEventTimer) {
+        clearInterval(randomEventTimer);
+        randomEventTimer = null;
+      }
+    }
+    
+    // ===========================================
+    // LOGIQUE DE JEU
+    // ===========================================
+    
+    function startGame(difficulty) {
+      gameState.selectedDifficulty = difficulty;
+      const config = DIFFICULTIES[difficulty];
+      gameState.wordLength = config.wordLength;
+      gameState.maxAttempts = config.maxAttempts;
+      gameState.currentAttempt = 0;
+      gameState.gameActive = true;
+      gameState.timeLeft = 90;
+      
+      // Choisir un mot aléatoire
+      const wordList = WORD_LISTS[gameState.wordLength];
+      gameState.currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      
+      console.log('🎮 Mot à deviner:', gameState.currentWord);
+      
+      // Cacher la sélection de difficulté et afficher le jeu
+      document.getElementById('difficulty-selection').classList.add('hidden');
+      document.getElementById('game-interface').classList.remove('hidden');
+      
+      createGrid();
+      updateDisplay();
+      startTimer();
+      startRandomEvents();
+      
+      showMessage(`Nouvelle partie ! Mot de ${gameState.wordLength} lettres`, 'success');
+    }
+    
+    function submitGuess() {
+      const input = document.getElementById('guess-input');
+      const guess = input.value.toUpperCase().trim();
+      
+      if (!gameState.gameActive) {
+        showMessage('Le jeu n\'est pas actif !', 'warning');
+        return;
+      }
+      
+      if (guess.length !== gameState.wordLength) {
+        showMessage(`Le mot doit faire ${gameState.wordLength} lettres !`, 'error');
+        return;
+      }
+      
+      if (!isValidWord(guess, gameState.wordLength)) {
+        showMessage('Mot non valide !', 'error');
+        return;
+      }
+      
+      // Analyser la tentative
+      const colors = analyzeGuess(guess, gameState.currentWord);
+      updateGrid(gameState.currentAttempt, guess, colors);
+      
+      gameState.currentAttempt++;
+      input.value = '';
+      
+      // Vérifier si le mot est trouvé
+      if (guess === gameState.currentWord) {
+        endGame(true, 'Félicitations ! Mot trouvé !');
+        return;
+      }
+      
+      // Vérifier si plus de tentatives
+      if (gameState.currentAttempt >= gameState.maxAttempts) {
+        endGame(false, `Le mot était : ${gameState.currentWord}`);
+        return;
+      }
+      
+      updateDisplay();
+    }
+    
+    function endGame(won, message) {
+      gameState.gameActive = false;
+      stopTimer();
+      stopRandomEvents();
+      
+      if (won) {
+        // Calculer le score
+        const baseScore = 100 * gameState.wordLength;
+        const timeBonus = gameState.timeLeft * 2;
+        const attemptBonus = (gameState.maxAttempts - gameState.currentAttempt) * 20;
+        const totalScore = (baseScore + timeBonus + attemptBonus) * gameState.combo;
+        
+        gameState.score += totalScore;
+        gameState.combo++;
+        gameState.wordsFound++;
+        
+        showMessage(`${message} Score: +${totalScore}`, 'success');
+      } else {
+        gameState.combo = 1;
+        showMessage(message, 'error');
+      }
+      
+      updateDisplay();
+    }
+    
+    function newGame() {
+      if (gameState.selectedDifficulty) {
+        startGame(gameState.selectedDifficulty);
+      } else {
+        // Retourner à la sélection de difficulté
+        document.getElementById('difficulty-selection').classList.remove('hidden');
+        document.getElementById('game-interface').classList.add('hidden');
+      }
+    }
+    
+    // ===========================================
+    // GESTIONNAIRES D'ÉVÉNEMENTS
+    // ===========================================
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sélection de difficulté
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const difficulty = this.dataset.difficulty;
+          startGame(difficulty);
+        });
+      });
+      
+      // Power-ups
+      document.querySelectorAll('.power-up-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const type = this.dataset.type;
+          usePowerUp(type);
+        });
+      });
+      
+      // Boutons de contrôle
+      document.getElementById('submit-btn').addEventListener('click', submitGuess);
+      document.getElementById('new-game-btn').addEventListener('click', newGame);
+      
+      // Input
+      document.getElementById('guess-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          submitGuess();
+        }
+      });
+      
+      // Raccourcis clavier pour les power-ups
+      document.addEventListener('keydown', function(e) {
+        if (e.key === '1') usePowerUp('hint');
+        if (e.key === '2') usePowerUp('time');
+        if (e.key === '3') usePowerUp('skip');
+      });
+      
+      console.log('🎮 Jeu initialisé ! Raccourcis: 1=Indice, 2=Temps, 3=Passer');
+    });
+  </script>
+</body>
+</html> 

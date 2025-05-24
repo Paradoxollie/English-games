@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enigma Scroll - Autonome</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --color-primary: #2ecc71;
+      --color-secondary: #3498db;
+      --color-background: #121212;
+      --color-text: #ffffff;
+      --word-correct: #2ecc71;
+      --word-present: #f39c12;
+      --word-absent: #7f8c8d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--color-background);
+      color: var(--color-text);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(26, 26, 26, 0.95);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    .game-title {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .game-subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+    }
+
+    .game-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat {
+      text-align: center;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-width: 80px;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .word-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 30px 0;
+      align-items: center;
+    }
+
+    .grid-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .grid-cell {
+      width: 50px;
+      height: 50px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .grid-cell.filled {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.1);
+    }
+
+    /* COULEURS ULTRA-FORCÉES */
+    .grid-cell.correct {
+      background-color: #2ecc71 !important;
+      border-color: #2ecc71 !important;
+      color: #121212 !important;
+      animation: flip 0.6s ease;
+    }
+
+    .grid-cell.present {
+      background-color: #f39c12 !important;
+      border-color: #f39c12 !important;
+      color: #121212 !important;
+      animation: flip 0.6s ease;
+    }
+
+    .grid-cell.absent {
+      background-color: #7f8c8d !important;
+      border-color: #7f8c8d !important;
+      color: #ffffff !important;
+      animation: flip 0.6s ease;
+    }
+
+    @keyframes flip {
+      0% { transform: scaleY(1); }
+      50% { transform: scaleY(0); }
+      100% { transform: scaleY(1); }
+    }
+
+    .keyboard {
+      margin: 30px 0;
+    }
+
+    .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .key-btn {
+      padding: 12px 8px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: var(--color-text);
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 40px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .key-btn:hover {
+      background: rgba(46, 204, 113, 0.2);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .key-btn:active {
+      transform: translateY(0);
+    }
+
+    .key-enter, .key-delete {
+      min-width: 60px;
+      font-size: 0.9rem;
+    }
+
+    /* COULEURS CLAVIER ULTRA-FORCÉES */
+    .key-btn.correct {
+      background-color: #2ecc71 !important;
+      border-color: #2ecc71 !important;
+      color: #121212 !important;
+    }
+
+    .key-btn.present {
+      background-color: #f39c12 !important;
+      border-color: #f39c12 !important;
+      color: #121212 !important;
+    }
+
+    .key-btn.absent {
+      background-color: #7f8c8d !important;
+      border-color: #7f8c8d !important;
+      color: #ffffff !important;
+    }
+
+    .game-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      color: #121212;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(52, 152, 219, 0.2);
+      border-color: var(--color-secondary);
+    }
+
+    .message {
+      text-align: center;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .message.success {
+      background: rgba(46, 204, 113, 0.2);
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .message.error {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+    }
+
+    .message.info {
+      background: rgba(52, 152, 219, 0.2);
+      border: 1px solid var(--color-secondary);
+      color: var(--color-secondary);
+    }
+
+    .leaderboard {
+      margin-top: 30px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 10px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .leaderboard-title {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      margin-bottom: 15px;
+    }
+
+    .score-list {
+      list-style: none;
+    }
+
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .score-item:last-child {
+      border-bottom: none;
+    }
+
+    .score-rank {
+      font-weight: bold;
+      color: var(--color-secondary);
+      min-width: 30px;
+    }
+
+    .score-player {
+      flex: 1;
+      text-align: left;
+      padding-left: 10px;
+    }
+
+    .score-value {
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .difficulty-selector {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .difficulty-selector label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--color-secondary);
+    }
+
+    .difficulty-selector select {
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--color-text);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .welcome-screen {
+      text-align: center;
+    }
+
+    .welcome-text {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .game-area {
+      display: none;
+    }
+
+    .game-area.active {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      .game-container {
+        padding: 20px;
+        margin: 10px;
+      }
+
+      .game-title {
+        font-size: 2rem;
+      }
+
+      .grid-cell {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+      }
+
+      .key-btn {
+        min-width: 32px;
+        height: 42px;
+        font-size: 0.9rem;
+        padding: 8px 4px;
+      }
+
+      .game-stats {
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 10px;
+        min-width: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- Écran d'accueil -->
+    <div id="welcome-screen" class="welcome-screen">
+      <h1 class="game-title">Enigma Scroll</h1>
+      <p class="game-subtitle">Les Parchemins Mystérieux</p>
+      
+      <div class="welcome-text">
+        <p>Devinez le mot secret en anglais ! Chaque lettre vous guide vers la solution.</p>
+        <p><strong style="color: #2ecc71;">Vert</strong> = lettre correcte et bien placée</p>
+        <p><strong style="color: #f39c12;">Orange</strong> = lettre présente mais mal placée</p>
+        <p><strong style="color: #7f8c8d;">Gris</strong> = lettre absente</p>
+      </div>
+
+      <div class="difficulty-selector">
+        <label for="difficulty">Choisissez la difficulté :</label>
+        <select id="difficulty">
+          <option value="4">Débutant (4 lettres)</option>
+          <option value="5" selected>Intermédiaire (5 lettres)</option>
+          <option value="6">Avancé (6 lettres)</option>
+        </select>
+      </div>
+
+      <div class="game-controls">
+        <button id="start-game" class="btn btn-primary">
+          <i class="fas fa-play"></i> Commencer
+        </button>
+        <button id="show-scores" class="btn btn-secondary">
+          <i class="fas fa-trophy"></i> Scores
+        </button>
+      </div>
+    </div>
+
+    <!-- Zone de jeu -->
+    <div id="game-area" class="game-area">
+      <h1 class="game-title">Enigma Scroll</h1>
+      
+      <div class="game-stats">
+        <div class="stat">
+          <div class="stat-label">Score</div>
+          <div id="score-display" class="stat-value">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Niveau</div>
+          <div id="level-display" class="stat-value">1</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Essais</div>
+          <div id="attempts-display" class="stat-value">6</div>
+        </div>
+      </div>
+
+      <div id="word-grid" class="word-grid">
+        <!-- Grille générée dynamiquement -->
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="keyboard">
+        <div class="keyboard-row">
+          <button class="key-btn" data-key="Q">Q</button>
+          <button class="key-btn" data-key="W">W</button>
+          <button class="key-btn" data-key="E">E</button>
+          <button class="key-btn" data-key="R">R</button>
+          <button class="key-btn" data-key="T">T</button>
+          <button class="key-btn" data-key="Y">Y</button>
+          <button class="key-btn" data-key="U">U</button>
+          <button class="key-btn" data-key="I">I</button>
+          <button class="key-btn" data-key="O">O</button>
+          <button class="key-btn" data-key="P">P</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key-btn" data-key="A">A</button>
+          <button class="key-btn" data-key="S">S</button>
+          <button class="key-btn" data-key="D">D</button>
+          <button class="key-btn" data-key="F">F</button>
+          <button class="key-btn" data-key="G">G</button>
+          <button class="key-btn" data-key="H">H</button>
+          <button class="key-btn" data-key="J">J</button>
+          <button class="key-btn" data-key="K">K</button>
+          <button class="key-btn" data-key="L">L</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key-btn key-enter" data-key="ENTER">ENTER</button>
+          <button class="key-btn" data-key="Z">Z</button>
+          <button class="key-btn" data-key="X">X</button>
+          <button class="key-btn" data-key="C">C</button>
+          <button class="key-btn" data-key="V">V</button>
+          <button class="key-btn" data-key="B">B</button>
+          <button class="key-btn" data-key="N">N</button>
+          <button class="key-btn" data-key="M">M</button>
+          <button class="key-btn key-delete" data-key="BACKSPACE">
+            <i class="fas fa-backspace"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <button id="new-word" class="btn btn-secondary">
+          <i class="fas fa-refresh"></i> Nouveau mot
+        </button>
+        <button id="back-to-menu" class="btn btn-secondary">
+          <i class="fas fa-home"></i> Menu
+        </button>
+      </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="leaderboard" class="leaderboard" style="display: none;">
+      <h3 class="leaderboard-title">Meilleurs Scores</h3>
+      <ul id="score-list" class="score-list">
+        <li class="score-item">
+          <span class="score-rank">1</span>
+          <span class="score-player">Aucun score</span>
+          <span class="score-value">-</span>
+        </li>
+      </ul>
+      <div class="game-controls" style="margin-top: 20px;">
+        <button id="hide-scores" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // MOTS PAR DIFFICULTÉ
+    const WORD_LISTS = {
+      4: ['WORD', 'GAME', 'CODE', 'PLAY', 'HERO', 'FIRE', 'BLUE', 'GOLD', 'STAR', 'MOON'],
+      5: ['WORDS', 'GAMES', 'CODES', 'PLAYS', 'MAGIC', 'QUEST', 'DREAM', 'LIGHT', 'POWER', 'BRAVE'],
+      6: ['ENIGMA', 'SCROLL', 'WIZARD', 'DRAGON', 'CASTLE', 'KNIGHT', 'FOREST', 'LEGEND', 'MYSTIC', 'ORACLE']
+    };
+
+    // ÉTAT DU JEU
+    let gameState = {
+      currentWord: '',
+      difficulty: 5,
+      currentAttempt: 0,
+      maxAttempts: 6,
+      currentGuess: '',
+      score: 0,
+      level: 1,
+      grid: [],
+      gameActive: false,
+      usedLetters: {}
+    };
+
+    // ÉLÉMENTS DOM
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const gameArea = document.getElementById('game-area');
+    const leaderboard = document.getElementById('leaderboard');
+    const wordGrid = document.getElementById('word-grid');
+    const messageDiv = document.getElementById('message');
+    const scoreDisplay = document.getElementById('score-display');
+    const levelDisplay = document.getElementById('level-display');
+    const attemptsDisplay = document.getElementById('attempts-display');
+    const difficultySelect = document.getElementById('difficulty');
+
+    // FONCTIONS UTILITAIRES
+    function getRandomWord(difficulty) {
+      const words = WORD_LISTS[difficulty] || WORD_LISTS[5];
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function showMessage(text, type = 'info') {
+      messageDiv.textContent = text;
+      messageDiv.className = `message ${type}`;
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    function updateDisplay() {
+      scoreDisplay.textContent = gameState.score;
+      levelDisplay.textContent = gameState.level;
+      attemptsDisplay.textContent = gameState.maxAttempts - gameState.currentAttempt;
+    }
+
+    // CRÉATION DE LA GRILLE
+    function createGrid() {
+      wordGrid.innerHTML = '';
+      gameState.grid = [];
+
+      for (let i = 0; i < gameState.maxAttempts; i++) {
+        const row = document.createElement('div');
+        row.className = 'grid-row';
+        
+        const gridRow = [];
+        for (let j = 0; j < gameState.difficulty; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'grid-cell';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          row.appendChild(cell);
+          gridRow.push({ letter: '', state: '' });
+        }
+        
+        wordGrid.appendChild(row);
+        gameState.grid.push(gridRow);
+      }
+    }
+
+    // MISE À JOUR DE LA GRILLE
+    function updateGrid() {
+      for (let i = 0; i < gameState.maxAttempts; i++) {
+        for (let j = 0; j < gameState.difficulty; j++) {
+          const cell = document.querySelector(`[data-row="${i}"][data-col="${j}"]`);
+          const gridData = gameState.grid[i][j];
+          
+          if (cell) {
+            cell.textContent = gridData.letter;
+            cell.className = 'grid-cell';
+            
+            if (gridData.letter) {
+              cell.classList.add('filled');
+            }
+            
+            if (gridData.state) {
+              cell.classList.add(gridData.state);
+              // FORCER les couleurs immédiatement
+              const colors = {
+                correct: '#2ecc71',
+                present: '#f39c12',
+                absent: '#7f8c8d'
+              };
+              const textColors = {
+                correct: '#121212',
+                present: '#121212',
+                absent: '#ffffff'
+              };
+              
+              if (colors[gridData.state]) {
+                cell.style.backgroundColor = colors[gridData.state];
+                cell.style.borderColor = colors[gridData.state];
+                cell.style.color = textColors[gridData.state];
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // MISE À JOUR DU CLAVIER
+    function updateKeyboard(letter, state) {
+      const key = document.querySelector(`[data-key="${letter}"]`);
+      if (key && state) {
+        key.classList.remove('correct', 'present', 'absent');
+        key.classList.add(state);
+        
+        // FORCER les couleurs
+        const colors = {
+          correct: '#2ecc71',
+          present: '#f39c12',
+          absent: '#7f8c8d'
+        };
+        const textColors = {
+          correct: '#121212',
+          present: '#121212',
+          absent: '#ffffff'
+        };
+        
+        if (colors[state]) {
+          key.style.backgroundColor = colors[state];
+          key.style.borderColor = colors[state];
+          key.style.color = textColors[state];
+        }
+      }
+    }
+
+    // AJOUT D'UNE LETTRE
+    function addLetter(letter) {
+      if (!gameState.gameActive || gameState.currentGuess.length >= gameState.difficulty) {
+        return;
+      }
+      
+      gameState.currentGuess += letter;
+      
+      // Mettre à jour la grille courante
+      const col = gameState.currentGuess.length - 1;
+      gameState.grid[gameState.currentAttempt][col].letter = letter;
+      updateGrid();
+    }
+
+    // SUPPRESSION D'UNE LETTRE
+    function removeLetter() {
+      if (!gameState.gameActive || gameState.currentGuess.length === 0) {
+        return;
+      }
+      
+      const col = gameState.currentGuess.length - 1;
+      gameState.grid[gameState.currentAttempt][col].letter = '';
+      gameState.currentGuess = gameState.currentGuess.slice(0, -1);
+      updateGrid();
+    }
+
+    // VALIDATION D'UN MOT
+    function submitGuess() {
+      if (!gameState.gameActive || gameState.currentGuess.length !== gameState.difficulty) {
+        showMessage('Complétez le mot !', 'error');
+        return;
+      }
+
+      // Analyser le mot
+      const guess = gameState.currentGuess.toUpperCase();
+      const word = gameState.currentWord.toUpperCase();
+      const result = [];
+
+      // Première passe : lettres correctes
+      for (let i = 0; i < guess.length; i++) {
+        if (guess[i] === word[i]) {
+          result[i] = 'correct';
+        }
+      }
+
+      // Deuxième passe : lettres présentes
+      const wordLetters = word.split('');
+      for (let i = 0; i < guess.length; i++) {
+        if (result[i] !== 'correct') {
+          const letterIndex = wordLetters.indexOf(guess[i]);
+          if (letterIndex !== -1) {
+            result[i] = 'present';
+            wordLetters[letterIndex] = null; // Marquer comme utilisé
+          } else {
+            result[i] = 'absent';
+          }
+        }
+      }
+
+      // Mettre à jour la grille et le clavier
+      for (let i = 0; i < guess.length; i++) {
+        gameState.grid[gameState.currentAttempt][i].state = result[i];
+        updateKeyboard(guess[i], result[i]);
+        
+        // Mettre à jour les lettres utilisées
+        if (!gameState.usedLetters[guess[i]] || result[i] === 'correct') {
+          gameState.usedLetters[guess[i]] = result[i];
+        }
+      }
+
+      updateGrid();
+
+      // Vérifier la victoire
+      if (guess === word) {
+        gameState.gameActive = false;
+        const points = (gameState.maxAttempts - gameState.currentAttempt) * 100;
+        gameState.score += points;
+        showMessage(`Bravo ! +${points} points`, 'success');
+        saveScore();
+        setTimeout(() => {
+          nextLevel();
+        }, 2000);
+        return;
+      }
+
+      // Passer à l'essai suivant
+      gameState.currentAttempt++;
+      gameState.currentGuess = '';
+
+      if (gameState.currentAttempt >= gameState.maxAttempts) {
+        gameState.gameActive = false;
+        showMessage(`Perdu ! Le mot était : ${word}`, 'error');
+        saveScore();
+        setTimeout(() => {
+          gameOver();
+        }, 2000);
+      }
+      
+      updateDisplay();
+    }
+
+    // NIVEAU SUIVANT
+    function nextLevel() {
+      gameState.level++;
+      gameState.currentWord = getRandomWord(gameState.difficulty);
+      gameState.currentAttempt = 0;
+      gameState.currentGuess = '';
+      gameState.usedLetters = {};
+      
+      // Réinitialiser le clavier
+      document.querySelectorAll('.key-btn').forEach(key => {
+        key.classList.remove('correct', 'present', 'absent');
+        key.style.backgroundColor = '';
+        key.style.borderColor = '';
+        key.style.color = '';
+      });
+      
+      createGrid();
+      updateDisplay();
+      gameState.gameActive = true;
+      showMessage(`Niveau ${gameState.level} !`, 'info');
+    }
+
+    // FIN DE PARTIE
+    function gameOver() {
+      showMessage('Partie terminée ! Merci d\'avoir joué.', 'info');
+      setTimeout(() => {
+        showWelcomeScreen();
+      }, 2000);
+    }
+
+    // SAUVEGARDE DU SCORE
+    function saveScore() {
+      try {
+        let scores = JSON.parse(localStorage.getItem('enigmaScrollScores') || '[]');
+        const newScore = {
+          score: gameState.score,
+          level: gameState.level,
+          difficulty: gameState.difficulty,
+          date: new Date().toISOString(),
+          timestamp: Date.now()
+        };
+        
+        scores.push(newScore);
+        scores.sort((a, b) => b.score - a.score);
+        scores = scores.slice(0, 10); // Top 10
+        
+        localStorage.setItem('enigmaScrollScores', JSON.stringify(scores));
+        console.log('📊 Score sauvegardé:', newScore);
+      } catch (e) {
+        console.error('❌ Erreur sauvegarde:', e);
+      }
+    }
+
+    // AFFICHAGE DES SCORES
+    function showScores() {
+      try {
+        const scores = JSON.parse(localStorage.getItem('enigmaScrollScores') || '[]');
+        const scoreList = document.getElementById('score-list');
+        
+        if (scores.length === 0) {
+          scoreList.innerHTML = '<li class="score-item"><span class="score-rank">-</span><span class="score-player">Aucun score</span><span class="score-value">-</span></li>';
+        } else {
+          scoreList.innerHTML = scores.map((score, index) => `
+            <li class="score-item">
+              <span class="score-rank">${index + 1}</span>
+              <span class="score-player">Niveau ${score.level} (${score.difficulty} lettres)</span>
+              <span class="score-value">${score.score}</span>
+            </li>
+          `).join('');
+        }
+        
+        welcomeScreen.style.display = 'none';
+        gameArea.style.display = 'none';
+        leaderboard.style.display = 'block';
+      } catch (e) {
+        console.error('❌ Erreur lecture scores:', e);
+      }
+    }
+
+    // NAVIGATION
+    function showWelcomeScreen() {
+      welcomeScreen.style.display = 'block';
+      gameArea.style.display = 'none';
+      leaderboard.style.display = 'none';
+    }
+
+    function showGameArea() {
+      welcomeScreen.style.display = 'none';
+      gameArea.style.display = 'block';
+      leaderboard.style.display = 'none';
+    }
+
+    // DÉMARRAGE DU JEU
+    function startGame() {
+      gameState.difficulty = parseInt(difficultySelect.value);
+      gameState.currentWord = getRandomWord(gameState.difficulty);
+      gameState.currentAttempt = 0;
+      gameState.currentGuess = '';
+      gameState.score = 0;
+      gameState.level = 1;
+      gameState.usedLetters = {};
+      gameState.gameActive = true;
+      
+      createGrid();
+      updateDisplay();
+      showGameArea();
+      showMessage(`Devinez le mot de ${gameState.difficulty} lettres !`, 'info');
+      
+      console.log('🎮 Jeu démarré - Mot:', gameState.currentWord);
+    }
+
+    // ÉVÉNEMENTS
+    document.getElementById('start-game').addEventListener('click', startGame);
+    document.getElementById('show-scores').addEventListener('click', showScores);
+    document.getElementById('hide-scores').addEventListener('click', showWelcomeScreen);
+    document.getElementById('new-word').addEventListener('click', nextLevel);
+    document.getElementById('back-to-menu').addEventListener('click', showWelcomeScreen);
+
+    // Clavier virtuel
+    document.querySelectorAll('.key-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.key;
+        
+        if (key === 'ENTER') {
+          submitGuess();
+        } else if (key === 'BACKSPACE') {
+          removeLetter();
+        } else {
+          addLetter(key);
+        }
+      });
+    });
+
+    // Clavier physique
+    document.addEventListener('keydown', (event) => {
+      if (!gameState.gameActive) return;
+      
+      const key = event.key.toUpperCase();
+      
+      if (event.key === 'Enter') {
+        submitGuess();
+      } else if (event.key === 'Backspace') {
+        removeLetter();
+      } else if (/^[A-Z]$/.test(key)) {
+        addLetter(key);
+      }
+    });
+
+    // FORÇAGE DES COULEURS (système de sécurité)
+    function forceColors() {
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .grid-cell.correct, .key-btn.correct {
+          background-color: #2ecc71 !important;
+          border-color: #2ecc71 !important;
+          color: #121212 !important;
+        }
+        .grid-cell.present, .key-btn.present {
+          background-color: #f39c12 !important;
+          border-color: #f39c12 !important;
+          color: #121212 !important;
+        }
+        .grid-cell.absent, .key-btn.absent {
+          background-color: #7f8c8d !important;
+          border-color: #7f8c8d !important;
+          color: #ffffff !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // INITIALISATION
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('✅ Enigma Scroll Simple chargé');
+      forceColors();
+      showWelcomeScreen();
+    });
+  </script>
+</body>
+</html> 
