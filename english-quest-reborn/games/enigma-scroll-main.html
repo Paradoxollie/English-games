@@ -19,8 +19,7 @@
   <script src="../src/js/firebase-service-adapter.js"></script>
   
   <!-- Scripts d'authentification -->
-  <script src="../scripts/auth-service.js"></script>
-  <script src="../scripts/auth-header.js"></script>
+  <script type="module" src="../scripts/auth-header.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -1939,17 +1938,24 @@
     // ===========================================
     
     async function checkAuthenticationAndStartGame(difficulty) {
-      // Vérifier si l'utilisateur est connecté
-      const authService = window.authService;
+      // Vérifier si l'utilisateur est connecté (même logique que auth-header.js)
       let currentUser = null;
       
-      if (authService) {
-        currentUser = authService.getCurrentUser();
-      } else {
-        // Fallback vers simple auth
+      try {
+        // D'abord essayer de récupérer depuis localStorage (système principal)
         const userData = localStorage.getItem('userSession');
         currentUser = userData ? JSON.parse(userData) : null;
+        
+        // Fallback : essayer window.authService si disponible
+        if (!currentUser && window.authService) {
+          currentUser = window.authService.getCurrentUser();
+        }
+      } catch (error) {
+        console.warn('Erreur lors de la vérification de l\'authentification:', error);
+        currentUser = null;
       }
+      
+      console.log('🔍 Vérification authentification:', currentUser ? 'Connecté' : 'Non connecté');
       
       if (!currentUser) {
         showMessage('Vous devez être connecté pour jouer !', 'warning', 3000);
@@ -1966,14 +1972,18 @@
     
     async function giveRewards(isTopScore = false) {
       try {
-        const authService = window.authService;
+        // Récupérer l'utilisateur connecté (même logique que checkAuthentication)
         let currentUser = null;
         
-        if (authService) {
-          currentUser = authService.getCurrentUser();
-        } else {
+        try {
           const userData = localStorage.getItem('userSession');
           currentUser = userData ? JSON.parse(userData) : null;
+          
+          if (!currentUser && window.authService) {
+            currentUser = window.authService.getCurrentUser();
+          }
+        } catch (error) {
+          console.warn('Erreur lors de la récupération de l\'utilisateur pour les récompenses:', error);
         }
         
         if (!currentUser) {
@@ -2017,6 +2027,25 @@
               showMessage(rewardMessage, 'success', 4000);
             } else {
               console.warn('Document utilisateur non trouvé pour les récompenses');
+              
+              // Fallback : créer le document utilisateur avec les récompenses
+              const initialData = {
+                gold: rewards.gold,
+                xp: rewards.xp,
+                email: currentUser.email,
+                displayName: currentUser.displayName || currentUser.username || 'Joueur',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
+              };
+              
+              transaction.set(userRef, initialData);
+              console.log('✅ Nouveau profil créé avec récompenses initiales');
+              
+              const rewardMessage = isTopScore 
+                ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
+                : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
+              
+              showMessage(rewardMessage, 'success', 4000);
             }
           });
         } else {
