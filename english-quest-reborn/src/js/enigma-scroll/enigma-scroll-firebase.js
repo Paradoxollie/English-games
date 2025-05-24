@@ -1,35 +1,47 @@
 /**
  * Gestion de Firebase pour Enigma Scroll
+ * Adapté pour utiliser firebaseServiceInstance comme Speed Verb Challenge
  */
 window.EnigmaScrollFirebase = (function() {
-    // Vérifier si Firebase est disponible
-    if (!window.firebase || !window.firebase.firestore) {
-        console.warn("Firebase n'est pas disponible pour Enigma Scroll");
-        return {
-            isAvailable: false,
-            saveScore: function() {
-                return Promise.reject(new Error("Firebase n'est pas disponible"));
-            },
-            getScores: function() {
-                return Promise.reject(new Error("Firebase n'est pas disponible"));
-            }
-        };
+    console.log("EnigmaScrollFirebase initialisé - vérification de firebaseServiceInstance à l'utilisation");
+
+    // Fonction pour vérifier dynamiquement la disponibilité
+    function checkFirebaseAvailability() {
+        return window.firebaseServiceInstance && window.firebaseServiceInstance.db;
     }
 
-    // Référence à Firestore
-    const db = firebase.firestore();
+    /**
+     * Récupère les informations du joueur actuel
+     */
+    async function getPlayerInfo() {
+        const authState = window.authService?.getAuthState();
+        if (authState?.isAuthenticated && authState.profile) {
+            return { 
+                userId: authState.profile.userId, 
+                playerName: authState.profile.username || 'Joueur Anonyme' 
+            };
+        }
+        return { userId: null, playerName: 'Joueur Anonyme' };
+    }
 
     /**
      * Sauvegarde un score dans Firebase
      * @param {number} score - Le score à sauvegarder
-     * @param {Object} scoreData - Les données complètes du score
+     * @param {Object} gameData - Les données complètes du jeu
      * @returns {Promise} - Une promesse qui se résout lorsque le score est sauvegardé
      */
-    function saveScore(score, scoreData = {}) {
-        // Vérifier si nous sommes connectés
-        if (!window.firebaseConnectionState || !window.firebaseConnectionState.isOnline) {
-            console.warn("Hors ligne, impossible de sauvegarder le score en ligne");
-            return Promise.reject(new Error("Hors ligne"));
+    async function saveScore(score, gameData = {}) {
+        if (!checkFirebaseAvailability()) {
+            console.warn("[ESF] firebaseServiceInstance n'est pas disponible");
+            throw new Error("Service Firebase non disponible");
+        }
+
+        const playerInfo = await getPlayerInfo();
+
+        if (!playerInfo.userId) {
+            console.warn("[ESF] User not authenticated, cannot save score to server.");
+            alert("Vous devez être connecté pour sauvegarder votre score en ligne.");
+            return false; 
         }
 
         // Vérifier si le score est valide
@@ -38,193 +50,175 @@ window.EnigmaScrollFirebase = (function() {
             return Promise.reject(new Error("Score invalide"));
         }
 
-        // Récupérer le nom d'utilisateur
-        const username = scoreData.username || localStorage.getItem('eq_username') || 'Anonyme';
-
-        // Préparer les données du score
-        const data = {
-            playerName: username,
-            username: username,
+        const scoreData = {
+            userId: playerInfo.userId,
+            playerName: playerInfo.playerName,
+            gameId: 'enigma-scroll',
             score: score,
-            gameId: "enigma-scroll",
-            game: "enigma-scroll",
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            difficulty: scoreData.difficulty || "intermediate",
-            wordsFound: scoreData.wordsFound || 0,
-            maxCombo: scoreData.maxCombo || 1,
-            totalTime: scoreData.totalTime || 0
+            difficulty: gameData.difficulty || 'intermediate',
+            wordsFound: gameData.wordsFound || 0,
+            maxCombo: gameData.maxCombo || 1,
+            totalTime: gameData.totalTime || 0,
+            timestamp: new Date()
         };
 
-        console.log("Sauvegarde du score en ligne:", data);
+        console.log("Sauvegarde du score Enigma Scroll:", scoreData);
 
-        // Sauvegarder le score dans Firestore
-        return db.collection("game_scores").add(data)
-            .then(docRef => {
-                console.log("Score sauvegardé avec l'ID:", docRef.id);
-
-                // Marquer le score local comme synchronisé
-                try {
-                    const localScores = JSON.parse(localStorage.getItem('localScores')) || [];
-                    const updatedScores = localScores.map(localScore => {
-                        if (localScore.score === score &&
-                            localScore.playerName === username &&
-                            localScore.gameId === "enigma-scroll" &&
-                            localScore.syncStatus === "pending") {
-                            return {
-                                ...localScore,
-                                syncStatus: "synced",
-                                docId: docRef.id
-                            };
-                        }
-                        return localScore;
-                    });
-                    localStorage.setItem('localScores', JSON.stringify(updatedScores));
-                } catch (error) {
-                    console.warn("Erreur lors de la mise à jour du statut de synchronisation:", error);
-                }
-
-                return docRef.id;
-            })
-            .catch(error => {
-                console.error("Erreur lors de la sauvegarde du score:", error);
-                throw error;
-            });
+        try {
+            // Utiliser firebaseServiceInstance.addScore comme Speed Verb Challenge
+            await window.firebaseServiceInstance.addScore(scoreData);
+            console.log("[ESF] Score submission successful for user:", playerInfo.playerName, scoreData);
+            
+            // Dispatch event similaire à Speed Verb Challenge
+            document.dispatchEvent(new CustomEvent('scoreSubmitted', {
+                detail: { success: true, playerName: playerInfo.playerName, score: score, isHighScore: false, offline: false }
+            }));
+            return true;
+        } catch (error) {
+            console.error("[ESF] Error saving score via firebaseServiceInstance:", error);
+            // Dispatch event avec erreur
+            document.dispatchEvent(new CustomEvent('scoreSubmitted', {
+                detail: { success: false, error: error.message, offline: !(window.navigator.onLine) }
+            }));
+            return false;
+        }
     }
 
     /**
-     * Récupère les scores depuis Firebase
+     * Récupère les meilleurs scores depuis Firebase
      * @param {string} timeFrame - Période ('daily', 'weekly', 'alltime')
+     * @param {string} difficulty - Difficulté ('easy', 'intermediate', 'hard')
      * @param {number} limit - Nombre maximum de scores à récupérer
      * @returns {Promise<Array>} - Une promesse qui se résout avec les scores
      */
-    function getScores(timeFrame = 'alltime', limit = 10) {
-        // Vérifier si nous sommes connectés
-        if (!window.firebaseConnectionState || !window.firebaseConnectionState.isOnline) {
-            console.warn("Hors ligne, impossible de récupérer les scores en ligne");
-            return Promise.reject(new Error("Hors ligne"));
+    async function getTopScores(timeFrame = 'alltime', difficulty = null, limit = 10) {
+        if (!checkFirebaseAvailability()) {
+            console.warn("[ESF] firebaseServiceInstance n'est pas disponible pour getTopScores");
+            throw new Error("Service Firebase non disponible");
         }
 
-        console.log(`Récupération des scores pour la période: ${timeFrame}`);
+        try {
+            console.log(`Récupération des scores Enigma Scroll pour la période: ${timeFrame}, difficulté: ${difficulty}`);
 
-        // Construire la requête
-        let query = db.collection("game_scores")
-            .where("gameId", "==", "enigma-scroll");
+            // Simplifier la requête pour éviter les problèmes d'index composé Firebase
+            // On récupère plus de scores et on filtre côté client
+            const fetchLimit = Math.max(50, limit * 3); // Récupérer plus pour compenser le filtrage
+            
+            let query = window.firebaseServiceInstance.db.collection('game_scores')
+                .where('gameId', '==', 'enigma-scroll')
+                .orderBy('score', 'desc')
+                .limit(fetchLimit);
 
-        // Ajouter des filtres en fonction de la période
-        if (timeFrame === 'daily') {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            query = query.where("timestamp", ">=", yesterday);
-        } else if (timeFrame === 'weekly') {
-            const lastWeek = new Date();
-            lastWeek.setDate(lastWeek.getDate() - 7);
-            query = query.where("timestamp", ">=", lastWeek);
-        }
+            const querySnapshot = await query.get();
+            let scores = [];
 
-        // Ne pas utiliser orderBy pour éviter l'erreur d'index
-        // Nous trierons les résultats côté client
-
-        // Récupérer plus de résultats pour avoir suffisamment de données à trier
-        // Nous limiterons ensuite côté client
-        const resultsToFetch = Math.min(100, limit * 5); // Récupérer plus de résultats pour le tri
-        query = query.limit(resultsToFetch);
-
-        // Exécuter la requête
-        return query.get()
-            .then(querySnapshot => {
-                const scores = [];
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    scores.push({
-                        id: doc.id,
-                        playerName: data.playerName || data.username || 'Anonyme',
-                        score: data.score || 0,
-                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date(),
-                        difficulty: data.difficulty || 'intermediate',
-                        wordsFound: data.wordsFound || 0,
-                        maxCombo: data.maxCombo || 1
-                    });
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                scores.push({
+                    id: doc.id,
+                    userId: data.userId,
+                    username: data.playerName || 'Anonyme',
+                    score: data.score || 0,
+                    timestamp: data.timestamp ? (data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp)) : new Date(),
+                    difficulty: data.difficulty || 'intermediate',
+                    wordsFound: data.wordsFound || 0,
+                    maxCombo: data.maxCombo || 1
                 });
-
-                // Trier les scores par score décroissant côté client
-                scores.sort((a, b) => b.score - a.score);
-
-                // Limiter le nombre de résultats
-                const limitedScores = scores.slice(0, limit);
-
-                console.log(`Récupéré ${scores.length} scores, limité à ${limitedScores.length} après tri`);
-
-                return limitedScores;
-            })
-            .catch(error => {
-                console.error("Erreur lors de la récupération des scores:", error);
-                throw error;
             });
+
+            // Client-side filtering for timeframe
+            if (timeFrame !== 'alltime') {
+                const now = new Date();
+                let startDate;
+                if (timeFrame === 'daily') {
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                } else if (timeFrame === 'weekly') {
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 7);
+                }
+                if (startDate) {
+                    scores = scores.filter(score => score.timestamp >= startDate);
+                }
+            }
+
+            // Client-side filtering for difficulty
+            if (difficulty && difficulty !== 'all') {
+                scores = scores.filter(score => score.difficulty === difficulty);
+            }
+
+            // Re-trier par score décroissant et limiter au nombre demandé
+            scores.sort((a, b) => b.score - a.score);
+            scores = scores.slice(0, limit);
+
+            console.log(`Récupéré ${scores.length} scores Enigma Scroll`);
+            return scores;
+
+        } catch (error) {
+            console.error("Erreur lors de la récupération des scores Enigma Scroll:", error);
+            throw error;
+        }
     }
 
     /**
-     * Importe des scores historiques dans Firebase
+     * Importe des scores historiques depuis l'ancienne version
      * @param {Array} scores - Liste des scores à importer
      * @returns {Promise} - Une promesse qui se résout lorsque les scores sont importés
      */
-    function importHistoricalScores(scores) {
-        // Vérifier si nous sommes connectés
-        if (!window.firebaseConnectionState || !window.firebaseConnectionState.isOnline) {
-            console.warn("Hors ligne, impossible d'importer les scores historiques");
-            return Promise.reject(new Error("Hors ligne"));
+    async function importHistoricalScores(scores) {
+        if (!checkFirebaseAvailability()) {
+            console.warn("[ESF] firebaseServiceInstance n'est pas disponible pour importHistoricalScores");
+            throw new Error("Service Firebase non disponible");
         }
 
-        // Vérifier si les scores sont valides
+        const playerInfo = await getPlayerInfo();
+
+        if (!playerInfo.userId) {
+            console.warn("Utilisateur non connecté, impossible d'importer les scores historiques");
+            return Promise.reject(new Error("Utilisateur non connecté"));
+        }
+
         if (!scores || !Array.isArray(scores) || scores.length === 0) {
             console.warn("Scores invalides, importation annulée");
             return Promise.reject(new Error("Scores invalides"));
         }
 
-        console.log(`Importation de ${scores.length} scores historiques`);
+        console.log(`Importation de ${scores.length} scores historiques Enigma Scroll`);
 
-        // Utiliser un lot pour les opérations en masse
-        const batch = db.batch();
+        try {
+            // Traiter les scores un par un pour éviter les problèmes de batch
+            for (const score of scores) {
+                const scoreData = {
+                    userId: playerInfo.userId,
+                    playerName: score.playerName || score.username || playerInfo.playerName,
+                    gameId: 'enigma-scroll',
+                    score: score.score,
+                    difficulty: score.difficulty || 'intermediate',
+                    wordsFound: score.wordsFound || 0,
+                    maxCombo: score.maxCombo || 1,
+                    totalTime: score.totalTime || 0,
+                    timestamp: score.timestamp ? new Date(score.timestamp) : new Date()
+                };
 
-        // Ajouter chaque score au lot
-        scores.forEach(score => {
-            const docRef = db.collection("game_scores").doc();
-            batch.set(docRef, {
-                playerName: score.playerName,
-                username: score.playerName,
-                score: score.score,
-                gameId: "enigma-scroll",
-                game: "enigma-scroll",
-                timestamp: firebase.firestore.Timestamp.fromDate(
-                    typeof score.timestamp === 'string'
-                        ? new Date(score.timestamp)
-                        : (score.timestamp instanceof Date
-                            ? score.timestamp
-                            : new Date())
-                ),
-                difficulty: score.difficulty || "intermediate",
-                wordsFound: score.wordsFound || Math.floor(score.score / 10),
-                maxCombo: score.maxCombo || Math.floor(Math.random() * 5) + 1,
-                isHistorical: true
-            });
-        });
+                await window.firebaseServiceInstance.addScore(scoreData);
+            }
 
-        // Exécuter le lot
-        return batch.commit()
-            .then(() => {
-                console.log(`${scores.length} scores historiques importés avec succès`);
-                return scores.length;
-            })
-            .catch(error => {
-                console.error("Erreur lors de l'importation des scores historiques:", error);
-                throw error;
-            });
+            console.log("Importation des scores historiques Enigma Scroll terminée");
+            return true;
+        } catch (error) {
+            console.error("Erreur lors de l'importation des scores historiques:", error);
+            throw error;
+        }
     }
 
-    // API publique
+    // Interface publique
     return {
-        isAvailable: true,
-        saveScore,
-        getScores,
-        importHistoricalScores
+        get isAvailable() {
+            return checkFirebaseAvailability();
+        },
+        saveScore: saveScore,
+        getTopScores: getTopScores,
+        importHistoricalScores: importHistoricalScores
     };
 })();
+
+console.log("EnigmaScrollFirebase chargé avec firebaseServiceInstance");

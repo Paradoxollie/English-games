@@ -53,11 +53,11 @@ async function updateUserBestScore(userId, currentScore, difficulty) {
       if (currentScore > currentBest) {
         bestScores[ENIGMA_SCROLL_GAME_ID][difficulty] = currentScore;
         await window.firebaseServiceInstance.updateProfile(userId, { bestScores });
-        console.log(\`[EnigmaFirebaseHelper] Updated best score for \${difficulty}: \${currentScore}\`);
+        console.log(`[EnigmaFirebaseHelper] Updated best score for ${difficulty}: ${currentScore}`);
       }
     } else {
       // Profile might not exist if called out of sync, though unlikely with auth guard on saveScore
-      console.warn(\`[EnigmaFirebaseHelper] Profile not found for userId: \${userId} when updating best score.\`);
+      console.warn(`[EnigmaFirebaseHelper] Profile not found for userId: ${userId} when updating best score.`);
       // Optionally, create a basic best score entry if profile is created later
       // For now, we assume profile exists if user is authenticated.
     }
@@ -74,17 +74,14 @@ async function getTopScores(timeFrame = 'alltime', difficulty = null, limit = 10
   }
 
   try {
-    let query = window.firebaseServiceInstance.db.collection('game_scores')
-      .where('gameId', '==', ENIGMA_SCROLL_GAME_ID);
+    // Simplifier la requête pour éviter les problèmes d'index composé Firebase
+    // On récupère plus de scores et on filtre côté client
+    const fetchLimit = Math.max(50, limit * 3); // Récupérer plus pour compenser le filtrage
     
-    // Difficulty filtering should ideally be part of the Firestore query if an index is set up.
-    // For now, if difficulty is specified, it will be filtered client-side AFTER the initial fetch.
-    // This is less efficient if many scores of other difficulties are fetched.
-    // if (difficulty) {
-    //   query = query.where('difficulty', '==', difficulty); // Requires composite index with 'score'
-    // }
-
-    query = query.orderBy('score', 'desc').limit(limit);
+    let query = window.firebaseServiceInstance.db.collection('game_scores')
+      .where('gameId', '==', ENIGMA_SCROLL_GAME_ID)
+      .orderBy('score', 'desc')
+      .limit(fetchLimit);
     
     const snapshot = await query.get();
     let scores = snapshot.docs.map(doc => {
@@ -101,7 +98,7 @@ async function getTopScores(timeFrame = 'alltime', difficulty = null, limit = 10
       };
     });
 
-    // Client-side filtering for timeframe (less efficient but works without specific timestamp indexes)
+    // Client-side filtering for timeframe
     if (timeFrame !== 'alltime') {
       const now = new Date();
       let startDate;
@@ -116,12 +113,16 @@ async function getTopScores(timeFrame = 'alltime', difficulty = null, limit = 10
       }
     }
 
-    // Client-side filtering for difficulty if not done in query
-    if (difficulty) {
+    // Client-side filtering for difficulty
+    if (difficulty && difficulty !== 'all') {
         scores = scores.filter(score => score.difficulty === difficulty);
     }
 
-    return scores; // Already limited by query, client-side filter might reduce count further.
+    // Re-trier par score décroissant et limiter au nombre demandé
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, limit);
+
+    return scores;
 
   } catch (error) {
     console.error("[EnigmaFirebaseHelper] Error fetching top scores:", error);

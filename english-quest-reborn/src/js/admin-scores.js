@@ -3,9 +3,6 @@
  * Permet à l'administrateur de gérer les scores des joueurs
  */
 
-import firebaseService from '../core/services/firebase.service.js';
-import { collection, getDocs, orderBy, query, limit, doc, getDoc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-
 const AdminScores = {
     // Propriétés
     isAdmin: false,

@@ -2,12 +2,12 @@
 
 window.RewardSystem = {
     async addCoins(amount, source) {
-        console.log(\`[RewardSystem] Attempting to add \${amount} PENDING coins from \${source}\`);
+        console.log(`[RewardSystem] Attempting to add ${amount} PENDING coins from ${source}`);
         const authState = window.authService?.getAuthState(); 
         if (!authState?.isAuthenticated || !authState.profile) {
             console.warn("[RewardSystem] User not authenticated for addCoins. Storing pending coins offline.");
             this.storeOfflineReward('pendingCoins', amount, source); // Store as pendingCoins
-            this.showRewardNotification(\`+\${amount} pièces en attente (hors ligne)\`, 'success');
+            this.showRewardNotification(`+${amount} pièces en attente (hors ligne)`, 'success');
             return false; 
         }
 
@@ -16,24 +16,24 @@ window.RewardSystem = {
 
         try {
             await window.authService.updateUserProfile({ pendingCoins: newPendingCoins });
-            console.log(\`[RewardSystem] pendingCoins update attempted for \${profile.username}. New pendingCoins: \${newPendingCoins}.\`);
-            this.showRewardNotification(\`+\${amount} pièces en attente\`, 'success');
+            console.log(`[RewardSystem] pendingCoins update attempted for ${profile.username}. New pendingCoins: ${newPendingCoins}.`);
+            this.showRewardNotification(`+${amount} pièces en attente`, 'success');
             return true;
         } catch (error) {
-            console.error(\`[RewardSystem] Error updating pendingCoins for \${profile.username}: \${error.message}. Storing offline.\`);
+            console.error(`[RewardSystem] Error updating pendingCoins for ${profile.username}: ${error.message}. Storing offline.`);
             this.storeOfflineReward('pendingCoins', amount, source);
-            this.showRewardNotification(\`+\${amount} pièces en attente (hors ligne - erreur)\`, 'success');
+            this.showRewardNotification(`+${amount} pièces en attente (hors ligne - erreur)`, 'success');
             return false;
         }
     },
 
     async addXP(amount, source) {
-        console.log(\`[RewardSystem] Attempting to add \${amount} PENDING XP from \${source}\`);
+        console.log(`[RewardSystem] Attempting to add ${amount} PENDING XP from ${source}`);
         const authState = window.authService?.getAuthState();
         if (!authState?.isAuthenticated || !authState.profile) {
             console.warn("[RewardSystem] User not authenticated for addXP. Storing pending XP offline.");
             this.storeOfflineReward('pendingXP', amount, source); // Store as pendingXP
-            this.showRewardNotification(\`+\${amount} XP en attente (hors ligne)\`, 'success');
+            this.showRewardNotification(`+${amount} XP en attente (hors ligne)`, 'success');
             return false;
         }
 
@@ -43,13 +43,13 @@ window.RewardSystem = {
         try {
             // Level-up logic is REMOVED here. It will be handled by admin panel when approving pendingXP.
             await window.authService.updateUserProfile({ pendingXP: newPendingXP });
-            console.log(\`[RewardSystem] pendingXP update attempted for \${profile.username}. New pendingXP: \${newPendingXP}.\`);
-            this.showRewardNotification(\`+\${amount} XP en attente\`, 'success');
+            console.log(`[RewardSystem] pendingXP update attempted for ${profile.username}. New pendingXP: ${newPendingXP}.`);
+            this.showRewardNotification(`+${amount} XP en attente`, 'success');
             return true;
         } catch (error) {
-            console.error(\`[RewardSystem] Error updating pendingXP for \${profile.username}: \${error.message}. Storing offline.\`);
+            console.error(`[RewardSystem] Error updating pendingXP for ${profile.username}: ${error.message}. Storing offline.`);
             this.storeOfflineReward('pendingXP', amount, source);
-            this.showRewardNotification(\`+\${amount} XP en attente (hors ligne - erreur)\`, 'success');
+            this.showRewardNotification(`+${amount} XP en attente (hors ligne - erreur)`, 'success');
             return false;
         }
     },
@@ -59,7 +59,7 @@ window.RewardSystem = {
             let offlineRewards = JSON.parse(localStorage.getItem('offlineRewards_eqr')) || [];
             offlineRewards.push({ type, amount, source, timestamp: new Date().toISOString() });
             localStorage.setItem('offlineRewards_eqr', JSON.stringify(offlineRewards));
-            console.log(\`[RewardSystem] Stored offline: \${amount} \${type} from \${source}\`);
+            console.log(`[RewardSystem] Stored offline: ${amount} ${type} from ${source}`);
         } catch (e) {
             console.error("[RewardSystem] Error storing offline reward:", e);
         }
@@ -74,7 +74,7 @@ window.RewardSystem = {
             document.body.appendChild(container);
         }
         const notif = document.createElement('div');
-        notif.className = \`reward-notification \${type}\`;
+        notif.className = `reward-notification ${type}`;
         notif.textContent = message;
         notif.style.padding = '10px 20px'; notif.style.marginBottom = '10px'; notif.style.borderRadius = '5px';
         notif.style.color = 'white'; notif.style.minWidth = '200px';
@@ -113,7 +113,7 @@ window.RewardSystem = {
              this.showRewardNotification('Récompenses hors ligne (en attente) synchronisées!', 'success');
         }
         if (stillOffline.length > 0) {
-            this.showRewardNotification(\`\${stillOffline.length} récompenses hors ligne (en attente) n'ont pas pu être synchronisées.\`, 'error');
+            this.showRewardNotification(`${stillOffline.length} récompenses hors ligne (en attente) n'ont pas pu être synchronisées.`, 'error');
         }
     }
 };
@@ -122,4 +122,4 @@ window.RewardSystem = {
 // It should be after authService is initialized and user is logged in.
 // Example: document.addEventListener('authInitializedAndUserPresent', () => window.RewardSystem.processOfflineRewards());
 
-console.log("RewardSystem refactored for pendingXP/pendingCoins.");
+console.log("RewardSystem refactored for pendingXP/pendingCoins."); 

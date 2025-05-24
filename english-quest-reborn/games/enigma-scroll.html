@@ -827,6 +827,46 @@
       background-color: rgba(205, 127, 50, 0.1);
     }
 
+    /* Styles pour les boutons de bascule leaderboard */
+    .leaderboard-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .toggle-btn {
+      padding: 0.75rem 1.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      color: var(--color-text);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .toggle-btn i {
+      font-size: 1rem;
+    }
+
     .current-player {
       background-color: rgba(46, 204, 113, 0.15) !important;
     }
@@ -1738,6 +1778,17 @@
           <div class="game-hud">
             <h2>Meilleurs Scores</h2>
           </div>
+          
+          <!-- Boutons de bascule entre scores locaux et en ligne -->
+          <div class="leaderboard-toggle">
+            <button id="local-scores-btn" class="toggle-btn active">
+              <i class="fas fa-user"></i> Mes Scores
+            </button>
+            <button id="online-scores-btn" class="toggle-btn">
+              <i class="fas fa-globe"></i> Scores Globaux
+            </button>
+          </div>
+          
           <div id="enigma-scroll-leaderboard" class="leaderboard-container">
             <table class="leaderboard-table">
               <thead>
@@ -1928,9 +1979,10 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="../src/js/firebase-init.js"></script>
+  <script src="../src/js/firebase-service-adapter.js"></script>
 
   <!-- Scripts du jeu (avec defer pour optimiser le chargement) -->
-  <script src="../scripts/local-auth.js" defer></script>
+  <script src="../scripts/auth-local.js" defer></script>
   <script src="../src/js/auth-state.js" defer></script>
   <script src="../src/js/reward-system.js" defer></script>
   <script src="../src/js/admin-scores.js" defer></script>
