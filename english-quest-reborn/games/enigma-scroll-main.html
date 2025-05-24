@@ -284,6 +284,7 @@
       gap: var(--spacing-lg);
       max-width: 1200px;
       margin: 0 auto;
+      padding: var(--spacing-md) 0;
     }
 
     .game-main {
@@ -850,125 +851,129 @@
     </div>
 
     <!-- Zone de jeu -->
-    <div id="gameArea" class="game-area hidden">
-      <div class="game-main">
-              <!-- Power-ups -->
-        <div class="power-ups">
-          <div class="power-up" data-type="hint">
-                  <div class="power-up-icon">💡</div>
-            <div class="power-up-name">Indice (1)</div>
-                </div>
-          <div class="power-up" data-type="time">
-                  <div class="power-up-icon">⏰</div>
-            <div class="power-up-name">+15s (2)</div>
-                </div>
-          <div class="power-up" data-type="skip">
-                  <div class="power-up-icon">⏭️</div>
-            <div class="power-up-name">Passer (3)</div>
-                </div>
+    <div id="gameArea" class="hidden">
+      <div class="container">
+        <div class="game-area">
+          <div class="game-main">
+            <!-- Power-ups -->
+            <div class="power-ups">
+              <div class="power-up" data-type="hint">
+                <div class="power-up-icon">💡</div>
+                <div class="power-up-name">Indice (1)</div>
               </div>
-
-              <!-- Grille de jeu -->
-        <div id="gameGrid" class="game-grid"></div>
-
-              <!-- Clavier virtuel -->
-        <div class="keyboard">
-                <div class="keyboard-row">
-                  <button class="key-btn">Q</button>
-                  <button class="key-btn">W</button>
-                  <button class="key-btn">E</button>
-                  <button class="key-btn">R</button>
-                  <button class="key-btn">T</button>
-                  <button class="key-btn">Y</button>
-                  <button class="key-btn">U</button>
-                  <button class="key-btn">I</button>
-                  <button class="key-btn">O</button>
-                  <button class="key-btn">P</button>
-                </div>
-                <div class="keyboard-row">
-                  <button class="key-btn">A</button>
-                  <button class="key-btn">S</button>
-                  <button class="key-btn">D</button>
-                  <button class="key-btn">F</button>
-                  <button class="key-btn">G</button>
-                  <button class="key-btn">H</button>
-                  <button class="key-btn">J</button>
-                  <button class="key-btn">K</button>
-                  <button class="key-btn">L</button>
-                </div>
-                <div class="keyboard-row">
-                  <button class="key-btn key-enter">ENTER</button>
-                  <button class="key-btn">Z</button>
-                  <button class="key-btn">X</button>
-                  <button class="key-btn">C</button>
-                  <button class="key-btn">V</button>
-                  <button class="key-btn">B</button>
-                  <button class="key-btn">N</button>
-                  <button class="key-btn">M</button>
-                  <button class="key-btn key-delete">⌫</button>
-                </div>
+              <div class="power-up" data-type="time">
+                <div class="power-up-icon">⏰</div>
+                <div class="power-up-name">+15s (2)</div>
               </div>
-
-        <div class="text-center">
-          <button id="newGameButton" class="btn btn-secondary" style="display: none;">
-            <i class="fas fa-redo"></i>
-            Nouvelle Partie
-                </button>
+              <div class="power-up" data-type="skip">
+                <div class="power-up-icon">⏭️</div>
+                <div class="power-up-name">Passer (3)</div>
               </div>
             </div>
 
-      <div class="game-sidebar">
-        <!-- Statistiques -->
-        <div class="stats-card">
-          <h3 class="card-title">Statistiques</h3>
-          <div class="stat-item">
-            <span>Score:</span>
-            <span class="stat-value" id="currentScore">0</span>
+            <!-- Grille de jeu -->
+            <div id="gameGrid" class="game-grid"></div>
+
+            <!-- Clavier virtuel -->
+            <div class="keyboard">
+              <div class="keyboard-row">
+                <button class="key-btn">Q</button>
+                <button class="key-btn">W</button>
+                <button class="key-btn">E</button>
+                <button class="key-btn">R</button>
+                <button class="key-btn">T</button>
+                <button class="key-btn">Y</button>
+                <button class="key-btn">U</button>
+                <button class="key-btn">I</button>
+                <button class="key-btn">O</button>
+                <button class="key-btn">P</button>
+              </div>
+              <div class="keyboard-row">
+                <button class="key-btn">A</button>
+                <button class="key-btn">S</button>
+                <button class="key-btn">D</button>
+                <button class="key-btn">F</button>
+                <button class="key-btn">G</button>
+                <button class="key-btn">H</button>
+                <button class="key-btn">J</button>
+                <button class="key-btn">K</button>
+                <button class="key-btn">L</button>
+              </div>
+              <div class="keyboard-row">
+                <button class="key-btn key-enter">ENTER</button>
+                <button class="key-btn">Z</button>
+                <button class="key-btn">X</button>
+                <button class="key-btn">C</button>
+                <button class="key-btn">V</button>
+                <button class="key-btn">B</button>
+                <button class="key-btn">N</button>
+                <button class="key-btn">M</button>
+                <button class="key-btn key-delete">⌫</button>
+              </div>
             </div>
-          <div class="stat-item">
-            <span>Combo:</span>
-            <span class="stat-value" id="currentCombo">1</span>
+
+            <div class="text-center">
+              <button id="newGameButton" class="btn btn-secondary" style="display: none;">
+                <i class="fas fa-redo"></i>
+                Nouvelle Partie
+              </button>
             </div>
-          <div class="stat-item">
-            <span>Mots trouvés:</span>
-            <span class="stat-value" id="wordsFound">0</span>
-            </div>
-          <div class="stat-item">
-            <span>Temps restant:</span>
-            <span class="stat-value" id="timeLeft">90</span>
           </div>
-          <div class="stat-item">
-            <span>Or:</span>
-            <span class="stat-value" id="playerGold">0</span>
-          </div>
-          <div class="stat-item">
-            <span>XP:</span>
-            <span class="stat-value" id="playerXP">0</span>
-          </div>
+
+          <div class="game-sidebar">
+            <!-- Statistiques -->
+            <div class="stats-card">
+              <h3 class="card-title">Statistiques</h3>
+              <div class="stat-item">
+                <span>Score:</span>
+                <span class="stat-value" id="currentScore">0</span>
+              </div>
+              <div class="stat-item">
+                <span>Combo:</span>
+                <span class="stat-value" id="currentCombo">1</span>
+              </div>
+              <div class="stat-item">
+                <span>Mots trouvés:</span>
+                <span class="stat-value" id="wordsFound">0</span>
+              </div>
+              <div class="stat-item">
+                <span>Temps restant:</span>
+                <span class="stat-value" id="timeLeft">90</span>
+              </div>
+              <div class="stat-item">
+                <span>Or:</span>
+                <span class="stat-value" id="playerGold">0</span>
+              </div>
+              <div class="stat-item">
+                <span>XP:</span>
+                <span class="stat-value" id="playerXP">0</span>
+              </div>
             </div>
             
-        <!-- Classement -->
-        <div class="leaderboard-card">
-          <h3 class="card-title">Meilleurs Scores</h3>
+            <!-- Classement -->
+            <div class="leaderboard-card">
+              <h3 class="card-title">Meilleurs Scores</h3>
               <table class="leaderboard-table">
                 <thead>
                   <tr>
-                <th class="rank">#</th>
-                <th class="player">Joueur</th>
-                <th class="score">Score</th>
+                    <th class="rank">#</th>
+                    <th class="player">Joueur</th>
+                    <th class="score">Score</th>
                   </tr>
                 </thead>
-            <tbody id="leaderboardBody">
+                <tbody id="leaderboardBody">
                   <tr>
-                <td colspan="3" style="text-align: center; color: var(--color-text-secondary);">
-                  Chargement...
+                    <td colspan="3" style="text-align: center; color: var(--color-text-secondary);">
+                      Chargement...
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+        </div>
       </div>
+    </div>
   </main>
 
   <!-- Message de notification -->
@@ -1029,6 +1034,7 @@
       
       authCheckTimer = setInterval(async () => {
         const wasAuthenticated = !!currentUser;
+        const previousUser = currentUser;
         await checkAuthentication();
         const isAuthenticated = !!currentUser;
         
@@ -1038,40 +1044,45 @@
             // L'utilisateur vient de se connecter
             console.log('🎉 Utilisateur connecté détecté !');
             
+            // Masquer l'écran d'authentification
+            document.getElementById('authRequired').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
             // Réactiver l'interface
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
               btn.style.pointerEvents = 'auto';
               btn.style.opacity = '1';
             });
-            
-            // Masquer l'écran d'authentification avec animation
-            const authScreen = document.getElementById('authRequired');
-            authScreen.style.opacity = '0';
-            authScreen.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-              authScreen.classList.add('hidden');
-              authScreen.style.opacity = '1';
-              authScreen.style.transform = 'scale(1)';
-            }, 300);
+            document.getElementById('startGameButton').disabled = false;
             
             showMessage('🎉 Connexion détectée ! Bienvenue !', 'success');
           } else {
             // L'utilisateur vient de se déconnecter
             console.log('👋 Déconnexion détectée');
+            
+            // Afficher l'écran d'authentification
             document.getElementById('authRequired').classList.remove('hidden');
+            document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('gameArea').classList.add('hidden');
-            document.getElementById('welcomeScreen').classList.remove('hidden');
             
             // Désactiver l'interface
             document.querySelectorAll('.difficulty-btn').forEach(btn => {
               btn.style.pointerEvents = 'none';
               btn.style.opacity = '0.5';
             });
+            document.getElementById('startGameButton').disabled = true;
+            
+            // Arrêter le jeu si en cours
+            if (gameState.gameActive) {
+              gameState.gameActive = false;
+              stopTimer();
+              stopRandomEvents();
+            }
             
             showMessage('Vous avez été déconnecté.', 'warning');
           }
         }
-      }, 2000); // Vérifier toutes les 2 secondes
+      }, 3000); // Vérifier toutes les 3 secondes pour éviter la surcharge
     }
 
     // ===========================================
@@ -1084,7 +1095,7 @@
       // Attendre que les services soient prêts avec un timeout plus long
       await new Promise(resolve => {
         let attempts = 0;
-        const maxAttempts = 50; // 5 secondes max
+        const maxAttempts = 30; // 3 secondes max
         
         const checkServices = () => {
           attempts++;
@@ -1116,7 +1127,9 @@
       // Méthode 1: authService du reborn
       if (window.authService && typeof window.authService.getCurrentUser === 'function') {
         try {
-          await window.authService.init();
+          if (!window.authService.initialized) {
+            await window.authService.init();
+          }
           currentUser = window.authService.getCurrentUser();
           console.log('Utilisateur trouvé via authService:', currentUser);
         } catch (error) {
@@ -1174,17 +1187,13 @@
       console.log('Utilisateur final détecté:', currentUser);
       updateAuthUI();
       
-      // Toujours afficher le jeu, mais avec des restrictions si pas connecté
       if (!currentUser) {
-        document.getElementById('authRequired').classList.remove('hidden');
-        document.getElementById('welcomeScreen').classList.add('hidden');
-        document.getElementById('gameArea').classList.add('hidden');
+        console.log('Aucun utilisateur connecté - affichage de l\'écran d\'authentification');
         return false;
       }
       
+      console.log('Utilisateur connecté - chargement du profil');
       await loadUserProfile();
-      document.getElementById('authRequired').classList.add('hidden');
-      document.getElementById('welcomeScreen').classList.remove('hidden');
       return true;
     }
 
@@ -1201,18 +1210,32 @@
         loginButton.style.display = 'none';
         profileButton.style.display = 'inline-flex';
         
-        // Mettre à jour le texte du bouton profil
+        // Mettre à jour le texte du bouton profil avec la logique reborn
         let displayName = 'Mon Profil';
-        if (currentUser.displayName) {
-          displayName = currentUser.displayName;
+        
+        // Debug: afficher la structure de l'utilisateur
+        console.log('Structure utilisateur pour nom:', currentUser);
+        
+        // Essayer différentes propriétés du système reborn
+        if (currentUser.userData && currentUser.userData.username) {
+          displayName = currentUser.userData.username;
+        } else if (currentUser.userData && currentUser.userData.name) {
+          displayName = currentUser.userData.name;
+        } else if (currentUser.userData && currentUser.userData.displayName) {
+          displayName = currentUser.userData.displayName;
         } else if (currentUser.username) {
           displayName = currentUser.username;
+        } else if (currentUser.displayName) {
+          displayName = currentUser.displayName;
         } else if (currentUser.name) {
           displayName = currentUser.name;
         } else if (currentUser.email) {
           displayName = currentUser.email.split('@')[0];
+        } else if (currentUser.userData && currentUser.userData.email) {
+          displayName = currentUser.userData.email.split('@')[0];
         }
         
+        console.log('Nom d\'affichage choisi:', displayName);
         profileButton.textContent = displayName;
 
         // Ajouter le bouton de déconnexion
@@ -1836,26 +1859,30 @@
     document.addEventListener('DOMContentLoaded', async function() {
       console.log('🎮 Initialisation d\'Enigma Scroll...');
       
-      // Démarrer le polling d'authentification
-      startAuthPolling();
-      
       // Afficher toujours l'écran d'accueil du jeu en premier
       document.getElementById('welcomeScreen').classList.remove('hidden');
       
-      // Vérifier l'authentification
+      // Démarrer le polling d'authentification
+      startAuthPolling();
+      
+      // Vérifier l'authentification initiale
       const isAuthenticated = await checkAuthentication();
       if (!isAuthenticated) {
+        console.log('Utilisateur non connecté - affichage de l\'écran de connexion');
+        // Afficher l'écran d'authentification
+        document.getElementById('authRequired').classList.remove('hidden');
+        
         // Désactiver les interactions du jeu
         document.querySelectorAll('.difficulty-btn').forEach(btn => {
           btn.style.pointerEvents = 'none';
           btn.style.opacity = '0.5';
         });
         document.getElementById('startGameButton').disabled = true;
-        return;
+      } else {
+        console.log('Utilisateur connecté - initialisation complète');
+        // Charger le classement initial
+        await loadLeaderboard();
       }
-      
-      // Charger le classement initial
-      await loadLeaderboard();
       
       // Sélection de difficulté
       document.querySelectorAll('.difficulty-btn').forEach(btn => {
