@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Enigma Scroll - Système de scores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .section {
+            background-color: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #3a3a3a;
+        }
+        
+        .section h2 {
+            color: #2ecc71;
+            margin-top: 0;
+        }
+        
+        button {
+            background-color: #2ecc71;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #27ae60;
+        }
+        
+        .output {
+            background-color: #0a0a0a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border: 1px solid #3a3a3a;
+        }
+        
+        .success {
+            color: #2ecc71;
+        }
+        
+        .error {
+            color: #e74c3c;
+        }
+        
+        .warning {
+            color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Enigma Scroll - Système de scores (Version corrigée)</h1>
+    
+    <div class="section">
+        <h2>📊 État du système</h2>
+        <button onclick="checkSystemStatus()">Vérifier l'état du système</button>
+        <div id="systemStatus" class="output"></div>
+    </div>
+    
+    <div class="section">
+        <h2>👤 Authentification</h2>
+        <button onclick="checkAuth()">Vérifier l'authentification</button>
+        <button onclick="simulateLogin()">Simuler une connexion</button>
+        <div id="authStatus" class="output"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🔄 Migration des scores</h2>
+        <button onclick="createTestScores()">Créer des scores de test</button>
+        <button onclick="testMigration()">Tester la migration</button>
+        <button onclick="forceMigration()">Forcer la migration</button>
+        <div id="migrationStatus" class="output"></div>
+    </div>
+    
+    <div class="section">
+        <h2>📋 Scores locaux</h2>
+        <button onclick="showLocalScores()">Afficher les scores locaux</button>
+        <button onclick="clearLocalScores()">Effacer les scores locaux</button>
+        <div id="localScoresStatus" class="output"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🌐 Firebase</h2>
+        <button onclick="testFirebase()">Tester Firebase</button>
+        <button onclick="testFirebaseServiceInstance()">Tester firebaseServiceInstance</button>
+        <div id="firebaseStatus" class="output"></div>
+    </div>
+
+    <!-- Scripts Firebase (version 8 pour compatibilité) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <!-- Configuration Firebase -->
+    <script>
+        // Configuration Firebase simplifiée pour le debug
+        const firebaseConfig = {
+            apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "452279652544",
+            appId: "1:452279652544:web:916f93e0ab29183e739d25",
+            measurementId: "G-RMCQTMKDVP",
+            databaseURL: "https://english-games-41017-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+
+        // Initialiser Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialisé pour debug");
+        }
+
+        // Créer un firebaseServiceInstance simulé
+        window.firebaseServiceInstance = {
+            db: firebase.firestore(),
+            auth: firebase.auth(),
+            addScore: async function(scoreData) {
+                console.log("firebaseServiceInstance.addScore appelé avec:", scoreData);
+                // Simulation de l'ajout de score
+                const scoresRef = this.db.collection('game_scores');
+                return await scoresRef.add({
+                    ...scoreData,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        };
+
+        // Créer un authService simulé
+        window.authService = {
+            getCurrentUser: function() {
+                const localUser = localStorage.getItem('english_quest_current_user');
+                if (localUser) {
+                    try {
+                        const user = JSON.parse(localUser);
+                        return {
+                            uid: user.userId || 'test-user-123',
+                            username: user.username,
+                            email: user.email || 'test@example.com'
+                        };
+                    } catch (e) {
+                        return null;
+                    }
+                }
+                return null;
+            },
+            getAuthState: function() {
+                const user = this.getCurrentUser();
+                if (user) {
+                    return {
+                        isAuthenticated: true,
+                        profile: {
+                            username: user.username,
+                            email: user.email,
+                            userId: user.uid
+                        }
+                    };
+                }
+                return { isAuthenticated: false, profile: null };
+            }
+        };
+
+        console.log("Services de debug créés:", {
+            authService: window.authService,
+            firebaseServiceInstance: window.firebaseServiceInstance
+        });
+    </script>
+
+        <!-- Scripts du jeu -->    <script src="scripts/auth-local.js"></script>    <script src="src/js/auth-state.js"></script>    <script src="src/js/enigma-scroll/enigma-scroll-firebase.js"></script>    <script src="src/js/enigma-scroll/enigma-scroll-leaderboard.js"></script>    <script src="src/js/enigma-scroll/enigma-scroll.js"></script>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        function checkSystemStatus() {
+            const output = document.getElementById('systemStatus');
+            output.innerHTML = '';
+            
+            log('systemStatus', '🔍 Vérification de l\'état du système...', 'info');
+            
+            // Vérifier les objets globaux
+            const checks = [
+                { name: 'window.authService', obj: window.authService },
+                { name: 'window.firebaseServiceInstance', obj: window.firebaseServiceInstance },
+                { name: 'window.EnigmaScrollFirebase', obj: window.EnigmaScrollFirebase },
+                { name: 'window.EnigmaScrollLeaderboard', obj: window.EnigmaScrollLeaderboard },
+                { name: 'window.EnigmaScrollMigration', obj: window.EnigmaScrollMigration }
+            ];
+            
+            checks.forEach(check => {
+                if (check.obj) {
+                    log('systemStatus', `✅ ${check.name} : disponible`, 'success');
+                    
+                    // Vérifications supplémentaires
+                    if (check.name === 'window.authService') {
+                        if (typeof check.obj.getAuthState === 'function') {
+                            log('systemStatus', `  ✅ authService.getAuthState : disponible`, 'success');
+                        } else {
+                            log('systemStatus', `  ❌ authService.getAuthState : manquant`, 'error');
+                        }
+                    }
+                    
+                    if (check.name === 'window.firebaseServiceInstance') {
+                        if (check.obj.db) {
+                            log('systemStatus', `  ✅ firebaseServiceInstance.db : disponible`, 'success');
+                        } else {
+                            log('systemStatus', `  ❌ firebaseServiceInstance.db : manquant`, 'error');
+                        }
+                        if (typeof check.obj.addScore === 'function') {
+                            log('systemStatus', `  ✅ firebaseServiceInstance.addScore : disponible`, 'success');
+                        } else {
+                            log('systemStatus', `  ❌ firebaseServiceInstance.addScore : manquant`, 'error');
+                        }
+                    }
+                } else {
+                    log('systemStatus', `❌ ${check.name} : non disponible`, 'error');
+                }
+            });
+        }
+
+        function checkAuth() {
+            const output = document.getElementById('authStatus');
+            output.innerHTML = '';
+            
+            log('authStatus', '🔍 Vérification de l\'authentification...', 'info');
+            
+            try {
+                if (window.authService) {
+                    const authState = window.authService.getAuthState();
+                    if (authState && authState.isAuthenticated) {
+                        log('authStatus', `✅ Utilisateur connecté : ${authState.profile.username}`, 'success');
+                        log('authStatus', `📧 Email : ${authState.profile.email}`, 'info');
+                        log('authStatus', `🆔 ID : ${authState.profile.userId}`, 'info');
+                    } else {
+                        log('authStatus', '❌ Aucun utilisateur connecté', 'warning');
+                    }
+                } else {
+                    log('authStatus', '❌ authService non disponible', 'error');
+                }
+                
+                // Vérifier localStorage
+                const localUser = localStorage.getItem('english_quest_current_user');
+                if (localUser) {
+                    const user = JSON.parse(localUser);
+                    log('authStatus', `💾 Utilisateur en localStorage : ${user.username}`, 'info');
+                } else {
+                    log('authStatus', '💾 Aucun utilisateur en localStorage', 'warning');
+                }
+
+                // Vérifier aussi l'autre format de localStorage
+                const englishQuestUserId = localStorage.getItem('englishQuestUserId');
+                if (englishQuestUserId) {
+                    log('authStatus', `💾 User ID en localStorage : ${englishQuestUserId}`, 'info');
+                } else {
+                    log('authStatus', '💾 Aucun englishQuestUserId en localStorage', 'warning');
+                }
+            } catch (error) {
+                log('authStatus', `❌ Erreur : ${error.message}`, 'error');
+            }
+        }
+
+        function simulateLogin() {
+            const output = document.getElementById('authStatus');
+            log('authStatus', '🎭 Simulation d\'une connexion...', 'info');
+            
+            const testUser = {
+                username: 'TestUser',
+                email: 'test@example.com',
+                userId: 'test-user-123',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Simuler les deux formats de localStorage
+            localStorage.setItem('english_quest_current_user', JSON.stringify(testUser));
+            localStorage.setItem('englishQuestUserId', testUser.userId);
+            
+            log('authStatus', `✅ Utilisateur simulé créé : ${testUser.username}`, 'success');
+        }
+
+        function createTestScores() {
+            const output = document.getElementById('migrationStatus');
+            log('migrationStatus', '🎯 Création de scores de test...', 'info');
+            
+            const testScores = [
+                {
+                    playerName: 'TestUser',
+                    score: 1500,
+                    wordsFound: 15,
+                    maxCombo: 5,
+                    difficulty: 'intermediate',
+                    timestamp: new Date(Date.now() - 86400000).toISOString() // hier
+                },
+                {
+                    playerName: 'TestUser',
+                    score: 2000,
+                    wordsFound: 20,
+                    maxCombo: 8,
+                    difficulty: 'advanced',
+                    timestamp: new Date(Date.now() - 172800000).toISOString() // avant-hier
+                }
+            ];
+            
+            // Ajouter aux différents formats d'anciens scores
+            localStorage.setItem('enigma_scroll_scores', JSON.stringify(testScores));
+            localStorage.setItem('enigmaScrollScores', JSON.stringify(testScores));
+            
+            log('migrationStatus', `✅ ${testScores.length} scores de test créés`, 'success');
+        }
+
+        function testMigration() {
+            const output = document.getElementById('migrationStatus');
+            log('migrationStatus', '🔄 Test de la migration...', 'info');
+            
+            if (window.EnigmaScrollMigration) {
+                log('migrationStatus', '✅ EnigmaScrollMigration disponible', 'success');
+                
+                try {
+                    const result = window.EnigmaScrollMigration.migrateOldScores();
+                    if (result && typeof result.then === 'function') {
+                        result.then(success => {
+                            if (success) {
+                                log('migrationStatus', '✅ Migration réussie !', 'success');
+                            } else {
+                                log('migrationStatus', '⚠️ Migration échouée', 'warning');
+                            }
+                        }).catch(error => {
+                            log('migrationStatus', `❌ Erreur de migration : ${error.message}`, 'error');
+                        });
+                    } else {
+                        log('migrationStatus', result ? '✅ Migration réussie !' : '⚠️ Migration échouée', result ? 'success' : 'warning');
+                    }
+                } catch (error) {
+                    log('migrationStatus', `❌ Erreur lors de l'appel de migration : ${error.message}`, 'error');
+                }
+            } else {
+                log('migrationStatus', '❌ EnigmaScrollMigration non disponible', 'error');
+                log('migrationStatus', '💡 Essayez de recharger la page et attendez que tous les scripts se chargent', 'info');
+            }
+        }
+
+        function forceMigration() {
+            const output = document.getElementById('migrationStatus');
+            log('migrationStatus', '🔨 Migration forcée...', 'info');
+            
+            // Migration manuelle sans dépendre des objets globaux
+            try {
+                const oldFormats = [
+                    'enigma_scroll_local_scores',
+                    'enigma_scroll_scores',
+                    'enigmaScrollScores'
+                ];
+
+                let allOldScores = [];
+
+                for (const format of oldFormats) {
+                    const scoresJson = localStorage.getItem(format);
+                    if (scoresJson) {
+                        try {
+                            const scores = JSON.parse(scoresJson);
+                            if (Array.isArray(scores)) {
+                                log('migrationStatus', `📊 Trouvé ${scores.length} scores dans ${format}`, 'info');
+                                allOldScores.push(...scores);
+                            }
+                        } catch (error) {
+                            log('migrationStatus', `⚠️ Erreur lecture ${format}: ${error.message}`, 'warning');
+                        }
+                    }
+                }
+
+                if (allOldScores.length === 0) {
+                    log('migrationStatus', '✅ Aucun ancien score à migrer', 'success');
+                    return;
+                }
+
+                // Conversion vers le nouveau format
+                const localScores = JSON.parse(localStorage.getItem('localScores') || '[]');
+                
+                allOldScores.forEach(score => {
+                    const newScore = {
+                        username: score.playerName || score.username || 'Anonyme',
+                        playerName: score.playerName || score.username || 'Anonyme',
+                        score: score.score || 0,
+                        wordsFound: score.wordsFound || 0,
+                        maxCombo: score.maxCombo || 1,
+                        difficulty: score.difficulty || 'intermediate',
+                        timestamp: score.timestamp || new Date().toISOString(),
+                        gameId: 'enigma-scroll',
+                        migrated: true
+                    };
+                    
+                    localScores.push(newScore);
+                });
+
+                // Supprimer les doublons et trier
+                const uniqueScores = localScores.filter((score, index, array) => 
+                    array.findIndex(s => 
+                        s.gameId === score.gameId &&
+                        s.score === score.score && 
+                        s.timestamp === score.timestamp
+                    ) === index
+                );
+
+                uniqueScores.sort((a, b) => b.score - a.score);
+                const limitedScores = uniqueScores.slice(0, 100);
+
+                localStorage.setItem('localScores', JSON.stringify(limitedScores));
+                localStorage.setItem('enigma_scroll_migration_done', new Date().toISOString());
+
+                log('migrationStatus', `✅ Migration forcée terminée : ${allOldScores.length} scores traités`, 'success');
+                log('migrationStatus', `📊 ${uniqueScores.length} scores uniques après déduplication`, 'info');
+                log('migrationStatus', `💾 ${limitedScores.length} scores conservés après limitation`, 'info');
+                
+            } catch (error) {
+                log('migrationStatus', `❌ Erreur migration forcée : ${error.message}`, 'error');
+            }
+        }
+
+        function showLocalScores() {
+            const output = document.getElementById('localScoresStatus');
+            output.innerHTML = '';
+            
+            try {
+                const localScores = JSON.parse(localStorage.getItem('localScores') || '[]');
+                const enigmaScores = localScores.filter(score => score.gameId === 'enigma-scroll');
+                
+                log('localScoresStatus', `📊 Total scores locaux : ${localScores.length}`, 'info');
+                log('localScoresStatus', `🎮 Scores Enigma Scroll : ${enigmaScores.length}`, 'info');
+                
+                if (enigmaScores.length > 0) {
+                    log('localScoresStatus', '\n🏆 Top 5 Enigma Scroll :', 'success');
+                    enigmaScores.slice(0, 5).forEach((score, index) => {
+                        log('localScoresStatus', `${index + 1}. ${score.username} - ${score.score} pts (${score.difficulty})`, 'info');
+                    });
+                }
+
+                // Vérifier les anciens formats
+                const oldFormats = ['enigma_scroll_scores', 'enigmaScrollScores'];
+                oldFormats.forEach(format => {
+                    const oldScores = localStorage.getItem(format);
+                    if (oldScores) {
+                        try {
+                            const scores = JSON.parse(oldScores);
+                            log('localScoresStatus', `📜 Anciens scores ${format} : ${scores.length}`, 'warning');
+                        } catch (e) {
+                            log('localScoresStatus', `❌ Erreur lecture ${format}`, 'error');
+                        }
+                    }
+                });
+
+            } catch (error) {
+                log('localScoresStatus', `❌ Erreur : ${error.message}`, 'error');
+            }
+        }
+
+        function clearLocalScores() {
+            const output = document.getElementById('localScoresStatus');
+            
+            if (confirm('Êtes-vous sûr de vouloir effacer tous les scores locaux ?')) {
+                localStorage.removeItem('localScores');
+                localStorage.removeItem('enigma_scroll_scores');
+                localStorage.removeItem('enigmaScrollScores');
+                localStorage.removeItem('enigma_scroll_migration_done');
+                
+                log('localScoresStatus', '✅ Scores locaux effacés', 'success');
+            }
+        }
+
+        function testFirebase() {
+            const output = document.getElementById('firebaseStatus');
+            output.innerHTML = '';
+            
+            log('firebaseStatus', '🔥 Test de Firebase...', 'info');
+            
+            if (window.firebase) {
+                log('firebaseStatus', '✅ Firebase SDK chargé', 'success');
+                
+                if (window.firebase.apps.length > 0) {
+                    log('firebaseStatus', '✅ Firebase initialisé', 'success');
+                    
+                    try {
+                        const db = firebase.firestore();
+                        log('firebaseStatus', '✅ Firestore disponible', 'success');
+                        
+                        // Test de connexion
+                        db.collection('_test').doc('connection').set({
+                            test: true,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            log('firebaseStatus', '✅ Test de connexion Firestore réussi', 'success');
+                        }).catch(error => {
+                            log('firebaseStatus', `⚠️ Test de connexion Firestore échoué : ${error.message}`, 'warning');
+                        });
+                        
+                    } catch (error) {
+                        log('firebaseStatus', `❌ Erreur Firestore : ${error.message}`, 'error');
+                    }
+                } else {
+                    log('firebaseStatus', '❌ Firebase non initialisé', 'error');
+                }
+            } else {
+                log('firebaseStatus', '❌ Firebase SDK non chargé', 'error');
+            }
+        }
+
+        function testFirebaseServiceInstance() {
+            const output = document.getElementById('firebaseStatus');
+            
+            log('firebaseStatus', '🔧 Test firebaseServiceInstance...', 'info');
+            
+            if (window.firebaseServiceInstance) {
+                log('firebaseStatus', '✅ firebaseServiceInstance disponible', 'success');
+                
+                if (typeof window.firebaseServiceInstance.addScore === 'function') {
+                    log('firebaseStatus', '✅ Méthode addScore disponible', 'success');
+                    
+                    // Test de la méthode addScore
+                    const testScore = {
+                        gameId: 'enigma-scroll',
+                        username: 'TestUser',
+                        score: 1000,
+                        wordsFound: 10,
+                        maxCombo: 3,
+                        difficulty: 'intermediate'
+                    };
+                    
+                    window.firebaseServiceInstance.addScore(testScore)
+                        .then(() => {
+                            log('firebaseStatus', '✅ Test addScore réussi', 'success');
+                        })
+                        .catch(error => {
+                            log('firebaseStatus', `⚠️ Test addScore échoué : ${error.message}`, 'warning');
+                        });
+                } else {
+                    log('firebaseStatus', '❌ Méthode addScore manquante', 'error');
+                }
+                
+                if (window.firebaseServiceInstance.db) {
+                    log('firebaseStatus', '✅ Base de données disponible', 'success');
+                } else {
+                    log('firebaseStatus', '❌ Base de données non disponible', 'error');
+                }
+            } else {
+                log('firebaseStatus', '❌ firebaseServiceInstance non disponible', 'error');
+            }
+        }
+
+        // Auto-check au chargement
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                checkSystemStatus();
+                checkAuth();
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

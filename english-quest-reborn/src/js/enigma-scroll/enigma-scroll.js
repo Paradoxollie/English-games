@@ -69,12 +69,17 @@ function initGame() {
   // Initialiser le leaderboard
   setTimeout(() => {
     if (window.EnigmaScrollLeaderboard && typeof window.EnigmaScrollLeaderboard.init === 'function') {
-      window.EnigmaScrollLeaderboard.init('enigma-scroll-leaderboard');
+      window.EnigmaScrollLeaderboard.init('leaderboard-body');
       console.log('Leaderboard initialisé depuis enigma-scroll.js');
     } else {
       console.warn('Leaderboard non disponible');
     }
   }, 1000);
+
+  // Vérifier et migrer les anciens scores si nécessaire
+  setTimeout(() => {
+    checkAndMigrateOldScores();
+  }, 2000);
 
   // Ne plus afficher automatiquement la modale des règles au chargement
   console.log('Les règles peuvent être affichées en cliquant sur le bouton "Règles du jeu"');
@@ -120,60 +125,46 @@ function setupUICallbacks() {
  * Charge les données utilisateur
  */
 function loadUserData() {
-  // Essayer de récupérer le nom d'utilisateur depuis toutes les sources possibles
-  let username = null;
-
-  // 1. Essayer de récupérer depuis localStorage simple (priorité la plus élevée)
-  const storedUsername = localStorage.getItem('eq_username');
-  if (storedUsername) {
-    username = storedUsername;
-    console.log(`Utilisateur chargé depuis eq_username: ${username}`);
-  }
-
-  // 2. Essayer de récupérer depuis l'objet utilisateur English Quest
-  if (!username) {
-    const userJson = localStorage.getItem('english_quest_current_user');
-    if (userJson) {
-      try {
-        const user = JSON.parse(userJson);
-        if (user && user.username) {
-          username = user.username;
-          console.log(`Utilisateur chargé depuis english_quest_current_user: ${username}`);
-        }
-      } catch (error) {
-        console.warn("Erreur lors de la récupération de l'utilisateur depuis english_quest_current_user:", error);
-      }
-    }
-  }
-
-  // 3. Essayer de récupérer depuis Firebase
-  if (!username && window.firebase && window.firebase.auth) {
-    const user = window.firebase.auth().currentUser;
-    if (user) {
-      username = user.displayName || user.email || null;
-      if (username) {
-        console.log(`Utilisateur chargé depuis Firebase: ${username}`);
-      }
-    }
-  }
-
-  // Mettre à jour le nom d'utilisateur dans gameState
-  if (username) {
-    gameState.username = username;
-
-    // Sauvegarder le nom d'utilisateur dans localStorage pour les futures utilisations
-    localStorage.setItem('eq_username', username);
+  // Utiliser le même système d'authentification que Speed Verb Challenge
+  const authState = window.authService?.getAuthState();
+  if (authState?.isAuthenticated && authState.profile) {
+    gameState.username = authState.profile.username || 'Joueur Anonyme';
+    gameState.userId = authState.profile.userId;
+    console.log(`Utilisateur chargé depuis authService: ${gameState.username}`);
   } else {
-    console.warn("Aucun nom d'utilisateur trouvé, utilisation du nom par défaut:", gameState.username);
-  }
+    // Fallback vers l'ancien système pour compatibilité
+    let username = null;
 
-  // Essayer de récupérer l'ID utilisateur depuis le stockage local
-  const storedUserId = localStorage.getItem('eq_userId');
-  if (storedUserId) {
-    gameState.userId = storedUserId;
-  } else if (window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-    gameState.userId = window.firebase.auth().currentUser.uid;
-    localStorage.setItem('eq_userId', gameState.userId);
+    // 1. Essayer de récupérer depuis localStorage simple
+    const storedUsername = localStorage.getItem('eq_username');
+    if (storedUsername) {
+      username = storedUsername;
+      console.log(`Utilisateur chargé depuis eq_username: ${username}`);
+    }
+
+    // 2. Essayer de récupérer depuis l'objet utilisateur English Quest
+    if (!username) {
+      const userJson = localStorage.getItem('english_quest_current_user');
+      if (userJson) {
+        try {
+          const user = JSON.parse(userJson);
+          if (user && user.username) {
+            username = user.username;
+            console.log(`Utilisateur chargé depuis english_quest_current_user: ${username}`);
+          }
+        } catch (error) {
+          console.warn("Erreur lors de la récupération de l'utilisateur depuis english_quest_current_user:", error);
+        }
+      }
+    }
+
+    // Mettre à jour le nom d'utilisateur dans gameState
+    if (username) {
+      gameState.username = username;
+      localStorage.setItem('eq_username', username);
+    } else {
+      console.warn("Aucun nom d'utilisateur trouvé, utilisation du nom par défaut:", gameState.username);
+    }
   }
 
   // Essayer de récupérer le meilleur score
@@ -979,21 +970,11 @@ function savePlayerScore() {
     return;
   }
 
-  // Préparer les données du score
-  const scoreData = {
-    score: gameState.score,
-    wordsFound: gameState.wordsFound,
-    maxCombo: gameState.maxCombo,
-    difficulty: gameState.difficulty,
-    totalTime: gameState.totalTime
-  };
-
-  // Sauvegarder localement d'abord
+  // Sauvegarder localement d'abord pour compatibilité
   try {
-    // Préparer les données du score
     const scoreData = {
       username: gameState.username,
-      playerName: gameState.username, // Pour compatibilité avec le nouveau format
+      playerName: gameState.username,
       score: gameState.score,
       wordsFound: gameState.wordsFound,
       maxCombo: gameState.maxCombo,
@@ -1001,38 +982,23 @@ function savePlayerScore() {
       timestamp: new Date().toISOString(),
       offline: true,
       syncStatus: 'pending',
-      gameId: 'enigma-scroll' // Identifiant du jeu pour le nouveau format
+      gameId: 'enigma-scroll'
     };
 
-    // 1. Sauvegarder dans le format de l'ancienne version
-    const oldLocalScores = JSON.parse(localStorage.getItem('enigma_scroll_local_scores')) || [];
-    oldLocalScores.push(scoreData);
-    oldLocalScores.sort((a, b) => b.score - a.score);
-    const limitedOldScores = oldLocalScores.slice(0, 20);
-    localStorage.setItem('enigma_scroll_local_scores', JSON.stringify(limitedOldScores));
+    // Sauvegarder dans le format commun
+    const localScores = JSON.parse(localStorage.getItem('localScores')) || [];
+    localScores.push(scoreData);
+    localScores.sort((a, b) => b.score - a.score);
+    const limitedScores = localScores.slice(0, 50);
+    localStorage.setItem('localScores', JSON.stringify(limitedScores));
 
-    // 2. Sauvegarder dans le format spécifique à Enigma Scroll
-    const enigmaScores = JSON.parse(localStorage.getItem('enigma_scroll_scores')) || [];
-    enigmaScores.push(scoreData);
-    enigmaScores.sort((a, b) => b.score - a.score);
-    const limitedEnigmaScores = enigmaScores.slice(0, 20);
-    localStorage.setItem('enigma_scroll_scores', JSON.stringify(limitedEnigmaScores));
-
-    // 3. Sauvegarder dans le nouveau format commun
-    const newLocalScores = JSON.parse(localStorage.getItem('localScores')) || [];
-    newLocalScores.push(scoreData);
-    newLocalScores.sort((a, b) => b.score - a.score);
-    const limitedNewScores = newLocalScores.slice(0, 50); // Plus de scores dans le format commun
-    localStorage.setItem('localScores', JSON.stringify(limitedNewScores));
-
-    console.log('Score sauvegardé localement dans tous les formats');
+    console.log('Score sauvegardé localement');
   } catch (error) {
     console.error('Erreur lors de la sauvegarde locale du score:', error);
   }
 
-  // Sauvegarder en ligne si possible
+  // Sauvegarder en ligne avec le nouveau système
   if (window.EnigmaScrollFirebase && window.EnigmaScrollFirebase.isAvailable) {
-    // Préparer les données du score pour Firebase
     const firebaseScoreData = {
       username: gameState.username,
       score: gameState.score,
@@ -1045,10 +1011,12 @@ function savePlayerScore() {
     window.EnigmaScrollFirebase.saveScore(gameState.score, firebaseScoreData)
       .then(() => {
         console.log('Score sauvegardé en ligne avec succès');
-
+        
         // Rafraîchir le leaderboard
         if (window.EnigmaScrollLeaderboard && typeof window.EnigmaScrollLeaderboard.loadScores === 'function') {
-          window.EnigmaScrollLeaderboard.loadScores();
+          setTimeout(() => {
+            window.EnigmaScrollLeaderboard.loadScores();
+          }, 1000);
         }
       })
       .catch(error => {
@@ -1119,7 +1087,158 @@ function endGame(reason) {
   }
 }
 
+/**
+ * Migre les anciens scores locaux vers le nouveau système Firebase
+ */
+async function migrateOldScores() {
+  console.log('🔄 Démarrage de la migration des anciens scores Enigma Scroll');
+
+  if (!window.EnigmaScrollFirebase || !window.EnigmaScrollFirebase.isAvailable) {
+    console.warn('Firebase non disponible, migration impossible');
+    return false;
+  }
+
+  const authState = window.authService?.getAuthState();
+  if (!authState?.isAuthenticated) {
+    console.warn('Utilisateur non connecté, migration impossible');
+    return false;
+  }
+
+  try {
+    // Récupérer les anciens scores depuis localStorage
+    const oldFormats = [
+      'enigma_scroll_local_scores',
+      'enigma_scroll_scores',
+      'enigmaScrollScores'
+    ];
+
+    let allOldScores = [];
+
+    for (const format of oldFormats) {
+      const scoresJson = localStorage.getItem(format);
+      if (scoresJson) {
+        try {
+          const scores = JSON.parse(scoresJson);
+          if (Array.isArray(scores)) {
+            console.log(`📊 Trouvé ${scores.length} scores dans ${format}`);
+            allOldScores.push(...scores);
+          }
+        } catch (error) {
+          console.warn(`Erreur lors de la lecture des scores ${format}:`, error);
+        }
+      }
+    }
+
+    if (allOldScores.length === 0) {
+      console.log('✅ Aucun ancien score à migrer');
+      return true;
+    }
+
+    // Supprimer les doublons basés sur score + nom + date
+    const uniqueScores = allOldScores.filter((score, index, array) => 
+      array.findIndex(s => 
+        s.score === score.score && 
+        s.playerName === score.playerName && 
+        s.timestamp === score.timestamp
+      ) === index
+    );
+
+    console.log(`📊 ${uniqueScores.length} scores uniques à migrer`);
+
+    // Migrer via EnigmaScrollFirebase
+    const result = await window.EnigmaScrollFirebase.importHistoricalScores(uniqueScores);
+
+    if (result) {
+      console.log('✅ Migration des anciens scores terminée avec succès');
+
+      // Marquer la migration comme effectuée
+      localStorage.setItem('enigma_scroll_migration_done', new Date().toISOString());
+
+      // Rafraîchir le leaderboard
+      if (window.EnigmaScrollLeaderboard && typeof window.EnigmaScrollLeaderboard.loadScores === 'function') {
+        setTimeout(() => {
+          window.EnigmaScrollLeaderboard.loadScores();
+        }, 2000);
+      }
+
+      // Nettoyer les anciens formats après migration réussie
+      cleanupOldFormats();
+
+      return true;
+    } else {
+      console.error('❌ Échec de la migration des anciens scores');
+      return false;
+    }
+
+  } catch (error) {
+    console.error('❌ Erreur lors de la migration des anciens scores:', error);
+    return false;
+  }
+}
+
+/**
+ * Vérifie et effectue automatiquement la migration si nécessaire
+ */
+function checkAndMigrateOldScores() {
+  // Vérifier si la migration a déjà été effectuée
+  const migrationDone = localStorage.getItem('enigma_scroll_migration_done');
+  if (migrationDone) {
+    console.log('Migration des scores Enigma Scroll déjà effectuée le', migrationDone);
+    return;
+  }
+
+  // Vérifier si l'utilisateur est connecté
+  const authState = window.authService?.getAuthState();
+  if (!authState?.isAuthenticated) {
+    console.log('Utilisateur non connecté, migration reportée');
+    return;
+  }
+
+  // Effectuer la migration après un délai pour laisser le temps aux scripts de se charger
+  setTimeout(() => {
+    migrateOldScores().then(success => {
+      if (success) {
+        console.log('✅ Migration automatique des scores terminée');
+      }
+    }).catch(error => {
+      console.error('❌ Erreur lors de la migration automatique:', error);
+    });
+  }, 3000);
+}
+
+// Exposer les fonctions de migration globalement pour les tests
+window.EnigmaScrollMigration = {
+  migrateOldScores,
+  checkAndMigrateOldScores,
+  cleanupOldFormats
+};
+
 // Initialiser le jeu lorsque la page est chargée
 document.addEventListener('DOMContentLoaded', function() {
   initGame();
 });
+
+// Nettoyer les anciens formats après migration réussie
+function cleanupOldFormats() {
+  const oldFormats = [
+    'enigma_scroll_local_scores',
+    'enigma_scroll_scores', 
+    'enigmaScrollScores',
+    'enigma_scroll_player_data'
+  ];
+  
+  let cleaned = 0;
+  oldFormats.forEach(format => {
+    if (localStorage.getItem(format)) {
+      localStorage.removeItem(format);
+      cleaned++;
+      console.log(`🧹 Nettoyé ancien format: ${format}`);
+    }
+  });
+  
+  if (cleaned > 0) {
+    console.log(`✅ ${cleaned} anciens formats nettoyés`);
+  }
+  
+  return cleaned;
+}

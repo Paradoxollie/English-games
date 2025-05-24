@@ -17,7 +17,7 @@
   <header class="header">
     <div class="container header-container">
       <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
-      <button class="menu-toggle">☰</button>
+
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="index.html" class="nav-link">Accueil</a></li>
@@ -27,8 +27,11 @@
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
         </ul>
       </nav>
-      <div class="user-menu">
-        <a href="profile.html" class="btn-login">Mon Profil</a>
+
+      <div class="user-menu" id="userMenu">
+        <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>
