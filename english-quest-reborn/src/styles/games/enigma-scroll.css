@@ -1,52 +1,41 @@
 /* ===== ENIGMA SCROLL - STYLES PRINCIPAUX ===== */
-/* Thème MMORPG pour le jeu Enigma Scroll */
+/* Thème cohérent avec English Quest Reborn */
 
 /* ===== VARIABLES ET FONDATIONS ===== */
 :root {
-  /* Palette de couleurs principale */
-  --enigma-dark: #0a0e14;        /* Fond très sombre */
-  --enigma-medium: #121a24;      /* Fond des éléments */
-  --enigma-light: #1a2432;       /* Éléments plus clairs */
+  /* Couleurs principales du design reborn */
+  --enigma-primary: #2ecc71;     /* Vert principal */
+  --enigma-secondary: #3498db;   /* Bleu secondaire */
+  --enigma-tertiary: #f39c12;    /* Orange tertiaire */
 
-  /* Couleurs d'accent */
-  --enigma-primary: #2e7d32;     /* Vert forêt - couleur principale */
-  --enigma-secondary: #7b1fa2;   /* Violet mystique - couleur secondaire */
-  --enigma-tertiary: #1565c0;    /* Bleu profond - couleur tertiaire */
+  /* Couleurs fonctionnelles pour le jeu */
+  --enigma-correct: #2ecc71;     /* Vert - lettre correcte */
+  --enigma-present: #f39c12;     /* Orange - lettre présente */
+  --enigma-absent: #7f8c8d;      /* Gris - lettre absente */
 
-  /* Couleurs fonctionnelles */
-  --enigma-correct: #2e7d32;     /* Vert - lettre correcte */
-  --enigma-present: #f9a825;     /* Jaune - lettre présente */
-  --enigma-absent: #424242;      /* Gris - lettre absente */
+  /* Couleurs de fond */
+  --enigma-dark: #121212;        /* Fond principal */
+  --enigma-medium: #1e1e1e;      /* Fond des éléments */
+  --enigma-light: #2a2a2a;       /* Éléments plus clairs */
+
+  /* Couleurs de texte */
+  --enigma-text: #ffffff;
+  --enigma-text-secondary: rgba(255, 255, 255, 0.7);
+  --enigma-text-disabled: rgba(255, 255, 255, 0.5);
 
   /* Compatibilité avec les variables du site */
-  --dark-bg: var(--color-background, #121212);
-  --text-light: var(--color-text-secondary, #b0bec5);
-  --color-primary: var(--color-primary, #2ecc71);
-  --color-primary-dark: var(--color-primary-dark, #27ae60);
-  --color-primary-light: var(--color-primary-light, #58d68d);
-  --color-secondary: var(--color-secondary, #3498db);
-  --color-secondary-dark: var(--color-secondary-dark, #2980b9);
-  --color-accent: var(--color-tertiary, #ffffff);
+  --color-primary: #2ecc71;
+  --color-secondary: #3498db;
+  --color-text: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-background: #121212;
 }
 
 /* ===== STYLES DE BASE ===== */
 .enigma-scroll-page {
-  background-color: var(--dark-bg);
-  color: var(--text-light);
+  background-color: var(--enigma-dark);
+  color: var(--enigma-text);
   font-family: 'Spectral', serif;
-}
-
-/* Ajout d'un effet de fond mystique */
-.enigma-scroll-page::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at center, rgba(46, 125, 50, 0.1) 0%, rgba(10, 14, 20, 0) 70%);
-  pointer-events: none;
-  z-index: -1;
 }
 
 /* ===== CONTENEUR PRINCIPAL DU JEU ===== */
@@ -58,70 +47,25 @@
   z-index: 1;
 }
 
-/* Effet de parchemin ancien */
-#enigma-scroll-container::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: linear-gradient(135deg,
-    rgba(46, 125, 50, 0.1) 0%,
-    rgba(10, 14, 20, 0) 50%,
-    rgba(123, 31, 162, 0.1) 100%);
-  border-radius: 15px;
-  z-index: -1;
-  pointer-events: none;
-  animation: glow-pulse 8s infinite alternate;
-}
-
-@keyframes glow-pulse {
-  0% {
-    box-shadow: 0 0 15px rgba(46, 125, 50, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(123, 31, 162, 0.3);
-  }
-  100% {
-    box-shadow: 0 0 15px rgba(21, 101, 192, 0.3);
-  }
-}
-
 /* ===== INTRODUCTION DU JEU ===== */
 .game-intro {
-  background-color: rgba(10, 14, 20, 0.9);
-  border: 2px solid var(--color-primary);
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 2px solid var(--enigma-primary);
   border-radius: 12px;
   padding: 2.5rem;
   margin-bottom: 2.5rem;
   text-align: center;
-  box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
   position: relative;
   overflow: hidden;
-}
-
-/* Effet de parchemin ancien pour l'intro */
-.game-intro::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at top right, rgba(46, 125, 50, 0.1), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(123, 31, 162, 0.1), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
 }
 
 .game-intro h1 {
   font-family: 'MedievalSharp', fantasy;
   font-size: 2.8rem;
-  color: var(--color-primary);
+  color: var(--enigma-primary);
   margin-bottom: 0.8rem;
-  text-shadow: 0 0 10px rgba(46, 125, 50, 0.6);
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
   position: relative;
   z-index: 1;
 }
@@ -129,7 +73,7 @@
 .game-intro .subtitle {
   display: block;
   font-size: 1.6rem;
-  color: var(--color-secondary);
+  color: var(--enigma-secondary);
   font-family: 'Cinzel', serif;
   margin-top: 0.5rem;
   position: relative;
@@ -144,7 +88,7 @@
   max-width: 800px;
   position: relative;
   z-index: 1;
-  color: var(--text-light);
+  color: var(--enigma-text-secondary);
 }
 
 /* ===== SÉLECTEUR DE DIFFICULTÉ ===== */
@@ -158,21 +102,10 @@
   font-family: 'Cinzel', serif;
   font-size: 1.4rem;
   margin-bottom: 1.5rem;
-  color: var(--color-primary);
-  text-shadow: 0 0 5px rgba(46, 125, 50, 0.3);
+  color: var(--enigma-primary);
+  text-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
   position: relative;
   display: inline-block;
-}
-
-.difficulty-selector h3::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
 }
 
 .difficulty-options {
@@ -184,8 +117,8 @@
 }
 
 .difficulty-btn {
-  background-color: rgba(10, 14, 20, 0.7);
-  border: 1px solid var(--color-primary);
+  background-color: rgba(30, 30, 30, 0.7);
+  border: 1px solid var(--enigma-primary);
   border-radius: 10px;
   padding: 1.2rem 1rem;
   display: flex;
@@ -197,88 +130,24 @@
   width: 160px;
   position: relative;
   overflow: hidden;
-  -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
-  touch-action: manipulation; /* Optimise pour les interactions tactiles */
-}
-
-/* Responsive pour les petits écrans */
-@media (max-width: 768px) {
-  .difficulty-options {
-    gap: 0.8rem;
-  }
-
-  .difficulty-btn {
-    width: 130px;
-    padding: 0.8rem 0.6rem;
-    gap: 0.5rem;
-  }
-
-  .difficulty-icon {
-    font-size: 1.5rem;
-  }
-
-  .difficulty-name {
-    font-size: 0.9rem;
-  }
-
-  .difficulty-desc {
-    font-size: 0.8rem;
-  }
-
-  .game-intro {
-    padding: 1.5rem;
-  }
-
-  .game-intro h1 {
-    font-size: 2rem;
-  }
-
-  .game-intro .subtitle {
-    font-size: 1.2rem;
-  }
-
-  .game-description {
-    font-size: 1rem;
-    margin: 1.5rem auto;
-  }
-
-  .game-area {
-    padding: 1.5rem;
-  }
-}
-
-.difficulty-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, rgba(46, 125, 50, 0.1), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
 .difficulty-btn:hover {
-  background-color: rgba(39, 174, 96, 0.2);
+  background: rgba(46, 204, 113, 0.1);
+  border-color: var(--enigma-primary);
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
-  border-color: var(--color-primary-light);
-}
-
-.difficulty-btn:hover::before {
-  opacity: 1;
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
 }
 
 .difficulty-btn.active {
-  background-color: var(--color-primary);
-  color: white;
-  box-shadow: 0 0 20px rgba(46, 125, 50, 0.6);
+  background: var(--enigma-primary);
+  color: #121212;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
 }
 
 .difficulty-icon {
   font-size: 1.8rem;
-  color: var(--color-primary);
+  color: var(--enigma-primary);
   transition: transform 0.3s ease;
 }
 
@@ -287,7 +156,7 @@
 }
 
 .difficulty-btn.active .difficulty-icon {
-  color: white;
+  color: #121212;
 }
 
 .difficulty-name {
@@ -295,500 +164,309 @@
   font-weight: 600;
   font-size: 1.1rem;
   letter-spacing: 0.5px;
+  color: var(--enigma-text);
 }
 
 .difficulty-desc {
   font-size: 0.9rem;
   opacity: 0.8;
+  color: var(--enigma-text-secondary);
 }
 
 /* ===== BOUTON DE DÉMARRAGE ===== */
 .start-button {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, var(--enigma-primary), var(--enigma-secondary));
   color: white;
   border: none;
-  border-radius: 50px;
-  padding: 1.2rem 3rem;
-  font-family: 'Cinzel', serif;
-  font-size: 1.3rem;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
   margin-top: 2rem;
   position: relative;
   overflow: hidden;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.start-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%);
-  transition: left 0.7s ease;
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
 }
 
 .start-button:hover {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(46, 125, 50, 0.6);
-}
-
-.start-button:hover::before {
-  left: 100%;
-}
-
-.start-button:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
 }
 
 /* ===== ZONE DE JEU ===== */
 .game-area {
-  background-color: rgba(10, 14, 20, 0.9);
-  border: 2px solid var(--color-primary);
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 2px solid var(--enigma-primary);
   border-radius: 12px;
-  padding: 2.5rem;
-  margin-bottom: 2.5rem;
-  box-shadow: 0 0 20px rgba(46, 125, 50, 0.3);
+  padding: 2rem;
+  margin-bottom: 2rem;
   position: relative;
-  overflow: hidden;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
 }
 
-/* Effet de parchemin mystique pour la zone de jeu */
-.game-area::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(46, 125, 50, 0.1), transparent 40%),
-    radial-gradient(circle at bottom right, rgba(123, 31, 162, 0.1), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Bordure brillante animée */
-.game-area::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg,
-    var(--color-primary) 0%,
-    transparent 25%,
-    transparent 75%,
-    var(--color-primary) 100%);
-  border-radius: 14px;
-  z-index: -1;
-  opacity: 0.5;
-  animation: border-glow 4s infinite alternate;
-}
-
-@keyframes border-glow {
-  0% {
-    opacity: 0.3;
-    filter: blur(3px);
-  }
-  100% {
-    opacity: 0.6;
-    filter: blur(1px);
-  }
-}
-
-/* Informations de jeu */
+/* ===== INFORMATIONS DU JEU ===== */
 .game-info {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 2.5rem;
-  background-color: rgba(10, 14, 20, 0.8);
-  border: 1px solid var(--color-primary);
-  border-radius: 10px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  position: relative;
-  z-index: 1;
-}
-
-.game-info::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg,
-    rgba(46, 125, 50, 0.1) 0%,
-    transparent 50%,
-    rgba(123, 31, 162, 0.1) 100%);
-  border-radius: 10px;
-  z-index: -1;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .game-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem;
+  background-color: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(46, 204, 113, 0.3);
   border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  min-width: 100px;
   transition: all 0.3s ease;
-  position: relative;
 }
 
 .game-stat:hover {
-  background-color: rgba(46, 125, 50, 0.1);
-  transform: translateY(-3px);
+  border-color: var(--enigma-primary);
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
 }
 
 .stat-icon {
-  font-size: 1.4rem;
-  color: var(--color-primary);
-  margin-bottom: 0.2rem;
+  font-size: 1.5rem;
+  color: var(--enigma-primary);
+  margin-bottom: 0.5rem;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-light);
-  opacity: 0.9;
-  font-family: 'Spectral', serif;
+  color: var(--enigma-text-secondary);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .stat-value {
-  font-family: 'Cinzel', serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 0 5px rgba(46, 125, 50, 0.5);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--enigma-text);
+  font-family: 'Exo 2', sans-serif;
 }
 
-/* Grille de mots */
+/* ===== GRILLE DE MOTS ===== */
 .word-grid {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  margin: 2.5rem 0;
-  position: relative;
-  z-index: 1;
-}
-
-/* Effet de parchemin ancien sous la grille */
-.word-grid::before {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% + 40px);
-  height: calc(100% + 40px);
-  background: radial-gradient(ellipse at center, rgba(46, 125, 50, 0.1), transparent 70%);
-  z-index: -1;
-  border-radius: 20px;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .grid-row {
   display: flex;
-  gap: 0.7rem;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .grid-cell {
   width: 3.5rem;
   height: 3.5rem;
-  border: 2px solid rgba(46, 125, 50, 0.3);
-  border-radius: 8px;
+  background: rgba(18, 18, 18, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-family: 'Cinzel', serif;
+  justify-content: center;
   font-size: 1.5rem;
-  font-weight: 600;
-  color: white;
+  font-weight: bold;
+  color: var(--enigma-text);
   text-transform: uppercase;
   transition: all 0.3s ease;
-  background-color: rgba(10, 14, 20, 0.7);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: relative;
-  overflow: hidden;
-}
-
-/* Responsive pour les petits écrans */
-@media (max-width: 768px) {
-  .grid-cell {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.2rem;
-    border-width: 1px;
-  }
-
-  .grid-row {
-    gap: 0.4rem;
-  }
-
-  .word-grid {
-    gap: 0.4rem;
-  }
-}
-
-.grid-cell::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
-  z-index: -1;
 }
 
 .grid-cell.filled {
-  border-color: var(--color-secondary);
-  animation: cell-pop 0.3s ease-in-out;
-  box-shadow: 0 0 15px rgba(123, 31, 162, 0.3);
+  border-color: var(--enigma-primary);
+  background: rgba(46, 204, 113, 0.1);
+  animation: cellFill 0.2s ease-in-out;
 }
 
+@keyframes cellFill {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* États des cellules avec couleurs forcées */
 .grid-cell.correct {
-  background-color: var(--enigma-correct);
-  border-color: var(--enigma-correct);
-  box-shadow: 0 0 15px rgba(46, 125, 50, 0.5);
+  background-color: var(--enigma-correct) !important;
+  border-color: var(--enigma-correct) !important;
+  color: #121212 !important;
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+  animation: correctCell 0.5s ease-in-out;
+}
+
+@keyframes correctCell {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
 }
 
 .grid-cell.present {
-  background-color: var(--enigma-present);
-  border-color: var(--enigma-present);
-  box-shadow: 0 0 15px rgba(249, 168, 37, 0.5);
+  background-color: var(--enigma-present) !important;
+  border-color: var(--enigma-present) !important;
+  color: #121212 !important;
+  box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
+  animation: presentCell 0.5s ease-in-out;
+}
+
+@keyframes presentCell {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
 }
 
 .grid-cell.absent {
-  background-color: var(--enigma-absent);
-  border-color: var(--enigma-absent);
-  box-shadow: 0 0 10px rgba(66, 66, 66, 0.3);
+  background-color: var(--enigma-absent) !important;
+  border-color: var(--enigma-absent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 5px rgba(127, 140, 141, 0.3);
+  animation: absentCell 0.5s ease-in-out;
+}
+
+@keyframes absentCell {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
 }
 
 .grid-cell.hint {
-  background-color: var(--color-secondary);
-  border-color: var(--color-secondary);
-  animation: hint-pulse 2s infinite;
-  box-shadow: 0 0 20px rgba(21, 101, 192, 0.5);
+  background-color: rgba(52, 152, 219, 0.3) !important;
+  border-color: var(--enigma-secondary) !important;
+  color: var(--enigma-text) !important;
+  animation: hintPulse 1s ease-in-out infinite;
 }
 
-/* Clavier virtuel */
+@keyframes hintPulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(52, 152, 219, 0.8); }
+}
+
+/* ===== CLAVIER VIRTUEL ===== */
 .keyboard {
-  margin: 3rem 0 2rem;
-  position: relative;
-  z-index: 1;
-}
-
-/* Effet de lueur sous le clavier */
-.keyboard::before {
-  content: '';
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% + 30px);
-  height: calc(100% + 30px);
-  background: radial-gradient(ellipse at center, rgba(123, 31, 162, 0.1), transparent 70%);
-  z-index: -1;
-  border-radius: 20px;
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 0.4rem;
-  margin-bottom: 0.7rem;
+  gap: 0.25rem;
 }
 
 .key-btn {
-  min-width: 2.8rem;
-  height: 3.8rem;
-  background-color: rgba(10, 14, 20, 0.8);
-  border: 1px solid rgba(46, 125, 50, 0.4);
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: 'Cinzel', serif;
+  flex: 1;
+  min-width: 2.2rem;
+  height: 3.2rem;
+  background: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: var(--enigma-text);
   font-size: 1.1rem;
   font-weight: 600;
-  color: white;
   cursor: pointer;
   transition: all 0.2s ease;
-  user-select: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
-  touch-action: manipulation; /* Optimise pour les interactions tactiles */
-}
-
-/* Responsive pour les petits écrans */
-@media (max-width: 768px) {
-  .key-btn {
-    min-width: 2rem;
-    height: 3rem;
-    font-size: 0.9rem;
-    border-width: 1px;
-  }
-
-  .key-enter, .key-delete {
-    min-width: 3.5rem !important;
-    font-size: 0.8rem !important;
-  }
-
-  .keyboard-row {
-    gap: 0.3rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .power-ups-container {
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-
-  .power-up {
-    width: 80px;
-    padding: 0.8rem;
-  }
-
-  .power-up-icon {
-    font-size: 1.5rem;
-  }
-
-  .power-up-count {
-    font-size: 1.2rem;
-  }
-}
-
-.key-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
-  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
 }
 
 .key-btn:hover {
-  background-color: rgba(46, 125, 50, 0.3);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  border-color: var(--color-primary);
+  background: rgba(46, 204, 113, 0.1);
+  border-color: var(--enigma-primary);
+  transform: translateY(-2px);
 }
 
 .key-btn:active {
-  transform: translateY(0) scale(0.95);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px);
 }
 
 .key-enter, .key-delete {
-  min-width: 4.5rem;
-  font-size: 1rem;
-  background: linear-gradient(135deg, rgba(46, 125, 50, 0.2) 0%, rgba(10, 14, 20, 0.8) 100%);
+  min-width: 3.5rem;
+  font-size: 0.85rem;
+  flex: 1.5;
 }
 
+/* États des touches du clavier */
 .key-btn.correct {
-  background-color: var(--enigma-correct);
-  border-color: var(--enigma-correct);
-  box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+  background-color: var(--enigma-correct) !important;
+  border-color: var(--enigma-correct) !important;
+  color: #121212 !important;
 }
 
 .key-btn.present {
-  background-color: var(--enigma-present);
-  border-color: var(--enigma-present);
-  box-shadow: 0 0 10px rgba(249, 168, 37, 0.5);
+  background-color: var(--enigma-present) !important;
+  border-color: var(--enigma-present) !important;
+  color: #121212 !important;
 }
 
 .key-btn.absent {
-  background-color: var(--enigma-absent);
-  border-color: var(--enigma-absent);
-  color: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 0 5px rgba(66, 66, 66, 0.3);
+  background-color: var(--enigma-absent) !important;
+  border-color: var(--enigma-absent) !important;
+  color: #ffffff !important;
+  opacity: 0.6;
 }
 
-/* Power-ups */
+.key-pressed {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+}
+
+/* ===== POWER-UPS ===== */
 .power-ups-container {
   display: flex;
   justify-content: center;
-  gap: 2.5rem;
-  margin: 3rem 0;
-  position: relative;
-  z-index: 1;
-}
-
-/* Effet de lueur sous les power-ups */
-.power-ups-container::before {
-  content: '';
-  position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% + 100px);
-  height: calc(100% + 30px);
-  background: radial-gradient(ellipse at center, rgba(46, 125, 50, 0.1), transparent 70%);
-  z-index: -1;
-  border-radius: 20px;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
 }
 
 .power-up {
+  background-color: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 1.2rem;
-  border-radius: 12px;
-  background-color: rgba(10, 14, 20, 0.8);
-  border: 1px solid rgba(46, 125, 50, 0.3);
-  width: 100px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 80px;
   position: relative;
-  overflow: hidden;
-}
-
-.power-up::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
-  z-index: -1;
 }
 
 .power-up:hover {
-  background-color: rgba(46, 125, 50, 0.2);
-  transform: translateY(-8px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  border-color: var(--color-primary);
+  background: rgba(46, 204, 113, 0.1);
+  border-color: var(--enigma-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
 }
 
 .power-up:active {
-  transform: translateY(-3px) scale(0.95);
+  transform: translateY(1px);
 }
 
 .power-up-icon {
-  font-size: 2rem;
-  color: var(--color-primary);
+  font-size: 1.5rem;
+  color: var(--enigma-primary);
   transition: transform 0.3s ease;
 }
 
@@ -797,175 +475,137 @@
 }
 
 .power-up[data-power="hint"] .power-up-icon {
-  color: var(--color-secondary);
+  color: #f1c40f;
 }
 
 .power-up[data-power="hint"]:hover {
-  background-color: rgba(123, 31, 162, 0.2);
-  border-color: var(--color-secondary);
-  box-shadow: 0 8px 20px rgba(123, 31, 162, 0.3);
+  border-color: #f1c40f;
+  box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3);
 }
 
 .power-up[data-power="time"] .power-up-icon {
-  color: var(--color-accent);
+  color: #3498db;
 }
 
 .power-up[data-power="time"]:hover {
-  background-color: rgba(21, 101, 192, 0.2);
-  border-color: var(--color-tertiary);
-  box-shadow: 0 8px 20px rgba(21, 101, 192, 0.3);
+  border-color: #3498db;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
 
 .power-up[data-power="skip"] .power-up-icon {
-  color: #f44336;
+  color: #e74c3c;
 }
 
 .power-up[data-power="skip"]:hover {
-  background-color: rgba(244, 67, 54, 0.2);
-  border-color: #f44336;
-  box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
+  border-color: #e74c3c;
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
 }
 
 .power-up-name {
   font-size: 0.9rem;
-  color: var(--text-light);
-  font-family: 'Spectral', serif;
-  letter-spacing: 0.5px;
+  color: var(--enigma-text);
+  font-weight: 500;
 }
 
 .power-up-count {
-  font-family: 'Cinzel', serif;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 0 5px rgba(46, 125, 50, 0.5);
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--enigma-primary);
+  background: rgba(46, 204, 113, 0.1);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ===== ZONE DE CLASSEMENT ===== */
+/* ===== LEADERBOARD ===== */
 .leaderboard-area {
-  background-color: rgba(10, 14, 20, 0.9);
-  border: 2px solid var(--color-secondary);
+  background-color: rgba(30, 30, 30, 0.9);
+  border: 2px solid var(--enigma-primary);
   border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 0 20px rgba(21, 101, 192, 0.3);
+  padding: 2rem;
+  margin-bottom: 2rem;
   position: relative;
-  overflow: hidden;
-  margin-top: 3rem;
-}
-
-/* Effet de parchemin ancien pour le classement */
-.leaderboard-area::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(21, 101, 192, 0.1), transparent 40%),
-    radial-gradient(circle at bottom right, rgba(123, 31, 162, 0.1), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);
 }
 
 .leaderboard-area h2 {
-  font-family: 'MedievalSharp', fantasy;
-  font-size: 2rem;
-  color: var(--color-secondary);
-  margin-bottom: 1.8rem;
+  color: var(--enigma-primary);
   text-align: center;
-  text-shadow: 0 0 10px rgba(21, 101, 192, 0.6);
-  position: relative;
-}
-
-.leaderboard-area h2::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-secondary), transparent);
+  margin-bottom: 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.6);
 }
 
 .leaderboard-tabs {
   display: flex;
   justify-content: center;
-  gap: 1.2rem;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 1;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .leaderboard-tab {
-  background-color: rgba(10, 14, 20, 0.8);
-  border: 1px solid rgba(21, 101, 192, 0.3);
-  border-radius: 50px;
-  padding: 0.7rem 1.5rem;
-  font-family: 'Cinzel', serif;
-  font-size: 1rem;
-  color: var(--text-light);
+  background: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  color: var(--enigma-text-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
 }
 
 .leaderboard-tab:hover {
-  background-color: rgba(21, 101, 192, 0.2);
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3);
+  background: rgba(46, 204, 113, 0.1);
+  border-color: var(--enigma-primary);
+  color: var(--enigma-text);
 }
 
 .leaderboard-tab.active {
-  background-color: var(--color-secondary);
-  color: white;
-  box-shadow: 0 0 15px rgba(21, 101, 192, 0.5);
+  background: var(--enigma-primary);
+  color: #121212;
+  border-color: var(--enigma-primary);
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
 }
 
 .leaderboard-content {
-  background-color: rgba(10, 14, 20, 0.7);
-  border: 1px solid rgba(21, 101, 192, 0.2);
-  border-radius: 10px;
-  padding: 1.5rem;
-  max-height: 450px;
-  overflow-y: auto;
-  position: relative;
-  z-index: 1;
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+  background: rgba(18, 18, 18, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid rgba(46, 204, 113, 0.2);
 }
 
 .leaderboard-loading {
   text-align: center;
-  padding: 3rem;
-  color: var(--text-light);
+  padding: 2rem;
+  color: var(--enigma-text-secondary);
   font-style: italic;
-  font-size: 1.1rem;
 }
 
 .leaderboard-error, .leaderboard-empty {
-  color: var(--text-light);
   text-align: center;
   padding: 2rem;
-  font-style: italic;
+  color: var(--enigma-text-secondary);
 }
 
 .leaderboard-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  color: var(--text-light);
+  color: var(--enigma-text);
   font-family: 'Spectral', serif;
 }
 
 .leaderboard-table th {
   padding: 0.8rem;
   text-align: left;
-  border-bottom: 1px solid rgba(123, 31, 162, 0.5);
+  border-bottom: 1px solid rgba(46, 204, 113, 0.5);
   font-family: 'Cinzel', serif;
   font-weight: 600;
-  color: var(--color-secondary);
+  color: var(--enigma-primary);
 }
 
 .leaderboard-table td {
@@ -974,20 +614,20 @@
 }
 
 .leaderboard-table tr:hover {
-  background-color: rgba(123, 31, 162, 0.1);
+  background-color: rgba(46, 204, 113, 0.1);
 }
 
 .leaderboard-table .top-score {
-  background-color: rgba(123, 31, 162, 0.2);
+  background-color: rgba(46, 204, 113, 0.1);
 }
 
 .leaderboard-table .top-score:first-child {
-  background-color: rgba(255, 193, 7, 0.2);
+  background-color: rgba(241, 196, 15, 0.1);
 }
 
 .rank-cell {
-  font-weight: 600;
   text-align: center;
+  font-weight: bold;
   width: 60px;
 }
 
@@ -996,250 +636,211 @@
 }
 
 .score-cell {
-  font-weight: 600;
-  color: var(--color-primary);
   text-align: right;
+  color: var(--enigma-primary);
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .date-cell {
+  text-align: right;
   font-size: 0.9rem;
   opacity: 0.8;
-  text-align: right;
 }
 
 /* ===== MODALES ===== */
 .modal {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1000;
-  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 }
 
 .modal.show {
-  display: flex;
   opacity: 1;
   visibility: visible;
 }
 
 .modal-content {
-  background-color: rgba(10, 14, 20, 0.95);
-  border: 2px solid var(--color-primary);
-  border-radius: 15px;
+  background-color: rgba(30, 30, 30, 0.95);
+  border-radius: 12px;
   width: 90%;
-  max-width: 550px;
+  max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 0 40px rgba(46, 125, 50, 0.6);
-  animation: modal-appear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+  border: 1px solid var(--enigma-primary);
   position: relative;
+  animation: modalAppear 0.3s ease-out;
 }
 
-/* Effet de parchemin ancien pour les modales */
-.modal-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at top right, rgba(46, 125, 50, 0.1), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(123, 31, 162, 0.1), transparent 40%);
-  pointer-events: none;
-  z-index: -1;
-  border-radius: 15px;
+@keyframes modalAppear {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .modal-header {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, rgba(10, 14, 20, 0.8) 100%);
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid var(--color-primary);
+  padding: 1.2rem;
+  border-bottom: 1px solid rgba(46, 204, 113, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 13px 13px 0 0;
-  position: relative;
-}
-
-.modal-header::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  position: sticky;
+  top: 0;
+  background-color: rgba(30, 30, 30, 0.98);
+  z-index: 1;
+  border-radius: 12px 12px 0 0;
 }
 
 .modal-title {
-  font-family: 'MedievalSharp', fantasy;
-  font-size: 1.7rem;
-  color: white;
+  color: var(--enigma-primary);
   margin: 0;
-  text-shadow: 0 0 10px rgba(46, 125, 50, 0.6);
+  font-size: 1.6rem;
+  font-family: 'Cinzel', serif;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
 }
 
 .modal-close {
   background: none;
   border: none;
-  font-size: 1.8rem;
-  color: var(--text-light);
+  color: var(--enigma-text-secondary);
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
   width: 40px;
   height: 40px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   border-radius: 50%;
 }
 
 .modal-close:hover {
-  color: white;
-  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--enigma-primary);
+  background-color: rgba(46, 204, 113, 0.1);
   transform: rotate(90deg);
 }
 
 .modal-body {
-  padding: 2rem;
-  color: var(--text-light);
-  font-size: 1.1rem;
-  line-height: 1.7;
-  position: relative;
-  z-index: 1;
+  padding: 1.5rem;
+  color: var(--enigma-text);
+  font-family: 'Spectral', serif;
+  line-height: 1.6;
 }
 
 .modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid rgba(46, 125, 50, 0.3);
+  padding: 1.2rem;
+  border-top: 1px solid rgba(46, 204, 113, 0.3);
   display: flex;
-  justify-content: flex-end;
-  gap: 1.2rem;
-  position: relative;
-}
-
-.modal-footer::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  justify-content: center;
+  gap: 1rem;
+  position: sticky;
+  bottom: 0;
+  background-color: rgba(30, 30, 30, 0.98);
+  border-radius: 0 0 12px 12px;
 }
 
 .modal-button {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, var(--color-primary) 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--enigma-primary), var(--enigma-secondary));
+  color: #121212;
   border: none;
-  border-radius: 50px;
-  padding: 0.9rem 1.8rem;
-  font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.modal-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%);
-  transition: left 0.7s ease;
+  font-family: 'Exo 2', sans-serif;
+  min-width: 120px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .modal-button:hover {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
-}
-
-.modal-button:hover::before {
-  left: 100%;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
 }
 
 .modal-button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .modal-button.secondary {
-  background: linear-gradient(135deg, rgba(10, 14, 20, 0.8) 0%, rgba(46, 125, 50, 0.2) 50%, rgba(10, 14, 20, 0.8) 100%);
-  border: 1px solid var(--color-primary);
+  background: transparent;
+  border: 1px solid var(--enigma-primary);
+  color: var(--enigma-primary);
+  box-shadow: none;
 }
 
 .modal-button.secondary:hover {
-  background: linear-gradient(135deg, rgba(46, 125, 50, 0.2) 0%, rgba(10, 14, 20, 0.8) 50%, rgba(46, 125, 50, 0.2) 100%);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  background-color: rgba(46, 204, 113, 0.1);
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
 }
 
-/* Styles spécifiques pour la modale des règles */
+/* ===== EXEMPLES DE COULEURS ===== */
 .example-correct {
   background-color: var(--enigma-correct);
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  color: #121212;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
 .example-present {
   background-color: var(--enigma-present);
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  color: #121212;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
 .example-absent {
   background-color: var(--enigma-absent);
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  color: #ffffff;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
-/* Styles pour la modale de fin de partie */
+/* ===== STATISTIQUES DE FIN DE PARTIE ===== */
 .game-over-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .game-over-stat {
-  background-color: var(--dark-bg);
+  background: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(46, 204, 113, 0.3);
   border-radius: 8px;
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  text-align: center;
 }
 
+/* ===== RÉCOMPENSES ===== */
 .rewards-section {
-  margin: 1.5rem 0;
+  margin: 2rem 0;
   text-align: center;
 }
 
 .rewards-section h3 {
-  font-family: 'Cinzel', serif;
-  font-size: 1.2rem;
-  color: var(--color-primary);
+  color: var(--enigma-primary);
   margin-bottom: 1rem;
 }
 
@@ -1247,6 +848,7 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
+  margin-top: 1rem;
 }
 
 .reward {
@@ -1257,121 +859,157 @@
 }
 
 .reward-icon {
-  font-size: 1.5rem;
-  color: #ffc107;
+  font-size: 2rem;
+  color: var(--enigma-primary);
 }
 
 .reward-value {
-  font-family: 'Cinzel', serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--enigma-text);
 }
 
+/* ===== NOUVEAU RECORD ===== */
 .new-high-score {
-  background-color: rgba(255, 193, 7, 0.2);
-  border: 1px solid #ffc107;
+  background: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.5);
   border-radius: 8px;
   padding: 1rem;
+  margin: 1.5rem 0;
   text-align: center;
   color: #ffc107;
-  font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
-  margin-top: 1.5rem;
+  font-weight: bold;
   animation: pulse 2s infinite;
 }
 
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+  }
+}
+
+/* ===== DERNIER MOT ===== */
 .last-word-container {
-  background-color: rgba(10, 14, 20, 0.8);
-  border: 1px solid var(--color-secondary);
-  color: white;
-  padding: 1rem;
+  background: rgba(18, 18, 18, 0.7);
+  border: 1px solid rgba(46, 204, 113, 0.3);
   border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
   text-align: center;
-  margin-top: 1.5rem;
-  font-weight: 500;
 }
 
 .last-word-container .revealed-word {
-  color: var(--color-secondary);
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 1px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--enigma-primary);
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-/* Styles pour la modale de mot trouvé */
 .revealed-word {
-  font-family: 'Cinzel', serif;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  display: block;
-  text-align: center;
-  margin: 1rem 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--enigma-primary);
+  text-transform: uppercase;
   letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
 }
 
 .word-definition {
   font-style: italic;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background-color: var(--dark-bg);
-  border-radius: 8px;
-  border-left: 3px solid var(--color-primary);
+  color: var(--enigma-text-secondary);
+  margin-top: 1rem;
+  line-height: 1.6;
 }
 
 .word-stats {
   display: flex;
   justify-content: space-around;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0;
 }
 
-/* ===== ANIMATIONS ===== */
-@keyframes cell-pop {
-  0% {
-    transform: scale(1);
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .game-intro h1 {
+    font-size: 2.2rem;
   }
-  50% {
-    transform: scale(1.1);
+
+  .game-intro .subtitle {
+    font-size: 1.3rem;
   }
-  100% {
-    transform: scale(1);
+
+  .difficulty-options {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .difficulty-btn {
+    width: 200px;
+  }
+
+  .game-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .game-stat {
+    min-width: auto;
+  }
+
+  .grid-cell {
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.2rem;
+  }
+
+  .key-btn {
+    min-width: 2rem;
+    height: 2.8rem;
+    font-size: 0.9rem;
+  }
+
+  .power-ups-container {
+    gap: 1rem;
+  }
+
+  .power-up {
+    width: 70px;
+  }
+
+  .game-over-stats {
+    grid-template-columns: 1fr;
   }
 }
 
-@keyframes hint-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(21, 101, 192, 0.7);
+@media (max-width: 480px) {
+  .game-intro h1 {
+    font-size: 1.8rem;
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(21, 101, 192, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(21, 101, 192, 0);
-  }
-}
 
-@keyframes modal-appear {
-  0% {
-    transform: translateY(-50px);
-    opacity: 0;
+  .grid-cell {
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1rem;
   }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-@keyframes pulse {
-  0% {
-    opacity: 0.6;
+  .key-btn {
+    min-width: 1.8rem;
+    height: 2.4rem;
+    font-size: 0.8rem;
   }
-  50% {
-    opacity: 1;
+
+  .key-enter, .key-delete {
+    font-size: 0.7rem;
   }
-  100% {
-    opacity: 0.6;
+
+  .modal-content {
+    width: 95%;
   }
 }
 
@@ -1392,10 +1030,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at bottom, rgba(46, 125, 50, 0.1) 0%, rgba(10, 14, 20, 0) 70%);
+  background: radial-gradient(ellipse at center, rgba(46, 204, 113, 0.05) 0%, transparent 70%);
   pointer-events: none;
-  z-index: -2;
-  animation: mist-move 20s infinite alternate;
+  z-index: -1;
+  animation: mistMove 20s ease-in-out infinite alternate;
 }
 
 .floating-leaves {
@@ -1408,91 +1046,11 @@
   z-index: -1;
 }
 
-@keyframes mist-move {
+@keyframes mistMove {
   0% {
-    background-position: 0% 0%;
+    transform: translateX(-10px) translateY(-10px);
   }
   100% {
-    background-position: 100% 100%;
-  }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .game-intro h1 {
-    font-size: 2rem;
-  }
-
-  .game-intro .subtitle {
-    font-size: 1.2rem;
-  }
-
-  .difficulty-options {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .difficulty-btn {
-    width: 100%;
-    max-width: 300px;
-  }
-
-  .game-info {
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .game-stat {
-    flex: 1 0 40%;
-  }
-
-  .grid-cell {
-    width: 2.8rem;
-    height: 2.8rem;
-    font-size: 1.2rem;
-  }
-
-  .key-btn {
-    min-width: 2rem;
-    height: 3rem;
-    font-size: 0.9rem;
-  }
-
-  .power-ups-container {
-    flex-wrap: wrap;
-  }
-
-  .power-up {
-    flex: 1 0 30%;
-  }
-
-  .game-over-stats {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .game-intro h1 {
-    font-size: 1.8rem;
-  }
-
-  .grid-cell {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1rem;
-  }
-
-  .key-btn {
-    min-width: 1.8rem;
-    height: 2.8rem;
-    font-size: 0.8rem;
-  }
-
-  .key-enter, .key-delete {
-    min-width: 3rem;
-  }
-
-  .modal-content {
-    width: 95%;
+    transform: translateX(10px) translateY(10px);
   }
 }

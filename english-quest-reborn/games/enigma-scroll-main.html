@@ -13,18 +13,11 @@
 
   <!-- Base styles - Ordre important pour éviter les conflits -->
   <link href="../styles/new-design.css" rel="stylesheet">
-  <link href="../src/styles/layout.css" rel="stylesheet">
   <link href="../styles/animations.css" rel="stylesheet">
   <link href="../styles/particles.css" rel="stylesheet">
-  <!-- Le fichier responsive.css n'existe pas, styles responsifs inclus dans new-design.css -->
 
   <!-- Game-specific styles -->
   <link href="../src/styles/games/enigma-scroll.css" rel="stylesheet">
-  <link href="../src/styles/streak-bonus.css" rel="stylesheet">
-  <link href="../src/styles/reward-notifications.css" rel="stylesheet">
-  <link href="../src/styles/connection-indicator.css" rel="stylesheet">
-  <link href="../src/styles/leaderboard.css" rel="stylesheet">
-  <link href="../src/styles/sync-indicator.css" rel="stylesheet">
 
   <!-- Styles personnalisés pour corriger l'alignement et les couleurs -->
   <style>
@@ -40,6 +33,15 @@
       --word-present: #f39c12; /* Orange pour lettre présente mais mal placée */
       --word-absent: #7f8c8d; /* Gris pour lettre absente */
       --word-unfilled: rgba(255, 255, 255, 0.1); /* Gris léger pour cases vides */
+      
+      /* Variables du design reborn pour assurer la cohérence */
+      --color-text: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.7);
+      --color-background: #121212;
+      --color-primary: #2ecc71;
+      --color-primary-dark: #27ae60;
+      --color-primary-light: #58d68d;
+      --color-secondary: #3498db;
     }
 
     /* Correction des couleurs du titre */
@@ -62,7 +64,111 @@
 
     /* Assurer que le header est exactement comme sur les autres pages */
     .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+      z-index: 1000;
       padding: var(--spacing-sm) 0;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-sm);
+    }
+
+    .logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: var(--color-text);
+    }
+
+    .nav-list {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-link {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .nav-link:hover {
+      color: var(--color-primary);
+    }
+
+    .nav-link.active {
+      color: var(--color-primary);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--color-primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      font-size: 1.5rem;
+      cursor: pointer;
     }
 
     /* Assurer que le container a la même largeur que sur les autres pages */
@@ -71,6 +177,31 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 var(--spacing-sm);
+    }
+
+    /* Responsive pour la navigation */
+    @media (max-width: 768px) {
+      .nav {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-list.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(46, 204, 113, 0.2);
+        padding: 1rem;
+        gap: 1rem;
+      }
     }
 
     /* Styles pour le corps du jeu */
@@ -651,6 +782,64 @@
 
     .leaderboard-table tr:hover {
       background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    /* Styles pour les boutons de bascule du leaderboard */
+    .leaderboard-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+    }
+
+    .toggle-btn {
+      padding: 0.7rem 1.2rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: var(--color-primary);
+      color: var(--color-text);
+    }
+
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: #121212;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+    }
+
+    /* Styles pour les cellules de score */
+    .score-cell {
+      text-align: right;
+      color: var(--color-primary) !important;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .rank-cell {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .player-cell {
+      font-weight: 500;
+    }
+
+    .date-cell {
+      text-align: right;
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
 
     .leaderboard-table .rank-gold {
@@ -1818,7 +2007,7 @@
       appId: "1:123456789:web:abcdef"
     };
 
-    // Charger les scripts nécessaires avec fallbacks
+    // Charger les scripts nécessaires avec fallbacks et corrections
     setTimeout(() => {
       loadScript('../scripts/auth-local.js');
       loadScript('../src/js/auth-state.js');
@@ -1831,39 +2020,535 @@
       loadScript('../src/js/enigma-scroll/game-ui.js');
       loadScript('../src/js/enigma-scroll/enigma-scroll.js');
       loadScript('../src/js/enigma-scroll/enigma-scroll-leaderboard.js');
+      
+      // OVERRIDE IMPORTANT pour corriger les problèmes
+      setTimeout(() => {
+        // Rediriger les appels de sauvegarde vers notre système robuste
+        if (window.EnigmaScrollGame && window.enigmaScrollGame) {
+          const originalSaveScore = window.EnigmaScrollGame.prototype ? window.EnigmaScrollGame.prototype.saveScore : null;
+          
+          // Override de la méthode saveScore
+          if (window.EnigmaScrollGame && window.EnigmaScrollGame.prototype) {
+            window.EnigmaScrollGame.prototype.saveScore = function(score) {
+              console.log('📊 Redirection sauvegarde score vers système robuste:', score);
+              return window.enigmaScrollGame.saveScore(score, null, this.level || 1, this.difficulty || 5);
+            };
+          }
+          
+          // Override global également
+          window.saveGameScore = function(score, player, level, difficulty) {
+            return window.enigmaScrollGame.saveScore(score, player, level, difficulty);
+          };
+        }
+        
+        // Forcer les couleurs dès que le jeu est chargé
+        if (window.forceGameColors) {
+          window.forceGameColors();
+        }
+        
+        console.log('🔧 Overrides et corrections appliqués');
+      }, 2000);
     }, 500);
 
-    // Fonction globale pour forcer les couleurs
-    window.forceGameColors = function() {
-      console.log('🎨 Forçage des couleurs du jeu...');
-      
-      // CSS variables FORCÉES
-      document.documentElement.style.setProperty('--word-correct', '#2ecc71', 'important');
-      document.documentElement.style.setProperty('--word-present', '#f39c12', 'important');
-      document.documentElement.style.setProperty('--word-absent', '#7f8c8d', 'important');
-      
-      // Forcer sur les éléments existants
-      document.querySelectorAll('.grid-cell.correct, .key-btn.correct').forEach(el => {
-        el.style.setProperty('background-color', '#2ecc71', 'important');
-        el.style.setProperty('border-color', '#2ecc71', 'important');
-        el.style.setProperty('color', '#121212', 'important');
-      });
-      
-      document.querySelectorAll('.grid-cell.present, .key-btn.present').forEach(el => {
-        el.style.setProperty('background-color', '#f39c12', 'important');
-        el.style.setProperty('border-color', '#f39c12', 'important');
-        el.style.setProperty('color', '#121212', 'important');
-      });
-      
-      document.querySelectorAll('.grid-cell.absent, .key-btn.absent').forEach(el => {
-        el.style.setProperty('background-color', '#7f8c8d', 'important');
-        el.style.setProperty('border-color', '#7f8c8d', 'important');
-        el.style.setProperty('color', '#ffffff', 'important');
-      });
+    // SYSTÈME DE COULEURS ULTRA-ROBUSTE AMÉLIORÉ
+    window.GAME_COLORS = {
+      correct: '#2ecc71',
+      present: '#f39c12', 
+      absent: '#7f8c8d'
     };
 
-    // Appliquer les couleurs à intervalles réguliers
-    setInterval(window.forceGameColors, 500);
+    // Observer pour détecter les changements DOM
+    let colorObserver = null;
+    
+    // Fonction de forçage ultra-agressive - Version améliorée
+    window.forceGameColors = function() {
+      // Stopper l'ancien observer
+      if (colorObserver) {
+        colorObserver.disconnect();
+      }
+
+      // FORCER les variables CSS
+      const style = document.documentElement.style;
+      style.setProperty('--word-correct', window.GAME_COLORS.correct, 'important');
+      style.setProperty('--word-present', window.GAME_COLORS.present, 'important');
+      style.setProperty('--word-absent', window.GAME_COLORS.absent, 'important');
+      
+      // INJECTER du CSS ultra-prioritaire avec spécificité maximale
+      let forceStyleEl = document.getElementById('force-game-colors-ultimate');
+      if (!forceStyleEl) {
+        forceStyleEl = document.createElement('style');
+        forceStyleEl.id = 'force-game-colors-ultimate';
+        document.head.appendChild(forceStyleEl);
+      }
+      
+      forceStyleEl.innerHTML = `
+        /* COULEURS ULTRA-FORCÉES AVEC SPÉCIFICITÉ MAXIMALE */
+        body .grid-cell.correct, body .key-btn.correct,
+        .game-universe .grid-cell.correct, .game-universe .key-btn.correct {
+          background-color: ${window.GAME_COLORS.correct} !important;
+          border-color: ${window.GAME_COLORS.correct} !important;
+          color: #121212 !important;
+          background: ${window.GAME_COLORS.correct} !important;
+        }
+        body .grid-cell.present, body .key-btn.present,
+        .game-universe .grid-cell.present, .game-universe .key-btn.present {
+          background-color: ${window.GAME_COLORS.present} !important;
+          border-color: ${window.GAME_COLORS.present} !important;
+          color: #121212 !important;
+          background: ${window.GAME_COLORS.present} !important;
+        }
+        body .grid-cell.absent, body .key-btn.absent,
+        .game-universe .grid-cell.absent, .game-universe .key-btn.absent {
+          background-color: ${window.GAME_COLORS.absent} !important;
+          border-color: ${window.GAME_COLORS.absent} !important;
+          color: #ffffff !important;
+          background: ${window.GAME_COLORS.absent} !important;
+        }
+      `;
+      
+      // FORCER individuellement chaque élément existant
+      ['correct', 'present', 'absent'].forEach(state => {
+        document.querySelectorAll(`.grid-cell.${state}, .key-btn.${state}`).forEach(el => {
+          const color = window.GAME_COLORS[state];
+          const textColor = state === 'absent' ? '#ffffff' : '#121212';
+          
+          // Méthode 1: setProperty avec important
+          el.style.setProperty('background-color', color, 'important');
+          el.style.setProperty('border-color', color, 'important');
+          el.style.setProperty('color', textColor, 'important');
+          el.style.setProperty('background', color, 'important');
+          
+          // Méthode 2: cssText direct
+          el.style.cssText += `; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important;`;
+          
+          // Méthode 3: setAttribute pour forcer encore plus
+          const currentStyle = el.getAttribute('style') || '';
+          const newStyle = `${currentStyle}; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important; background: ${color} !important;`;
+          el.setAttribute('style', newStyle);
+        });
+      });
+
+      // Créer un observer pour les nouveaux éléments
+      colorObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) { // Element node
+              const elements = node.querySelectorAll ? node.querySelectorAll('.grid-cell, .key-btn') : [];
+              elements.forEach(el => {
+                ['correct', 'present', 'absent'].forEach(state => {
+                  if (el.classList.contains(state)) {
+                    const color = window.GAME_COLORS[state];
+                    const textColor = state === 'absent' ? '#ffffff' : '#121212';
+                    el.style.setProperty('background-color', color, 'important');
+                    el.style.setProperty('border-color', color, 'important');
+                    el.style.setProperty('color', textColor, 'important');
+                    el.style.setProperty('background', color, 'important');
+                    el.style.cssText += `; background-color: ${color} !important; border-color: ${color} !important; color: ${textColor} !important;`;
+                  }
+                });
+              });
+            }
+          });
+        });
+      });
+
+      // Observer le DOM entier
+      colorObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'style']
+      });
+      
+      console.log('🎨 Système de couleurs ultra-robuste activé');
+    };
+
+         // SYSTÈME DE SCORES LOCAL ULTRA-RENFORCÉ
+     window.enigmaScrollGame = {
+       scores: [],
+       currentScore: 0,
+       gameRunning: false,
+       
+       // Sauvegarde de score robuste
+       saveScore: function(score, playerName, level, difficulty) {
+         try {
+           const user = window.simpleAuth ? window.simpleAuth.getCurrentUser() : null;
+           const finalPlayerName = playerName || (user && user.username) || (user && user.displayName) || 'Joueur Anonyme';
+           
+           const newScore = {
+             score: score || 0,
+             player: finalPlayerName,
+             level: level || 1,
+             difficulty: difficulty || 5,
+             date: new Date().toISOString(),
+             timestamp: Date.now()
+           };
+           
+           let scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+           scores.push(newScore);
+           scores.sort((a, b) => b.score - a.score);
+           scores = scores.slice(0, 10); // Garder top 10 en local
+           
+           localStorage.setItem('enigmaScrollMainScores', JSON.stringify(scores));
+           this.scores = scores;
+           this.updateLeaderboard();
+           
+           console.log('📊 Score sauvegardé (version complète):', newScore);
+           
+           // Sauvegarder aussi dans Firebase si disponible
+           this.saveToFirebase(newScore);
+           
+           // Déclencher mise à jour des scores globaux si c'est l'onglet actif
+           const onlineBtn = document.getElementById('online-scores-btn');
+           if (onlineBtn && onlineBtn.classList.contains('active')) {
+             setTimeout(() => this.showOnlineScores(), 500);
+           }
+           
+           return newScore;
+         } catch (e) {
+           console.error('❌ Erreur sauvegarde score:', e);
+           return null;
+         }
+       },
+       
+       // Lecture des scores robuste
+       getScores: function() {
+         try {
+           this.scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+           return this.scores;
+         } catch (e) {
+           console.error('❌ Erreur lecture scores:', e);
+           this.scores = [];
+           return [];
+         }
+       },
+       
+                // Mise à jour du leaderboard robuste (seulement pour scores locaux)
+         updateLeaderboard: function() {
+           // Vérifier si on est en mode scores globaux - si oui, ne pas écraser
+           const onlineBtn = document.getElementById('online-scores-btn');
+           if (onlineBtn && onlineBtn.classList.contains('active')) {
+             console.log('Mode scores globaux actif - pas de mise à jour locale');
+             return;
+           }
+           
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) {
+             console.warn('Element leaderboard-body introuvable');
+             return;
+           }
+           
+           const scores = this.getScores();
+         
+         if (scores.length === 0) {
+           tbody.innerHTML = `
+             <tr>
+               <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                 Aucun score enregistré
+                 <br><small style="opacity: 0.6;">Jouez pour voir vos scores ici !</small>
+               </td>
+             </tr>`;
+           return;
+         }
+         
+         tbody.innerHTML = scores.map((score, index) => {
+           const isTopScore = index < 3;
+           const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+           const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+           
+           return `
+             <tr class="${rankClass}" style="transition: background-color 0.3s ease;">
+               <td class="rank-cell" style="text-align: center; font-weight: bold; color: ${rankColor};">
+                 ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+               </td>
+               <td class="player-cell" style="font-weight: 500; color: #ffffff;">
+                 ${score.player || 'Joueur Anonyme'}${score.level ? ` (Niveau ${score.level})` : ''}
+               </td>
+               <td class="score-cell" style="text-align: right; color: #2ecc71; font-weight: bold; font-size: ${isTopScore ? '1.1rem' : '1rem'};">
+                 ${Number(score.score).toLocaleString()}
+               </td>
+               <td class="date-cell" style="text-align: right; font-size: 0.9rem; opacity: 0.8; color: rgba(255,255,255,0.7);">
+                 ${score.date ? new Date(score.date).toLocaleDateString('fr-FR') : 'Date inconnue'}
+               </td>
+             </tr>
+           `;
+         }).join('');
+         
+         console.log(`📈 Leaderboard mis à jour avec ${scores.length} scores`);
+       },
+       
+       // Sauvegarder dans Firebase
+       saveToFirebase: function(scoreData) {
+         if (typeof firebase === 'undefined' || !firebase.firestore) {
+           console.warn('Firebase non disponible pour la sauvegarde');
+           return;
+         }
+         
+         try {
+           const db = firebase.firestore();
+           
+           // Préparer les données pour Firebase
+           const firebaseData = {
+             score: scoreData.score,
+             player: scoreData.player,
+             level: scoreData.level || 1,
+             difficulty: scoreData.difficulty || 5,
+             date: scoreData.date,
+             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+             gameType: 'enigma-scroll'
+           };
+           
+           // Sauvegarder dans la collection principale
+           db.collection('enigma_scroll_scores').add(firebaseData)
+             .then(docRef => {
+               console.log('✅ Score sauvegardé dans Firebase:', docRef.id);
+             })
+             .catch(error => {
+               console.warn('⚠️ Erreur sauvegarde Firebase principale:', error);
+               
+               // Essayer avec la collection alternative
+               db.collection('game_scores').add(firebaseData)
+                 .then(docRef => {
+                   console.log('✅ Score sauvegardé dans Firebase (fallback):', docRef.id);
+                 })
+                 .catch(fallbackError => {
+                   console.error('❌ Erreur sauvegarde Firebase fallback:', fallbackError);
+                 });
+             });
+         } catch (error) {
+           console.error('❌ Erreur initialisation Firebase pour sauvegarde:', error);
+         }
+       },
+
+       // Initialisation du système
+       init: function() {
+         console.log('🚀 Initialisation du système de scores Enigma Scroll');
+         this.updateLeaderboard();
+         this.setupLeaderboardButtons();
+         
+         // Vérifier périodiquement (seulement pour scores locaux)
+         setInterval(() => {
+           if (document.getElementById('leaderboard-body')) {
+             // Ne pas mettre à jour si on est en mode scores globaux
+             const onlineBtn = document.getElementById('online-scores-btn');
+             if (!onlineBtn || !onlineBtn.classList.contains('active')) {
+               this.updateLeaderboard();
+             }
+           }
+         }, 10000); // Toutes les 10 secondes
+       },
+
+       // Configuration des boutons du leaderboard
+       setupLeaderboardButtons: function() {
+         const localBtn = document.getElementById('local-scores-btn');
+         const onlineBtn = document.getElementById('online-scores-btn');
+         
+         if (localBtn) {
+           localBtn.addEventListener('click', () => {
+             localBtn.classList.add('active');
+             if (onlineBtn) onlineBtn.classList.remove('active');
+             this.showLocalScores();
+           });
+         }
+         
+         if (onlineBtn) {
+           onlineBtn.addEventListener('click', () => {
+             onlineBtn.classList.add('active');
+             if (localBtn) localBtn.classList.remove('active');
+             this.showOnlineScores();
+           });
+         }
+       },
+
+       // Afficher les scores locaux
+       showLocalScores: function() {
+         // Marquer qu'on est en mode scores locaux
+         this.currentMode = 'local';
+         this.updateLeaderboard();
+       },
+
+       // Afficher les scores globaux (avec fallback)
+       showOnlineScores: function() {
+         const tbody = document.getElementById('leaderboard-body');
+         if (!tbody) return;
+         
+         // Marquer qu'on est en mode scores globaux
+         this.currentMode = 'online';
+         
+         // Afficher un loading temporaire
+         tbody.innerHTML = `
+           <tr>
+             <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+               <i class="fas fa-spinner fa-spin"></i> Chargement des scores globaux...
+             </td>
+           </tr>`;
+         
+         // Essayer de charger les scores Firebase avec la vraie structure
+         this.loadFirebaseScores();
+       },
+
+       // Afficher les scores en ligne
+       displayOnlineScores: function(scores) {
+         const tbody = document.getElementById('leaderboard-body');
+         if (!tbody) return;
+         
+         tbody.innerHTML = scores.map((score, index) => {
+           const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+           const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+           
+           return `
+             <tr class="${rankClass}" style="transition: background-color 0.3s ease;">
+               <td class="rank-cell" style="text-align: center; font-weight: bold; color: ${rankColor};">
+                 ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+               </td>
+               <td class="player-cell" style="font-weight: 500; color: #ffffff;">
+                 ${score.playerName || score.player || 'Joueur Anonyme'}
+                 ${score.level ? ` (Niveau ${score.level})` : ''}
+               </td>
+               <td class="score-cell" style="text-align: right; color: #2ecc71; font-weight: bold; font-size: ${index < 3 ? '1.1rem' : '1rem'};">
+                 ${Number(score.score || 0).toLocaleString()}
+               </td>
+                                <td class="date-cell" style="text-align: right; font-size: 0.9rem; opacity: 0.8; color: rgba(255,255,255,0.7);">
+                   ${score.date || 'Date inconnue'}
+                 </td>
+             </tr>
+           `;
+         }).join('');
+       },
+
+                // Charger les scores Firebase avec la vraie structure
+         loadFirebaseScores: function() {
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) return;
+           
+           // Vérifier si Firebase est disponible
+           if (typeof firebase === 'undefined' || !firebase.firestore) {
+             this.showNoOnlineScores();
+             return;
+           }
+           
+           try {
+             const db = firebase.firestore();
+             console.log('🔍 Chargement des scores Firebase depuis enigma_scroll_scores...');
+             
+                            // Utiliser la vraie collection comme dans l'ancienne version
+               db.collection('enigma_scroll_scores')
+                 .orderBy('score', 'desc')
+                 .limit(5)
+               .get()
+                                .then(querySnapshot => {
+                   const scores = [];
+                   querySnapshot.forEach(doc => {
+                     const data = doc.data();
+                     
+                     // Debugging : afficher la structure réelle des données
+                     console.log('📄 Document Firebase:', doc.id, data);
+                     
+                     // Essayer de récupérer le nom du joueur avec tous les champs possibles
+                     let playerName = 'Joueur Anonyme';
+                     if (data.playerName) playerName = data.playerName;
+                     else if (data.player) playerName = data.player;
+                     else if (data.name) playerName = data.name;
+                     else if (data.username) playerName = data.username;
+                     else if (data.user) playerName = data.user;
+                     
+                     // Gestion correcte des dates Firebase
+                     let formattedDate = 'Date inconnue';
+                     if (data.timestamp && data.timestamp.toDate) {
+                       // Timestamp Firebase Firestore
+                       formattedDate = data.timestamp.toDate().toLocaleDateString('fr-FR');
+                     } else if (data.date) {
+                       // Date sous forme de string ou autre format
+                       const dateObj = new Date(data.date);
+                       if (!isNaN(dateObj.getTime())) {
+                         formattedDate = dateObj.toLocaleDateString('fr-FR');
+                       }
+                     }
+                     
+                     scores.push({
+                       id: doc.id,
+                       score: data.score || 0,
+                       player: playerName,
+                       playerName: playerName,
+                       level: data.level,
+                       difficulty: data.difficulty,
+                       date: formattedDate,
+                       timestamp: data.timestamp || data.date,
+                       rawData: data // Pour debugging
+                     });
+                   });
+                   
+                   console.log(`✅ ${scores.length} scores Firebase récupérés`, scores);
+                 
+                 if (scores.length > 0) {
+                   this.displayOnlineScores(scores);
+                 } else {
+                   this.showNoOnlineScores();
+                 }
+               })
+               .catch(error => {
+                 console.error('❌ Erreur lors du chargement des scores Firebase:', error);
+                 
+                                    // Essayer aussi avec game_scores comme fallback
+                   db.collection('game_scores')
+                     .where('gameType', '==', 'enigma-scroll')
+                     .orderBy('score', 'desc')
+                     .limit(5)
+                   .get()
+                   .then(querySnapshot => {
+                     const scores = [];
+                     querySnapshot.forEach(doc => {
+                       const data = doc.data();
+                       scores.push({
+                         id: doc.id,
+                         score: data.score || 0,
+                         player: data.player || data.playerName || 'Joueur Anonyme',
+                         playerName: data.player || data.playerName || 'Joueur Anonyme',
+                         level: data.level,
+                         difficulty: data.difficulty,
+                         date: data.date,
+                         timestamp: data.timestamp || data.date
+                       });
+                     });
+                     
+                     console.log(`✅ ${scores.length} scores Firebase récupérés (fallback)`, scores);
+                     
+                     if (scores.length > 0) {
+                       this.displayOnlineScores(scores);
+                     } else {
+                       this.showNoOnlineScores();
+                     }
+                   })
+                   .catch(fallbackError => {
+                     console.error('❌ Erreur fallback:', fallbackError);
+                     this.showNoOnlineScores();
+                   });
+               });
+           } catch (initError) {
+             console.error('❌ Erreur initialisation Firebase:', initError);
+             this.showNoOnlineScores();
+           }
+         },
+
+         // Afficher message si pas de scores en ligne
+         showNoOnlineScores: function() {
+           const tbody = document.getElementById('leaderboard-body');
+           if (!tbody) return;
+           
+           tbody.innerHTML = `
+             <tr>
+               <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                 <i class="fas fa-globe" style="margin-bottom: 10px; font-size: 2rem; display: block;"></i>
+                 Aucun score global disponible
+                 <br><small style="opacity: 0.6;">Les scores globaux nécessitent une connexion internet.<br>Vos scores locaux sont sauvegardés !</small>
+               </td>
+             </tr>`;
+         }
+     };
+
+    // Appliquer immédiatement et régulièrement
+    setTimeout(window.forceGameColors, 100);
+    setInterval(window.forceGameColors, 2000); // Moins fréquent mais plus efficace
     
     // Système d'authentification local simple
     window.simpleAuth = {
@@ -1920,6 +2605,9 @@
           --word-correct: #2ecc71 !important;
           --word-present: #f39c12 !important;
           --word-absent: #7f8c8d !important;
+          --color-primary: #2ecc71 !important;
+          --color-text: #ffffff !important;
+          --color-text-secondary: rgba(255, 255, 255, 0.7) !important;
         }
         
         /* Grille - États des cellules FORCÉS */
@@ -1927,18 +2615,21 @@
           background-color: #2ecc71 !important;
           border-color: #2ecc71 !important;
           color: #121212 !important;
+          box-shadow: 0 0 15px rgba(46, 204, 113, 0.5) !important;
         }
         
         .grid-cell.present {
           background-color: #f39c12 !important;
           border-color: #f39c12 !important;
           color: #121212 !important;
+          box-shadow: 0 0 15px rgba(243, 156, 18, 0.5) !important;
         }
         
         .grid-cell.absent {
           background-color: #7f8c8d !important;
           border-color: #7f8c8d !important;
           color: #ffffff !important;
+          box-shadow: 0 0 5px rgba(127, 140, 141, 0.3) !important;
         }
         
         /* Clavier - États des touches FORCÉS */
@@ -2015,14 +2706,109 @@
       }, 100);
       
       // Masquer les modales au démarrage
+      // INITIALISATION ULTRA-ROBUSTE DU SYSTÈME
       setTimeout(() => {
-        var rulesModal = document.getElementById('enigmaRulesModal') || document.getElementById('rulesModal');
-        if (rulesModal) {
-          rulesModal.style.display = 'none';
-          rulesModal.style.opacity = '0';
-          rulesModal.style.visibility = 'hidden';
+        // Masquer toutes les modales
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.style.display = 'none';
+          modal.style.opacity = '0';
+          modal.style.visibility = 'hidden';
+        });
+        
+        // Créer les éléments manquants si nécessaires
+        function ensureElement(id, defaultHtml) {
+          if (!document.getElementById(id)) {
+            console.warn('Élément manquant:', id, '- Création automatique');
+            const div = document.createElement('div');
+            div.id = id;
+            div.innerHTML = defaultHtml || '';
+            div.style.display = 'none'; // Caché par défaut
+            document.body.appendChild(div);
+          }
         }
-      }, 100);
+        
+        // S'assurer que tous les éléments nécessaires existent
+        ensureElement('revealed-word', 'WORD');
+        ensureElement('word-definition', 'Définition');
+        ensureElement('points-earned', '+0');
+        ensureElement('time-bonus', '+0s');
+        ensureElement('final-score', '0');
+        ensureElement('words-found', '0');
+        ensureElement('max-combo', 'x1');
+        ensureElement('total-time', '0s');
+        ensureElement('last-word', 'WORD');
+        
+                 // INITIALISATION COMPLÈTE DU JEU
+         console.log('🚀 Initialisation complète du système Enigma Scroll...');
+         
+         // 1. Initialiser le système de scores
+         if (window.enigmaScrollGame) {
+           window.enigmaScrollGame.init();
+         }
+         
+         // 2. Appliquer les couleurs immédiatement et périodiquement
+         if (window.forceGameColors) {
+           window.forceGameColors();
+           // Forcer les couleurs régulièrement
+           setInterval(window.forceGameColors, 3000);
+         }
+         
+         // 3. Vérifier que tous les éléments critiques existent
+         const criticalElements = [
+           'welcome-screen', 'game-area', 'word-grid', 'keyboard',
+           'score-display', 'level-display', 'leaderboard-body'
+         ];
+         
+         criticalElements.forEach(id => {
+           const element = document.getElementById(id);
+           if (!element) {
+             console.warn(`⚠️ Élément critique manquant: ${id}`);
+           } else {
+             console.log(`✅ Élément trouvé: ${id}`);
+           }
+         });
+         
+         // 4. Initialiser les gestionnaires d'événements du jeu
+         if (typeof window.initializeGame === 'function') {
+           try {
+             window.initializeGame();
+             console.log('✅ Jeu initialisé via initializeGame()');
+           } catch (e) {
+             console.warn('⚠️ Erreur initialisation jeu:', e);
+           }
+         }
+         
+         // 5. Initialiser le menu mobile
+         const menuToggle = document.querySelector('.menu-toggle');
+         const navList = document.querySelector('.nav-list');
+         if (menuToggle && navList) {
+           menuToggle.addEventListener('click', function() {
+             navList.classList.toggle('active');
+           });
+         }
+         
+         // 6. Test du système de scores et Firebase
+         setTimeout(() => {
+           if (window.enigmaScrollGame) {
+             console.log('✅ Système de scores prêt');
+             window.enigmaScrollGame.updateLeaderboard();
+             
+             // Tester la connexion Firebase
+             if (typeof firebase !== 'undefined' && firebase.firestore) {
+               console.log('✅ Firebase disponible');
+               // Si l'onglet scores globaux est actif, le charger
+               const onlineBtn = document.getElementById('online-scores-btn');
+               if (onlineBtn && onlineBtn.classList.contains('active')) {
+                 window.enigmaScrollGame.showOnlineScores();
+               }
+             } else {
+               console.warn('⚠️ Firebase non disponible - scores locaux uniquement');
+             }
+           }
+         }, 1000);
+         
+         console.log('✅ Système Enigma Scroll complètement initialisé');
+      }, 200);
     })();
   </script>
 
