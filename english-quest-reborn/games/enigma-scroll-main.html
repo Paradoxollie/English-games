@@ -17,8 +17,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="../src/js/firebase-init.js"></script>
   <script src="../src/js/firebase-service-adapter.js"></script>
+  
+  <!-- Scripts d'authentification -->
+  <script src="../scripts/auth-service.js"></script>
+  <script src="../scripts/auth-header.js"></script>
 
   <style>
+    /* Variables exactes du site reborn */
     :root {
       /* Couleurs principales */
       --color-primary: #2ecc71;
@@ -28,7 +33,7 @@
       --color-warning: #f39c12;
       --color-info: #3498db;
 
-      /* Couleurs de fond */
+      /* Couleurs de fond - exactement comme le site principal */
       --color-background: #121212;
       --color-surface: #1e1e1e;
       --color-surface-hover: #2a2a2a;
@@ -90,7 +95,7 @@
       padding-top: 80px;
     }
 
-    /* Header styles */
+    /* Header styles - exactement comme le site principal */
     .header {
       position: fixed;
       top: 0;
@@ -190,24 +195,6 @@
       box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
     }
 
-    .btn-logout {
-      background: linear-gradient(135deg, var(--color-danger), #c0392b);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: var(--border-radius-md);
-      text-decoration: none;
-      font-weight: 600;
-      transition: all var(--transition-normal);
-      border: none;
-      cursor: pointer;
-      margin-left: 10px;
-    }
-
-    .btn-logout:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
-    }
-
     /* Container principal */
     .container {
       width: 90%;
@@ -216,139 +203,360 @@
       padding: 0 var(--spacing-sm);
     }
 
-    /* Écran de connexion obligatoire */
-    .auth-required {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(18, 18, 18, 0.95);
-      backdrop-filter: blur(8px);
-      z-index: 2000;
+    .game-universe {
+      min-height: calc(100vh - 80px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 0;
+      background-color: var(--color-background);
+      gap: 2rem;
+    }
+
+    /* Layout à deux colonnes comme le site reborn */
+    .game-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .game-interface {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .sidebar {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      transition: all 0.3s ease;
+      gap: 1.5rem;
     }
 
-    .auth-required h1 {
-      font-family: var(--font-family-secondary);
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-info));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .auth-required p {
-      font-size: 1.2rem;
-      color: var(--color-text-secondary);
+    .game-header-content {
       margin-bottom: 2rem;
-      max-width: 600px;
     }
 
-    /* Section de jeu */
-    .game-section {
-      padding: var(--spacing-md) 0;
-    }
-
-    .game-header {
-      text-align: center;
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .game-title {
-      font-family: var(--font-family-secondary);
+    .section-title.text-gradient {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
       font-size: 3rem;
       margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-info));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-family: var(--font-family-secondary);
     }
 
     .game-subtitle {
-      font-size: 1.2rem;
       color: var(--color-text-secondary);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      font-family: 'Spectral', serif;
     }
 
-    /* Zone de jeu */
-    .game-area {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: var(--spacing-lg);
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: var(--spacing-md) 0;
+    /* Sélection de difficulté */
+    .difficulty-selection {
+      margin: 2rem 0;
     }
 
-    .game-main {
+    .difficulty-selection h3 {
+      color: var(--color-text-primary);
+      margin-bottom: 1.5rem;
+      font-family: var(--font-family-secondary);
+    }
+
+    .difficulty-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .difficulty-btn {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-md);
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1.5rem 1rem;
+      background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius-lg);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      color: var(--color-text-primary);
+      min-width: 120px;
+      text-decoration: none;
     }
 
-    /* Grille de jeu */
-    .game-grid {
-      display: grid;
-      gap: 0.25rem;
+    .difficulty-btn:hover {
+      background: var(--color-surface-hover);
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .difficulty-btn.active {
+      background: var(--color-primary);
+      color: var(--color-background);
+    }
+
+    .difficulty-icon {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+    }
+
+    .difficulty-btn.active .difficulty-icon {
+      color: var(--color-background);
+    }
+
+    .difficulty-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .difficulty-desc {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .game-buttons {
+      display: flex;
+      gap: 1rem;
       justify-content: center;
-      margin: var(--spacing-md) 0;
+      margin-top: 2rem;
+    }
+
+    .game-button {
+      padding: 1rem 2rem;
+      border-radius: var(--border-radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      border: none;
+      font-family: var(--font-family-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .primary-button {
+      background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+      color: var(--color-background);
+    }
+
+    .primary-button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .secondary-button {
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .secondary-button:hover {
+      background-color: rgba(46, 204, 113, 0.1);
+    }
+
+    /* Interface de jeu */
+    .game-hud {
+      display: flex;
+      justify-content: space-around;
+      background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius-lg);
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .hud-icon {
+      color: var(--color-primary);
+      font-size: 1.2rem;
+    }
+
+    .hud-label {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hud-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text-primary);
+    }
+
+    /* Power-ups */
+    .power-ups-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .power-up {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      width: 80px;
+    }
+
+    .power-up:hover {
+      background: var(--color-surface-hover);
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .power-up.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .power-up.disabled:hover {
+      transform: none;
+      box-shadow: none;
+      background: var(--color-surface);
+    }
+
+    .power-up-icon {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+    }
+
+    .power-up-name {
+      font-size: 0.9rem;
+      color: var(--color-text-primary);
+    }
+
+    .power-up-count {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-text-primary);
+    }
+
+    /* Grille de mots */
+    .word-grid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .grid-row {
-      display: grid;
-      gap: 0.25rem;
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: center;
     }
 
     .grid-cell {
-      width: 60px;
-      height: 60px;
-      border: 2px solid var(--color-surface-hover);
+      width: 3.5rem;
+      height: 3.5rem;
       background: var(--color-surface);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.5rem;
       font-weight: bold;
-      text-transform: uppercase;
       color: var(--color-text-primary);
-      border-radius: var(--border-radius-sm);
-      transition: all var(--transition-fast);
+      text-transform: uppercase;
+      transition: all var(--transition-normal), transform var(--transition-normal);
+      transform-style: preserve-3d;
     }
 
-    .grid-cell.current {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    .grid-cell.filled {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: var(--color-surface-hover);
+      animation: cellFill 0.2s ease-in-out;
+    }
+
+    @keyframes cellFill {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
 
     .grid-cell.correct {
-      background: var(--word-correct);
+      background-color: var(--word-correct);
       border-color: var(--word-correct);
-      animation: cellFlip 0.6s ease;
+      color: var(--color-background);
+      animation: correctCell 0.5s ease-in-out;
+    }
+
+    @keyframes correctCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: var(--color-surface); }
+      51% { background-color: var(--word-correct); }
+      100% { transform: rotateY(0); }
     }
 
     .grid-cell.present {
-      background: var(--word-present);
+      background-color: var(--word-present);
       border-color: var(--word-present);
-      animation: cellFlip 0.6s ease;
+      color: var(--color-background);
+      animation: presentCell 0.5s ease-in-out;
+    }
+
+    @keyframes presentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: var(--color-surface); }
+      51% { background-color: var(--word-present); }
+      100% { transform: rotateY(0); }
     }
 
     .grid-cell.absent {
-      background: var(--word-absent);
+      background-color: var(--word-absent);
       border-color: var(--word-absent);
-      animation: cellFlip 0.6s ease;
+      color: var(--color-text-primary);
+      animation: absentCell 0.5s ease-in-out;
+    }
+
+    @keyframes absentCell {
+      0% { transform: rotateY(0); }
+      50% { transform: rotateY(90deg); background-color: var(--color-surface); }
+      51% { background-color: var(--word-absent); }
+      100% { transform: rotateY(0); }
     }
 
     .grid-cell.hint {
-      background: linear-gradient(135deg, var(--color-info), var(--color-primary));
-      border-color: var(--color-info);
-      animation: hintReveal 0.8s ease;
+      background: linear-gradient(45deg, var(--word-present), var(--color-warning)) !important;
+      border: 2px solid var(--word-present);
+      color: var(--color-background);
+      animation: bounceHint 0.6s ease;
+    }
+
+    @keyframes bounceHint {
+      0%, 20%, 50%, 80%, 100% { transform: scale(1); }
+      40% { transform: scale(1.1); }
+      60% { transform: scale(1.05); }
     }
 
     /* Clavier virtuel */
@@ -356,91 +564,117 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      max-width: 500px;
-      margin: 0 auto;
+      align-items: center;
+      margin: 2rem 0;
     }
 
     .keyboard-row {
       display: flex;
-      gap: 0.25rem;
       justify-content: center;
+      gap: 0.25rem;
+      width: 100%;
     }
 
     .key-btn {
-      padding: 0.75rem;
-      background: var(--color-surface-hover);
-      border: none;
-      border-radius: var(--border-radius-sm);
+      flex: 1;
+      min-width: 2.2rem;
+      height: 3.2rem;
+      background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
       color: var(--color-text-primary);
+      font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all var(--transition-fast);
-      min-width: 40px;
-      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+      touch-action: manipulation;
     }
 
     .key-btn:hover {
-      background: var(--color-surface-active);
-      transform: translateY(-1px);
+      background: var(--color-surface-hover);
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
     }
 
-    .key-btn.key-enter, .key-btn.key-delete {
-      font-size: 0.7rem;
-      padding: 0.75rem 1rem;
+    .key-btn:active {
+      transform: translateY(1px);
+    }
+
+    .key-enter, .key-delete {
+      min-width: 3.5rem;
+      font-size: 0.85rem;
+      flex: 1.5;
     }
 
     .key-btn.correct {
-      background: var(--word-correct);
+      background-color: var(--word-correct);
+      border-color: var(--word-correct);
+      color: var(--color-background);
     }
 
     .key-btn.present {
-      background: var(--word-present);
+      background-color: var(--word-present);
+      border-color: var(--word-present);
+      color: var(--color-background);
     }
 
     .key-btn.absent {
-      background: var(--word-absent);
+      background-color: var(--word-absent);
+      border-color: var(--word-absent);
+      color: var(--color-text-primary);
     }
 
-    /* Sidebar */
-    .game-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-
-    .stats-card, .leaderboard-card {
+    /* Sidebar panels - style reborn */
+    .game-panel {
       background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--border-radius-lg);
-      padding: var(--spacing-md);
-      border: 1px solid rgba(46, 204, 113, 0.2);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
-    .card-title {
-      font-family: var(--font-family-secondary);
-      font-size: 1.3rem;
-      margin-bottom: var(--spacing-sm);
+    .game-panel h2 {
       color: var(--color-primary);
+      font-family: var(--font-family-secondary);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      text-align: center;
     }
 
-    .stat-item {
+    /* Leaderboard styles */
+    .leaderboard-toggle {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
 
-    .stat-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
+    .toggle-btn {
+      flex: 1;
+      padding: 0.5rem;
+      background: var(--color-surface-hover);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius-md);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
-    .stat-value {
-      font-weight: bold;
-      color: var(--color-accent);
+    .toggle-btn.active {
+      background: var(--color-primary);
+      color: var(--color-background);
+      border-color: var(--color-primary);
     }
 
-    /* Tableau des scores amélioré */
     .leaderboard-table {
       width: 100%;
       border-collapse: collapse;
@@ -450,310 +684,145 @@
 
     .leaderboard-table th {
       background: var(--color-surface-hover);
-      padding: 0.4rem;
+      color: var(--color-text-primary);
+      padding: 0.4rem 0.3rem;
       text-align: left;
       font-weight: 600;
-      color: var(--color-primary);
-      border-bottom: 1px solid rgba(46, 204, 113, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       font-size: 0.8rem;
     }
 
     .leaderboard-table td {
-      padding: 0.4rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.3rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .leaderboard-table tr:hover {
       background: var(--color-surface-hover);
     }
 
-    .leaderboard-table .rank {
-      width: 20%;
+    .leaderboard-table th:nth-child(1),
+    .leaderboard-table td:nth-child(1) {
+      width: 15%;
       text-align: center;
-      font-weight: bold;
     }
 
-    .leaderboard-table .player {
-      width: 45%;
-    }
-
-    .leaderboard-table .score {
+    .leaderboard-table th:nth-child(2),
+    .leaderboard-table td:nth-child(2) {
       width: 35%;
+    }
+
+    .leaderboard-table th:nth-child(3),
+    .leaderboard-table td:nth-child(3) {
+      width: 25%;
       text-align: right;
-      font-weight: bold;
-      color: var(--color-accent);
-      font-size: 0.8rem;
     }
 
-    /* Écran d'accueil */
-    .welcome-screen {
-      text-align: center;
-      padding: var(--spacing-xl);
-      max-width: 800px;
-      margin: 0 auto;
+    .leaderboard-table th:nth-child(4),
+    .leaderboard-table td:nth-child(4) {
+      width: 25%;
+      text-align: right;
+      font-size: 0.75rem;
     }
 
-    .difficulty-selection {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing-md);
-      margin: var(--spacing-lg) 0;
-    }
+    .rank-gold { background: rgba(255, 215, 0, 0.1); }
+    .rank-silver { background: rgba(192, 192, 192, 0.1); }
+    .rank-bronze { background: rgba(205, 127, 50, 0.1); }
 
-    .difficulty-btn {
-      background: var(--color-surface);
-      border: 2px solid rgba(46, 204, 113, 0.3);
-      border-radius: var(--border-radius-lg);
-      padding: var(--spacing-md);
-      color: var(--color-text-primary);
-      cursor: pointer;
-      transition: all var(--transition-normal);
-      text-decoration: none;
-      display: block;
-    }
-
-    .difficulty-btn:hover:not([style*="pointer-events: none"]) {
-      border-color: var(--color-primary);
-      background: var(--color-surface-hover);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .difficulty-btn.active {
-      border-color: var(--color-primary);
-      background: rgba(46, 204, 113, 0.1);
-    }
-
-    .difficulty-btn[style*="pointer-events: none"] {
-      cursor: not-allowed;
-    }
-
-    .difficulty-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-      color: var(--color-primary);
-    }
-
-    .difficulty-desc {
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Boutons */
-    .btn {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-      color: white;
-      padding: 0.75rem 2rem;
-      border: none;
-      border-radius: var(--border-radius-md);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all var(--transition-normal);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 1rem;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-    }
-
-    .btn-secondary {
-      background: linear-gradient(135deg, var(--color-info), var(--color-primary));
-    }
-
-    .btn-lg {
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Messages */
-    .message {
+    /* Messages popup */
+    .popup-message {
       position: fixed;
-      top: 100px;
+      top: 20%;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--color-surface);
-      border: 1px solid var(--color-primary);
-      border-radius: var(--border-radius-md);
       padding: 1rem 2rem;
-      color: var(--color-text-primary);
-      z-index: 1001;
+      border-radius: var(--border-radius-md);
+      font-weight: bold;
+      z-index: 1000;
+      display: none;
+      font-size: 1rem;
       box-shadow: var(--shadow-lg);
-      opacity: 0;
-      transition: all var(--transition-normal);
+      animation: fadeIn var(--transition-normal) ease;
     }
 
-    .message.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    .message.success {
-      border-color: var(--color-primary);
-      background: rgba(46, 204, 113, 0.1);
-    }
+    .popup-message.success { background: var(--word-correct); color: var(--color-background); }
+    .popup-message.error { background: var(--color-danger); color: white; }
+    .popup-message.info { background: var(--color-info); color: white; }
+    .popup-message.warning { background: var(--word-present); color: var(--color-background); }
 
-    .message.error {
-      border-color: var(--color-danger);
-      background: rgba(231, 76, 60, 0.1);
-    }
-
-    .message.warning {
-      border-color: var(--color-warning);
-      background: rgba(243, 156, 18, 0.1);
-    }
-
-    /* Classes utilitaires */
     .hidden {
       display: none !important;
     }
 
-    .text-center {
-      text-align: center;
+    /* Loader pour validation API */
+    .validation-loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--color-primary);
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 8px;
     }
 
-    /* Power-ups */
-    .power-ups {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin: var(--spacing-md) 0;
-    }
-
-    .power-up {
-      background: var(--color-surface);
-      border: 2px solid rgba(46, 204, 113, 0.3);
-      border-radius: var(--border-radius-md);
-      padding: 1rem;
-      cursor: pointer;
-      transition: all var(--transition-normal);
-      text-align: center;
-      min-width: 100px;
-    }
-
-    .power-up:hover {
-      border-color: var(--color-primary);
-      background: var(--color-surface-hover);
-      transform: translateY(-2px);
-    }
-
-    .power-up.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .power-up-icon {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      color: var(--color-primary);
-    }
-
-    .power-up-name {
-      font-size: 0.8rem;
-      color: var(--color-text-secondary);
-    }
-
-    /* Styles pour les récompenses */
-    .reward-notification {
-      position: fixed;
-      top: 150px;
-      right: 20px;
-      background: linear-gradient(135deg, var(--color-accent), #e67e22);
-      color: white;
-      padding: 1rem;
-      border-radius: var(--border-radius-md);
-      z-index: 1002;
-      transform: translateX(400px);
-      transition: transform 0.5s ease;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .reward-notification.show {
-      transform: translateX(0);
-    }
-
-    .reward-icon {
-      font-size: 1.5rem;
-      margin-right: 0.5rem;
-    }
-
-    /* Animations */
-    @keyframes cellFlip {
-      0% { transform: scaleY(1); }
-      50% { transform: scaleY(0); }
-      100% { transform: scaleY(1); }
-    }
-
-    @keyframes hintReveal {
-      0% { transform: scale(0.8); opacity: 0; }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-      20%, 40%, 60%, 80% { transform: translateX(2px); }
-    }
-
-    @keyframes dance {
-      0%, 100% { transform: translateY(0); }
-      25% { transform: translateY(-10px); }
-      75% { transform: translateY(-5px); }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-      .game-area {
+    @media (max-width: 1024px) {
+      .game-content {
         grid-template-columns: 1fr;
-        gap: var(--spacing-md);
+        gap: 1rem;
       }
       
-      .game-sidebar {
+      .sidebar {
         order: -1;
       }
+    }
 
+    @media (max-width: 768px) {
+      .difficulty-options {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+      
+      .game-hud {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .power-ups-container {
+        flex-wrap: wrap;
+      }
+      
       .grid-cell {
-        width: 50px;
-        height: 50px;
+        width: 3rem;
+        height: 3rem;
         font-size: 1.2rem;
       }
-
-      .game-title {
-        font-size: 2rem;
+      
+      .key-btn {
+        min-width: 2rem;
+        height: 3rem;
+        font-size: 1rem;
       }
 
-      .difficulty-selection {
-        grid-template-columns: 1fr;
-      }
-
-      .leaderboard-table {
-        font-size: 0.75rem;
-      }
-
-      .leaderboard-table th,
-      .leaderboard-table td {
-        padding: 0.3rem;
+      .section-title.text-gradient {
+        font-size: 2.5rem;
       }
     }
   </style>
 </head>
-<body>
+<body class="game-body">
   <!-- Header -->
   <header class="header">
     <div class="container header-container">
@@ -762,7 +831,7 @@
       <nav class="nav">
         <ul class="nav-list">
           <li><a href="../index.html" class="nav-link">Accueil</a></li>
-          <li><a href="../games.html" class="nav-link">Jeux</a></li>
+          <li><a href="../games.html" class="nav-link active">Jeux</a></li>
           <li><a href="../courses.html" class="nav-link">Cours</a></li>
           <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
@@ -776,890 +845,995 @@
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main>
-    <!-- Écran de connexion obligatoire -->
-    <div id="authRequired" class="auth-required hidden">
+  <!-- Container du jeu -->
+  <div class="game-universe">
     <div class="container">
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <i class="fas fa-lock" style="font-size: 4rem; color: var(--color-primary); margin-bottom: 1rem;"></i>
-          <h1>🔒 Accès Restreint</h1>
-          <p style="font-size: 1.4rem; margin-bottom: 1rem;">
-            <strong>Connexion obligatoire pour jouer à Enigma Scroll</strong>
-          </p>
-          <p style="font-size: 1.1rem; color: var(--color-text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-            🎮 Pour accéder au jeu et sauvegarder votre progression, vos scores et vos récompenses (or & XP), vous devez être connecté à votre compte English Quest.
-          </p>
-          
-          <div style="background: var(--color-surface); border-radius: var(--border-radius-lg); padding: 1.5rem; margin: 2rem auto; max-width: 500px; border: 1px solid rgba(46, 204, 113, 0.3);">
-            <h3 style="color: var(--color-primary); margin-bottom: 1rem;">✨ Avantages de la connexion :</h3>
-            <ul style="text-align: left; list-style: none; padding: 0;">
-              <li style="margin-bottom: 0.5rem;">🏆 Sauvegarde automatique de vos scores</li>
-              <li style="margin-bottom: 0.5rem;">💰 Gagner de l'or et de l'XP</li>
-              <li style="margin-bottom: 0.5rem;">📊 Classement global</li>
-              <li style="margin-bottom: 0.5rem;">🎯 Suivi de vos performances</li>
-              <li style="margin-bottom: 0.5rem;">🎮 Accès à tous les jeux</li>
-            </ul>
+      <div class="game-content">
+        <!-- Interface de jeu principale -->
+        <main class="game-interface">
+          <!-- En-tête du jeu -->
+          <div class="game-header-content">
+            <h1 class="section-title text-gradient">Enigma Scroll</h1>
+            <p class="game-subtitle">Les Parchemins Mystérieux</p>
+          </div>
+
+          <!-- Sections du jeu -->
+          <div class="game-sections">
+            <!-- Écran d'accueil -->
+            <div id="welcome-screen" class="game-state active">
+              <div class="welcome-content">
+                <p style="color: var(--color-text-secondary); margin-bottom: 2rem; line-height: 1.6;">
+                  Plongez dans un monde de mystère linguistique où chaque mot est un trésor caché à découvrir.
+                  Devinez les mots secrets en anglais et progressez à travers différents royaumes thématiques.
+                </p>
+
+                <div class="difficulty-selection">
+                  <h3>Choisissez votre niveau de difficulté :</h3>
+                  <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="beginner">
+                      <span class="difficulty-icon"><i class="fas fa-seedling"></i></span>
+                      <span class="difficulty-name">Débutant</span>
+                      <span class="difficulty-desc">Mots de 4 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="intermediate">
+                      <span class="difficulty-icon"><i class="fas fa-leaf"></i></span>
+                      <span class="difficulty-name">Intermédiaire</span>
+                      <span class="difficulty-desc">Mots de 5 lettres</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="advanced">
+                      <span class="difficulty-icon"><i class="fas fa-tree"></i></span>
+                      <span class="difficulty-name">Avancé</span>
+                      <span class="difficulty-desc">Mots de 6 lettres</span>
+                    </button>
                   </div>
                 </div>
 
-        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-          <a href="../login.html" class="btn btn-lg" style="min-width: 200px;">
-            <i class="fas fa-sign-in-alt"></i>
-            Se connecter
-          </a>
-          <a href="../register.html" class="btn btn-secondary btn-lg" style="min-width: 200px;">
-            <i class="fas fa-user-plus"></i>
-            Créer un compte
-          </a>
+                <div class="game-buttons">
+                  <button id="start-game-button" class="game-button primary-button glow-button">
+                    <span class="button-text">Commencer l'aventure</span>
+                    <span class="action-icon">✦</span>
+                  </button>
                 </div>
-        
-        <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--color-text-disabled);">
-          Pas encore de compte ? L'inscription est gratuite et prend moins d'une minute !
-        </p>
               </div>
             </div>
 
-    <!-- Écran d'accueil du jeu -->
-    <div id="welcomeScreen" class="welcome-screen hidden">
-      <div class="container">
-        <div class="game-header">
-          <h1 class="game-title">Enigma Scroll</h1>
-          <p class="game-subtitle">Déchiffrez les parchemins mystérieux et devinez des mots cachés en anglais</p>
+            <!-- Zone de jeu -->
+            <div id="game-area" class="game-state hidden">
+              <!-- HUD du jeu -->
+              <div class="game-hud">
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-star"></i></span>
+                  <span class="hud-label">Score</span>
+                  <span id="score-display" class="hud-value">0</span>
                 </div>
-
-        <div class="difficulty-selection">
-          <div class="difficulty-btn" data-difficulty="easy">
-            <div class="difficulty-title">Facile</div>
-            <div class="difficulty-desc">Mots de 4 lettres<br>6 tentatives</div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-hourglass-half"></i></span>
+                  <span class="hud-label">Temps</span>
+                  <span id="time-display" class="hud-value">90</span>
                 </div>
-          <div class="difficulty-btn" data-difficulty="medium">
-            <div class="difficulty-title">Moyen</div>
-            <div class="difficulty-desc">Mots de 5 lettres<br>6 tentatives</div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-bolt"></i></span>
+                  <span class="hud-label">Combo</span>
+                  <span id="combo-display" class="hud-value">x1</span>
                 </div>
-          <div class="difficulty-btn" data-difficulty="hard">
-            <div class="difficulty-title">Difficile</div>
-            <div class="difficulty-desc">Mots de 6 lettres<br>6 tentatives</div>
+                <div class="hud-item">
+                  <span class="hud-icon"><i class="fas fa-scroll"></i></span>
+                  <span class="hud-label">Essais</span>
+                  <span id="attempts-display" class="hud-value">0/6</span>
                 </div>
               </div>
 
-        <button id="startGameButton" class="btn btn-lg" disabled>
-          <i class="fas fa-play"></i>
-          Commencer la Partie
-        </button>
-      </div>
-    </div>
+              <!-- Power-ups -->
+              <div class="power-ups-container">
+                <div class="power-up" data-type="hint" id="hint-powerup">
+                  <div class="power-up-icon">💡</div>
+                  <div class="power-up-name">Indice</div>
+                  <div class="power-up-count" id="hint-count">3</div>
+                </div>
+                <div class="power-up" data-type="time" id="time-powerup">
+                  <div class="power-up-icon">⏰</div>
+                  <div class="power-up-name">+30s</div>
+                  <div class="power-up-count" id="time-count">2</div>
+                </div>
+                <div class="power-up" data-type="skip" id="skip-powerup">
+                  <div class="power-up-icon">⏭️</div>
+                  <div class="power-up-name">Passer</div>
+                  <div class="power-up-count" id="skip-count">1</div>
+                </div>
+              </div>
 
-    <!-- Zone de jeu -->
-    <div id="gameArea" class="hidden">
-      <div class="container">
-        <div class="game-area">
-          <div class="game-main">
-            <!-- Power-ups -->
-            <div class="power-ups">
-              <div class="power-up" data-type="hint">
-                <div class="power-up-icon">💡</div>
-                <div class="power-up-name">Indice (1)</div>
+              <!-- Grille de jeu -->
+              <div id="word-grid" class="word-grid"></div>
+
+              <!-- Clavier virtuel -->
+              <div id="keyboard" class="keyboard">
+                <div class="keyboard-row">
+                  <button class="key-btn">Q</button>
+                  <button class="key-btn">W</button>
+                  <button class="key-btn">E</button>
+                  <button class="key-btn">R</button>
+                  <button class="key-btn">T</button>
+                  <button class="key-btn">Y</button>
+                  <button class="key-btn">U</button>
+                  <button class="key-btn">I</button>
+                  <button class="key-btn">O</button>
+                  <button class="key-btn">P</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn">A</button>
+                  <button class="key-btn">S</button>
+                  <button class="key-btn">D</button>
+                  <button class="key-btn">F</button>
+                  <button class="key-btn">G</button>
+                  <button class="key-btn">H</button>
+                  <button class="key-btn">J</button>
+                  <button class="key-btn">K</button>
+                  <button class="key-btn">L</button>
+                </div>
+                <div class="keyboard-row">
+                  <button class="key-btn key-enter">ENTER</button>
+                  <button class="key-btn">Z</button>
+                  <button class="key-btn">X</button>
+                  <button class="key-btn">C</button>
+                  <button class="key-btn">V</button>
+                  <button class="key-btn">B</button>
+                  <button class="key-btn">N</button>
+                  <button class="key-btn">M</button>
+                  <button class="key-btn key-delete">⌫</button>
+                </div>
               </div>
-              <div class="power-up" data-type="time">
-                <div class="power-up-icon">⏰</div>
-                <div class="power-up-name">+15s (2)</div>
-              </div>
-              <div class="power-up" data-type="skip">
-                <div class="power-up-icon">⏭️</div>
-                <div class="power-up-name">Passer (3)</div>
+
+              <!-- Boutons de contrôle -->
+              <div class="game-buttons" style="margin-top: 2rem;">
+                <button id="new-game-button" class="game-button secondary-button" style="display: none;">
+                  Nouveau mot
+                </button>
               </div>
             </div>
+          </div>
+        </main>
 
-            <!-- Grille de jeu -->
-            <div id="gameGrid" class="game-grid"></div>
-
-            <!-- Clavier virtuel -->
-            <div class="keyboard">
-              <div class="keyboard-row">
-                <button class="key-btn">Q</button>
-                <button class="key-btn">W</button>
-                <button class="key-btn">E</button>
-                <button class="key-btn">R</button>
-                <button class="key-btn">T</button>
-                <button class="key-btn">Y</button>
-                <button class="key-btn">U</button>
-                <button class="key-btn">I</button>
-                <button class="key-btn">O</button>
-                <button class="key-btn">P</button>
-              </div>
-              <div class="keyboard-row">
-                <button class="key-btn">A</button>
-                <button class="key-btn">S</button>
-                <button class="key-btn">D</button>
-                <button class="key-btn">F</button>
-                <button class="key-btn">G</button>
-                <button class="key-btn">H</button>
-                <button class="key-btn">J</button>
-                <button class="key-btn">K</button>
-                <button class="key-btn">L</button>
-              </div>
-              <div class="keyboard-row">
-                <button class="key-btn key-enter">ENTER</button>
-                <button class="key-btn">Z</button>
-                <button class="key-btn">X</button>
-                <button class="key-btn">C</button>
-                <button class="key-btn">V</button>
-                <button class="key-btn">B</button>
-                <button class="key-btn">N</button>
-                <button class="key-btn">M</button>
-                <button class="key-btn key-delete">⌫</button>
-              </div>
+        <!-- Sidebar avec leaderboard -->
+        <aside class="sidebar">
+          <!-- Panel des statistiques -->
+          <div class="game-panel stats-panel">
+            <h2>Statistiques</h2>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <span>Mots trouvés :</span>
+              <span id="words-found-stat">0</span>
             </div>
-
-            <div class="text-center">
-              <button id="newGameButton" class="btn btn-secondary" style="display: none;">
-                <i class="fas fa-redo"></i>
-                Nouvelle Partie
-              </button>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <span>Meilleur combo :</span>
+              <span id="best-combo-stat">x1</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Score total :</span>
+              <span id="total-score-stat">0</span>
             </div>
           </div>
 
-          <div class="game-sidebar">
-            <!-- Statistiques -->
-            <div class="stats-card">
-              <h3 class="card-title">Statistiques</h3>
-              <div class="stat-item">
-                <span>Score:</span>
-                <span class="stat-value" id="currentScore">0</span>
-              </div>
-              <div class="stat-item">
-                <span>Combo:</span>
-                <span class="stat-value" id="currentCombo">1</span>
-              </div>
-              <div class="stat-item">
-                <span>Mots trouvés:</span>
-                <span class="stat-value" id="wordsFound">0</span>
-              </div>
-              <div class="stat-item">
-                <span>Temps restant:</span>
-                <span class="stat-value" id="timeLeft">90</span>
-              </div>
-              <div class="stat-item">
-                <span>Or:</span>
-                <span class="stat-value" id="playerGold">0</span>
-              </div>
-              <div class="stat-item">
-                <span>XP:</span>
-                <span class="stat-value" id="playerXP">0</span>
-              </div>
+          <!-- Leaderboard panel -->
+          <div class="game-panel leaderboard-panel">
+            <h2>Meilleurs Scores</h2>
+            
+            <!-- Boutons de bascule entre scores locaux et en ligne -->
+            <div class="leaderboard-toggle">
+              <button id="local-scores-btn" class="toggle-btn active">
+                <i class="fas fa-user"></i> Mes Scores
+              </button>
+              <button id="online-scores-btn" class="toggle-btn">
+                <i class="fas fa-globe"></i> Scores Globaux
+              </button>
             </div>
             
-            <!-- Classement -->
-            <div class="leaderboard-card">
-              <h3 class="card-title">Meilleurs Scores</h3>
+            <div id="enigma-scroll-leaderboard" class="leaderboard-container">
               <table class="leaderboard-table">
                 <thead>
                   <tr>
-                    <th class="rank">#</th>
-                    <th class="player">Joueur</th>
-                    <th class="score">Score</th>
+                    <th class="rank-header">Rang</th>
+                    <th class="player-header">Joueur</th>
+                    <th class="score-header">Score</th>
+                    <th class="date-header">Date</th>
                   </tr>
                 </thead>
-                <tbody id="leaderboardBody">
+                <tbody id="leaderboard-body">
                   <tr>
-                    <td colspan="3" style="text-align: center; color: var(--color-text-secondary);">
-                      Chargement...
+                    <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                      Aucun score enregistré
+                      <br><small style="opacity: 0.6;">Jouez pour voir vos scores ici !</small>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
-  </main>
-
-  <!-- Message de notification -->
-  <div id="messageContainer" class="message"></div>
-
-  <!-- Notification de récompense -->
-  <div id="rewardNotification" class="reward-notification">
-    <i class="fas fa-coins reward-icon"></i>
-    <span id="rewardText"></span>
   </div>
+
+  <!-- Messages popup -->
+  <div class="popup-message" id="popup-message"></div>
 
   <script>
     // ===========================================
-    // DONNÉES ET CONFIGURATION
+    // LISTES DE MOTS COMME DANS LA VERSION ORIGINALE
     // ===========================================
     
     const TARGET_WORDS = {
-      4: ['WORD', 'GAME', 'PLAY', 'LOVE', 'TIME', 'LIFE', 'HOPE', 'TREE', 'BOOK', 'FIRE', 'BLUE', 'MOON', 'STAR', 'GOLD', 'FISH', 'BIRD', 'WIND', 'RAIN', 'SNOW', 'CAKE'],
-      5: ['HOUSE', 'LIGHT', 'WORLD', 'SMILE', 'PEACE', 'MAGIC', 'DREAM', 'HAPPY', 'LUCKY', 'ANGEL', 'BRAVE', 'CLEAN', 'DANCE', 'EARTH', 'FRESH', 'GRACE', 'HEART', 'JOLLY', 'QUICK', 'SWEET'],
-      6: ['FRIEND', 'CASTLE', 'DRAGON', 'FOREST', 'GENTLE', 'BRIGHT', 'STRONG', 'WISDOM', 'HEALTH', 'MOTHER', 'FATHER', 'SCHOOL', 'TALENT', 'SPRING', 'GOLDEN', 'SILENT', 'PLANET', 'FLOWER', 'ISLAND', 'MARKET']
+      4: ['WORD', 'GAME', 'PLAY', 'LOVE', 'TIME', 'HELP', 'MAKE', 'TAKE', 'COME', 'GOOD', 'LIFE', 'WORK', 'YEAR', 'HAND', 'PART', 'BOOK', 'LOOK', 'FACE', 'FEEL', 'FACT', 'KNOW', 'JUST', 'LIKE', 'WANT', 'WILL', 'WELL', 'CALL', 'BACK', 'FIND', 'GIVE', 'REAL', 'LAST', 'LONG', 'SAID', 'EACH', 'MANY', 'MOST', 'OVER', 'SUCH', 'VERY', 'WHEN', 'THEM', 'SOME', 'WHAT', 'YOUR', 'HAVE', 'MORE', 'BEEN', 'INTO', 'THAN', 'ONLY', 'THIS', 'THAT', 'WITH', 'FROM', 'THEY', 'WERE', 'HERE', 'ALSO', 'MADE', 'TELL', 'SHOW', 'MOVE', 'LIVE', 'STOP', 'KEEP', 'TURN', 'WALK', 'TALK', 'HOME', 'CITY', 'SURE', 'WENT', 'OPEN', 'DONE', 'SEEN', 'TOLD', 'CAME', 'GAVE', 'TOOK', 'KNEW'],
+      5: ['WORLD', 'ABOUT', 'AFTER', 'FIRST', 'NEVER', 'AGAIN', 'OTHER', 'PLACE', 'WHERE', 'THINK', 'HOUSE', 'BEING', 'THING', 'WHILE', 'MIGHT', 'WOMAN', 'CHILD', 'STILL', 'RIGHT', 'SMALL', 'LARGE', 'SOUND', 'LIGHT', 'WATER', 'EARTH', 'MUSIC', 'HAPPY', 'POWER', 'MONEY', 'STATE', 'HEART', 'SMILE', 'PEACE', 'LEARN', 'LAUGH', 'DREAM', 'BRAVE', 'SMART', 'QUICK', 'CLEAR', 'CLEAN', 'FRESH', 'TRUST', 'TRUTH', 'MAGIC', 'SPACE', 'TRADE', 'SPORT', 'STORY', 'STUDY'],
+      6: ['ANIMAL', 'ANSWER', 'APPEAR', 'AROUND', 'BETTER', 'BROTHER', 'CHANGE', 'COMING', 'CORNER', 'COURSE', 'CREATE', 'DEPEND', 'DIRECT', 'DURING', 'ELEVEN', 'ENERGY', 'ENOUGH', 'ESCAPE', 'EUROPE', 'EXCEPT', 'EXPECT', 'FIGURE', 'FINGER', 'FOLLOW', 'FORGET', 'FRIEND', 'FUTURE', 'GARDEN', 'HAPPEN', 'HEALTH', 'ISLAND', 'ITSELF', 'JUNGLE', 'KNIGHT', 'LISTEN', 'LIVING', 'LONDON', 'MANNER', 'MASTER', 'MEMBER', 'MEMORY', 'MODERN', 'MOTHER', 'NATURE', 'NEARLY', 'NOTICE', 'NUMBER', 'OBJECT', 'OTHERS', 'PEOPLE']
     };
 
+    // Cache pour les résultats de validation API (comme dans l'original)
+    const wordValidationCache = {};
+
+    // ===========================================
+    // SYSTÈME DE VALIDATION API ORIGINAL
+    // ===========================================
+
+    /**
+     * Vérifie si un mot est un mot anglais valide via l'API Dictionary
+     * EXACTEMENT comme dans la version originale
+     */
+    async function isEnglishWord(word) {
+      try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
+        if (response.ok) {
+          const data = await response.json();
+          return data.length > 0;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification du mot via l'API:", error);
+        
+        // Fallback : vérifier dans les listes locales si l'API ne marche pas
+        const normalizedWord = word.toUpperCase().trim();
+        for (const list of Object.values(TARGET_WORDS)) {
+          if (list.includes(normalizedWord)) {
+            return true;
+          }
+        }
+        
+        return false;
+      }
+    }
+
+    /**
+     * Vérifie si un mot est valide avec le système original :
+     * 1. Cache local
+     * 2. API Dictionary pour TOUS les mots anglais
+     * 3. Fallback sur listes locales
+     */
+    async function isValidWord(word, wordLength) {
+      const normalizedWord = word.toUpperCase().trim();
+      
+      if (!normalizedWord || normalizedWord.length !== wordLength) {
+        return false;
+      }
+      
+      // Vérifier dans le cache
+      if (wordValidationCache[normalizedWord] !== undefined) {
+        return wordValidationCache[normalizedWord];
+      }
+      
+      // Vérifier via l'API Dictionary (système original)
+      const isValid = await isEnglishWord(normalizedWord);
+      wordValidationCache[normalizedWord] = isValid;
+      
+      return isValid;
+    }
+
+    // ===========================================
+    // SYSTÈME DE SCORES INTÉGRÉ DU SITE REBORN
+    // ===========================================
+
+    // Système de scores exactement comme dans enigma-scroll-main.html
+    window.enigmaScrollGame = {
+      scores: [],
+      currentScore: 0,
+      gameRunning: false,
+      currentMode: 'local',
+      
+      // Sauvegarde de score robuste
+      saveScore: function(score, playerName, level, difficulty) {
+        try {
+          const user = window.simpleAuth ? window.simpleAuth.getCurrentUser() : null;
+          const finalPlayerName = playerName || (user && user.username) || (user && user.displayName) || 'Joueur Anonyme';
+          
+          const newScore = {
+            score: score || 0,
+            player: finalPlayerName,
+            level: level || 1,
+            difficulty: difficulty || 5,
+            date: new Date().toISOString(),
+            timestamp: Date.now()
+          };
+          
+          let scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+          scores.push(newScore);
+          scores.sort((a, b) => b.score - a.score);
+          scores = scores.slice(0, 10); // Garder top 10 en local
+          
+          localStorage.setItem('enigmaScrollMainScores', JSON.stringify(scores));
+          this.scores = scores;
+          this.updateLeaderboard();
+          
+          console.log('📊 Score sauvegardé:', newScore);
+          
+          // Sauvegarder aussi dans Firebase si disponible
+          this.saveToFirebase(newScore);
+          
+          return newScore;
+        } catch (e) {
+          console.error('❌ Erreur sauvegarde score:', e);
+          return null;
+        }
+      },
+      
+      // Lecture des scores robuste
+      getScores: function() {
+        try {
+          this.scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+          return this.scores;
+        } catch (e) {
+          console.error('❌ Erreur lecture scores:', e);
+          this.scores = [];
+          return [];
+        }
+      },
+      
+      // Mise à jour du leaderboard robuste
+      updateLeaderboard: function() {
+        const onlineBtn = document.getElementById('online-scores-btn');
+        if (onlineBtn && onlineBtn.classList.contains('active')) {
+          return;
+        }
+        
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) {
+          return;
+        }
+        
+        const scores = this.getScores();
+        
+        if (scores.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                Aucun score enregistré
+                <br><small style="opacity: 0.6;">Jouez pour voir vos scores ici !</small>
+              </td>
+            </tr>`;
+          return;
+        }
+        
+        tbody.innerHTML = scores.map((score, index) => {
+          const isTopScore = index < 3;
+          const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+          const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+          
+          return `
+            <tr class="${rankClass}">
+              <td style="text-align: center; font-weight: bold; color: ${rankColor};">
+                ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+              </td>
+              <td style="font-weight: 500; color: #ffffff;">
+                ${score.player || 'Joueur Anonyme'}
+              </td>
+              <td style="text-align: right; color: #2ecc71; font-weight: bold;">
+                ${Number(score.score).toLocaleString()}
+              </td>
+              <td style="text-align: right; font-size: 0.9rem; opacity: 0.8;">
+                ${score.date ? new Date(score.date).toLocaleDateString('fr-FR') : 'Date inconnue'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      },
+      
+      // Configuration des boutons du leaderboard
+      setupLeaderboardButtons: function() {
+        const localBtn = document.getElementById('local-scores-btn');
+        const onlineBtn = document.getElementById('online-scores-btn');
+        
+        if (localBtn) {
+          localBtn.addEventListener('click', () => {
+            localBtn.classList.add('active');
+            if (onlineBtn) onlineBtn.classList.remove('active');
+            this.showLocalScores();
+          });
+        }
+        
+        if (onlineBtn) {
+          onlineBtn.addEventListener('click', () => {
+            onlineBtn.classList.add('active');
+            if (localBtn) localBtn.classList.remove('active');
+            this.showOnlineScores();
+          });
+        }
+      },
+
+      // Afficher les scores locaux
+      showLocalScores: function() {
+        this.currentMode = 'local';
+        this.updateLeaderboard();
+      },
+
+      // Afficher les scores globaux (placeholder)
+      showOnlineScores: function() {
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) return;
+        
+        // Marquer qu'on est en mode scores globaux
+        this.currentMode = 'online';
+        
+        // Afficher un loading temporaire
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+              <i class="fas fa-spinner fa-spin"></i> Chargement des scores globaux...
+            </td>
+          </tr>`;
+        
+        // Essayer de charger les scores Firebase avec la vraie structure
+        this.loadFirebaseScores();
+      },
+
+      // Afficher les scores en ligne
+      displayOnlineScores: function(scores) {
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = scores.map((score, index) => {
+          const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#2ecc71';
+          const rankClass = index === 0 ? 'rank-gold' : index === 1 ? 'rank-silver' : index === 2 ? 'rank-bronze' : '';
+          
+          return `
+            <tr class="${rankClass}">
+              <td style="text-align: center; font-weight: bold; color: ${rankColor};">
+                ${index + 1}${index === 0 ? ' 🏆' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+              </td>
+              <td style="font-weight: 500; color: #ffffff;">
+                ${score.playerName || score.player || 'Joueur Anonyme'}
+                ${score.level ? ` (Niveau ${score.level})` : ''}
+              </td>
+              <td style="text-align: right; color: #2ecc71; font-weight: bold; font-size: ${index < 3 ? '1.1rem' : '1rem'};">
+                ${Number(score.score || 0).toLocaleString()}
+              </td>
+              <td style="text-align: right; font-size: 0.9rem; opacity: 0.8;">
+                ${score.date || 'Date inconnue'}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      },
+
+      // Charger les scores Firebase avec la vraie structure
+      loadFirebaseScores: function() {
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) return;
+        
+        // Vérifier si Firebase est disponible
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+          this.showNoOnlineScores();
+          return;
+        }
+        
+        try {
+          const db = firebase.firestore();
+          console.log('🔍 Chargement des scores Firebase depuis enigma_scroll_scores...');
+          
+          // Utiliser la vraie collection comme dans l'ancienne version
+          db.collection('enigma_scroll_scores')
+            .orderBy('score', 'desc')
+            .limit(10)
+            .get()
+            .then(querySnapshot => {
+              const scores = [];
+              querySnapshot.forEach(doc => {
+                const data = doc.data();
+                
+                console.log('📄 Document Firebase:', doc.id, data);
+                
+                // Essayer de récupérer le nom du joueur avec tous les champs possibles
+                let playerName = 'Joueur Anonyme';
+                if (data.playerName) playerName = data.playerName;
+                else if (data.player) playerName = data.player;
+                else if (data.name) playerName = data.name;
+                else if (data.username) playerName = data.username;
+                else if (data.user) playerName = data.user;
+                
+                // Gestion correcte des dates Firebase
+                let formattedDate = 'Date inconnue';
+                if (data.timestamp && data.timestamp.toDate) {
+                  // Timestamp Firebase Firestore
+                  formattedDate = data.timestamp.toDate().toLocaleDateString('fr-FR');
+                } else if (data.date) {
+                  // Date sous forme de string ou autre format
+                  const dateObj = new Date(data.date);
+                  if (!isNaN(dateObj.getTime())) {
+                    formattedDate = dateObj.toLocaleDateString('fr-FR');
+                  }
+                }
+                
+                scores.push({
+                  id: doc.id,
+                  score: data.score || 0,
+                  player: playerName,
+                  playerName: playerName,
+                  level: data.level,
+                  difficulty: data.difficulty,
+                  date: formattedDate,
+                  timestamp: data.timestamp || data.date
+                });
+              });
+              
+              console.log(`✅ ${scores.length} scores Firebase récupérés`, scores);
+            
+              if (scores.length > 0) {
+                this.displayOnlineScores(scores);
+              } else {
+                this.showNoOnlineScores();
+              }
+            })
+            .catch(error => {
+              console.error('❌ Erreur lors du chargement des scores Firebase:', error);
+              
+              // Essayer aussi avec game_scores comme fallback
+              db.collection('game_scores')
+                .where('gameType', '==', 'enigma-scroll')
+                .orderBy('score', 'desc')
+                .limit(10)
+                .get()
+                .then(querySnapshot => {
+                  const scores = [];
+                  querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    let formattedDate = 'Date inconnue';
+                    if (data.timestamp && data.timestamp.toDate) {
+                      formattedDate = data.timestamp.toDate().toLocaleDateString('fr-FR');
+                    } else if (data.date) {
+                      const dateObj = new Date(data.date);
+                      if (!isNaN(dateObj.getTime())) {
+                        formattedDate = dateObj.toLocaleDateString('fr-FR');
+                      }
+                    }
+                    
+                    scores.push({
+                      id: doc.id,
+                      score: data.score || 0,
+                      player: data.player || data.playerName || 'Joueur Anonyme',
+                      playerName: data.player || data.playerName || 'Joueur Anonyme',
+                      level: data.level,
+                      difficulty: data.difficulty,
+                      date: formattedDate
+                    });
+                  });
+                  
+                  console.log(`✅ ${scores.length} scores Firebase récupérés (fallback)`, scores);
+                  
+                  if (scores.length > 0) {
+                    this.displayOnlineScores(scores);
+                  } else {
+                    this.showNoOnlineScores();
+                  }
+                })
+                .catch(fallbackError => {
+                  console.error('❌ Erreur fallback:', fallbackError);
+                  this.showNoOnlineScores();
+                });
+            });
+        } catch (initError) {
+          console.error('❌ Erreur initialisation Firebase:', initError);
+          this.showNoOnlineScores();
+        }
+      },
+
+      // Afficher message si pas de scores en ligne
+      showNoOnlineScores: function() {
+        const tbody = document.getElementById('leaderboard-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+              <i class="fas fa-globe" style="margin-bottom: 10px; font-size: 2rem; display: block;"></i>
+              Aucun score global disponible
+              <br><small style="opacity: 0.6;">Les scores globaux nécessitent une connexion internet.<br>Vos scores locaux sont sauvegardés !</small>
+            </td>
+          </tr>`;
+      },
+
+      // Sauvegarder dans Firebase
+      saveToFirebase: function(scoreData) {
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+          console.warn('Firebase non disponible pour la sauvegarde');
+          return;
+        }
+        
+        try {
+          const db = firebase.firestore();
+          
+          // Préparer les données pour Firebase
+          const firebaseData = {
+            score: scoreData.score,
+            player: scoreData.player,
+            level: scoreData.level || 1,
+            difficulty: scoreData.difficulty || 5,
+            date: scoreData.date,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            gameType: 'enigma-scroll'
+          };
+          
+          // Sauvegarder dans la collection principale
+          db.collection('enigma_scroll_scores').add(firebaseData)
+            .then(docRef => {
+              console.log('✅ Score sauvegardé dans Firebase:', docRef.id);
+              
+              // Déclencher mise à jour des scores globaux si c'est l'onglet actif
+              const onlineBtn = document.getElementById('online-scores-btn');
+              if (onlineBtn && onlineBtn.classList.contains('active')) {
+                setTimeout(() => this.showOnlineScores(), 500);
+              }
+            })
+            .catch(error => {
+              console.warn('⚠️ Erreur sauvegarde Firebase principale:', error);
+              
+              // Essayer avec la collection alternative
+              db.collection('game_scores').add(firebaseData)
+                .then(docRef => {
+                  console.log('✅ Score sauvegardé dans Firebase (fallback):', docRef.id);
+                })
+                .catch(fallbackError => {
+                  console.error('❌ Erreur sauvegarde Firebase fallback:', fallbackError);
+                });
+            });
+        } catch (error) {
+          console.error('❌ Erreur initialisation Firebase pour sauvegarde:', error);
+        }
+      },
+
+      // Initialisation du système
+      init: function() {
+        this.updateLeaderboard();
+        this.setupLeaderboardButtons();
+      }
+    };
+
+    // ===========================================
+    // CONFIGURATION DU JEU
+    // ===========================================
+    
     const DIFFICULTIES = {
-      easy: { wordLength: 4, maxAttempts: 6, timeLimit: 90 },
-      medium: { wordLength: 5, maxAttempts: 6, timeLimit: 90 },
-      hard: { wordLength: 6, maxAttempts: 6, timeLimit: 90 }
+      'beginner': { wordLength: 4, maxAttempts: 6 },
+      'intermediate': { wordLength: 5, maxAttempts: 6 },
+      'advanced': { wordLength: 6, maxAttempts: 6 }
     };
-
-    // Variables du jeu
+    
+    // ===========================================
+    // VARIABLES DE JEU
+    // ===========================================
+    
     let gameState = {
-      gameActive: false,
+      selectedDifficulty: null,
       currentWord: '',
       currentRow: 0,
       currentCol: 0,
       wordLength: 5,
       maxAttempts: 6,
-      timeLeft: 90,
-      score: 0,
-      combo: 1,
-      bestCombo: 1,
-      wordsFound: 0,
+      gameActive: false,
       boardState: [],
       keyboardState: {},
-      selectedDifficulty: null,
-      validatingWord: false,
-      gameStarted: false
+      score: 0,
+      combo: 1,
+      timeLeft: 90,
+      wordsFound: 0,
+      bestCombo: 1,
+      powerUps: {
+        hint: 3,
+        time: 2,
+        skip: 1
+      },
+      validatingWord: false
     };
-
+    
     let gameTimer = null;
     let randomEventTimer = null;
-    let authCheckTimer = null;
-    let currentUser = null;
-    let userProfile = null;
-
-    // Fonction de polling pour vérifier l'authentification
-    function startAuthPolling() {
-      if (authCheckTimer) clearInterval(authCheckTimer);
-      
-      authCheckTimer = setInterval(async () => {
-        const wasAuthenticated = !!currentUser;
-        const previousUser = currentUser;
-        await checkAuthentication();
-        const isAuthenticated = !!currentUser;
-        
-        // Si l'état d'authentification a changé
-        if (wasAuthenticated !== isAuthenticated) {
-          if (isAuthenticated) {
-            // L'utilisateur vient de se connecter
-            console.log('🎉 Utilisateur connecté détecté !');
-            
-            // Masquer l'écran d'authentification
-            document.getElementById('authRequired').classList.add('hidden');
-            document.getElementById('welcomeScreen').classList.remove('hidden');
-            
-            // Réactiver l'interface
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-              btn.style.pointerEvents = 'auto';
-              btn.style.opacity = '1';
-            });
-            document.getElementById('startGameButton').disabled = false;
-            
-            showMessage('🎉 Connexion détectée ! Bienvenue !', 'success');
-          } else {
-            // L'utilisateur vient de se déconnecter
-            console.log('👋 Déconnexion détectée');
-            
-            // Afficher l'écran d'authentification
-            document.getElementById('authRequired').classList.remove('hidden');
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('gameArea').classList.add('hidden');
-            
-            // Désactiver l'interface
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-              btn.style.pointerEvents = 'none';
-              btn.style.opacity = '0.5';
-            });
-            document.getElementById('startGameButton').disabled = true;
-            
-            // Arrêter le jeu si en cours
-            if (gameState.gameActive) {
-              gameState.gameActive = false;
-              stopTimer();
-              stopRandomEvents();
-            }
-            
-            showMessage('Vous avez été déconnecté.', 'warning');
-          }
-        }
-      }, 3000); // Vérifier toutes les 3 secondes pour éviter la surcharge
-    }
 
     // ===========================================
-    // SYSTÈME D'AUTHENTIFICATION ET PROFIL
-    // ===========================================
-
-    async function checkAuthentication() {
-      console.log('Vérification de l\'authentification...');
-      
-      // Attendre que les services soient prêts avec un timeout plus long
-      await new Promise(resolve => {
-        let attempts = 0;
-        const maxAttempts = 30; // 3 secondes max
-        
-        const checkServices = () => {
-          attempts++;
-          
-          // Vérifier les différentes méthodes d'authentification du reborn
-          const authMethods = [
-            window.authService?.getCurrentUser(),
-            localStorage.getItem('userSession'),
-            localStorage.getItem('currentUser'),
-            sessionStorage.getItem('userSession'),
-            window.currentUser,
-            window.user
-          ];
-          
-          const foundUser = authMethods.find(method => method && method !== 'null');
-          
-          if (foundUser || attempts >= maxAttempts) {
-            resolve();
-          } else {
-            setTimeout(checkServices, 100);
-          }
-        };
-        checkServices();
-      });
-
-      // Essayer différentes méthodes de récupération de l'utilisateur
-      currentUser = null;
-      
-      // Méthode 1: authService du reborn
-      if (window.authService && typeof window.authService.getCurrentUser === 'function') {
-        try {
-          if (!window.authService.initialized) {
-            await window.authService.init();
-          }
-          currentUser = window.authService.getCurrentUser();
-          console.log('Utilisateur trouvé via authService:', currentUser);
-        } catch (error) {
-          console.log('Erreur authService:', error);
-        }
-      }
-      
-      // Méthode 2: localStorage userSession
-      if (!currentUser) {
-        const userData = localStorage.getItem('userSession');
-        if (userData && userData !== 'null') {
-          try {
-            currentUser = JSON.parse(userData);
-            console.log('Utilisateur trouvé via localStorage userSession:', currentUser);
-          } catch (error) {
-            console.log('Erreur parsing userSession:', error);
-          }
-        }
-      }
-      
-      // Méthode 3: localStorage currentUser
-      if (!currentUser) {
-        const userData = localStorage.getItem('currentUser');
-        if (userData && userData !== 'null') {
-          try {
-            currentUser = JSON.parse(userData);
-            console.log('Utilisateur trouvé via localStorage currentUser:', currentUser);
-          } catch (error) {
-            console.log('Erreur parsing currentUser:', error);
-          }
-        }
-      }
-      
-      // Méthode 4: sessionStorage
-      if (!currentUser) {
-        const userData = sessionStorage.getItem('userSession');
-        if (userData && userData !== 'null') {
-          try {
-            currentUser = JSON.parse(userData);
-            console.log('Utilisateur trouvé via sessionStorage:', currentUser);
-          } catch (error) {
-            console.log('Erreur parsing sessionStorage:', error);
-          }
-        }
-      }
-      
-      // Méthode 5: variables globales
-      if (!currentUser) {
-        currentUser = window.currentUser || window.user || null;
-        if (currentUser) {
-          console.log('Utilisateur trouvé via variables globales:', currentUser);
-        }
-      }
-
-      console.log('Utilisateur final détecté:', currentUser);
-      updateAuthUI();
-      
-      if (!currentUser) {
-        console.log('Aucun utilisateur connecté - affichage de l\'écran d\'authentification');
-        return false;
-      }
-      
-      console.log('Utilisateur connecté - chargement du profil');
-      await loadUserProfile();
-      return true;
-    }
-
-    function updateAuthUI() {
-      const loginButton = document.getElementById('loginButton');
-      const profileButton = document.getElementById('profileButton');
-      const userMenu = document.getElementById('userMenu');
-
-      // Supprimer les anciens boutons de déconnexion
-      const existingLogoutButtons = document.querySelectorAll('#logoutButton');
-      existingLogoutButtons.forEach(btn => btn.remove());
-
-      if (currentUser) {
-        loginButton.style.display = 'none';
-        profileButton.style.display = 'inline-flex';
-        
-        // Mettre à jour le texte du bouton profil avec la logique reborn
-        let displayName = 'Mon Profil';
-        
-        // Debug: afficher la structure de l'utilisateur
-        console.log('Structure utilisateur pour nom:', currentUser);
-        
-        // Essayer différentes propriétés du système reborn
-        if (currentUser.userData && currentUser.userData.username) {
-          displayName = currentUser.userData.username;
-        } else if (currentUser.userData && currentUser.userData.name) {
-          displayName = currentUser.userData.name;
-        } else if (currentUser.userData && currentUser.userData.displayName) {
-          displayName = currentUser.userData.displayName;
-        } else if (currentUser.username) {
-          displayName = currentUser.username;
-        } else if (currentUser.displayName) {
-          displayName = currentUser.displayName;
-        } else if (currentUser.name) {
-          displayName = currentUser.name;
-        } else if (currentUser.email) {
-          displayName = currentUser.email.split('@')[0];
-        } else if (currentUser.userData && currentUser.userData.email) {
-          displayName = currentUser.userData.email.split('@')[0];
-        }
-        
-        console.log('Nom d\'affichage choisi:', displayName);
-        profileButton.textContent = displayName;
-
-        // Ajouter le bouton de déconnexion
-        const logoutButton = document.createElement('a');
-        logoutButton.id = 'logoutButton';
-        logoutButton.className = 'btn-logout';
-        logoutButton.textContent = 'Déconnexion';
-        logoutButton.href = '#';
-        logoutButton.addEventListener('click', async (e) => {
-          e.preventDefault();
-          await logout();
-        });
-        
-        userMenu.appendChild(logoutButton);
-      } else {
-        loginButton.style.display = 'inline-flex';
-        profileButton.style.display = 'none';
-      }
-    }
-
-    async function logout() {
-      if (window.authService) {
-        await window.authService.logout();
-      } else {
-        localStorage.removeItem('userSession');
-      }
-      currentUser = null;
-      userProfile = null;
-      window.location.reload();
-    }
-
-    async function loadUserProfile() {
-      if (!currentUser) return;
-
-      try {
-        if (window.firebaseServiceInstance && window.firebaseServiceInstance.getProfile) {
-          userProfile = await window.firebaseServiceInstance.getProfile(currentUser.uid);
-        }
-
-        // Initialiser le profil s'il n'existe pas
-        if (!userProfile) {
-          userProfile = {
-            gold: 0,
-            xp: 0,
-            gamesPlayed: 0,
-            totalScore: 0
-          };
-        }
-
-        document.getElementById('playerGold').textContent = userProfile.gold || 0;
-        document.getElementById('playerXP').textContent = userProfile.xp || 0;
-      } catch (error) {
-        console.error('Erreur lors du chargement du profil:', error);
-        // Profil par défaut en cas d'erreur
-        userProfile = { gold: 0, xp: 0, gamesPlayed: 0, totalScore: 0 };
-        document.getElementById('playerGold').textContent = 0;
-        document.getElementById('playerXP').textContent = 0;
-      }
-    }
-
-    async function updateUserProgress(goldEarned, xpEarned, isTopScore = false) {
-      if (!currentUser) return;
-
-      try {
-        const newGold = (userProfile.gold || 0) + goldEarned;
-        const newXP = (userProfile.xp || 0) + xpEarned;
-        const newGamesPlayed = (userProfile.gamesPlayed || 0) + 1;
-
-        const updateData = {
-          gold: newGold,
-          xp: newXP,
-          gamesPlayed: newGamesPlayed,
-          lastActivity: new Date()
-        };
-
-        if (window.firebaseServiceInstance && window.firebaseServiceInstance.updateProfile) {
-          await window.firebaseServiceInstance.updateProfile(currentUser.uid, updateData);
-        }
-        
-        // Mettre à jour l'affichage local
-        userProfile.gold = newGold;
-        userProfile.xp = newXP;
-        userProfile.gamesPlayed = newGamesPlayed;
-        document.getElementById('playerGold').textContent = newGold;
-        document.getElementById('playerXP').textContent = newXP;
-
-        // Afficher la notification de récompense
-        showRewardNotification(goldEarned, xpEarned, isTopScore);
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour du profil:', error);
-        // Mettre à jour localement même en cas d'erreur
-        userProfile.gold = (userProfile.gold || 0) + goldEarned;
-        userProfile.xp = (userProfile.xp || 0) + xpEarned;
-        document.getElementById('playerGold').textContent = userProfile.gold;
-        document.getElementById('playerXP').textContent = userProfile.xp;
-        showRewardNotification(goldEarned, xpEarned, isTopScore);
-      }
-    }
-
-    function showRewardNotification(gold, xp, isTopScore) {
-      const notification = document.getElementById('rewardNotification');
-      const rewardText = document.getElementById('rewardText');
-      
-      if (isTopScore) {
-        rewardText.textContent = `🏆 Top Score! +${gold} or, +${xp} XP`;
-        notification.style.background = 'linear-gradient(135deg, #f1c40f, #e67e22)';
-                  } else {
-        rewardText.textContent = `🎮 Partie terminée! +${gold} or, +${xp} XP`;
-        notification.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
-      }
-      
-      notification.classList.add('show');
-      
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 4000);
-    }
-
-    // ===========================================
-    // SYSTÈME DE SCORES ET CLASSEMENT
+    // FONCTIONS UTILITAIRES
     // ===========================================
     
-    async function saveScore(finalScore, wordsCount, difficulty) {
-      if (!currentUser) return;
-
-      try {
-        const scoreData = {
-          userId: currentUser.uid,
-          username: currentUser.username || currentUser.displayName || currentUser.email?.split('@')[0] || 'Joueur',
-          game: 'enigma-scroll',
-          score: finalScore,
-          wordsFound: wordsCount,
-          difficulty: difficulty,
-          timestamp: new Date()
-        };
-
-        if (window.firebaseServiceInstance && window.firebaseServiceInstance.addScore) {
-          await window.firebaseServiceInstance.addScore(scoreData);
-        }
-        
-        // Vérifier si c'est un top score
-        const isTopScore = await checkIfTopScore(finalScore);
-        
-        // Récompenses : 1 or et 1 XP pour terminer, 20 or et 20 XP pour top score
-        const goldReward = isTopScore ? 20 : 1;
-        const xpReward = isTopScore ? 20 : 1;
-        
-        await updateUserProgress(goldReward, xpReward, isTopScore);
-        
-        // Recharger le classement
-        await loadLeaderboard();
-      } catch (error) {
-        console.error('Erreur lors de la sauvegarde du score:', error);
-        // Donner quand même les récompenses même si la sauvegarde échoue
-        await updateUserProgress(1, 1, false);
-      }
-    }
-
-    async function checkIfTopScore(score) {
-      try {
-        // Critère simple pour un top score
-        return score > 1000;
-      } catch (error) {
-        console.error('Erreur lors de la vérification du top score:', error);
-        return false;
-      }
-    }
-
-    async function loadLeaderboard() {
-      const leaderboardBody = document.getElementById('leaderboardBody');
+    function analyzeGuess(guess, target) {
+      const result = [];
+      const targetArray = target.split('');
+      const guessArray = guess.split('');
+      const targetCounts = {};
       
-      try {
-        // Affichage d'exemple en attendant l'implémentation complète
-        const sampleData = [
-          { rank: 1, player: 'Alex', score: 2450 },
-          { rank: 2, player: 'Marie', score: 2100 },
-          { rank: 3, player: 'Tom', score: 1890 },
-          { rank: 4, player: 'Lisa', score: 1650 },
-          { rank: 5, player: 'John', score: 1420 }
-        ];
-
-        leaderboardBody.innerHTML = sampleData.map(data => `
-          <tr>
-            <td class="rank">${data.rank}</td>
-            <td class="player">${data.player}</td>
-            <td class="score">${data.score}</td>
-          </tr>
-        `).join('');
-      } catch (error) {
-        console.error('Erreur lors du chargement du classement:', error);
-        leaderboardBody.innerHTML = `
-          <tr>
-            <td colspan="3" style="text-align: center; color: var(--color-danger);">
-              Erreur de chargement
-            </td>
-          </tr>
-        `;
+      // Compter les lettres dans le mot cible
+      targetArray.forEach(letter => {
+        targetCounts[letter] = (targetCounts[letter] || 0) + 1;
+      });
+      
+      // Premier passage : marquer les lettres correctes
+      for (let i = 0; i < guessArray.length; i++) {
+        if (guessArray[i] === targetArray[i]) {
+          result[i] = 'correct';
+          targetCounts[guessArray[i]]--;
+        } else {
+          result[i] = null;
+        }
       }
+      
+      // Deuxième passage : marquer les lettres présentes et absentes
+      for (let i = 0; i < guessArray.length; i++) {
+        if (result[i] === null) {
+          if (targetCounts[guessArray[i]] > 0) {
+            result[i] = 'present';
+            targetCounts[guessArray[i]]--;
+          } else {
+            result[i] = 'absent';
+          }
+        }
+      }
+      
+      return result;
+    }
+    
+    function showMessage(message, type = 'info', duration = 2000) {
+      const popup = document.getElementById('popup-message');
+      popup.textContent = message;
+      popup.className = `popup-message ${type}`;
+      popup.style.display = 'block';
+      
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, duration);
+    }
+    
+    function updateDisplay() {
+      document.getElementById('score-display').textContent = gameState.score;
+      document.getElementById('combo-display').textContent = `x${gameState.combo}`;
+      document.getElementById('time-display').textContent = gameState.timeLeft;
+      document.getElementById('attempts-display').textContent = `${gameState.currentRow}/${gameState.maxAttempts}`;
+      
+      // Mettre à jour les power-ups
+      document.getElementById('hint-count').textContent = gameState.powerUps.hint;
+      document.getElementById('time-count').textContent = gameState.powerUps.time;
+      document.getElementById('skip-count').textContent = gameState.powerUps.skip;
+      
+      // Mettre à jour les statistiques dans la sidebar
+      document.getElementById('words-found-stat').textContent = gameState.wordsFound;
+      document.getElementById('best-combo-stat').textContent = `x${gameState.bestCombo}`;
+      document.getElementById('total-score-stat').textContent = gameState.score.toLocaleString();
+      
+      // Désactiver les power-ups épuisés
+      Object.keys(gameState.powerUps).forEach(type => {
+        const element = document.querySelector(`[data-type="${type}"]`);
+        if (gameState.powerUps[type] <= 0) {
+          element.classList.add('disabled');
+        } else {
+          element.classList.remove('disabled');
+        }
+      });
     }
 
     // ===========================================
-    // LOGIQUE DE JEU
+    // CRÉATION DE LA GRILLE 
     // ===========================================
     
     function createGrid() {
-      const gameGrid = document.getElementById('gameGrid');
-      gameGrid.innerHTML = '';
-      gameGrid.style.gridTemplateColumns = `repeat(${gameState.wordLength}, 1fr)`;
+      const wordGrid = document.getElementById('word-grid');
+      wordGrid.innerHTML = '';
       
       gameState.boardState = [];
       
       for (let row = 0; row < gameState.maxAttempts; row++) {
+        const gridRow = document.createElement('div');
+        gridRow.className = 'grid-row';
+        
         gameState.boardState[row] = [];
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'grid-row';
-        rowDiv.style.gridTemplateColumns = `repeat(${gameState.wordLength}, 1fr)`;
         
         for (let col = 0; col < gameState.wordLength; col++) {
-          const cell = document.createElement('div');
-          cell.className = 'grid-cell';
-          cell.dataset.row = row;
-          cell.dataset.col = col;
+          const gridCell = document.createElement('div');
+          gridCell.className = 'grid-cell';
+          gridCell.dataset.row = row;
+          gridCell.dataset.col = col;
           
+          gridRow.appendChild(gridCell);
           gameState.boardState[row][col] = { letter: '', state: '' };
-          rowDiv.appendChild(cell);
         }
         
-        gameGrid.appendChild(rowDiv);
+        wordGrid.appendChild(gridRow);
       }
     }
-
-    function updateDisplay() {
-      document.getElementById('currentScore').textContent = gameState.score;
-      document.getElementById('currentCombo').textContent = gameState.combo;
-      document.getElementById('wordsFound').textContent = gameState.wordsFound;
-      document.getElementById('timeLeft').textContent = gameState.timeLeft;
+    
+    function updateKeyboard(letter, state) {
+      const keys = document.querySelectorAll('.key-btn');
+      const key = Array.from(keys).find(k => k.textContent === letter);
       
-      // Mettre à jour la grille
-      for (let row = 0; row < gameState.maxAttempts; row++) {
-        for (let col = 0; col < gameState.wordLength; col++) {
-          const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-          const cellData = gameState.boardState[row][col];
-          
-          cell.textContent = cellData.letter;
-          cell.className = 'grid-cell';
-          
-          if (cellData.state) {
-            cell.classList.add(cellData.state);
-          }
-          
-          if (row === gameState.currentRow && col === gameState.currentCol && gameState.gameActive) {
-            cell.classList.add('current');
-          }
-        }
-      }
+      if (!key) return;
+      
+      const currentState = gameState.keyboardState[letter];
+      
+      // Hiérarchie des états : correct > present > absent
+      if (currentState === 'correct') return;
+      if (currentState === 'present' && state === 'absent') return;
+      
+      gameState.keyboardState[letter] = state;
+      key.className = `key-btn ${state}`;
     }
     
     function addLetter(letter) {
-      if (!gameState.gameActive || gameState.currentCol >= gameState.wordLength) return;
+      if (gameState.currentCol >= gameState.wordLength || !gameState.gameActive || gameState.validatingWord) return;
       
       const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${gameState.currentCol}"]`);
       cell.textContent = letter;
+      cell.classList.add('filled');
+      
       gameState.boardState[gameState.currentRow][gameState.currentCol].letter = letter;
       gameState.currentCol++;
-      updateDisplay();
     }
     
     function deleteLetter() {
-      if (!gameState.gameActive || gameState.currentCol <= 0) return;
+      if (gameState.currentCol <= 0 || gameState.validatingWord) return;
       
       gameState.currentCol--;
       const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${gameState.currentCol}"]`);
       cell.textContent = '';
+      cell.classList.remove('filled', 'hint');
+      
       gameState.boardState[gameState.currentRow][gameState.currentCol].letter = '';
-      updateDisplay();
     }
     
     async function submitWord() {
-      if (!gameState.gameActive || gameState.validatingWord) return;
-      if (gameState.currentCol < gameState.wordLength) {
+      if (gameState.currentCol !== gameState.wordLength) {
         showMessage('Mot incomplet !', 'warning');
         return;
       }
       
+      if (gameState.validatingWord) {
+        return; // Déjà en train de valider
+      }
+      
+      const word = gameState.boardState[gameState.currentRow].map(cell => cell.letter).join('');
+      
+      // Désactiver les entrées pendant la validation
       gameState.validatingWord = true;
       
-      const guess = gameState.boardState[gameState.currentRow]
-        .map(cell => cell.letter)
-        .join('')
-        .toUpperCase();
-      
-      showMessage('Vérification du mot...', 'info');
+      // Ajouter un indicateur de chargement
+      const enterKey = document.querySelector('.key-enter');
+      const originalText = enterKey.textContent;
+      enterKey.innerHTML = 'ENTER <span class="validation-loader"></span>';
       
       try {
-        const isValid = await validateWord(guess);
+        const isValid = await isValidWord(word, gameState.wordLength);
         
         if (!isValid) {
           showMessage('Mot non valide !', 'error');
-          // Animation de secousse
-          const row = document.querySelector(`[data-row="${gameState.currentRow}"]`);
-          if (row) {
-            row.style.animation = 'shake 0.5s ease';
+          // Animation de secousse pour la ligne
+          const row = document.querySelector(`[data-row="${gameState.currentRow}"]`).parentElement;
+          row.style.animation = 'shake 0.5s ease-in-out';
           setTimeout(() => row.style.animation = '', 500);
-          }
-          gameState.validatingWord = false;
           return;
         }
         
-        processGuess(guess);
+        // Analyser le mot
+        const result = analyzeGuess(word, gameState.currentWord);
         
-      } catch (error) {
-        console.error('Erreur validation:', error);
-        showMessage('Erreur de validation', 'error');
-        gameState.validatingWord = false;
-      }
-    }
-
-    async function validateWord(word) {
-      try {
-        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`);
-        return response.ok;
-      } catch (error) {
-        console.error('Erreur validation API:', error);
-        return true; // En cas d'erreur, on accepte le mot
-      }
-    }
-
-    function processGuess(guess) {
-      const targetWord = gameState.currentWord.toUpperCase();
-      const guessArray = guess.split('');
-      const targetArray = targetWord.split('');
-      const result = new Array(gameState.wordLength).fill('absent');
-      const targetLetterCount = {};
-      
-      // Compter les lettres dans le mot cible
-      targetArray.forEach(letter => {
-        targetLetterCount[letter] = (targetLetterCount[letter] || 0) + 1;
-      });
-      
-      // Première passe : marquer les lettres correctes
-      guessArray.forEach((letter, index) => {
-        if (letter === targetArray[index]) {
-          result[index] = 'correct';
-          targetLetterCount[letter]--;
+        // Animer et mettre à jour les cellules
+        for (let i = 0; i < gameState.wordLength; i++) {
+          const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${i}"]`);
+          const letter = word[i];
+          const state = result[i];
+          
+          setTimeout(() => {
+            cell.classList.remove('filled', 'hint');
+            cell.classList.add(state);
+            updateKeyboard(letter, state);
+          }, i * 100);
+          
+          gameState.boardState[gameState.currentRow][i].state = state;
         }
-      });
-      
-      // Deuxième passe : marquer les lettres présentes
-      guessArray.forEach((letter, index) => {
-        if (result[index] === 'absent' && targetLetterCount[letter] > 0) {
-          result[index] = 'present';
-          targetLetterCount[letter]--;
-        }
-      });
-      
-      // Appliquer les résultats
-      result.forEach((state, index) => {
-        gameState.boardState[gameState.currentRow][index].state = state;
         
-        // Mettre à jour le clavier
-        const letter = guessArray[index];
-        const currentState = gameState.keyboardState[letter];
-        
-        if (!currentState || (currentState === 'absent' && state !== 'absent') || 
-            (currentState === 'present' && state === 'correct')) {
-          gameState.keyboardState[letter] = state;
+        // Vérifier si le mot est correct
+        if (word === gameState.currentWord) {
+          setTimeout(() => {
+            // Animation de danse pour la victoire
+            for (let i = 0; i < gameState.wordLength; i++) {
+              const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${i}"]`);
+              setTimeout(() => {
+                cell.style.animation = 'dance 0.5s ease-in-out';
+              }, i * 100);
+            }
+            endGame(true, 'Félicitations ! Mot trouvé !');
+          }, gameState.wordLength * 100);
+          return;
         }
-      });
-      
-      updateKeyboard();
-      updateDisplay();
-      
-      // Vérifier la victoire
-      if (guess === targetWord) {
-        endGame(true, 'Félicitations ! Mot trouvé !');
-      } else {
+        
         gameState.currentRow++;
         gameState.currentCol = 0;
-        gameState.validatingWord = false;
         
         // Vérifier si plus de tentatives
         if (gameState.currentRow >= gameState.maxAttempts) {
-          endGame(false, `Échec ! Le mot était : ${targetWord}`);
+          setTimeout(() => {
+            endGame(false, `Le mot était : ${gameState.currentWord}`);
+          }, gameState.wordLength * 100);
+          return;
         }
+        
+        updateDisplay();
+        
+      } finally {
+        // Réactiver les entrées et restaurer le bouton
+        gameState.validatingWord = false;
+        enterKey.textContent = originalText;
       }
     }
 
-    function updateKeyboard() {
-      document.querySelectorAll('.key-btn').forEach(key => {
-        const letter = key.textContent;
-        if (letter.length === 1 && gameState.keyboardState[letter]) {
-          key.className = `key-btn ${gameState.keyboardState[letter]}`;
-        }
-      });
+    // ===========================================
+    // POWER-UPS
+    // ===========================================
+    
+    function usePowerUp(type) {
+      if (!gameState.gameActive || gameState.validatingWord) {
+        showMessage('Action impossible en ce moment !', 'warning');
+        return;
+      }
+      
+      if (gameState.powerUps[type] <= 0) {
+        showMessage('Power-up épuisé !', 'warning');
+        return;
+      }
+      
+      gameState.powerUps[type]--;
+      
+      switch (type) {
+        case 'hint':
+          // Révéler une lettre aléatoire dans la ligne actuelle
+          const availablePositions = [];
+          for (let i = 0; i < gameState.wordLength; i++) {
+            if (gameState.boardState[gameState.currentRow][i].letter === '') {
+              availablePositions.push(i);
+            }
+          }
+          
+          if (availablePositions.length > 0) {
+            const randomPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+            const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${randomPos}"]`);
+            const letter = gameState.currentWord[randomPos];
+            
+            cell.textContent = letter;
+            cell.classList.add('hint');
+            
+            gameState.boardState[gameState.currentRow][randomPos].letter = letter;
+            gameState.currentCol = Math.max(gameState.currentCol, randomPos + 1);
+            
+            showMessage(`Indice révélé : ${letter}`, 'success');
+          }
+          break;
+          
+        case 'time':
+          gameState.timeLeft += 30;
+          showMessage('+30 secondes !', 'success');
+          break;
+          
+        case 'skip':
+          showMessage(`Le mot était : ${gameState.currentWord}`, 'info');
+          setTimeout(() => newGame(), 2000);
+          break;
+      }
+      
+      updateDisplay();
     }
 
-    function startGame(difficulty) {
-      gameState.selectedDifficulty = difficulty;
-      const config = DIFFICULTIES[difficulty];
-      gameState.wordLength = config.wordLength;
-      gameState.maxAttempts = config.maxAttempts;
-      gameState.timeLeft = config.timeLimit;
-      gameState.currentRow = 0;
-      gameState.currentCol = 0;
-      gameState.gameActive = true;
-      gameState.keyboardState = {};
-      gameState.validatingWord = false;
-      gameState.gameStarted = true;
-      
-      // Choisir un mot aléatoire
-      const wordList = TARGET_WORDS[gameState.wordLength];
-      gameState.currentWord = wordList[Math.floor(Math.random() * wordList.length)];
-      
-      // Interface
-      document.getElementById('welcomeScreen').classList.add('hidden');
-      document.getElementById('gameArea').classList.remove('hidden');
-      
-      createGrid();
-      updateDisplay();
-      startTimer();
-      startRandomEvents();
-      
-      showMessage(`Nouvelle partie ! Mot de ${gameState.wordLength} lettres`, 'success');
-    }
+    // ===========================================
+    // GESTION DU TIMER ET ÉVÉNEMENTS
+    // ===========================================
     
     function startTimer() {
       if (gameTimer) clearInterval(gameTimer);
@@ -1680,23 +1854,6 @@
         gameTimer = null;
       }
     }
-
-    function startRandomEvents() {
-      if (randomEventTimer) clearInterval(randomEventTimer);
-      
-      randomEventTimer = setInterval(() => {
-        if (Math.random() < 0.3) {
-          triggerRandomEvent();
-        }
-      }, 25000);
-    }
-
-    function stopRandomEvents() {
-      if (randomEventTimer) {
-        clearInterval(randomEventTimer);
-        randomEventTimer = null;
-      }
-    }
     
     function triggerRandomEvent() {
       if (!gameState.gameActive) return;
@@ -1715,6 +1872,43 @@
             gameState.combo = Math.min(gameState.combo * 2, 10);
             showMessage('🎁 Événement : Combo doublé !', 'success');
           }
+        },
+        {
+          name: 'Super Hint',
+          action: () => {
+            const availablePositions = [];
+            for (let i = 0; i < gameState.wordLength; i++) {
+              if (gameState.boardState[gameState.currentRow][i].letter === '') {
+                availablePositions.push(i);
+              }
+            }
+            
+            const revealCount = Math.min(2, availablePositions.length);
+            for (let i = 0; i < revealCount; i++) {
+              if (availablePositions.length === 0) break;
+              
+              const randomIndex = Math.floor(Math.random() * availablePositions.length);
+              const randomPos = availablePositions[randomIndex];
+              availablePositions.splice(randomIndex, 1);
+              
+              const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${randomPos}"]`);
+              const letter = gameState.currentWord[randomPos];
+              
+              cell.textContent = letter;
+              cell.classList.add('hint');
+              gameState.boardState[gameState.currentRow][randomPos].letter = letter;
+            }
+            
+            // Mettre à jour la position actuelle
+            gameState.currentCol = 0;
+            for (let i = 0; i < gameState.wordLength; i++) {
+              if (gameState.boardState[gameState.currentRow][i].letter !== '') {
+                gameState.currentCol = i + 1;
+              }
+            }
+            
+            showMessage('🎁 Événement : 2 lettres révélées !', 'success');
+          }
         }
       ];
       
@@ -1723,11 +1917,187 @@
       updateDisplay();
     }
     
+    function startRandomEvents() {
+      if (randomEventTimer) clearInterval(randomEventTimer);
+      
+      randomEventTimer = setInterval(() => {
+        if (Math.random() < 0.3) {
+          triggerRandomEvent();
+        }
+      }, 25000);
+    }
+    
+    function stopRandomEvents() {
+      if (randomEventTimer) {
+        clearInterval(randomEventTimer);
+        randomEventTimer = null;
+      }
+    }
+
+    // ===========================================
+    // SYSTÈME DE RÉCOMPENSES ET AUTHENTIFICATION
+    // ===========================================
+    
+    async function checkAuthenticationAndStartGame(difficulty) {
+      // Vérifier si l'utilisateur est connecté
+      const authService = window.authService;
+      let currentUser = null;
+      
+      if (authService) {
+        currentUser = authService.getCurrentUser();
+      } else {
+        // Fallback vers simple auth
+        const userData = localStorage.getItem('userSession');
+        currentUser = userData ? JSON.parse(userData) : null;
+      }
+      
+      if (!currentUser) {
+        showMessage('Vous devez être connecté pour jouer !', 'warning', 3000);
+        setTimeout(() => {
+          // Rediriger vers la page de connexion après 2 secondes
+          window.location.href = '../login.html';
+        }, 2000);
+        return;
+      }
+      
+      console.log('✅ Utilisateur connecté:', currentUser.displayName || currentUser.username || currentUser.email);
+      startGame(difficulty);
+    }
+    
+    async function giveRewards(isTopScore = false) {
+      try {
+        const authService = window.authService;
+        let currentUser = null;
+        
+        if (authService) {
+          currentUser = authService.getCurrentUser();
+        } else {
+          const userData = localStorage.getItem('userSession');
+          currentUser = userData ? JSON.parse(userData) : null;
+        }
+        
+        if (!currentUser) {
+          console.warn('Pas d\'utilisateur connecté pour donner des récompenses');
+          return;
+        }
+        
+        // Définir les récompenses
+        const baseRewards = { gold: 1, xp: 1 };
+        const topScoreRewards = { gold: 20, xp: 20 };
+        const rewards = isTopScore ? topScoreRewards : baseRewards;
+        
+        console.log(`🎁 Attribution des récompenses: ${rewards.gold} or, ${rewards.xp} XP`);
+        
+        // Tenter la sauvegarde via Firebase
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+          const db = firebase.firestore();
+          const userRef = db.collection('users').doc(currentUser.uid || currentUser.id || currentUser.email);
+          
+          await db.runTransaction(async (transaction) => {
+            const userDoc = await transaction.get(userRef);
+            
+            if (userDoc.exists) {
+              const userData = userDoc.data();
+              const newGold = (userData.gold || 0) + rewards.gold;
+              const newXP = (userData.xp || 0) + rewards.xp;
+              
+              transaction.update(userRef, {
+                gold: newGold,
+                xp: newXP,
+                lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              
+              console.log(`✅ Récompenses sauvegardées: ${newGold} or total, ${newXP} XP total`);
+              
+              // Afficher un message de récompense
+              const rewardMessage = isTopScore 
+                ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
+                : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
+              
+              showMessage(rewardMessage, 'success', 4000);
+            } else {
+              console.warn('Document utilisateur non trouvé pour les récompenses');
+            }
+          });
+        } else {
+          // Fallback: sauvegarder localement
+          const localProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+          localProfile.gold = (localProfile.gold || 0) + rewards.gold;
+          localProfile.xp = (localProfile.xp || 0) + rewards.xp;
+          localStorage.setItem('userProfile', JSON.stringify(localProfile));
+          
+          const rewardMessage = isTopScore 
+            ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
+            : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
+          
+          showMessage(rewardMessage, 'success', 4000);
+          console.log(`✅ Récompenses sauvegardées localement: ${localProfile.gold} or total, ${localProfile.xp} XP total`);
+        }
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'attribution des récompenses:', error);
+        showMessage('Erreur lors de la sauvegarde des récompenses', 'warning');
+      }
+    }
+    
+    function checkIfTopScore(score) {
+      try {
+        // Vérifier dans les scores locaux
+        const localScores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
+        const isLocalTopScore = localScores.length === 0 || score > (localScores[0]?.score || 0);
+        
+        return isLocalTopScore;
+      } catch (error) {
+        console.error('Erreur lors de la vérification du top score:', error);
+        return false;
+      }
+    }
+
+    // ===========================================
+    // LOGIQUE DE JEU PRINCIPALE (MODIFIÉE)
+    // ===========================================
+    
+    function startGame(difficulty) {
+      gameState.selectedDifficulty = difficulty;
+      const config = DIFFICULTIES[difficulty];
+      gameState.wordLength = config.wordLength;
+      gameState.maxAttempts = config.maxAttempts;
+      gameState.currentRow = 0;
+      gameState.currentCol = 0;
+      gameState.gameActive = true;
+      gameState.timeLeft = 90;
+      gameState.keyboardState = {};
+      gameState.validatingWord = false;
+      
+      // Reset des couleurs du clavier pour chaque nouveau mot
+      resetKeyboardColors();
+      
+      // Choisir un mot aléatoire
+      const wordList = TARGET_WORDS[gameState.wordLength];
+      gameState.currentWord = wordList[Math.floor(Math.random() * wordList.length)];
+      
+      // Interface
+      document.getElementById('welcome-screen').classList.add('hidden');
+      document.getElementById('game-area').classList.remove('hidden');
+      
+      createGrid();
+      updateDisplay();
+      startTimer();
+      startRandomEvents();
+      
+      showMessage(`Nouvelle partie ! Mot de ${gameState.wordLength} lettres`, 'success');
+    }
+    
+    // ===========================================
+    // FIN DE JEU MODIFIÉE AVEC RÉCOMPENSES
+    // ===========================================
+    
     function endGame(won, message) {
       gameState.gameActive = false;
       gameState.validatingWord = false;
       stopTimer();
       stopRandomEvents();
+      
+      let finalScore = gameState.score;
       
       if (won) {
         // Calculer le score
@@ -1737,6 +2107,7 @@
         const totalScore = (baseScore + timeBonus + attemptBonus) * gameState.combo;
         
         gameState.score += totalScore;
+        finalScore = gameState.score;
         gameState.combo++;
         gameState.wordsFound++;
         
@@ -1745,181 +2116,151 @@
           gameState.bestCombo = gameState.combo;
         }
         
+        // Vérifier si c'est un top score AVANT de sauvegarder
+        const isTopScore = checkIfTopScore(finalScore);
+        
+        // Sauvegarder le score dans le système reborn
+        window.enigmaScrollGame.saveScore(
+          finalScore,
+          null,
+          gameState.wordsFound,
+          gameState.wordLength
+        );
+        
+        // Donner les récompenses en fonction du résultat
+        setTimeout(() => {
+          giveRewards(isTopScore);
+        }, 1000);
+        
         showMessage(`${message} Score: +${totalScore}`, 'success', 3000);
         
-        // Sauvegarder le score et donner des récompenses
-        saveScore(gameState.score, gameState.wordsFound, gameState.selectedDifficulty);
-        
-        // Passage automatique au mot suivant après 2 secondes
-        setTimeout(() => {
-          if (gameState.selectedDifficulty) {
-            showMessage('Nouveau mot !', 'info', 1000);
-            setTimeout(() => {
-              startGame(gameState.selectedDifficulty);
-            }, 500);
-          }
-        }, 2000);
+        // Vérifier si temps écoulé ou plus de place pour continuer
+        if (gameState.timeLeft <= 0) {
+          // Temps écoulé - fin de partie
+          showMessage('⏰ Temps écoulé ! Partie terminée', 'warning', 3000);
+          setTimeout(() => {
+            document.getElementById('new-game-button').style.display = 'inline-flex';
+          }, 2000);
+        } else {
+          // Continuer avec un nouveau mot
+          setTimeout(() => {
+            if (gameState.selectedDifficulty) {
+              showMessage('Nouveau mot !', 'info', 1000);
+              setTimeout(() => {
+                startGame(gameState.selectedDifficulty);
+              }, 500);
+            }
+          }, 2000);
+        }
         
       } else {
+        // Partie perdue - donner les récompenses de base
+        finalScore = gameState.score;
+        
+        // Vérifier si c'est un top score même en perdant
+        const isTopScore = checkIfTopScore(finalScore);
+        
         // Sauvegarder le score final en cas d'échec
-        if (gameState.gameStarted) {
-          saveScore(gameState.score, gameState.wordsFound, gameState.selectedDifficulty);
-        }
+        window.enigmaScrollGame.saveScore(
+          finalScore,
+          null,
+          gameState.wordsFound,
+          gameState.wordLength
+        );
+        
+        // Donner les récompenses (de base si pas de top score)
+        setTimeout(() => {
+          giveRewards(isTopScore);
+        }, 1000);
         
         gameState.combo = 1;
         showMessage(message, 'error', 3000);
         
         // Afficher le bouton nouveau jeu
         setTimeout(() => {
-          document.getElementById('newGameButton').style.display = 'inline-flex';
+          document.getElementById('new-game-button').style.display = 'inline-flex';
         }, 2000);
       }
       
       updateDisplay();
     }
     
+    // Modifier la condition de fin de partie pour le temps
+    function startTimer() {
+      if (gameTimer) clearInterval(gameTimer);
+      
+      gameTimer = setInterval(() => {
+        gameState.timeLeft--;
+        updateDisplay();
+        
+        if (gameState.timeLeft <= 0) {
+          endGame(false, 'Temps écoulé !');
+        }
+      }, 1000);
+    }
+
+    function resetKeyboardColors() {
+      // Supprimer seulement les classes de couleur, pas les classes structurelles
+      document.querySelectorAll('.key-btn').forEach(key => {
+        // Sauvegarder les classes spéciales avant de les supprimer
+        const isEnterKey = key.classList.contains('key-enter');
+        const isDeleteKey = key.classList.contains('key-delete');
+        
+        // Supprimer seulement les classes de couleur
+        key.classList.remove('correct', 'present', 'absent');
+        
+        // Conserver les classes structurelles nécessaires
+        if (isEnterKey && !key.classList.contains('key-enter')) {
+          key.classList.add('key-enter');
+        }
+        if (isDeleteKey && !key.classList.contains('key-delete')) {
+          key.classList.add('key-delete');
+        }
+      });
+      
+      // Vider aussi l'état du clavier
+      gameState.keyboardState = {};
+    }
+    
     function newGame() {
-      document.getElementById('newGameButton').style.display = 'none';
-      gameState.score = 0;
-      gameState.combo = 1;
-      gameState.wordsFound = 0;
-      gameState.gameStarted = false;
-      
+      document.getElementById('new-game-button').style.display = 'none';
       if (gameState.selectedDifficulty) {
-        startGame(gameState.selectedDifficulty);
-      } else {
-        document.getElementById('gameArea').classList.add('hidden');
-        document.getElementById('welcomeScreen').classList.remove('hidden');
+        checkAuthenticationAndStartGame(gameState.selectedDifficulty);
       }
-    }
-
-    // Power-ups
-    function usePowerUp(type) {
-      if (!gameState.gameActive) return;
-      
-      switch (type) {
-        case 'hint':
-          // Révéler une lettre
-          const availablePositions = [];
-          for (let i = 0; i < gameState.wordLength; i++) {
-            if (gameState.boardState[gameState.currentRow][i].letter === '') {
-              availablePositions.push(i);
-            }
-          }
-          
-          if (availablePositions.length > 0) {
-            const randomPos = availablePositions[Math.floor(Math.random() * availablePositions.length)];
-            const cell = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${randomPos}"]`);
-            const letter = gameState.currentWord[randomPos];
-            
-            cell.textContent = letter;
-            cell.classList.add('hint');
-            gameState.boardState[gameState.currentRow][randomPos].letter = letter;
-            
-            // Mettre à jour la position actuelle
-            gameState.currentCol = Math.max(gameState.currentCol, randomPos + 1);
-            showMessage('💡 Indice utilisé !', 'success');
-          }
-          break;
-          
-        case 'time':
-          gameState.timeLeft += 15;
-          showMessage('⏰ +15 secondes !', 'success');
-          break;
-          
-        case 'skip':
-          if (gameState.selectedDifficulty) {
-            showMessage('⏭️ Mot passé !', 'info');
-            setTimeout(() => {
-              startGame(gameState.selectedDifficulty);
-            }, 500);
-          }
-          break;
-      }
-      
-      updateDisplay();
-    }
-
-    // Messages
-    function showMessage(text, type = 'info', duration = 2000) {
-      const messageContainer = document.getElementById('messageContainer');
-      messageContainer.textContent = text;
-      messageContainer.className = `message ${type}`;
-      messageContainer.classList.add('show');
-      
-      setTimeout(() => {
-        messageContainer.classList.remove('show');
-      }, duration);
     }
 
     // ===========================================
     // GESTIONNAIRES D'ÉVÉNEMENTS
     // ===========================================
     
-    document.addEventListener('DOMContentLoaded', async function() {
-      console.log('🎮 Initialisation d\'Enigma Scroll...');
-      
-      // Afficher toujours l'écran d'accueil du jeu en premier
-      document.getElementById('welcomeScreen').classList.remove('hidden');
-      
-      // Démarrer le polling d'authentification
-      startAuthPolling();
-      
-      // Vérifier l'authentification initiale
-      const isAuthenticated = await checkAuthentication();
-      if (!isAuthenticated) {
-        console.log('Utilisateur non connecté - affichage de l\'écran de connexion');
-        // Afficher l'écran d'authentification
-        document.getElementById('authRequired').classList.remove('hidden');
-        
-        // Désactiver les interactions du jeu
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-          btn.style.pointerEvents = 'none';
-          btn.style.opacity = '0.5';
-        });
-        document.getElementById('startGameButton').disabled = true;
-      } else {
-        console.log('Utilisateur connecté - initialisation complète');
-        // Charger le classement initial
-        await loadLeaderboard();
-      }
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialiser le système de scores
+      window.enigmaScrollGame.init();
       
       // Sélection de difficulté
       document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-          if (!currentUser) {
-            showMessage('Veuillez vous connecter d\'abord !', 'warning');
-            return;
-          }
-          
+          // Réinitialiser toutes les sélections
           document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
           this.classList.add('active');
           
           const difficulty = this.dataset.difficulty;
           gameState.selectedDifficulty = difficulty;
-          
-          document.getElementById('startGameButton').disabled = false;
         });
       });
       
-      // Bouton commencer
-      document.getElementById('startGameButton').addEventListener('click', function() {
-        if (!currentUser) {
-          showMessage('Veuillez vous connecter d\'abord !', 'warning');
-          return;
-        }
-        
+      // Bouton commencer - AVEC VÉRIFICATION D'AUTHENTIFICATION
+      document.getElementById('start-game-button').addEventListener('click', function() {
         if (!gameState.selectedDifficulty) {
           showMessage('Veuillez sélectionner une difficulté !', 'warning');
           return;
         }
-        startGame(gameState.selectedDifficulty);
+        checkAuthenticationAndStartGame(gameState.selectedDifficulty);
       });
       
       // Power-ups
       document.querySelectorAll('.power-up').forEach(item => {
         item.addEventListener('click', function() {
-          if (!currentUser || !gameState.gameActive) return;
           const type = this.dataset.type;
           usePowerUp(type);
         });
@@ -1928,7 +2269,6 @@
       // Clavier virtuel
       document.querySelectorAll('.key-btn').forEach(key => {
         key.addEventListener('click', function() {
-          if (!currentUser) return;
           const keyText = this.textContent;
           handleKeyPress(keyText);
         });
@@ -1936,8 +2276,6 @@
       
       // Clavier physique
       document.addEventListener('keydown', function(e) {
-        if (!currentUser) return;
-        
         const key = e.key.toUpperCase();
         
         // Power-ups avec touches numériques
@@ -1949,12 +2287,12 @@
       });
       
       // Nouveau jeu
-      document.getElementById('newGameButton').addEventListener('click', function() {
-        if (!currentUser) return;
-        newGame();
-      });
+      document.getElementById('new-game-button').addEventListener('click', newGame);
       
-      console.log('✅ Enigma Scroll initialisé avec succès !');
+      console.log('🎮 Jeu Enigma Scroll initialisé avec système de scores reborn !');
+      console.log('🌐 Validation API activée pour TOUS les mots anglais');
+      console.log('🎮 Raccourcis: 1=Indice, 2=Temps, 3=Passer');
+      console.log('🔐 Authentification requise pour jouer');
     });
     
     function handleKeyPress(key) {
@@ -1968,6 +2306,22 @@
         addLetter(key);
       }
     }
+
+    // Animation de secousse pour les erreurs
+    const shakeStyle = document.createElement('style');
+    shakeStyle.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+        20%, 40%, 60%, 80% { transform: translateX(2px); }
+      }
+      @keyframes dance {
+        0%, 100% { transform: translateY(0); }
+        25% { transform: translateY(-10px); }
+        75% { transform: translateY(-5px); }
+      }
+    `;
+    document.head.appendChild(shakeStyle);
   </script>
 </body>
 </html> 
