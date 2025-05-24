@@ -7,33 +7,67 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   // Système d'authentification simple pour le mode standalone
   const simpleAuth = {
-    getCurrentUser: function() {
+    getCurrentUser: async function() {
       try {
-        const userData = localStorage.getItem('userSession');
-        return userData ? JSON.parse(userData) : null;
+        // Utiliser la même logique que le service principal
+        const userId = localStorage.getItem('englishQuestUserId');
+        console.log('🔍 [Auth Header] ID utilisateur récupéré:', userId);
+        
+        if (!userId || userId === "undefined" || userId === "null") {
+          console.log('❌ [Auth Header] Aucun ID utilisateur valide trouvé');
+          return null;
+        }
+        
+        // Si window.authService est disponible, l'utiliser pour récupérer les données complètes
+        if (window.authService && typeof window.authService.loadUserData === 'function') {
+          console.log('🔄 [Auth Header] Utilisation de authService.loadUserData');
+          try {
+            const userData = await window.authService.loadUserData(userId);
+            if (userData) {
+              console.log('✅ [Auth Header] Données utilisateur récupérées:', userData.username || userData.displayName || 'Utilisateur');
+              return { uid: userId, ...userData };
+            }
+          } catch (error) {
+            console.warn('⚠️ [Auth Header] Erreur loadUserData:', error);
+          }
+        }
+        
+        // Fallback : créer un objet utilisateur minimal avec l'ID
+        console.log('📝 [Auth Header] Création objet utilisateur minimal');
+        return { 
+          uid: userId, 
+          id: userId,
+          username: `Utilisateur ${userId.substring(0, 8)}`,
+          displayName: `Utilisateur ${userId.substring(0, 8)}`
+        };
+        
       } catch (e) {
-        console.warn('Erreur lecture session:', e);
+        console.warn('❌ [Auth Header] Erreur lecture session:', e);
         return null;
       }
     },
     logout: function() {
-      localStorage.removeItem('userSession');
-      console.log('Session supprimée');
+      localStorage.removeItem('englishQuestUserId');
+      localStorage.removeItem('englishQuestIsAdmin');
+      console.log('🚪 [Auth Header] Session supprimée');
     },
     addAuthStateListener: function(callback) {
       // Simple polling pour détecter les changements
-      let lastUser = this.getCurrentUser();
-      setInterval(() => {
-        const currentUser = this.getCurrentUser();
-        const userChanged = (lastUser && !currentUser) || (!lastUser && currentUser) || 
-                           (lastUser && currentUser && lastUser.email !== currentUser.email);
+      let lastUserId = localStorage.getItem('englishQuestUserId');
+      setInterval(async () => {
+        const currentUserId = localStorage.getItem('englishQuestUserId');
+        const userChanged = (lastUserId && !currentUserId) || (!lastUserId && currentUserId) || 
+                           (lastUserId !== currentUserId);
         if (userChanged) {
-          lastUser = currentUser;
+          console.log('🔄 [Auth Header] Changement d\'état détecté');
+          lastUserId = currentUserId;
+          const currentUser = await this.getCurrentUser();
           callback(currentUser);
         }
       }, 2000);
     },
     init: async function() {
+      console.log('🚀 [Auth Header] Initialisation du système simple');
       return Promise.resolve();
     }
   };
@@ -43,6 +77,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   if (!window.authService) {
     console.log("Utilisation du système d'authentification simplifié");
+  } else {
+    console.log("✅ Service d'authentification principal détecté");
   }
 
   // Initialiser le service d'authentification
@@ -59,8 +95,13 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // Fonction pour nettoyer et mettre à jour l'interface
-  function updateUI(user) {
-    console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || user.username || "Utilisateur connecté") : "Déconnecté");
+  async function updateUI(user) {
+    // Si on n'a pas encore d'utilisateur, essayer de le récupérer
+    if (!user) {
+      user = await authService.getCurrentUser();
+    }
+    
+    console.log("🔄 Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.username || user.email || "Utilisateur connecté") : "Déconnecté");
     
     // Supprimer tous les boutons de déconnexion existants pour éviter les doublons
     const existingLogoutButtons = document.querySelectorAll('[id^="logoutButton"], .btn-logout[id*="logout"]');
@@ -103,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         logoutButton.href = '#';
         logoutButton.addEventListener('click', async (e) => {
           e.preventDefault();
-          console.log("Clic sur le bouton de déconnexion");
+          console.log("🚪 Clic sur le bouton de déconnexion");
           await authService.logout();
           window.location.reload(); // Recharger pour nettoyer l'état
         });
@@ -126,11 +167,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // Mettre à jour l'UI avec l'état initial
-  const currentUser = authService.getCurrentUser();
-  updateUI(currentUser);
-  console.log("Interface initialisée avec l'état d'authentification actuel");
+  const currentUser = await authService.getCurrentUser();
+  console.log('👤 [Auth Header] Utilisateur initial récupéré:', currentUser ? 'Connecté' : 'Déconnecté');
+  await updateUI(currentUser);
+  console.log("✅ Interface initialisée avec l'état d'authentification actuel");
 
   // Ajouter un écouteur pour les changements d'état d'authentification
   authService.addAuthStateListener(updateUI);
-  console.log("Écouteur d'état d'authentification ajouté");
+  console.log("👂 Écouteur d'état d'authentification ajouté");
 });
