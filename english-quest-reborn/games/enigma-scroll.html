@@ -36,15 +36,15 @@
     /* Couleurs spécifiques pour le jeu Enigma Scroll en accord avec le design reborn */
     :root {
       /* Couleurs pour le jeu Wordle-like - utilisant les couleurs du système reborn */
-      --word-correct: var(--color-primary, #2ecc71); /* Vert pour lettre correcte et bien placée */
-      --word-present: var(--color-warning, #f39c12); /* Orange pour lettre présente mais mal placée */
+      --word-correct: #2ecc71; /* Vert pour lettre correcte et bien placée */
+      --word-present: #f39c12; /* Orange pour lettre présente mais mal placée */
       --word-absent: #7f8c8d; /* Gris pour lettre absente */
       --word-unfilled: rgba(255, 255, 255, 0.1); /* Gris léger pour cases vides */
     }
 
     /* Correction des couleurs du titre */
     .section-title.text-gradient {
-      background: linear-gradient(90deg, var(--color-primary, #2ecc71), var(--color-info, #3498db));
+      background: linear-gradient(90deg, #2ecc71, #3498db);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -55,7 +55,7 @@
 
     /* Correction de la couleur du sous-titre */
     .game-subtitle {
-      color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+      color: rgba(255, 255, 255, 0.7);
       font-size: 1.2rem;
       margin-bottom: 2rem;
     }
@@ -2156,7 +2156,8 @@
 
   <!-- Scripts -->
   <script src="../scripts/new-design.js"></script>
-  <script type="module" src="../scripts/auth-header.js"></script>
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script src="../scripts/auth-header.js"></script>
   <script src="../scripts/debug.js"></script>
 </body>
 </html>
