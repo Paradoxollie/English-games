@@ -5,25 +5,46 @@
 document.addEventListener('DOMContentLoaded', async function() {
   console.log("Initialisation du header d'authentification...");
   
-  // Attendre que authService soit disponible (il sera chargé par auth-service.js)
-  let authService = null;
-  let attempts = 0;
-  const maxAttempts = 50;
-  
-  while (!authService && attempts < maxAttempts) {
-    if (window.authService) {
-      authService = window.authService;
-      break;
+  // Système d'authentification simple pour le mode standalone
+  const simpleAuth = {
+    getCurrentUser: function() {
+      try {
+        const userData = localStorage.getItem('userSession');
+        return userData ? JSON.parse(userData) : null;
+      } catch (e) {
+        console.warn('Erreur lecture session:', e);
+        return null;
+      }
+    },
+    logout: function() {
+      localStorage.removeItem('userSession');
+      console.log('Session supprimée');
+    },
+    addAuthStateListener: function(callback) {
+      // Simple polling pour détecter les changements
+      let lastUser = this.getCurrentUser();
+      setInterval(() => {
+        const currentUser = this.getCurrentUser();
+        const userChanged = (lastUser && !currentUser) || (!lastUser && currentUser) || 
+                           (lastUser && currentUser && lastUser.email !== currentUser.email);
+        if (userChanged) {
+          lastUser = currentUser;
+          callback(currentUser);
+        }
+      }, 2000);
+    },
+    init: async function() {
+      return Promise.resolve();
     }
-    await new Promise(resolve => setTimeout(resolve, 100));
-    attempts++;
-  }
+  };
+
+  // Utiliser authService si disponible, sinon utiliser simpleAuth
+  let authService = window.authService || simpleAuth;
   
-  if (!authService) {
-    console.error("authService non disponible après", maxAttempts, "tentatives");
-    return;
+  if (!window.authService) {
+    console.log("Utilisation du système d'authentification simplifié");
   }
-  
+
   // Initialiser le service d'authentification
   await authService.init();
   
@@ -41,7 +62,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   function updateUI(user) {
     console.log("Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.email || user.username || "Utilisateur connecté") : "Déconnecté");
     
-        // Supprimer les boutons de déconnexion existants pour éviter les doublons    const existingLogoutButton = document.getElementById('logoutButton');    if (existingLogoutButton) {      existingLogoutButton.remove();    }
+    // Supprimer tous les boutons de déconnexion existants pour éviter les doublons
+    const existingLogoutButtons = document.querySelectorAll('[id^="logoutButton"], .btn-logout[id*="logout"]');
+    existingLogoutButtons.forEach(btn => {
+      if (btn && btn.parentNode) {
+        btn.remove();
+        console.log('🗑️ Bouton de déconnexion supprimé:', btn.textContent);
+      }
+    });
     
     if (user) {
       // L'utilisateur est connecté - MASQUER le bouton de connexion
