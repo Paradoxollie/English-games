@@ -10,6 +10,11 @@
   <link rel="stylesheet" href="styles/new-design.css">
   <link rel="stylesheet" href="styles/animations.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -224,5 +229,101 @@
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>
   <script src="scripts/debug.js"></script>
+  
+  <!-- Firebase et statistiques -->
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
+      authDomain: "english-games-41017.firebaseapp.com",
+      projectId: "english-games-41017",
+      storageBucket: "english-games-41017.appspot.com",
+      messagingSenderId: "1062036556501",
+      appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
+    };
+
+    // Initialiser Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  </script>
+  <script type="module" src="scripts/game-stats-service.js"></script>
+  <script type="module">
+    import { gameStatsService } from './scripts/game-stats-service.js';
+    
+    // Initialiser et charger les statistiques
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('🎮 Initialisation des statistiques des jeux (page games)...');
+      
+      await gameStatsService.init();
+      
+      // Charger les statistiques pour tous les jeux
+      const allStats = await gameStatsService.getAllGameStats();
+      console.log('📊 Statistiques chargées:', allStats);
+      
+      // Mettre à jour Speed Verb Challenge (jeu vedette)
+      const speedVerbStats = allStats['speed-verb-challenge'] || await gameStatsService.getGameStats('speed-verb-challenge');
+      updateGameStats('speed-verb-challenge', speedVerbStats);
+      
+      // Mettre à jour Enigma Scroll
+      const enigmaStats = allStats['enigma-scroll'] || await gameStatsService.getGameStats('enigma-scroll');
+      updateGameStats('enigma-scroll', enigmaStats);
+      
+      // Mettre à jour les autres jeux
+      const wordMemoryStats = allStats['word-memory'] || await gameStatsService.getGameStats('word-memory');
+      updateGameStats('word-memory', wordMemoryStats);
+      
+      const memoryMatrixStats = allStats['memory-matrix'] || await gameStatsService.getGameStats('memory-matrix');
+      updateGameStats('memory-matrix', memoryMatrixStats);
+    });
+    
+    function updateGameStats(gameId, stats) {
+      // Mettre à jour les statistiques selon le jeu
+      if (gameId === 'speed-verb-challenge') {
+        // Jeu vedette
+        const featuredPlayerCount = document.querySelector('.featured-game .game-stats .game-stat:first-child span');
+        const featuredRating = document.querySelector('.featured-game .game-stats .game-stat:last-child span');
+        
+        if (featuredPlayerCount) {
+          featuredPlayerCount.textContent = `${gameStatsService.formatPlayerCount(stats.playCount)} joueurs`;
+        }
+        if (featuredRating) {
+          featuredRating.textContent = `${stats.averageRating}/5`;
+        }
+      } else if (gameId === 'enigma-scroll') {
+        // Enigma Scroll
+        const enigmaCard = document.querySelector('.game-card:nth-child(4)'); // 4ème carte
+        if (enigmaCard) {
+          const playerCount = enigmaCard.querySelector('.game-stats .game-stat:first-child span');
+          const rating = enigmaCard.querySelector('.game-stats .game-stat:last-child span');
+          
+          if (playerCount) {
+            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+          }
+          if (rating) {
+            rating.textContent = `${stats.averageRating}/5`;
+          }
+        }
+      } else if (gameId === 'word-memory') {
+        // Word Memory Game
+        const wordMemoryCard = document.querySelector('.game-card:nth-child(2)'); // 2ème carte
+        if (wordMemoryCard) {
+          const playerCount = wordMemoryCard.querySelector('.game-stats .game-stat span');
+          if (playerCount) {
+            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+          }
+        }
+      } else if (gameId === 'memory-matrix') {
+        // Memory Matrix
+        const memoryMatrixCard = document.querySelector('.game-card:nth-child(3)'); // 3ème carte
+        if (memoryMatrixCard) {
+          const playerCount = memoryMatrixCard.querySelector('.game-stats .game-stat span');
+          if (playerCount) {
+            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+          }
+        }
+      }
+    }
+  </script>
 </body>
 </html>

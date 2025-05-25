@@ -20,6 +20,7 @@
     <script type="module" src="../scripts/auth-service.js"></script>
     <script type="module" src="../scripts/auth-header.js"></script>
     <script type="module" src="../scripts/reward-service.js"></script>
+    <script type="module" src="../scripts/game-stats-service.js"></script>
 
     <style>
         :root {
@@ -813,6 +814,19 @@
                                 </div>
                             </div>
 
+                            <!-- Système de notation -->
+                            <div class="rating-section" style="margin: 2rem 0; padding: 1.5rem; background: var(--color-surface); border-radius: var(--border-radius-lg); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <h3 style="color: var(--color-primary); margin-bottom: 1rem; text-align: center;">Notez votre expérience</h3>
+                                <div class="star-rating" style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                    <span class="star" data-rating="1" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                                    <span class="star" data-rating="2" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                                    <span class="star" data-rating="3" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                                    <span class="star" data-rating="4" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                                    <span class="star" data-rating="5" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                                </div>
+                                <p id="rating-message" style="text-align: center; color: var(--color-text-secondary); font-size: 0.9rem; opacity: 0.8;">Cliquez sur les étoiles pour noter le jeu</p>
+                            </div>
+
                             <div class="game-buttons">
                                 <button id="play-again-btn" class="game-button primary-button">
                                     <span>Rejouer</span>
@@ -1420,6 +1434,9 @@
                 });
             }
 
+            // Gestion du système de notation
+            setupRatingSystem();
+
             // Gestion des boutons de jeu
             const checkBtn = document.getElementById('check-answer-btn');
             const skipBtn = document.getElementById('skip-verb-btn');
@@ -1816,11 +1833,13 @@
 
             // Sauvegarder le score avec le système de leaderboard
             let playerName = 'Joueur Anonyme';
+            let playerId = null;
             
             // Essayer de récupérer le nom du joueur connecté
             try {
                 if (window.authService && window.authService.currentUser) {
                     playerName = window.authService.currentUser.username || window.authService.currentUser.displayName || 'Joueur Connecté';
+                    playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
                 }
             } catch (e) {
                 console.log('Impossible de récupérer le nom du joueur:', e);
@@ -1833,6 +1852,12 @@
                 level: Math.floor(score / 50) + 1,
                 difficulty: selectedDifficulty
             });
+
+            // Enregistrer les statistiques de jeu
+            if (window.gameStatsService) {
+                window.gameStatsService.recordGamePlay('speed-verb-challenge', playerId, score);
+                console.log('📊 Statistiques de jeu enregistrées');
+            }
 
             // Vérifier si c'est un top score AVANT de donner les récompenses
             const isTopScore = checkIfTopScore(score);
@@ -1860,6 +1885,70 @@
             }
             
             updateHUD();
+        }
+
+        // Système de notation
+        function setupRatingSystem() {
+            const stars = document.querySelectorAll('.star');
+            const ratingMessage = document.getElementById('rating-message');
+            let selectedRating = 0;
+
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', () => {
+                    highlightStars(index + 1);
+                });
+
+                star.addEventListener('mouseleave', () => {
+                    highlightStars(selectedRating);
+                });
+
+                star.addEventListener('click', () => {
+                    selectedRating = index + 1;
+                    highlightStars(selectedRating);
+                    submitRating(selectedRating);
+                });
+            });
+
+            function highlightStars(rating) {
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.style.color = '#f39c12';
+                    } else {
+                        star.style.color = '#666';
+                    }
+                });
+            }
+
+            async function submitRating(rating) {
+                try {
+                    let playerId = null;
+                    if (window.authService && window.authService.currentUser) {
+                        playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+                    }
+
+                    if (window.gameStatsService) {
+                        const success = await window.gameStatsService.submitRating('speed-verb-challenge', rating, playerId);
+                        
+                        if (success) {
+                            ratingMessage.textContent = `Merci ! Vous avez noté le jeu ${rating}/5 ⭐`;
+                            ratingMessage.style.color = 'var(--color-primary)';
+                            
+                            // Désactiver les étoiles après soumission
+                            stars.forEach(star => {
+                                star.style.cursor = 'default';
+                                star.style.pointerEvents = 'none';
+                            });
+                        } else {
+                            ratingMessage.textContent = 'Erreur lors de l\'envoi de la note';
+                            ratingMessage.style.color = 'var(--verb-incorrect)';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erreur soumission note:', error);
+                    ratingMessage.textContent = 'Erreur lors de l\'envoi de la note';
+                    ratingMessage.style.color = 'var(--verb-incorrect)';
+                }
+            }
         }
 
         // Fonction de debug
