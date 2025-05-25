@@ -1140,7 +1140,41 @@
       // Sauvegarde de score robuste
       saveScore: function(score, playerName, level, difficulty) {
         try {
-          const user = window.simpleAuth ? window.simpleAuth.getCurrentUser() : null;
+          // Récupérer l'utilisateur connecté avec la même logique que dans checkAuthenticationAndStartGame
+          let user = null;
+          const LOCALSTORAGE_KEYS = {
+            CURRENT_USER: 'english_quest_current_user',
+            LEGACY_CURRENT_USER: 'currentUser',
+            USER_ID: 'englishQuestUserId'
+          };
+          
+          // Essayer d'abord la nouvelle clé
+          let userData = localStorage.getItem(LOCALSTORAGE_KEYS.CURRENT_USER);
+          if (userData) {
+            try {
+              user = JSON.parse(userData);
+            } catch (e) {
+              user = null;
+            }
+          }
+
+          // Essayer ensuite l'ancienne clé si pas trouvé
+          if (!user) {
+            userData = localStorage.getItem(LOCALSTORAGE_KEYS.LEGACY_CURRENT_USER);
+            if (userData) {
+              try {
+                user = JSON.parse(userData);
+              } catch (e) {
+                user = null;
+              }
+            }
+          }
+          
+          // Essayer authService en dernier recours
+          if (!user && window.authService && typeof window.authService.getCurrentUser === 'function') {
+            user = window.authService.getCurrentUser();
+          }
+          
           const finalPlayerName = playerName || (user && user.username) || (user && user.displayName) || 'Joueur Anonyme';
           
           const newScore = {
