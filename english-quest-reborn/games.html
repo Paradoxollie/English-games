@@ -330,10 +330,10 @@
         if (featuredRating) {
           if (stats.ratingCount > 0) {
             featuredRating.textContent = `${stats.averageRating}/5 ⭐ (${stats.ratingCount} avis)`;
-            console.log(`✅ Speed Verb (vedette) - Note: ${stats.averageRating}/5`);
+            console.log(`✅ Speed Verb (vedette) - Note réelle: ${stats.averageRating}/5 (${stats.ratingCount} avis)`);
           } else {
-            featuredRating.textContent = `4.8/5 ⭐`;
-            console.log(`✅ Speed Verb (vedette) - Note par défaut affichée`);
+            featuredRating.textContent = `${stats.averageRating}/5 ⭐`;
+            console.log(`✅ Speed Verb (vedette) - Note par défaut: ${stats.averageRating}/5`);
           }
         }
         
@@ -364,10 +364,10 @@
           if (ratingSpan) {
             if (stats.ratingCount > 0) {
               ratingSpan.textContent = `${stats.averageRating}/5`;
-              console.log(`✅ Enigma Scroll - Note: ${stats.averageRating}/5`);
+              console.log(`✅ Enigma Scroll - Note réelle: ${stats.averageRating}/5 (${stats.ratingCount} avis)`);
             } else {
-              ratingSpan.textContent = `4.7/5`;
-              console.log(`✅ Enigma Scroll - Note par défaut affichée`);
+              ratingSpan.textContent = `${stats.averageRating}/5`;
+              console.log(`✅ Enigma Scroll - Note par défaut: ${stats.averageRating}/5`);
             }
           }
         }
