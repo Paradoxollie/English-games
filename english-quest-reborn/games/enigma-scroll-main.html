@@ -22,6 +22,7 @@
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
   <script type="module" src="../scripts/game-stats-service.js"></script>
+  <script type="module" src="../scripts/end-game-rating.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -2360,11 +2361,15 @@
         document.getElementById('new-game-button').style.display = 'inline-flex';
       }, 2000);
       
-      // Afficher le panel de notation après un délai
+      // Afficher l'interface de notation après un délai
       setTimeout(() => {
-        const ratingPanel = document.getElementById('rating-panel');
-        if (ratingPanel) {
-          ratingPanel.style.display = 'block';
+        let playerId = null;
+        if (window.authService && window.authService.currentUser) {
+          playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+        }
+        
+        if (window.endGameRating) {
+          window.endGameRating.showRating('enigma-scroll', playerId, 'Enigma Scroll');
         }
       }, 3000);
       
@@ -2374,10 +2379,9 @@
     function newGame() {
       document.getElementById('new-game-button').style.display = 'none';
       
-      // Cacher le panel de notation
-      const ratingPanel = document.getElementById('rating-panel');
-      if (ratingPanel) {
-        ratingPanel.style.display = 'none';
+      // Fermer l'interface de notation si elle est ouverte
+      if (window.endGameRating) {
+        window.endGameRating.hideRating();
       }
       
       // CORRECTION: Réinitialiser complètement la session pour une nouvelle partie

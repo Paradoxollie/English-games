@@ -195,29 +195,170 @@ class GameStatsService {
     }
 
     /**
-     * Soumet une note pour un jeu
+     * Soumet une note pour un jeu (une seule note par joueur par jeu)
      */
     async submitRating(gameId, rating, playerId = null) {
         if (!this.isInitialized || rating < 1 || rating > 5) return false;
 
         try {
-            // Enregistrer la note
-            await this.db.collection('game_ratings').add({
-                gameId: gameId,
-                playerId: playerId || 'anonymous',
-                rating: rating,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                date: new Date().toISOString()
-            });
+            const playerIdToUse = playerId || 'anonymous';
+            
+            // Vérifier si le joueur a déjà noté ce jeu
+            const existingRatingQuery = await this.db.collection('game_ratings')
+                .where('gameId', '==', gameId)
+                .where('playerId', '==', playerIdToUse)
+                .get();
 
-            // Mettre à jour les statistiques
-            await this.updateGameStats(gameId, 0, rating);
+            let isUpdate = false;
+            let oldRating = null;
 
-            console.log(`✅ Note ${rating}/5 enregistrée pour ${gameId}`);
-            return true;
+            if (!existingRatingQuery.empty) {
+                // Le joueur a déjà noté ce jeu - mettre à jour
+                const existingDoc = existingRatingQuery.docs[0];
+                oldRating = existingDoc.data().rating;
+                
+                await existingDoc.ref.update({
+                    rating: rating,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastModified: new Date().toISOString()
+                });
+                
+                isUpdate = true;
+                console.log(`✅ Note mise à jour de ${oldRating} vers ${rating}/5 pour ${gameId}`);
+            } else {
+                // Nouvelle note
+                await this.db.collection('game_ratings').add({
+                    gameId: gameId,
+                    playerId: playerIdToUse,
+                    rating: rating,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    date: new Date().toISOString()
+                });
+                
+                console.log(`✅ Nouvelle note ${rating}/5 enregistrée pour ${gameId}`);
+            }
+
+            // Recalculer les statistiques du jeu
+            await this.recalculateGameRating(gameId);
+
+            return { success: true, isUpdate, oldRating };
         } catch (error) {
             console.error('❌ Erreur soumission note:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    /**
+     * Recalcule la note moyenne d'un jeu basée sur toutes les notes
+     */
+    async recalculateGameRating(gameId) {
+        if (!this.isInitialized) return false;
+
+        try {
+            // Récupérer toutes les notes pour ce jeu
+            const ratingsSnapshot = await this.db.collection('game_ratings')
+                .where('gameId', '==', gameId)
+                .get();
+
+            let totalRating = 0;
+            let ratingCount = 0;
+
+            ratingsSnapshot.forEach(doc => {
+                const rating = doc.data().rating;
+                if (rating >= 1 && rating <= 5) {
+                    totalRating += rating;
+                    ratingCount++;
+                }
+            });
+
+            const averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+
+            // Mettre à jour les statistiques du jeu
+            const gameStatsRef = this.db.collection('game_statistics').doc(gameId);
+            const doc = await gameStatsRef.get();
+
+            if (doc.exists) {
+                await gameStatsRef.update({
+                    averageRating: averageRating,
+                    ratingCount: ratingCount,
+                    lastRatingUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // Créer les statistiques si elles n'existent pas
+                await gameStatsRef.set({
+                    gameId: gameId,
+                    playCount: 0,
+                    totalScore: 0,
+                    averageScore: 0,
+                    averageRating: averageRating,
+                    ratingCount: ratingCount,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastRatingUpdate: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            // Invalider le cache
+            this.cache.delete(gameId);
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Erreur recalcul note moyenne:', error);
             return false;
+        }
+    }
+
+    /**
+     * Vérifie si un joueur a déjà noté un jeu
+     */
+    async hasPlayerRated(gameId, playerId = null) {
+        if (!this.isInitialized) return false;
+
+        try {
+            const playerIdToUse = playerId || 'anonymous';
+            
+            const existingRatingQuery = await this.db.collection('game_ratings')
+                .where('gameId', '==', gameId)
+                .where('playerId', '==', playerIdToUse)
+                .get();
+
+            if (!existingRatingQuery.empty) {
+                const ratingData = existingRatingQuery.docs[0].data();
+                return {
+                    hasRated: true,
+                    currentRating: ratingData.rating,
+                    ratedAt: ratingData.timestamp
+                };
+            }
+
+            return { hasRated: false };
+        } catch (error) {
+            console.error('❌ Erreur vérification note existante:', error);
+            return { hasRated: false };
+        }
+    }
+
+    /**
+     * Récupère la note d'un joueur pour un jeu spécifique
+     */
+    async getPlayerRating(gameId, playerId = null) {
+        if (!this.isInitialized) return null;
+
+        try {
+            const playerIdToUse = playerId || 'anonymous';
+            
+            const ratingQuery = await this.db.collection('game_ratings')
+                .where('gameId', '==', gameId)
+                .where('playerId', '==', playerIdToUse)
+                .get();
+
+            if (!ratingQuery.empty) {
+                return ratingQuery.docs[0].data().rating;
+            }
+
+            return null;
+        } catch (error) {
+            console.error('❌ Erreur récupération note joueur:', error);
+            return null;
         }
     }
 
