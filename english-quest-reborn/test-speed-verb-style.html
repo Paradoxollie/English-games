@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Style Speed Verb Challenge - English Quest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        /* Variables du nouveau style Speed Verb */
+        :root {
+            --color-primary: #f39c12;
+            --color-secondary: #e67e22;
+            --color-accent: #3498db;
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-surface-hover: #2a2a2a;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --border-radius-lg: 1rem;
+            --border-radius-md: 0.5rem;
+            --transition-normal: 0.3s ease;
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-title {
+            color: var(--color-primary);
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Test du titre principal */
+        .main-title {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 900;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+        }
+
+        /* Test des boutons de difficulté */
+        .difficulty-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--color-text-primary);
+            min-width: 120px;
+        }
+
+        .difficulty-btn:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .difficulty-btn.active {
+            background: var(--color-primary);
+            color: var(--color-background);
+        }
+
+        .difficulty-icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .difficulty-btn.active .difficulty-icon {
+            color: var(--color-background);
+        }
+
+        /* Test des boutons de jeu */
+        .game-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .game-button {
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: none;
+            font-family: 'Exo 2', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-background);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .secondary-button {
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .secondary-button:hover {
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+
+        /* Test du HUD */
+        .game-hud {
+            display: flex;
+            justify-content: space-around;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1rem;
+            margin: 2rem 0;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .hud-icon {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .hud-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        /* Test du défi de verbe */
+        .verb-challenge {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verb-challenge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(243, 156, 18, 0.05) 50%, transparent 70%);
+            animation: energyFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes energyFlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .verb-card {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .verb-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin: 1rem 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: verbPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes verbPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .verb-translation {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+            font-family: 'Spectral', serif;
+        }
+
+        /* Test responsive */
+        @media (max-width: 768px) {
+            .difficulty-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .difficulty-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .game-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-button {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .verb-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1 class="test-title">Test du Nouveau Style Speed Verb Challenge</h1>
+        
+        <!-- Test du titre principal -->
+        <div class="test-section">
+            <h2 class="section-title">Titre Principal</h2>
+            <h1 class="main-title">Speed Verb Challenge</h1>
+            <p style="text-align: center; color: var(--color-text-secondary); font-family: 'Spectral', serif;">
+                Maîtrisez les verbes irréguliers anglais dans une course contre la montre
+            </p>
+        </div>
+
+        <!-- Test des boutons de difficulté -->
+        <div class="test-section">
+            <h2 class="section-title">Sélection de Difficulté</h2>
+            <div class="difficulty-options">
+                <div class="difficulty-btn active">
+                    <div class="difficulty-icon">⚡</div>
+                    <div style="font-weight: 600;">Apprenti</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Prétérit uniquement</div>
+                </div>
+
+                <div class="difficulty-btn">
+                    <div class="difficulty-icon">🔥</div>
+                    <div style="font-weight: 600;">Expert</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Prétérit + Participe passé</div>
+                </div>
+
+                <div class="difficulty-btn">
+                    <div class="difficulty-icon">⚔️</div>
+                    <div style="font-weight: 600;">Maître</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">Tout + Traduction</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test des boutons de jeu -->
+        <div class="test-section">
+            <h2 class="section-title">Boutons de Jeu</h2>
+            <div class="game-buttons">
+                <button class="game-button primary-button">
+                    <span>Commencer le Défi</span>
+                    <i class="fas fa-bolt"></i>
+                </button>
+
+                <button class="game-button secondary-button">
+                    <span>Règles du Jeu</span>
+                    <i class="fas fa-info-circle"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Test du HUD -->
+        <div class="test-section">
+            <h2 class="section-title">HUD de Jeu</h2>
+            <div class="game-hud">
+                <div class="hud-item">
+                    <div class="hud-icon">🏆</div>
+                    <div class="hud-label">Score</div>
+                    <div class="hud-value">1250</div>
+                </div>
+
+                <div class="hud-item">
+                    <div class="hud-icon">⏱️</div>
+                    <div class="hud-label">Temps</div>
+                    <div class="hud-value">45</div>
+                </div>
+
+                <div class="hud-item">
+                    <div class="hud-icon">📈</div>
+                    <div class="hud-label">Niveau</div>
+                    <div class="hud-value">3</div>
+                </div>
+
+                <div class="hud-item">
+                    <div class="hud-icon">🔥</div>
+                    <div class="hud-label">Combo</div>
+                    <div class="hud-value">x2.5</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test du défi de verbe -->
+        <div class="test-section">
+            <h2 class="section-title">Défi de Verbe avec Animation</h2>
+            <div class="verb-challenge">
+                <div class="verb-card">
+                    <div style="font-size: 1.1rem; color: var(--color-text-secondary); margin-bottom: 1rem; font-family: 'Spectral', serif;">
+                        Conjuguez le verbe :
+                    </div>
+                    <div class="verb-display">BEGIN</div>
+                    <div class="verb-translation">(commencer)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test responsive -->
+        <div class="test-section">
+            <h2 class="section-title">Test Responsive</h2>
+            <p style="color: var(--color-text-secondary);">
+                Redimensionnez votre fenêtre pour tester l'adaptation mobile. 
+                Les boutons de difficulté passent en colonne et les boutons de jeu s'adaptent.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Test interactif des boutons de difficulté
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        console.log('Test du nouveau style Speed Verb Challenge chargé avec succès !');
+    </script>
+</body>
+</html> 

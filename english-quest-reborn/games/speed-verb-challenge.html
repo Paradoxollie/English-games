@@ -8,69 +8,807 @@
     <title>Speed Verb Challenge | English Quest</title>
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&family=MedievalSharp&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <!-- Base styles -->
-    <link href="../styles/new-design.css" rel="stylesheet">
-    <link href="../src/styles/layout.css" rel="stylesheet">
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="../src/js/firebase-init.js"></script>
+    <script src="../scripts/auth-local.js"></script>
+    <script src="../src/js/auth-state.js"></script>
+    <script src="../src/js/verb-data.js"></script>
+    <script src="../src/js/game-effects-simple.js"></script>
+    <script src="../src/js/reward-system.js"></script>
+    <script src="../src/js/speed-verb-leaderboard.js"></script>
+    <script src="../src/js/games/speed-verb-challenge.js"></script>
+    <script src="../src/js/admin-scores.js"></script>
 
-    <!-- Game-specific styles -->
-    <link href="../src/styles/games/speed-verb-challenge.css" rel="stylesheet">
-    <link href="../src/styles/games/speed-verb-animations.css" rel="stylesheet">
-    <link href="../src/styles/games/game-events.css" rel="stylesheet">
-    <link href="../src/styles/streak-bonus.css" rel="stylesheet">
-    <link href="../src/styles/reward-notifications.css" rel="stylesheet">
-    <link href="../src/styles/connection-indicator.css" rel="stylesheet">
-    <link href="../src/styles/leaderboard.css" rel="stylesheet">
-    <link href="../src/styles/sync-indicator.css" rel="stylesheet">
+    <!-- Scripts d'authentification -->
+    <script type="module" src="../scripts/auth-service.js"></script>
+    <script type="module" src="../scripts/auth-header.js"></script>
+    <script type="module" src="../scripts/reward-service.js"></script>
 
-    <!-- Styles personnalisés pour corriger l'alignement -->
     <style>
-        /* Ajout d'un espace pour compenser le header fixe */
+        /* Variables exactes du site reborn avec thème Speed Verb */
+        :root {
+            /* Couleurs principales - thème vitesse/énergie */
+            --color-primary: #f39c12; /* Orange énergique pour la vitesse */
+            --color-secondary: #e67e22; /* Orange plus foncé */
+            --color-accent: #3498db; /* Bleu pour contraste */
+            --color-danger: #e74c3c;
+            --color-warning: #f1c40f;
+            --color-info: #3498db;
+            --color-success: #27ae60;
+
+            /* Couleurs de fond - exactement comme le site principal */
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-surface-hover: #2a2a2a;
+            --color-surface-active: #333333;
+
+            /* Couleurs de texte */
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --color-text-disabled: rgba(255, 255, 255, 0.5);
+
+            /* Couleurs pour les réponses */
+            --verb-correct: #27ae60;
+            --verb-incorrect: #e74c3c;
+            --verb-pending: rgba(255, 255, 255, 0.1);
+
+            /* Espacement */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 3rem;
+            --spacing-xl: 5rem;
+
+            /* Bordures */
+            --border-radius-sm: 0.25rem;
+            --border-radius-md: 0.5rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 2rem;
+
+            /* Ombres */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 15px rgba(243, 156, 18, 0.5);
+
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+
+            /* Typographie */
+            --font-family-primary: 'Exo 2', sans-serif;
+            --font-family-secondary: 'Cinzel', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            font-family: var(--font-family-primary);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            min-height: 100vh;
             padding-top: 80px;
         }
 
-        /* Assurer que le bouton de profil a la même taille sur toutes les pages */
-        .btn-login {
-            min-width: 80px;
-            text-align: center;
-        }
-
-        /* Correction des couleurs du titre */
-        .section-title.text-gradient {
-            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 900;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Correction de la couleur du sous-titre */
-        .game-subtitle {
-            color: var(--color-secondary);
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Assurer que le header est exactement comme sur les autres pages */
+        /* Header styles - exactement comme le site principal */
         .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+            z-index: 1000;
             padding: var(--spacing-sm) 0;
         }
 
-        /* Assurer que le container a la même largeur que sur les autres pages */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-sm);
+        }
+
+        .logo {
+            font-family: var(--font-family-secondary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--color-text-primary);
+        }
+
+        .nav-list {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-normal);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link.active {
+            color: var(--color-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width var(--transition-normal);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Container principal */
         .container {
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 var(--spacing-sm);
         }
+
+        .game-universe {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 0;
+            background-color: var(--color-background);
+        }
+
+        /* Layout à deux colonnes comme Enigma Scroll */
+        .game-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .game-interface {
+            width: 100%;
+            text-align: center;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .game-header-content {
+            margin-bottom: 2rem;
+        }
+
+        .section-title.text-gradient {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 900;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-family: var(--font-family-secondary);
+        }
+
+        .game-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-family: 'Spectral', serif;
+        }
+
+        /* Sélection de difficulté - style Enigma Scroll */
+        .difficulty-selection {
+            margin: 2rem 0;
+        }
+
+        .difficulty-selection h3 {
+            color: var(--color-text-primary);
+            margin-bottom: 1.5rem;
+            font-family: var(--font-family-secondary);
+        }
+
+        .difficulty-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--color-text-primary);
+            min-width: 120px;
+            text-decoration: none;
+        }
+
+        .difficulty-btn:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .difficulty-btn.active {
+            background: var(--color-primary);
+            color: var(--color-background);
+        }
+
+        .difficulty-icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .difficulty-btn.active .difficulty-icon {
+            color: var(--color-background);
+        }
+
+        .difficulty-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .difficulty-desc {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Boutons de jeu */
+        .game-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .game-button {
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: none;
+            font-family: var(--font-family-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-background);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .secondary-button {
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .secondary-button:hover {
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+
+        /* Interface de jeu - style Enigma Scroll */
+        .game-hud {
+            display: flex;
+            justify-content: space-around;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .hud-icon {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .hud-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        /* Défi de verbe - style unique */
+        .verb-challenge {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verb-challenge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(243, 156, 18, 0.05) 50%, transparent 70%);
+            animation: energyFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes energyFlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .verb-card {
+            position: relative;
+            z-index: 2;
+        }
+
+        .verb-info {
+            margin-bottom: 2rem;
+        }
+
+        .verb-prompt {
+            font-size: 1.1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+            font-family: 'Spectral', serif;
+        }
+
+        .verb-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin: 1rem 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: verbPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes verbPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .verb-translation {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+            font-family: 'Spectral', serif;
+        }
+
+        /* Inputs de verbe */
+        .verb-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .verb-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .verb-input-label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .verb-input {
+            padding: 1rem;
+            background: var(--color-background);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            color: var(--color-text-primary);
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+            font-family: var(--font-family-primary);
+        }
+
+        .verb-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        }
+
+        .verb-input.correct {
+            border-color: var(--verb-correct);
+            background-color: rgba(39, 174, 96, 0.1);
+            animation: correctFlash 0.5s ease;
+        }
+
+        .verb-input.incorrect {
+            border-color: var(--verb-incorrect);
+            background-color: rgba(231, 76, 60, 0.1);
+            animation: incorrectShake 0.5s ease;
+        }
+
+        @keyframes correctFlash {
+            0%, 100% { background-color: rgba(39, 174, 96, 0.1); }
+            50% { background-color: rgba(39, 174, 96, 0.3); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Actions de verbe */
+        .verb-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        /* Sidebar - Leaderboard */
+        .leaderboard-panel {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .leaderboard-panel h2 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-family: var(--font-family-secondary);
+            text-align: center;
+        }
+
+        .leaderboard-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-table th {
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .leaderboard-table td {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* États de jeu */
+        .game-state {
+            display: none;
+        }
+
+        .game-state.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Écran de bienvenue */
+        .welcome-content {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .panel-title {
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-family: var(--font-family-secondary);
+        }
+
+        .welcome-text {
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-family: 'Spectral', serif;
+        }
+
+        /* Écran de fin de jeu */
+        .results-container {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .final-score {
+            margin-bottom: 2rem;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: var(--color-background);
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        /* Modal */
+        .game-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .game-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            color: var(--color-primary);
+            font-family: var(--font-family-secondary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color var(--transition-normal);
+        }
+
+        .close-modal:hover {
+            color: var(--color-text-primary);
+        }
+
+        .modal-body {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .modal-body h3 {
+            color: var(--color-primary);
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .modal-body ul {
+            margin-left: 1rem;
+        }
+
+        .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .game-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-list {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .section-title.text-gradient {
+                font-size: 2rem;
+            }
+
+            .verb-display {
+                font-size: 2rem;
+            }
+
+            .difficulty-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .difficulty-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .verb-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-button {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
-<body class="game-body">
+<body>
     <!-- Header -->
     <header class="header">
         <div class="container header-container">
@@ -96,170 +834,164 @@
 
     <!-- Game container -->
     <div class="game-universe">
-        <!-- Game UI -->
-        <main class="game-interface">
-            <!-- Game header - Centered subtitle -->
-            <div class="game-header-content">
-                <h1 class="section-title text-gradient">Speed Verb Challenge</h1>
-                <p class="game-subtitle">Maîtrisez les verbes irréguliers anglais</p>
-            </div>
+        <div class="game-content">
+            <!-- Interface de jeu principale -->
+            <main class="game-interface">
+                <!-- En-tête du jeu -->
+                <div class="game-header-content">
+                    <h1 class="section-title text-gradient">Speed Verb Challenge</h1>
+                    <p class="game-subtitle">Maîtrisez les verbes irréguliers anglais dans une course contre la montre</p>
+                </div>
 
-            <!-- Game sections -->
-            <div class="game-sections">
-                <!-- Main game panel -->
-                <div class="game-panel main-panel">
-                    <!-- Game states -->
-                    <div class="game-states">
-                        <!-- Game state: welcome -->
-                        <div id="welcome-screen" class="game-state active">
-                            <div class="welcome-content">
-                                <h2 class="panel-title">Bienvenue, Apprenti Linguiste</h2>
-                                <p class="welcome-text">
-                                    Préparez-vous à tester votre connaissance des verbes irréguliers anglais dans une course contre la montre.
-                                    Chaque verbe correctement lancé vous rapportera des points et de l'expérience.
-                                </p>
+                <!-- États du jeu -->
+                <div class="game-states">
+                    <!-- État: écran de bienvenue -->
+                    <div id="welcome-screen" class="game-state active">
+                        <div class="welcome-content">
+                            <h2 class="panel-title">Bienvenue, Maître des Verbes</h2>
+                            <p class="welcome-text">
+                                Préparez-vous à tester votre connaissance des verbes irréguliers anglais dans une course effrénée contre la montre.
+                                Chaque verbe correctement conjugué vous rapportera des points et de l'expérience précieuse.
+                            </p>
 
-                                <div class="difficulty-selection">
-                                    <h3>Choisissez votre niveau de difficulté :</h3>
-                                    <div class="difficulty-options">
-                                        <label class="difficulty-option">
-                                            <input type="radio" name="difficulty" value="1" checked>
-                                            <span class="difficulty-label">Novice</span>
-                                            <span class="difficulty-desc">Seulement le prétérit</span>
-                                        </label>
+                            <div class="difficulty-selection">
+                                <h3>Choisissez votre niveau de défi :</h3>
+                                <div class="difficulty-options">
+                                    <div class="difficulty-btn active" data-difficulty="1">
+                                        <div class="difficulty-icon">⚡</div>
+                                        <div class="difficulty-name">Apprenti</div>
+                                        <div class="difficulty-desc">Prétérit uniquement</div>
+                                    </div>
 
-                                        <label class="difficulty-option">
-                                            <input type="radio" name="difficulty" value="2">
-                                            <span class="difficulty-label">Adepte</span>
-                                            <span class="difficulty-desc">Prétérit et participe passé</span>
-                                        </label>
+                                    <div class="difficulty-btn" data-difficulty="2">
+                                        <div class="difficulty-icon">🔥</div>
+                                        <div class="difficulty-name">Expert</div>
+                                        <div class="difficulty-desc">Prétérit + Participe passé</div>
+                                    </div>
 
-                                        <label class="difficulty-option">
-                                            <input type="radio" name="difficulty" value="3">
-                                            <span class="difficulty-label">Maître</span>
-                                            <span class="difficulty-desc">Prétérit, participe passé et traduction</span>
-                                        </label>
+                                    <div class="difficulty-btn" data-difficulty="3">
+                                        <div class="difficulty-icon">⚔️</div>
+                                        <div class="difficulty-name">Maître</div>
+                                        <div class="difficulty-desc">Tout + Traduction</div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <button id="start-game-btn" class="game-button primary-button glow-button">
-                                    <span class="button-text">Commencer le Rituel</span>
-                                    <span class="action-icon">✦</span>
+                            <div class="game-buttons">
+                                <button id="start-game-btn" class="game-button primary-button">
+                                    <span>Commencer le Défi</span>
+                                    <i class="fas fa-bolt"></i>
                                 </button>
 
                                 <button id="show-rules-btn" class="game-button secondary-button">
-                                    <span class="button-text">Règles du Jeu</span>
+                                    <span>Règles du Jeu</span>
+                                    <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Game state: playing -->
-                        <div id="playing" class="game-state">
-                            <!-- Game HUD -->
-                            <div class="game-hud">
-                                <div class="hud-item">
-                                    <span class="hud-icon score-icon"></span>
-                                    <span class="hud-label">Score</span>
-                                    <span id="player-score" class="hud-value">0</span>
-                                </div>
-
-                                <div class="hud-item">
-                                    <span class="hud-icon time-icon"></span>
-                                    <span class="hud-label">Temps</span>
-                                    <span id="time-left" class="hud-value">90</span>
-                                </div>
-
-                                <div class="hud-item">
-                                    <span class="hud-icon level-icon"></span>
-                                    <span class="hud-label">Niveau</span>
-                                    <span id="player-level" class="hud-value">1</span>
-                                </div>
-
-                                <div class="hud-item">
-                                    <span class="hud-icon combo-icon"></span>
-                                    <span class="hud-label">Combo</span>
-                                    <span id="combo-multiplier" class="hud-value">x1.0</span>
-                                </div>
+                    <!-- État: jeu en cours -->
+                    <div id="playing" class="game-state">
+                        <!-- HUD du jeu -->
+                        <div class="game-hud">
+                            <div class="hud-item">
+                                <div class="hud-icon">🏆</div>
+                                <div class="hud-label">Score</div>
+                                <div id="player-score" class="hud-value">0</div>
                             </div>
 
-                            <!-- XP Progress -->
-                            <div class="xp-progress-container">
-                                <div id="xp-progress" class="xp-progress-bar" style="width: 0%"></div>
+                            <div class="hud-item">
+                                <div class="hud-icon">⏱️</div>
+                                <div class="hud-label">Temps</div>
+                                <div id="time-left" class="hud-value">90</div>
                             </div>
 
-                            <!-- Verb challenge -->
-                            <div class="verb-challenge">
-                                <div class="verb-card">
-                                    <div class="verb-info">
-                                        <div class="verb-prompt">Lancez le sort de :</div>
-                                        <div id="current-verb" class="verb-display floating-verb">begin</div>
-                                        <div id="verb-translation" class="verb-translation">(commencer)</div>
-                                    </div>
-
-                                    <div id="verb-form-inputs" class="verb-inputs">
-                                        <!-- Inputs will be generated based on difficulty -->
-                                    </div>
-
-                                    <!-- Verb actions -->
-                                    <div class="verb-actions">
-                                        <button id="check-answer-btn" class="game-button action-button glow-button">
-                                            <span class="button-text">Lancer le Sort</span>
-                                            <span class="action-icon">✦</span>
-                                        </button>
-
-                                        <button id="skip-verb-btn" class="game-button secondary-button glow-button">
-                                            <span class="button-text">Bannir</span>
-                                            <span class="action-icon">✧</span>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="hud-item">
+                                <div class="hud-icon">📈</div>
+                                <div class="hud-label">Niveau</div>
+                                <div id="player-level" class="hud-value">1</div>
                             </div>
 
-                            <!-- Feedback message -->
-                            <div id="feedback-message" class="feedback-message"></div>
+                            <div class="hud-item">
+                                <div class="hud-icon">🔥</div>
+                                <div class="hud-label">Combo</div>
+                                <div id="combo-multiplier" class="hud-value">x1.0</div>
+                            </div>
                         </div>
 
-                        <!-- Game state: game over -->
-                        <div id="game-over" class="game-state">
-                            <h2 class="panel-title">Énergie Arcanique Épuisée</h2>
-                            <p class="game-over-text">Votre rituel est terminé. Voici vos résultats :</p>
-
-                            <div class="results-container">
-                                <div class="final-score">
-                                    <div class="score-label">Score Final</div>
-                                    <div id="final-score-value" class="score-value">0</div>
+                        <!-- Défi de verbe -->
+                        <div class="verb-challenge">
+                            <div class="verb-card">
+                                <div class="verb-info">
+                                    <div class="verb-prompt">Conjuguez le verbe :</div>
+                                    <div id="current-verb" class="verb-display">begin</div>
+                                    <div id="verb-translation" class="verb-translation">(commencer)</div>
                                 </div>
 
-                                <div class="stats-container">
-                                    <div class="stat-item">
-                                        <div class="stat-label">Niveau Atteint</div>
-                                        <div id="final-level" class="stat-value">1</div>
-                                    </div>
-
-                                    <div class="stat-item">
-                                        <div class="stat-label">Verbes Complétés</div>
-                                        <div id="verbs-completed" class="stat-value">0</div>
-                                    </div>
-
-                                    <div class="stat-item">
-                                        <div class="stat-label">Combo Maximum</div>
-                                        <div id="highest-combo" class="stat-value">x1.0</div>
-                                    </div>
+                                <div id="verb-form-inputs" class="verb-inputs">
+                                    <!-- Les inputs seront générés dynamiquement -->
                                 </div>
 
-                                <div class="game-over-actions">
-                                    <button id="save-score-btn" class="game-button primary-button glow-button">
-                                        <span class="button-glow"></span>
-                                        <span class="button-text">Inscrire mon score</span>
+                                <div class="verb-actions">
+                                    <button id="check-answer-btn" class="game-button primary-button">
+                                        <span>Valider</span>
+                                        <i class="fas fa-check"></i>
                                     </button>
 
-                                    <button id="play-again-btn" class="game-button secondary-button glow-button">
-                                        <span class="button-text">Nouveau Rituel</span>
+                                    <button id="skip-verb-btn" class="game-button secondary-button">
+                                        <span>Passer</span>
+                                        <i class="fas fa-forward"></i>
                                     </button>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Current verb answers -->
+                        <!-- Message de feedback -->
+                        <div id="feedback-message" class="feedback-message"></div>
+                    </div>
+
+                    <!-- État: fin de jeu -->
+                    <div id="game-over" class="game-state">
+                        <div class="results-container">
+                            <h2 class="panel-title">Défi Terminé !</h2>
+                            <p class="welcome-text">Votre performance dans cette course contre la montre :</p>
+
+                            <div class="final-score">
+                                <div class="score-label">Score Final</div>
+                                <div id="final-score-value" class="score-value">0</div>
+                            </div>
+
+                            <div class="stats-container">
+                                <div class="stat-item">
+                                    <div class="stat-label">Niveau Atteint</div>
+                                    <div id="final-level" class="stat-value">1</div>
+                                </div>
+
+                                <div class="stat-item">
+                                    <div class="stat-label">Verbes Réussis</div>
+                                    <div id="verbs-completed" class="stat-value">0</div>
+                                </div>
+
+                                <div class="stat-item">
+                                    <div class="stat-label">Combo Maximum</div>
+                                    <div id="highest-combo" class="stat-value">x1.0</div>
+                                </div>
+                            </div>
+
+                            <div class="game-buttons">
+                                <button id="save-score-btn" class="game-button primary-button">
+                                    <span>Sauvegarder le Score</span>
+                                    <i class="fas fa-save"></i>
+                                </button>
+
+                                <button id="play-again-btn" class="game-button secondary-button">
+                                    <span>Rejouer</span>
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+
+                            <!-- Réponses du dernier verbe -->
                             <div class="current-verb-answers">
                                 <h3>Réponses pour le dernier verbe :</h3>
                                 <div id="current-verb-answer" class="verb-answer"></div>
@@ -267,127 +999,119 @@
                         </div>
                     </div>
                 </div>
+            </main>
 
-                <!-- Leaderboard panel -->
-                <div class="game-panel leaderboard-panel">
-                    <div class="game-hud">
-                        <h2>Meilleurs Scores</h2>
-                    </div>
+            <!-- Sidebar - Leaderboard -->
+            <aside class="sidebar">
+                <div class="leaderboard-panel">
+                    <h2>🏆 Meilleurs Scores</h2>
                     <div id="speed-verb-leaderboard" class="leaderboard-container">
                         <table class="leaderboard-table">
                             <thead>
                                 <tr>
-                                    <th class="rank-header">Rang</th>
-                                    <th class="player-header">Joueur</th>
-                                    <th class="score-header">Score</th>
-                                    <th class="date-header">Date</th>
+                                    <th>Rang</th>
+                                    <th>Joueur</th>
+                                    <th>Score</th>
+                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboard-body">
                                 <tr>
-                                    <td colspan="4" class="loading-scores">Invocation des archives ancestrales...</td>
+                                    <td colspan="4" style="text-align: center; padding: 2rem; color: var(--color-text-secondary);">
+                                        Chargement des scores...
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </main>
+            </aside>
+        </div>
     </div>
 
-    <!-- Rules modal -->
+    <!-- Modal des règles -->
     <div id="rules-modal" class="game-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Règles du Jeu</h2>
+                <h2>Règles du Speed Verb Challenge</h2>
                 <button id="close-rules-btn" class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Bienvenue dans <strong>Speed Verb Challenge</strong>, une épreuve de maîtrise des verbes irréguliers anglais !</p>
+                <p>Bienvenue dans <strong>Speed Verb Challenge</strong>, le défi ultime des verbes irréguliers anglais !</p>
 
-                <h3>Objectif</h3>
-                <p>Complétez correctement autant de verbes irréguliers que possible avant la fin du temps imparti.</p>
+                <h3>🎯 Objectif</h3>
+                <p>Conjuguez correctement autant de verbes irréguliers que possible avant la fin du temps imparti (90 secondes).</p>
 
-                <h3>Comment jouer</h3>
+                <h3>🎮 Comment jouer</h3>
                 <ul>
-                    <li>Un verbe à l'infinitif s'affiche à l'écran</li>
+                    <li>Un verbe à l'infinitif s'affiche à l'écran avec sa traduction</li>
                     <li>Entrez les formes demandées selon le niveau de difficulté choisi</li>
-                    <li>Cliquez sur "Lancer le Sort" pour valider votre réponse</li>
-                    <li>Si vous ne connaissez pas un verbe, cliquez sur "Bannir" pour passer au suivant</li>
+                    <li>Cliquez sur "Valider" pour vérifier votre réponse</li>
+                    <li>Si vous ne connaissez pas un verbe, cliquez sur "Passer" pour le suivant</li>
                 </ul>
 
-                <h3>Niveaux de difficulté</h3>
+                <h3>⚡ Niveaux de difficulté</h3>
                 <ul>
-                    <li><strong>Novice :</strong> Seulement le prétérit (1 point par verbe)</li>
-                    <li><strong>Adepte :</strong> Prétérit et participe passé (2 points par verbe)</li>
+                    <li><strong>Apprenti :</strong> Seulement le prétérit (1 point par verbe)</li>
+                    <li><strong>Expert :</strong> Prétérit et participe passé (2 points par verbe)</li>
                     <li><strong>Maître :</strong> Prétérit, participe passé et traduction (3 points par verbe)</li>
                 </ul>
 
-                <h3>Système de combo</h3>
+                <h3>🔥 Système de combo</h3>
                 <p>Chaque réponse correcte consécutive augmente votre multiplicateur de combo de 10%, vous permettant de gagner plus de points !</p>
+
+                <h3>🏆 Récompenses</h3>
+                <p>Gagnez de l'XP et des pièces en fonction de votre performance. Les scores records sont récompensés avec un bonus x20 !</p>
             </div>
         </div>
     </div>
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-
-    <!-- Game scripts -->
-    <script src="../src/js/firebase-init.js"></script>
-    <script src="../scripts/auth-local.js"></script>
-    <script src="../src/js/auth-state.js"></script>
-    <script src="../src/js/verb-data.js"></script>
-    <script src="../src/js/game-effects-simple.js"></script>
-    <script src="../src/js/reward-system.js"></script>
-    <script src="../src/js/speed-verb-leaderboard.js"></script>
-    <script src="../src/js/games/speed-verb-challenge.js"></script>
-
-    <!-- Script d'administration des scores -->
-    <script src="../src/js/admin-scores.js"></script>
-
-    <!-- Script d'authentification header unifié -->
-    <script type="module" src="../scripts/auth-service.js"></script>
-    <script type="module" src="../scripts/auth-header.js"></script>
-
-    <!-- Script d'initialisation de l'utilisateur -->
+    <!-- Script d'initialisation -->
     <script>
-        // Vérifier si l'utilisateur est connecté au chargement de la page
+        // Initialisation du jeu
         document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // Vérifier si un utilisateur est connecté dans localStorage
-                const userJson = localStorage.getItem('english_quest_current_user');
-                if (userJson) {
-                    const user = JSON.parse(userJson);
+            // Gestion de la sélection de difficulté
+            const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            let selectedDifficulty = 1;
 
-                    if (user && user.username) {
-                        console.log("Utilisateur connecté au jeu");
+            difficultyBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    difficultyBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedDifficulty = parseInt(this.dataset.difficulty);
+                });
+            });
 
-                        // Mettre à jour l'interface utilisateur
-                        if (typeof window.updateUI === 'function') {
-                            window.updateUI();
-                        }
+            // Gestion du modal des règles
+            const showRulesBtn = document.getElementById('show-rules-btn');
+            const rulesModal = document.getElementById('rules-modal');
+            const closeRulesBtn = document.getElementById('close-rules-btn');
 
-                        // Ne pas mettre à jour le texte du bouton de connexion
-                        // Garder "Profil" comme sur les autres pages
-                    }
-                } else {
-                    console.log("Aucun utilisateur connecté");
+            showRulesBtn.addEventListener('click', () => {
+                rulesModal.classList.add('active');
+            });
+
+            closeRulesBtn.addEventListener('click', () => {
+                rulesModal.classList.remove('active');
+            });
+
+            rulesModal.addEventListener('click', (e) => {
+                if (e.target === rulesModal) {
+                    rulesModal.classList.remove('active');
                 }
+            });
 
-                // Initialiser le menu mobile
-                const menuToggle = document.querySelector('.menu-toggle');
-                const navList = document.querySelector('.nav-list');
+            // Gestion du menu mobile
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navList = document.querySelector('.nav-list');
 
-                if (menuToggle && navList) {
-                    menuToggle.addEventListener('click', function() {
-                        navList.classList.toggle('active');
-                    });
-                }
-            } catch (error) {
-                console.error("Erreur lors de la vérification de l'utilisateur:", error);
+            if (menuToggle && navList) {
+                menuToggle.addEventListener('click', function() {
+                    navList.classList.toggle('active');
+                });
             }
+
+            console.log('Speed Verb Challenge initialisé avec le nouveau style');
         });
     </script>
 </body>
