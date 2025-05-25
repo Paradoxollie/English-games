@@ -2337,7 +2337,14 @@
       gameState.wordsFound = 0;
       gameState.bestCombo = 1;
       
-      console.log('🔄 [Enigma Scroll] Réinitialisation complète pour nouvelle partie');
+      // CORRECTION: Réinitialiser aussi les power-ups (bonus)
+      gameState.powerUps = {
+        hint: 3,
+        time: 2,
+        skip: 1
+      };
+      
+      console.log('🔄 [Enigma Scroll] Réinitialisation complète pour nouvelle partie (score, combo, bonus)');
       
       if (gameState.selectedDifficulty) {
         checkAuthenticationAndStartGame(gameState.selectedDifficulty);
@@ -2378,7 +2385,14 @@
         gameState.wordsFound = 0;
         gameState.bestCombo = 1;
         
-        console.log('🚀 [Enigma Scroll] Démarrage nouvelle session de jeu');
+        // CORRECTION: Réinitialiser aussi les power-ups (bonus)
+        gameState.powerUps = {
+          hint: 3,
+          time: 2,
+          skip: 1
+        };
+        
+        console.log('🚀 [Enigma Scroll] Démarrage nouvelle session de jeu (score, combo, bonus réinitialisés)');
         
         checkAuthenticationAndStartGame(gameState.selectedDifficulty);
       });
