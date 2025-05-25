@@ -72,7 +72,8 @@ async function initAuthHeader() {
           return { 
             uid: userId, 
             id: userId,
-            username: `Utilisateur ${userId.substring(0, 8)}`
+            username: `Utilisateur ${userId.substring(0, 8)}`,
+            displayName: `Utilisateur ${userId.substring(0, 8)}`
           };
         }
         
@@ -93,9 +94,20 @@ async function initAuthHeader() {
       console.log('🚪 [Auth Header] Session supprimée');
     },
     addAuthStateListener: function(callback) {
-      // Simple polling pour détecter les changements
+      // Simple polling pour détecter les changements (moins fréquent pour éviter les boucles)
       let lastState = null;
-      setInterval(async () => {
+      let pollCount = 0;
+      const maxPolls = 10; // Limiter le nombre de vérifications
+      
+      const pollInterval = setInterval(async () => {
+        pollCount++;
+        
+        if (pollCount > maxPolls) {
+          console.log('🛑 [Auth Header] Arrêt du polling après', maxPolls, 'tentatives');
+          clearInterval(pollInterval);
+          return;
+        }
+        
         const currentUser = await this.getCurrentUser();
         const currentState = currentUser ? (currentUser.username || currentUser.uid) : null;
         
@@ -104,7 +116,7 @@ async function initAuthHeader() {
           lastState = currentState;
           callback(currentUser);
         }
-      }, 2000);
+      }, 3000); // Moins fréquent
     },
     init: async function() {
       console.log('🚀 [Auth Header] Initialisation du système simple');
@@ -112,14 +124,26 @@ async function initAuthHeader() {
     }
   };
 
-  // Utiliser authService si disponible, sinon utiliser simpleAuth
-  let authService;
+  // Attendre que authService soit disponible (avec timeout)
+  let authService = null;
+  let waitCount = 0;
+  const maxWait = 50; // 5 secondes maximum
   
-  if (window.authService) {
-    console.log("✅ Service d'authentification principal détecté");
-    authService = window.authService;
-  } else {
-    console.log("⚠️ Utilisation du système d'authentification simplifié");
+  while (!authService && waitCount < maxWait) {
+    if (window.authService) {
+      authService = window.authService;
+      console.log("✅ [Auth Header] Service d'authentification principal détecté");
+      break;
+    }
+    
+    console.log(`⏳ [Auth Header] Attente du service d'authentification... (${waitCount + 1}/${maxWait})`);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    waitCount++;
+  }
+  
+  // Si authService n'est toujours pas disponible, utiliser le système simplifié
+  if (!authService) {
+    console.log("⚠️ [Auth Header] Service d'authentification principal non trouvé, utilisation du système simplifié");
     authService = simpleAuth;
   }
 

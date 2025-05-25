@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Correction Auth - English Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/new-design.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link active">Test</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">
+        <span class="text-gradient">TEST CORRECTION AUTH</span>
+      </h1>
+      <p class="hero-subtitle">Vérification des corrections d'authentification</p>
+    </div>
+  </section>
+
+  <!-- Test Section -->
+  <section class="section" style="background-color: #1a1a1a; padding-top: 5rem; padding-bottom: 5rem;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title text-gradient">État de l'authentification</h2>
+        <p class="section-subtitle">Vérification en temps réel</p>
+      </div>
+
+      <div style="background: var(--color-surface); border-radius: var(--border-radius-lg); padding: 2rem; margin: 2rem 0;">
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">État actuel</h3>
+        <div id="auth-status" style="color: var(--color-text-primary); margin-bottom: 1rem; font-family: monospace; background: var(--color-background); padding: 1rem; border-radius: var(--border-radius-md);">
+          Chargement...
+        </div>
+
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Logs en temps réel</h3>
+        <div id="logs" style="color: var(--color-text-secondary); font-family: monospace; background: var(--color-background); padding: 1rem; border-radius: var(--border-radius-md); height: 300px; overflow-y: auto;">
+          Attente des logs...
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+          <button onclick="clearLogs()" class="btn-login">Effacer logs</button>
+          <button onclick="checkAuth()" class="btn-login">Vérifier auth</button>
+          <button onclick="testPages()" class="btn-login">Tester pages</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script type="module" src="scripts/auth-service.js"></script>
+  <script type="module" src="scripts/auth-header.js"></script>
+  <script src="scripts/debug.js"></script>
+
+  <script>
+    let logs = [];
+    
+    // Intercepter les logs console
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    function addLog(type, message) {
+      const timestamp = new Date().toLocaleTimeString();
+      logs.push(`[${timestamp}] ${type}: ${message}`);
+      updateLogsDisplay();
+    }
+    
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      if (args[0] && args[0].includes('[Auth Header]')) {
+        addLog('LOG', args.join(' '));
+      }
+    };
+    
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      if (args[0] && args[0].includes('[Auth Header]')) {
+        addLog('WARN', args.join(' '));
+      }
+    };
+    
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      if (args[0] && args[0].includes('[Auth Header]')) {
+        addLog('ERROR', args.join(' '));
+      }
+    };
+    
+    function updateLogsDisplay() {
+      const logsDiv = document.getElementById('logs');
+      if (logsDiv) {
+        logsDiv.textContent = logs.slice(-20).join('\n'); // Garder les 20 derniers logs
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+      }
+    }
+    
+    function clearLogs() {
+      logs = [];
+      updateLogsDisplay();
+    }
+    
+    function checkAuth() {
+      const status = document.getElementById('auth-status');
+      let result = 'Vérification authentification:\n\n';
+      
+      // Vérifier window.authService
+      result += `window.authService: ${window.authService ? '✅ Disponible' : '❌ Non disponible'}\n`;
+      
+      // Vérifier localStorage
+      const keys = ['english_quest_current_user', 'currentUser', 'englishQuestUserId'];
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          try {
+            const parsed = JSON.parse(value);
+            result += `${key}: ✅ ${parsed.username || parsed.uid || 'Données présentes'}\n`;
+          } catch (e) {
+            result += `${key}: ⚠️ Erreur parsing\n`;
+          }
+        } else {
+          result += `${key}: ❌ Absent\n`;
+        }
+      });
+      
+      // Vérifier les boutons
+      const loginBtn = document.getElementById('loginButton');
+      const profileBtn = document.getElementById('profileButton');
+      const logoutBtn = document.getElementById('logoutButton');
+      
+      result += '\nÉtat des boutons:\n';
+      result += `Connexion: ${loginBtn ? (loginBtn.style.display === 'none' ? 'MASQUÉ ✅' : 'VISIBLE ❌') : 'NON TROUVÉ ❌'}\n`;
+      result += `Profil: ${profileBtn ? (profileBtn.style.display === 'none' ? 'MASQUÉ ❌' : `VISIBLE ✅ ("${profileBtn.textContent}")`) : 'NON TROUVÉ ❌'}\n`;
+      result += `Déconnexion: ${logoutBtn ? 'PRÉSENT ✅' : 'ABSENT ❌'}\n`;
+      
+      status.textContent = result;
+    }
+    
+    function testPages() {
+      const pages = [
+        'games.html',
+        'courses.html', 
+        'gallery.html',
+        'leaderboard.html',
+        'games/speed-verb-challenge.html'
+      ];
+      
+      pages.forEach((page, index) => {
+        setTimeout(() => {
+          window.open(page, `_blank_${index}`);
+        }, index * 500);
+      });
+    }
+    
+    // Mise à jour automatique
+    setInterval(checkAuth, 2000);
+    
+    // Vérification initiale
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(checkAuth, 1000);
+    });
+  </script>
+</body>
+</html> 
