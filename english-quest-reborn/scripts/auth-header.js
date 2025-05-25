@@ -29,7 +29,7 @@ async function initAuthHeader() {
         if (userData) {
           try {
             const user = JSON.parse(userData);
-            console.log('✅ [Auth Header] Utilisateur trouvé via CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
+            console.log('✅ [Auth Header] Utilisateur trouvé via CURRENT_USER:', user.username || 'Utilisateur');
             return user;
           } catch (e) {
             console.warn('⚠️ [Auth Header] Erreur parsing CURRENT_USER:', e);
@@ -41,7 +41,7 @@ async function initAuthHeader() {
         if (userData) {
           try {
             const user = JSON.parse(userData);
-            console.log('✅ [Auth Header] Utilisateur trouvé via LEGACY_CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
+            console.log('✅ [Auth Header] Utilisateur trouvé via LEGACY_CURRENT_USER:', user.username || 'Utilisateur');
             return user;
           } catch (e) {
             console.warn('⚠️ [Auth Header] Erreur parsing LEGACY_CURRENT_USER:', e);
@@ -59,7 +59,7 @@ async function initAuthHeader() {
             try {
               const userData = await window.authService.loadUserData(userId);
               if (userData) {
-                console.log('✅ [Auth Header] Données utilisateur récupérées via authService:', userData.username || userData.displayName || 'Utilisateur');
+                console.log('✅ [Auth Header] Données utilisateur récupérées via authService:', userData.username || 'Utilisateur');
                 return { uid: userId, ...userData };
               }
             } catch (error) {

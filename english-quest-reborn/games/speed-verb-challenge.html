@@ -86,8 +86,9 @@
                 </ul>
             </nav>
 
-            <div class="user-menu">
-                <a href="../profile.html" class="btn-login">Profil</a>
+            <div class="user-menu" id="userMenu">
+                <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+                <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
                 <button class="menu-toggle">☰</button>
             </div>
         </div>
@@ -345,6 +346,9 @@
 
     <!-- Script d'administration des scores -->
     <script src="../src/js/admin-scores.js"></script>
+
+    <!-- Script d'authentification header unifié -->
+    <script type="module" src="../scripts/auth-header.js"></script>
 
     <!-- Script d'initialisation de l'utilisateur -->
     <script>

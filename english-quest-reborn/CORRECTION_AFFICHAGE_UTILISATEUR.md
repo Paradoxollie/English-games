@@ -18,6 +18,7 @@ L'utilisateur rapportait que le nom d'utilisateur s'affichait correctement sur c
 - `courses.html` ✅ (corrigé)  
 - `gallery.html` ✅ (corrigé)
 - `leaderboard.html` ✅ (corrigé)
+- `games/speed-verb-challenge.html` ✅ (corrigé)
 
 ## Solution implémentée
 
@@ -74,6 +75,17 @@ window.addEventListener('load', initAuthHeader);
 - ✅ Affichage des données localStorage
 - ✅ Boutons de test manuel
 
+### `test-all-pages.html` (nouveau)
+- ✅ Page de test pour navigation rapide
+- ✅ Liens vers toutes les pages à tester
+- ✅ Vérification automatique de l'état
+- ✅ Instructions détaillées pour les tests
+
+### `games/speed-verb-challenge.html`
+- ✅ Header mis à jour avec système d'authentification unifié
+- ✅ Ajout du script auth-header.js
+- ✅ Suppression du système d'authentification statique
+
 ## Tests et vérification
 
 ### Page de test créée : `test-auth-display.html`
@@ -113,18 +125,22 @@ Après cette correction, toutes les pages du site reborn devraient afficher corr
 - ✅ **Courses** : Nom d'utilisateur correct (corrigé)
 - ✅ **Gallery** : Nom d'utilisateur correct (corrigé)
 - ✅ **Leaderboard** : Nom d'utilisateur correct (corrigé)
+- ✅ **Speed Verb Challenge** : Nom d'utilisateur correct (corrigé)
 
 ## Commandes de test
 
 ```bash
-# Ouvrir la page de test
+# Ouvrir la page de test principale
+# Naviguer vers : http://localhost:3000/test-all-pages.html
+
+# Ou la page de test détaillée
 # Naviguer vers : http://localhost:3000/test-auth-display.html
 
 # Vérifier les logs dans la console
 # Rechercher : "[Auth Header]" dans les logs
 
 # Tester chaque page individuellement
-# Vérifier que le nom d'utilisateur s'affiche partout
+# Utiliser les liens dans test-all-pages.html
 ```
 
 ## Notes techniques

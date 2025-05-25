@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Toutes Pages - English Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/new-design.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="index.html" class="nav-link">Accueil</a></li>
+          <li><a href="games.html" class="nav-link">Jeux</a></li>
+          <li><a href="courses.html" class="nav-link">Cours</a></li>
+          <li><a href="gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="leaderboard.html" class="nav-link active">Test</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="background: linear-gradient(135deg, rgba(18, 18, 18, 0.7), rgba(30, 30, 30, 0.6)), url('assets/images/background.jpg'); background-size: cover; background-position: center top; background-repeat: no-repeat; position: relative;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(46, 204, 113, 0.1) 0%, transparent 70%); pointer-events: none;"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">
+        <span class="text-gradient">TEST TOUTES PAGES</span>
+      </h1>
+      <p class="hero-subtitle">Vérification rapide de l'affichage du nom d'utilisateur sur toutes les pages</p>
+    </div>
+  </section>
+
+  <!-- Test Section -->
+  <section class="section" style="background-color: #1a1a1a; padding-top: 5rem; padding-bottom: 5rem;">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title text-gradient">Test de Navigation</h2>
+        <p class="section-subtitle">Cliquez sur chaque lien pour vérifier l'affichage du nom d'utilisateur</p>
+      </div>
+
+      <div style="background: var(--color-surface); border-radius: var(--border-radius-lg); padding: 2rem; margin: 2rem 0;">
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Pages principales</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <a href="index.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-home"></i> Accueil
+          </a>
+          <a href="games.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-gamepad"></i> Jeux
+          </a>
+          <a href="courses.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-book"></i> Cours
+          </a>
+          <a href="gallery.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-images"></i> Galerie
+          </a>
+          <a href="leaderboard.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-trophy"></i> Classement
+          </a>
+          <a href="profile.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-user"></i> Profil
+          </a>
+        </div>
+
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Jeux</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <a href="games/enigma-scroll-main.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-scroll"></i> Enigma Scroll
+          </a>
+          <a href="games/speed-verb-challenge.html" class="btn-login" style="text-decoration: none; text-align: center; padding: 1rem;">
+            <i class="fas fa-bolt"></i> Speed Verb Challenge
+          </a>
+        </div>
+
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">État actuel</h3>
+        <div id="current-status" style="color: var(--color-text-primary); margin-bottom: 1rem; font-family: monospace; background: var(--color-background); padding: 1rem; border-radius: var(--border-radius-md);">
+          Chargement...
+        </div>
+
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Instructions</h3>
+        <div style="color: var(--color-text-secondary); line-height: 1.6;">
+          <p><strong>1.</strong> Vérifiez que vous êtes connecté (votre nom d'utilisateur doit apparaître dans le header ci-dessus)</p>
+          <p><strong>2.</strong> Cliquez sur chaque lien pour naviguer vers les différentes pages</p>
+          <p><strong>3.</strong> Sur chaque page, vérifiez que :</p>
+          <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+            <li>Votre <strong>nom d'utilisateur</strong> s'affiche dans le header (pas le nom Firebase)</li>
+            <li>Le bouton "Connexion" est <strong>masqué</strong></li>
+            <li>Le bouton "Déconnexion" est <strong>présent</strong></li>
+          </ul>
+          <p><strong>4.</strong> Si vous voyez un nom Firebase au lieu de votre pseudo, c'est un bug à signaler</p>
+        </div>
+
+        <h3 style="color: var(--color-primary); margin-bottom: 1rem;">Actions de test</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button onclick="checkCurrentUser()" class="btn-login">Vérifier Utilisateur</button>
+          <button onclick="showAllStorageData()" class="btn-login">Voir Données</button>
+          <button onclick="testAllPages()" class="btn-login">Test Auto</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+    <div class="container">
+      <div class="footer-content" style="text-align: center;">
+        <p style="color: var(--color-text-secondary);">Page de test pour vérifier toutes les pages - English Quest</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="scripts/new-design.js"></script>
+  <script type="module" src="scripts/auth-header.js"></script>
+  <script>
+    function checkCurrentUser() {
+      const keys = [
+        'english_quest_current_user',
+        'currentUser',
+        'englishQuestUserId'
+      ];
+      
+      let result = 'Vérification utilisateur:\n\n';
+      
+      keys.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value) {
+          try {
+            const parsed = JSON.parse(value);
+            result += `✅ ${key}:\n`;
+            if (parsed.username) {
+              result += `   → username: "${parsed.username}"\n`;
+            }
+            if (parsed.displayName) {
+              result += `   → displayName: "${parsed.displayName}" (ignoré)\n`;
+            }
+            if (parsed.email) {
+              result += `   → email: "${parsed.email}" (ignoré RGPD)\n`;
+            }
+          } catch (e) {
+            result += `❌ ${key}: Erreur parsing\n`;
+          }
+        } else {
+          result += `❌ ${key}: Absent\n`;
+        }
+        result += '\n';
+      });
+      
+      // Vérifier l'état des boutons
+      const loginBtn = document.getElementById('loginButton');
+      const profileBtn = document.getElementById('profileButton');
+      const logoutBtn = document.getElementById('logoutButton');
+      
+      result += 'État des boutons:\n';
+      result += `- Connexion: ${loginBtn ? (loginBtn.style.display === 'none' ? 'MASQUÉ ✅' : 'VISIBLE ❌') : 'NON TROUVÉ ❌'}\n`;
+      result += `- Profil: ${profileBtn ? (profileBtn.style.display === 'none' ? 'MASQUÉ ❌' : 'VISIBLE ✅') : 'NON TROUVÉ ❌'}\n`;
+      if (profileBtn && profileBtn.style.display !== 'none') {
+        result += `- Texte profil: "${profileBtn.textContent}"\n`;
+      }
+      result += `- Déconnexion: ${logoutBtn ? 'PRÉSENT ✅' : 'ABSENT ❌'}\n`;
+      
+      document.getElementById('current-status').textContent = result;
+    }
+    
+    function showAllStorageData() {
+      let data = 'Toutes les données localStorage:\n\n';
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.includes('english') || key.includes('user') || key.includes('User')) {
+          const value = localStorage.getItem(key);
+          data += `${key}:\n`;
+          try {
+            const parsed = JSON.parse(value);
+            data += `  Type: Object\n`;
+            if (parsed.username) data += `  username: "${parsed.username}"\n`;
+            if (parsed.displayName) data += `  displayName: "${parsed.displayName}"\n`;
+            if (parsed.email) data += `  email: "${parsed.email}"\n`;
+          } catch (e) {
+            data += `  Type: String\n  Valeur: "${value.substring(0, 50)}..."\n`;
+          }
+          data += '\n';
+        }
+      }
+      
+      document.getElementById('current-status').textContent = data;
+    }
+    
+    function testAllPages() {
+      const pages = [
+        'index.html',
+        'games.html', 
+        'courses.html',
+        'gallery.html',
+        'leaderboard.html',
+        'profile.html',
+        'games/enigma-scroll-main.html',
+        'games/speed-verb-challenge.html'
+      ];
+      
+      let result = 'Test automatique des pages:\n\n';
+      result += 'Pages à tester:\n';
+      pages.forEach((page, index) => {
+        result += `${index + 1}. ${page}\n`;
+      });
+      result += '\nPour tester automatiquement, ouvrez chaque page dans un nouvel onglet\n';
+      result += 'et vérifiez que votre nom d\'utilisateur s\'affiche correctement.\n\n';
+      result += 'Commande pour ouvrir toutes les pages:\n';
+      result += 'Ctrl+Clic sur chaque lien ci-dessus';
+      
+      document.getElementById('current-status').textContent = result;
+    }
+    
+    // Mise à jour automatique toutes les 3 secondes
+    setInterval(checkCurrentUser, 3000);
+    
+    // Vérification initiale
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(checkCurrentUser, 1000);
+    });
+  </script>
+</body>
+</html> 
