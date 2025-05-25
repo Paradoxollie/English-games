@@ -171,7 +171,7 @@ class RewardService {
      * @param {number} score - Score obtenu
      */
     async giveSpeedVerbRewards(isTopScore = false, score = 0) {
-        const baseRewards = { xp: 2, coins: 1 }; // Plus d'XP pour ce jeu
+        const baseRewards = { xp: 1, coins: 1 }; // Même récompenses qu'Enigma Scroll
         return await this.giveRewards(baseRewards, isTopScore, 'speed-verb');
     }
 

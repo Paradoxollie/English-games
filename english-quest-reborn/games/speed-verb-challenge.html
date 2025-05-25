@@ -1735,6 +1735,57 @@
             if (levelDisplay) levelDisplay.textContent = Math.floor(score / 100) + 1;
         }
 
+        // Fonction pour vérifier si c'est un top score (copié d'Enigma Scroll)
+        function checkIfTopScore(score) {
+            try {
+                // Vérifier dans les scores locaux
+                const localScores = JSON.parse(localStorage.getItem('speedVerbScores') || '[]');
+                const isLocalTopScore = localScores.length === 0 || score > (localScores[0]?.score || 0);
+                
+                return isLocalTopScore;
+            } catch (error) {
+                console.error('Erreur lors de la vérification du top score:', error);
+                return false;
+            }
+        }
+
+        // Fonction pour donner les récompenses (copié d'Enigma Scroll)
+        async function giveRewards(isTopScore = false) {
+            try {
+                console.log('🎁 [Speed Verb Challenge] Attribution des récompenses...');
+                
+                // Vérifier que le service de récompenses est disponible
+                if (!window.rewardService) {
+                    console.warn('❌ [Speed Verb Challenge] Service de récompenses non disponible');
+                    showFeedback(false, 'Service de récompenses non disponible');
+                    return;
+                }
+                
+                // Vérifier que l'utilisateur peut recevoir des récompenses
+                if (!window.rewardService.canGiveRewards()) {
+                    console.warn('❌ [Speed Verb Challenge] Utilisateur non connecté pour les récompenses');
+                    showFeedback(false, 'Vous devez être connecté pour recevoir des récompenses');
+                    return;
+                }
+                
+                // Attendre un peu pour que le service soit bien initialisé
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Utiliser le service de récompenses pour Speed Verb Challenge
+                const result = await window.rewardService.giveSpeedVerbRewards(isTopScore, score || 0);
+                
+                if (result.success) {
+                    console.log(`✅ [Speed Verb Challenge] Récompenses sauvegardées avec succès:`, result.rewards);
+                } else {
+                    console.error('❌ [Speed Verb Challenge] Erreur lors de la sauvegarde des récompenses:', result.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ [Speed Verb Challenge] Erreur critique lors de l\'attribution des récompenses:', error);
+                showFeedback(false, 'Erreur lors de la sauvegarde des récompenses');
+            }
+        }
+
         function endGame() {
             if (gameTimer) {
                 clearInterval(gameTimer);
@@ -1774,22 +1825,13 @@
                 difficulty: selectedDifficulty
             });
 
-            // Essayer de donner des récompenses
-            try {
-                if (window.rewardService && typeof window.rewardService.giveReward === 'function') {
-                    const isRecord = score > (localStorage.getItem('speedVerbBestScore') || 0);
-                    const xpGain = isRecord ? selectedDifficulty * 20 : selectedDifficulty * 2;
-                    const coinGain = isRecord ? 20 : 1;
-                    
-                    window.rewardService.giveReward('speed-verb-challenge', score, xpGain, coinGain, isRecord);
-                    
-                    if (isRecord) {
-                        localStorage.setItem('speedVerbBestScore', score);
-                    }
-                }
-            } catch (e) {
-                console.log('Système de récompenses non disponible:', e);
-            }
+            // Vérifier si c'est un top score AVANT de donner les récompenses
+            const isTopScore = checkIfTopScore(score);
+            
+            // Donner les récompenses avec le même système qu'Enigma Scroll
+            setTimeout(() => {
+                giveRewards(isTopScore);
+            }, 1000);
 
             console.log('🏁 Jeu terminé ! Score final:', score);
         }
