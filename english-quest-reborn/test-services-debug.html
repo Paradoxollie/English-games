@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Services Debug</title>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="src/js/firebase-init.js"></script>
+    
+    <!-- Services -->
+    <script type="module" src="scripts/auth-service.js"></script>
+    <script type="module" src="scripts/game-stats-service.js"></script>
+    <script type="module" src="scripts/end-game-rating.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background-color: #1e1e1e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        
+        .test-button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background-color: #27ae60;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+        }
+        
+        .status.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .status.warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            border: 1px solid #f39c12;
+            color: #f39c12;
+        }
+        
+        .log-container {
+            background-color: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .clear-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test Services Debug</h1>
+        <p>Outil de débogage pour vérifier le bon fonctionnement des services.</p>
+        
+        <!-- Section de vérification des services -->
+        <div class="test-section">
+            <h2>🔍 Vérification des Services</h2>
+            <button class="test-button" onclick="checkServices()">Vérifier les Services</button>
+            <div id="services-status"></div>
+        </div>
+        
+        <!-- Section de test d'authentification -->
+        <div class="test-section">
+            <h2>🔐 Test Authentification</h2>
+            <button class="test-button" onclick="testAuth()">Tester AuthService</button>
+            <div id="auth-status"></div>
+        </div>
+        
+        <!-- Section de test de notation -->
+        <div class="test-section">
+            <h2>⭐ Test Système de Notation</h2>
+            <button class="test-button" onclick="testRating()">Tester Notation</button>
+            <div id="rating-status"></div>
+        </div>
+        
+        <!-- Section de test GameStats -->
+        <div class="test-section">
+            <h2>📊 Test GameStats Service</h2>
+            <button class="test-button" onclick="testGameStats()">Tester GameStats</button>
+            <div id="gamestats-status"></div>
+        </div>
+        
+        <!-- Console de logs -->
+        <div class="test-section">
+            <h2>📝 Console de Logs</h2>
+            <button class="clear-btn" onclick="clearLogs()">🗑️ Effacer</button>
+            <div id="log-container" class="log-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction de logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            
+            let prefix = '';
+            switch(type) {
+                case 'success': prefix = '✅'; break;
+                case 'error': prefix = '❌'; break;
+                case 'warning': prefix = '⚠️'; break;
+                default: prefix = 'ℹ️'; break;
+            }
+            
+            logEntry.textContent = `[${timestamp}] ${prefix} ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = '';
+        }
+        
+        // Vérification des services
+        function checkServices() {
+            log('Vérification des services...');
+            
+            const services = [
+                { name: 'authService', obj: window.authService, desc: 'Service d\'authentification' },
+                { name: 'gameStatsService', obj: window.gameStatsService, desc: 'Service de statistiques' },
+                { name: 'endGameRating', obj: window.endGameRating, desc: 'Service de notation' }
+            ];
+            
+            let status = '';
+            let allOk = true;
+            
+            services.forEach(service => {
+                if (service.obj) {
+                    status += `<div class="status success">✅ ${service.name}: OK</div>`;
+                    log(`${service.name}: OK`);
+                } else {
+                    status += `<div class="status error">❌ ${service.name}: MANQUANT</div>`;
+                    log(`${service.name}: MANQUANT`, 'error');
+                    allOk = false;
+                }
+            });
+            
+            // Vérifier Firebase
+            if (typeof firebase !== 'undefined') {
+                status += `<div class="status success">✅ Firebase: OK</div>`;
+                log('Firebase: OK');
+            } else {
+                status += `<div class="status error">❌ Firebase: MANQUANT</div>`;
+                log('Firebase: MANQUANT', 'error');
+                allOk = false;
+            }
+            
+            if (allOk) {
+                status += `<div class="status success">🎉 Tous les services sont disponibles !</div>`;
+                log('Tous les services sont disponibles !', 'success');
+            }
+            
+            document.getElementById('services-status').innerHTML = status;
+        }
+        
+        // Test d'authentification
+        function testAuth() {
+            log('Test du service d\'authentification...');
+            
+            if (!window.authService) {
+                document.getElementById('auth-status').innerHTML = '<div class="status error">❌ AuthService non disponible</div>';
+                log('AuthService non disponible', 'error');
+                return;
+            }
+            
+            let status = '<div class="status success">✅ AuthService disponible</div>';
+            
+            // Vérifier l'utilisateur actuel
+            const currentUser = window.authService.getCurrentUser();
+            if (currentUser) {
+                status += `<div class="status success">✅ Utilisateur connecté: ${currentUser.username || currentUser.displayName || 'Utilisateur'}</div>`;
+                log(`Utilisateur connecté: ${currentUser.username || currentUser.displayName || 'Utilisateur'}`, 'success');
+            } else {
+                status += '<div class="status warning">⚠️ Aucun utilisateur connecté</div>';
+                log('Aucun utilisateur connecté', 'warning');
+            }
+            
+            document.getElementById('auth-status').innerHTML = status;
+        }
+        
+        // Test de notation
+        function testRating() {
+            log('Test du système de notation...');
+            
+            if (!window.endGameRating) {
+                document.getElementById('rating-status').innerHTML = '<div class="status error">❌ EndGameRating non disponible</div>';
+                log('EndGameRating non disponible', 'error');
+                return;
+            }
+            
+            let status = '<div class="status success">✅ EndGameRating disponible</div>';
+            
+            // Test d'affichage de la modal
+            try {
+                window.endGameRating.showRating('test-game', 'test-user', 'Jeu de Test');
+                status += '<div class="status success">✅ Modal de notation affichée</div>';
+                log('Modal de notation affichée avec succès', 'success');
+            } catch (error) {
+                status += `<div class="status error">❌ Erreur affichage modal: ${error.message}</div>`;
+                log(`Erreur affichage modal: ${error.message}`, 'error');
+            }
+            
+            document.getElementById('rating-status').innerHTML = status;
+        }
+        
+        // Test GameStats
+        async function testGameStats() {
+            log('Test du service GameStats...');
+            
+            if (!window.gameStatsService) {
+                document.getElementById('gamestats-status').innerHTML = '<div class="status error">❌ GameStatsService non disponible</div>';
+                log('GameStatsService non disponible', 'error');
+                return;
+            }
+            
+            let status = '<div class="status success">✅ GameStatsService disponible</div>';
+            
+            // Vérifier l'initialisation
+            if (window.gameStatsService.isInitialized) {
+                status += '<div class="status success">✅ Service initialisé</div>';
+                log('GameStatsService initialisé', 'success');
+                
+                // Test de récupération de stats
+                try {
+                    const stats = await window.gameStatsService.getGameStats('test-game');
+                    status += '<div class="status success">✅ Récupération de stats OK</div>';
+                    log('Récupération de stats réussie', 'success');
+                } catch (error) {
+                    status += `<div class="status error">❌ Erreur récupération stats: ${error.message}</div>`;
+                    log(`Erreur récupération stats: ${error.message}`, 'error');
+                }
+            } else {
+                status += '<div class="status warning">⚠️ Service non initialisé</div>';
+                log('GameStatsService non initialisé', 'warning');
+            }
+            
+            document.getElementById('gamestats-status').innerHTML = status;
+        }
+        
+        // Auto-vérification au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Page de test chargée');
+            
+            // Attendre un peu que les services se chargent
+            setTimeout(() => {
+                checkServices();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

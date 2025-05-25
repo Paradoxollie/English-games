@@ -435,4 +435,15 @@ const gameStatsService = new GameStatsService();
 export { gameStatsService };
 
 // Disponible globalement
-window.gameStatsService = gameStatsService; 
+window.gameStatsService = gameStatsService;
+
+// Auto-initialisation
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🔄 [GameStatsService] Auto-initialisation...');
+    const success = await gameStatsService.init();
+    if (success) {
+        console.log('✅ [GameStatsService] Service initialisé avec succès');
+    } else {
+        console.warn('⚠️ [GameStatsService] Échec de l\'initialisation (Firebase non disponible)');
+    }
+}); 
