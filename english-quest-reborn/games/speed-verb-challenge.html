@@ -1592,10 +1592,19 @@
             if (result.correct) {
                 // Réponse correcte
                 correctStreak++;
-                comboMultiplier = Math.min(3.0, 1.0 + (correctStreak * 0.1));
+                comboMultiplier = Math.min(2.0, 1.0 + (correctStreak * 0.05)); // Combo plus modéré
                 highestCombo = Math.max(highestCombo, comboMultiplier);
                 
-                const points = selectedDifficulty * Math.floor(comboMultiplier * 10);
+                // Système de points équilibré selon la difficulté
+                let basePoints;
+                switch(selectedDifficulty) {
+                    case 1: basePoints = 3; break;  // Apprenti: 3-6 points
+                    case 2: basePoints = 5; break;  // Expert: 5-10 points  
+                    case 3: basePoints = 8; break;  // Maître: 8-16 points
+                    default: basePoints = 3;
+                }
+                
+                const points = Math.floor(basePoints * comboMultiplier);
                 score += points;
                 verbsCompleted++;
                 
@@ -1732,7 +1741,7 @@
 
             if (scoreDisplay) scoreDisplay.textContent = score;
             if (comboDisplay) comboDisplay.textContent = `x${comboMultiplier.toFixed(1)}`;
-            if (levelDisplay) levelDisplay.textContent = Math.floor(score / 100) + 1;
+            if (levelDisplay) levelDisplay.textContent = Math.floor(score / 50) + 1; // Niveau tous les 50 points
         }
 
         // Fonction pour vérifier si c'est un top score (copié d'Enigma Scroll)
@@ -1799,7 +1808,7 @@
             const highestComboElement = document.getElementById('highest-combo');
 
             if (finalScoreElement) finalScoreElement.textContent = score;
-            if (finalLevelElement) finalLevelElement.textContent = Math.floor(score / 100) + 1;
+            if (finalLevelElement) finalLevelElement.textContent = Math.floor(score / 50) + 1;
             if (verbsCompletedElement) verbsCompletedElement.textContent = verbsCompleted;
             if (highestComboElement) highestComboElement.textContent = `x${highestCombo.toFixed(1)}`;
 
@@ -1821,7 +1830,7 @@
             leaderboardSystem.saveScore({
                 score: score,
                 player: playerName,
-                level: Math.floor(score / 100) + 1,
+                level: Math.floor(score / 50) + 1,
                 difficulty: selectedDifficulty
             });
 
