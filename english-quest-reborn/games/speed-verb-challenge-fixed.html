@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Speed Verb Challenge - Maîtrisez les verbes irréguliers anglais">
+    <meta name="theme-color" content="#121212">
+    <title>Speed Verb Challenge | English Quest</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&family=Spectral:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Scripts d'authentification uniquement -->
+    <script type="module" src="../scripts/auth-service.js"></script>
+    <script type="module" src="../scripts/auth-header.js"></script>
+    <script type="module" src="../scripts/reward-service.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #f39c12;
+            --color-secondary: #e67e22;
+            --color-accent: #3498db;
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-surface-hover: #2a2a2a;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+            --verb-correct: #27ae60;
+            --verb-incorrect: #e74c3c;
+            --border-radius-md: 0.5rem;
+            --border-radius-lg: 1rem;
+            --transition-normal: 0.3s ease;
+            --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(18, 18, 18, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--color-text-primary);
+        }
+
+        .nav-list {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-normal);
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--color-primary);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-normal);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .game-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .game-interface {
+            width: 100%;
+            text-align: center;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section-title {
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 900;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .game-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-family: 'Spectral', serif;
+        }
+
+        .difficulty-selection {
+            margin: 2rem 0;
+        }
+
+        .difficulty-selection h3 {
+            color: var(--color-text-primary);
+            margin-bottom: 1.5rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .difficulty-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem 1rem;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--color-text-primary);
+            min-width: 120px;
+        }
+
+        .difficulty-btn:hover {
+            background: var(--color-surface-hover);
+            border-color: var(--color-primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .difficulty-btn.active {
+            background: var(--color-primary);
+            color: var(--color-background);
+        }
+
+        .difficulty-icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .difficulty-btn.active .difficulty-icon {
+            color: var(--color-background);
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .game-button {
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: none;
+            font-family: 'Exo 2', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-background);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .secondary-button {
+            background: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .secondary-button:hover {
+            background-color: rgba(243, 156, 18, 0.1);
+        }
+
+        .game-hud {
+            display: flex;
+            justify-content: space-around;
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .hud-icon {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .hud-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        .verb-challenge {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .verb-challenge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(243, 156, 18, 0.05) 50%, transparent 70%);
+            animation: energyFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes energyFlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .verb-card {
+            position: relative;
+            z-index: 2;
+        }
+
+        .verb-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin: 1rem 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: verbPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes verbPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .verb-translation {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+            font-family: 'Spectral', serif;
+        }
+
+        .verb-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .verb-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .verb-input-label {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .verb-input {
+            padding: 1rem;
+            background: var(--color-background);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-md);
+            color: var(--color-text-primary);
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        .verb-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        }
+
+        .verb-input.correct {
+            border-color: var(--verb-correct);
+            background-color: rgba(39, 174, 96, 0.1);
+            animation: correctFlash 0.5s ease;
+        }
+
+        .verb-input.incorrect {
+            border-color: var(--verb-incorrect);
+            background-color: rgba(231, 76, 60, 0.1);
+            animation: incorrectShake 0.5s ease;
+        }
+
+        @keyframes correctFlash {
+            0%, 100% { background-color: rgba(39, 174, 96, 0.1); }
+            50% { background-color: rgba(39, 174, 96, 0.3); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .verb-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .feedback-message {
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all var(--transition-normal);
+        }
+
+        .feedback-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback-message.success {
+            background-color: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--verb-correct);
+            color: var(--verb-correct);
+        }
+
+        .feedback-message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--verb-incorrect);
+            color: var(--verb-incorrect);
+        }
+
+        .leaderboard-panel {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .leaderboard-panel h2 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-table th {
+            color: var(--color-primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .leaderboard-table td {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .game-state {
+            display: none;
+        }
+
+        .game-state.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-content {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .panel-title {
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-family: 'Cinzel', serif;
+        }
+
+        .welcome-text {
+            color: var(--color-text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            font-family: 'Spectral', serif;
+        }
+
+        .results-container {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .final-score {
+            margin-bottom: 2rem;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: var(--color-background);
+            padding: 1rem;
+            border-radius: var(--border-radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        @media (max-width: 1024px) {
+            .game-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .verb-display {
+                font-size: 2rem;
+            }
+
+            .difficulty-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .difficulty-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .verb-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-button {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="../index.html" class="nav-link">Accueil</a></li>
+                    <li><a href="../games.html" class="nav-link active">Jeux</a></li>
+                    <li><a href="../courses.html" class="nav-link">Cours</a></li>
+                    <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+                    <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-menu" id="userMenu">
+                <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+                <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Game container -->
+    <div class="container">
+        <div class="game-content">
+            <!-- Interface de jeu principale -->
+            <main class="game-interface">
+                <!-- En-tête du jeu -->
+                <div class="game-header-content">
+                    <h1 class="section-title">Speed Verb Challenge</h1>
+                    <p class="game-subtitle">Maîtrisez les verbes irréguliers anglais dans une course contre la montre</p>
+                </div>
+
+                <!-- États du jeu -->
+                <div class="game-states">
+                    <!-- État: écran de bienvenue -->
+                    <div id="welcome-screen" class="game-state active">
+                        <div class="welcome-content">
+                            <h2 class="panel-title">Bienvenue, Maître des Verbes</h2>
+                            <p class="welcome-text">
+                                Préparez-vous à tester votre connaissance des verbes irréguliers anglais dans une course effrénée contre la montre.
+                                Chaque verbe correctement conjugué vous rapportera des points et de l'expérience précieuse.
+                            </p>
+
+                            <div class="difficulty-selection">
+                                <h3>Choisissez votre niveau de défi :</h3>
+                                <div class="difficulty-options">
+                                    <div class="difficulty-btn active" data-difficulty="1">
+                                        <div class="difficulty-icon">⚡</div>
+                                        <div style="font-weight: 600;">Apprenti</div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7;">Prétérit uniquement</div>
+                                    </div>
+
+                                    <div class="difficulty-btn" data-difficulty="2">
+                                        <div class="difficulty-icon">🔥</div>
+                                        <div style="font-weight: 600;">Expert</div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7;">Prétérit + Participe passé</div>
+                                    </div>
+
+                                    <div class="difficulty-btn" data-difficulty="3">
+                                        <div class="difficulty-icon">⚔️</div>
+                                        <div style="font-weight: 600;">Maître</div>
+                                        <div style="font-size: 0.8rem; opacity: 0.7;">Tout + Traduction</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="game-buttons">
+                                <button id="start-game-btn" class="game-button primary-button">
+                                    <span>Commencer le Défi</span>
+                                    <i class="fas fa-bolt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- État: jeu en cours -->
+                    <div id="playing" class="game-state">
+                        <!-- HUD du jeu -->
+                        <div class="game-hud">
+                            <div class="hud-item">
+                                <div class="hud-icon">🏆</div>
+                                <div class="hud-label">Score</div>
+                                <div id="player-score" class="hud-value">0</div>
+                            </div>
+
+                            <div class="hud-item">
+                                <div class="hud-icon">⏱️</div>
+                                <div class="hud-label">Temps</div>
+                                <div id="time-left" class="hud-value">90</div>
+                            </div>
+
+                            <div class="hud-item">
+                                <div class="hud-icon">📈</div>
+                                <div class="hud-label">Niveau</div>
+                                <div id="player-level" class="hud-value">1</div>
+                            </div>
+
+                            <div class="hud-item">
+                                <div class="hud-icon">🔥</div>
+                                <div class="hud-label">Combo</div>
+                                <div id="combo-multiplier" class="hud-value">x1.0</div>
+                            </div>
+                        </div>
+
+                        <!-- Défi de verbe -->
+                        <div class="verb-challenge">
+                            <div class="verb-card">
+                                <div class="verb-info">
+                                    <div style="font-size: 1.1rem; color: var(--color-text-secondary); margin-bottom: 1rem; font-family: 'Spectral', serif;">Conjuguez le verbe :</div>
+                                    <div id="current-verb" class="verb-display">BEGIN</div>
+                                    <div id="verb-translation" class="verb-translation">(commencer)</div>
+                                </div>
+
+                                <div id="verb-form-inputs" class="verb-inputs">
+                                    <!-- Les inputs seront générés dynamiquement -->
+                                </div>
+
+                                <div class="verb-actions">
+                                    <button id="check-answer-btn" class="game-button primary-button">
+                                        <span>Valider</span>
+                                        <i class="fas fa-check"></i>
+                                    </button>
+
+                                    <button id="skip-verb-btn" class="game-button secondary-button">
+                                        <span>Passer</span>
+                                        <i class="fas fa-forward"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message de feedback -->
+                        <div id="feedback-message" class="feedback-message"></div>
+                    </div>
+
+                    <!-- État: fin de jeu -->
+                    <div id="game-over" class="game-state">
+                        <div class="results-container">
+                            <h2 class="panel-title">Défi Terminé !</h2>
+                            <p class="welcome-text">Votre performance dans cette course contre la montre :</p>
+
+                            <div class="final-score">
+                                <div class="score-label">Score Final</div>
+                                <div id="final-score-value" class="score-value">0</div>
+                            </div>
+
+                            <div class="stats-container">
+                                <div class="stat-item">
+                                    <div class="stat-label">Niveau Atteint</div>
+                                    <div id="final-level" class="stat-value">1</div>
+                                </div>
+
+                                <div class="stat-item">
+                                    <div class="stat-label">Verbes Réussis</div>
+                                    <div id="verbs-completed" class="stat-value">0</div>
+                                </div>
+
+                                <div class="stat-item">
+                                    <div class="stat-label">Combo Maximum</div>
+                                    <div id="highest-combo" class="stat-value">x1.0</div>
+                                </div>
+                            </div>
+
+                            <div class="game-buttons">
+                                <button id="play-again-btn" class="game-button primary-button">
+                                    <span>Rejouer</span>
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Sidebar - Leaderboard -->
+            <aside class="sidebar">
+                <div class="leaderboard-panel">
+                    <h2>🏆 Meilleurs Scores</h2>
+                    <div class="leaderboard-container">
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rang</th>
+                                    <th>Joueur</th>
+                                    <th>Score</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <tr>
+                                    <td>1</td>
+                                    <td>Champion</td>
+                                    <td>2500</td>
+                                    <td>Aujourd'hui</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Expert</td>
+                                    <td>2200</td>
+                                    <td>Hier</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Maître</td>
+                                    <td>1900</td>
+                                    <td>Il y a 2 jours</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>Apprenti</td>
+                                    <td>1500</td>
+                                    <td>Il y a 3 jours</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>Débutant</td>
+                                    <td>1200</td>
+                                    <td>Il y a 1 semaine</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- JavaScript intégré -->
+    <script>
+        // Données de verbes intégrées
+        const verbData = {
+            "be": { infinitive: "be", preterit: "was/were", pastParticiple: "been", translation: "être" },
+            "have": { infinitive: "have", preterit: "had", pastParticiple: "had", translation: "avoir" },
+            "do": { infinitive: "do", preterit: "did", pastParticiple: "done", translation: "faire" },
+            "go": { infinitive: "go", preterit: "went", pastParticiple: "gone", translation: "aller" },
+            "get": { infinitive: "get", preterit: "got", pastParticiple: "got", translation: "obtenir" },
+            "make": { infinitive: "make", preterit: "made", pastParticiple: "made", translation: "faire" },
+            "take": { infinitive: "take", preterit: "took", pastParticiple: "taken", translation: "prendre" },
+            "come": { infinitive: "come", preterit: "came", pastParticiple: "come", translation: "venir" },
+            "see": { infinitive: "see", preterit: "saw", pastParticiple: "seen", translation: "voir" },
+            "know": { infinitive: "know", preterit: "knew", pastParticiple: "known", translation: "savoir" },
+            "think": { infinitive: "think", preterit: "thought", pastParticiple: "thought", translation: "penser" },
+            "say": { infinitive: "say", preterit: "said", pastParticiple: "said", translation: "dire" },
+            "give": { infinitive: "give", preterit: "gave", pastParticiple: "given", translation: "donner" },
+            "find": { infinitive: "find", preterit: "found", pastParticiple: "found", translation: "trouver" },
+            "tell": { infinitive: "tell", preterit: "told", pastParticiple: "told", translation: "raconter" },
+            "become": { infinitive: "become", preterit: "became", pastParticiple: "become", translation: "devenir" },
+            "leave": { infinitive: "leave", preterit: "left", pastParticiple: "left", translation: "partir" },
+            "feel": { infinitive: "feel", preterit: "felt", pastParticiple: "felt", translation: "sentir" },
+            "bring": { infinitive: "bring", preterit: "brought", pastParticiple: "brought", translation: "apporter" },
+            "begin": { infinitive: "begin", preterit: "began", pastParticiple: "begun", translation: "commencer" },
+            "keep": { infinitive: "keep", preterit: "kept", pastParticiple: "kept", translation: "garder" },
+            "hold": { infinitive: "hold", preterit: "held", pastParticiple: "held", translation: "tenir" },
+            "write": { infinitive: "write", preterit: "wrote", pastParticiple: "written", translation: "écrire" },
+            "stand": { infinitive: "stand", preterit: "stood", pastParticiple: "stood", translation: "se tenir debout" },
+            "hear": { infinitive: "hear", preterit: "heard", pastParticiple: "heard", translation: "entendre" },
+            "let": { infinitive: "let", preterit: "let", pastParticiple: "let", translation: "laisser" },
+            "mean": { infinitive: "mean", preterit: "meant", pastParticiple: "meant", translation: "signifier" },
+            "set": { infinitive: "set", preterit: "set", pastParticiple: "set", translation: "placer" },
+            "meet": { infinitive: "meet", preterit: "met", pastParticiple: "met", translation: "rencontrer" },
+            "run": { infinitive: "run", preterit: "ran", pastParticiple: "run", translation: "courir" },
+            "speak": { infinitive: "speak", preterit: "spoke", pastParticiple: "spoken", translation: "parler" },
+            "read": { infinitive: "read", preterit: "read", pastParticiple: "read", translation: "lire" },
+            "spend": { infinitive: "spend", preterit: "spent", pastParticiple: "spent", translation: "dépenser" },
+            "grow": { infinitive: "grow", preterit: "grew", pastParticiple: "grown", translation: "grandir" },
+            "lose": { infinitive: "lose", preterit: "lost", pastParticiple: "lost", translation: "perdre" },
+            "send": { infinitive: "send", preterit: "sent", pastParticiple: "sent", translation: "envoyer" },
+            "build": { infinitive: "build", preterit: "built", pastParticiple: "built", translation: "construire" },
+            "fall": { infinitive: "fall", preterit: "fell", pastParticiple: "fallen", translation: "tomber" },
+            "cut": { infinitive: "cut", preterit: "cut", pastParticiple: "cut", translation: "couper" },
+            "break": { infinitive: "break", preterit: "broke", pastParticiple: "broken", translation: "casser" },
+            "eat": { infinitive: "eat", preterit: "ate", pastParticiple: "eaten", translation: "manger" },
+            "draw": { infinitive: "draw", preterit: "drew", pastParticiple: "drawn", translation: "dessiner" },
+            "buy": { infinitive: "buy", preterit: "bought", pastParticiple: "bought", translation: "acheter" },
+            "wear": { infinitive: "wear", preterit: "wore", pastParticiple: "worn", translation: "porter" },
+            "choose": { infinitive: "choose", preterit: "chose", pastParticiple: "chosen", translation: "choisir" },
+            "drive": { infinitive: "drive", preterit: "drove", pastParticiple: "driven", translation: "conduire" },
+            "fight": { infinitive: "fight", preterit: "fought", pastParticiple: "fought", translation: "se battre" },
+            "fly": { infinitive: "fly", preterit: "flew", pastParticiple: "flown", translation: "voler" },
+            "forget": { infinitive: "forget", preterit: "forgot", pastParticiple: "forgotten", translation: "oublier" },
+            "hide": { infinitive: "hide", preterit: "hid", pastParticiple: "hidden", translation: "cacher" },
+            "sing": { infinitive: "sing", preterit: "sang", pastParticiple: "sung", translation: "chanter" },
+            "swim": { infinitive: "swim", preterit: "swam", pastParticiple: "swum", translation: "nager" },
+            "teach": { infinitive: "teach", preterit: "taught", pastParticiple: "taught", translation: "enseigner" },
+            "throw": { infinitive: "throw", preterit: "threw", pastParticiple: "thrown", translation: "lancer" },
+            "win": { infinitive: "win", preterit: "won", pastParticiple: "won", translation: "gagner" },
+            "catch": { infinitive: "catch", preterit: "caught", pastParticiple: "caught", translation: "attraper" },
+            "sell": { infinitive: "sell", preterit: "sold", pastParticiple: "sold", translation: "vendre" },
+            "sleep": { infinitive: "sleep", preterit: "slept", pastParticiple: "slept", translation: "dormir" },
+            "steal": { infinitive: "steal", preterit: "stole", pastParticiple: "stolen", translation: "voler" },
+            "wake": { infinitive: "wake", preterit: "woke", pastParticiple: "woken", translation: "réveiller" }
+        };
+
+        // Variables de jeu
+        let selectedDifficulty = 1;
+        let gameTimer = null;
+        let timeLeft = 90;
+        let score = 0;
+        let currentVerb = null;
+        let verbsCompleted = 0;
+        let correctStreak = 0;
+        let comboMultiplier = 1.0;
+        let highestCombo = 1.0;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎮 Speed Verb Challenge - Version autonome chargée');
+            
+            // Gestion de la sélection de difficulté
+            const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            difficultyBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    difficultyBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedDifficulty = parseInt(this.dataset.difficulty);
+                    console.log('🎯 Difficulté sélectionnée:', selectedDifficulty);
+                });
+            });
+
+            // Gestion du bouton "Commencer le Défi"
+            const startGameBtn = document.getElementById('start-game-btn');
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', startGame);
+            }
+
+            // Gestion du bouton "Rejouer"
+            const playAgainBtn = document.getElementById('play-again-btn');
+            if (playAgainBtn) {
+                playAgainBtn.addEventListener('click', () => {
+                    changeGameState('welcome-screen');
+                    resetGame();
+                });
+            }
+
+            // Gestion des boutons de jeu
+            const checkBtn = document.getElementById('check-answer-btn');
+            const skipBtn = document.getElementById('skip-verb-btn');
+            
+            if (checkBtn) checkBtn.addEventListener('click', checkAnswer);
+            if (skipBtn) skipBtn.addEventListener('click', skipVerb);
+
+            // Gestion de la touche Entrée
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.target.classList.contains('verb-input')) {
+                    checkAnswer();
+                }
+            });
+
+            console.log('✅ Jeu initialisé avec succès');
+        });
+
+        // Fonctions utilitaires
+        function getRandomVerb() {
+            const verbs = Object.keys(verbData);
+            const randomIndex = Math.floor(Math.random() * verbs.length);
+            const verbKey = verbs[randomIndex];
+            return {
+                key: verbKey,
+                ...verbData[verbKey]
+            };
+        }
+
+        function changeGameState(state) {
+            console.log('🔄 Changement d\'état vers:', state);
+            
+            const states = ['welcome-screen', 'playing', 'game-over'];
+            states.forEach(stateId => {
+                const element = document.getElementById(stateId);
+                if (element) {
+                    element.classList.remove('active');
+                }
+            });
+
+            const targetState = document.getElementById(state);
+            if (targetState) {
+                targetState.classList.add('active');
+                console.log('✅ État changé vers:', state);
+            }
+        }
+
+        function startGame() {
+            console.log('🚀 Démarrage du jeu avec difficulté:', selectedDifficulty);
+            
+            // Réinitialiser les variables
+            timeLeft = 90;
+            score = 0;
+            verbsCompleted = 0;
+            correctStreak = 0;
+            comboMultiplier = 1.0;
+            highestCombo = 1.0;
+            
+            // Changer d'état
+            changeGameState('playing');
+            
+            // Afficher le premier verbe
+            displayNewVerb();
+            
+            // Démarrer le timer
+            startGameTimer();
+            
+            // Mettre à jour le HUD
+            updateHUD();
+        }
+
+        function startGameTimer() {
+            const timeDisplay = document.getElementById('time-left');
+            
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                if (timeDisplay) {
+                    timeDisplay.textContent = timeLeft;
+                }
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function displayNewVerb() {
+            currentVerb = getRandomVerb();
+            console.log('🎯 Nouveau verbe:', currentVerb);
+
+            // Afficher le verbe
+            const verbDisplay = document.getElementById('current-verb');
+            const verbTranslation = document.getElementById('verb-translation');
+            
+            if (verbDisplay) {
+                verbDisplay.textContent = currentVerb.infinitive.toUpperCase();
+            }
+            if (verbTranslation) {
+                verbTranslation.textContent = `(${currentVerb.translation})`;
+            }
+
+            // Créer les inputs selon la difficulté
+            createVerbInputs();
+        }
+
+        function createVerbInputs() {
+            const inputsContainer = document.getElementById('verb-form-inputs');
+            if (!inputsContainer) return;
+
+            inputsContainer.innerHTML = '';
+
+            // Prétérit (toujours présent)
+            if (selectedDifficulty >= 1) {
+                const preteritGroup = document.createElement('div');
+                preteritGroup.className = 'verb-input-group';
+                preteritGroup.innerHTML = `
+                    <label class="verb-input-label">Prétérit</label>
+                    <input type="text" class="verb-input" id="preterit-input" placeholder="Entrez le prétérit">
+                `;
+                inputsContainer.appendChild(preteritGroup);
+            }
+
+            // Participe passé
+            if (selectedDifficulty >= 2) {
+                const pastParticipleGroup = document.createElement('div');
+                pastParticipleGroup.className = 'verb-input-group';
+                pastParticipleGroup.innerHTML = `
+                    <label class="verb-input-label">Participe passé</label>
+                    <input type="text" class="verb-input" id="past-participle-input" placeholder="Entrez le participe passé">
+                `;
+                inputsContainer.appendChild(pastParticipleGroup);
+            }
+
+            // Traduction
+            if (selectedDifficulty >= 3) {
+                const translationGroup = document.createElement('div');
+                translationGroup.className = 'verb-input-group';
+                translationGroup.innerHTML = `
+                    <label class="verb-input-label">Traduction</label>
+                    <input type="text" class="verb-input" id="translation-input" placeholder="Entrez la traduction">
+                `;
+                inputsContainer.appendChild(translationGroup);
+            }
+
+            // Focus sur le premier input
+            setTimeout(() => {
+                const firstInput = inputsContainer.querySelector('.verb-input');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 100);
+        }
+
+        function checkAnswer() {
+            if (!currentVerb) return;
+
+            // Récupérer les réponses de l'utilisateur
+            const userAnswers = {};
+            
+            const preteritInput = document.getElementById('preterit-input');
+            const pastParticipleInput = document.getElementById('past-participle-input');
+            const translationInput = document.getElementById('translation-input');
+
+            if (preteritInput) userAnswers.preterit = preteritInput.value.toLowerCase().trim();
+            if (pastParticipleInput) userAnswers.pastParticiple = pastParticipleInput.value.toLowerCase().trim();
+            if (translationInput) userAnswers.translation = translationInput.value.toLowerCase().trim();
+
+            // Vérifier la réponse
+            const result = checkVerbAnswer(currentVerb.key, userAnswers, selectedDifficulty);
+            
+            if (result.correct) {
+                // Réponse correcte
+                correctStreak++;
+                comboMultiplier = Math.min(3.0, 1.0 + (correctStreak * 0.1));
+                highestCombo = Math.max(highestCombo, comboMultiplier);
+                
+                const points = selectedDifficulty * Math.floor(comboMultiplier * 10);
+                score += points;
+                verbsCompleted++;
+                
+                showFeedback(true, `Excellent ! +${points} points (Combo x${comboMultiplier.toFixed(1)})`);
+                
+                // Afficher les inputs comme corrects
+                markInputsCorrect();
+                
+                setTimeout(() => {
+                    displayNewVerb();
+                }, 1500);
+            } else {
+                // Réponse incorrecte
+                correctStreak = 0;
+                comboMultiplier = 1.0;
+                
+                showFeedback(false, `Incorrect ! Les bonnes réponses : ${formatCorrectAnswers(result.correctAnswers)}`);
+                
+                // Afficher les inputs comme incorrects
+                markInputsIncorrect(result.results);
+                
+                setTimeout(() => {
+                    displayNewVerb();
+                }, 3000);
+            }
+
+            updateHUD();
+        }
+
+        function checkVerbAnswer(verb, userAnswers, difficulty) {
+            const correctAnswers = verbData[verb];
+            if (!correctAnswers) return { correct: false, results: {}, correctAnswers: {} };
+
+            let allCorrect = true;
+            const results = {};
+
+            // Vérifier selon la difficulté
+            if (difficulty >= 1) {
+                // Prétérit
+                const userPreterit = userAnswers.preterit;
+                const correctPreterit = correctAnswers.preterit.toLowerCase();
+                results.preterit = userPreterit === correctPreterit || 
+                                   (correctPreterit.includes('/') && correctPreterit.split('/').some(form => form.trim() === userPreterit));
+                if (!results.preterit) allCorrect = false;
+            }
+
+            if (difficulty >= 2) {
+                // Participe passé
+                const userPastParticiple = userAnswers.pastParticiple;
+                const correctPastParticiple = correctAnswers.pastParticiple.toLowerCase();
+                results.pastParticiple = userPastParticiple === correctPastParticiple ||
+                                         (correctPastParticiple.includes('/') && correctPastParticiple.split('/').some(form => form.trim() === userPastParticiple));
+                if (!results.pastParticiple) allCorrect = false;
+            }
+
+            if (difficulty >= 3) {
+                // Traduction
+                const userTranslation = userAnswers.translation;
+                const correctTranslation = correctAnswers.translation.toLowerCase();
+                results.translation = userTranslation === correctTranslation ||
+                                      (correctTranslation.includes('/') && correctTranslation.split('/').some(form => form.trim() === userTranslation));
+                if (!results.translation) allCorrect = false;
+            }
+
+            return {
+                correct: allCorrect,
+                results: results,
+                correctAnswers: correctAnswers
+            };
+        }
+
+        function skipVerb() {
+            correctStreak = 0;
+            comboMultiplier = 1.0;
+            showFeedback(false, 'Verbe passé !');
+            
+            setTimeout(() => {
+                displayNewVerb();
+            }, 1000);
+            
+            updateHUD();
+        }
+
+        function markInputsCorrect() {
+            document.querySelectorAll('.verb-input').forEach(input => {
+                input.classList.add('correct');
+                input.classList.remove('incorrect');
+            });
+        }
+
+        function markInputsIncorrect(results) {
+            const preteritInput = document.getElementById('preterit-input');
+            const pastParticipleInput = document.getElementById('past-participle-input');
+            const translationInput = document.getElementById('translation-input');
+
+            if (preteritInput) {
+                preteritInput.classList.toggle('correct', results.preterit === true);
+                preteritInput.classList.toggle('incorrect', results.preterit === false);
+            }
+            if (pastParticipleInput) {
+                pastParticipleInput.classList.toggle('correct', results.pastParticiple === true);
+                pastParticipleInput.classList.toggle('incorrect', results.pastParticiple === false);
+            }
+            if (translationInput) {
+                translationInput.classList.toggle('correct', results.translation === true);
+                translationInput.classList.toggle('incorrect', results.translation === false);
+            }
+        }
+
+        function formatCorrectAnswers(answers) {
+            let result = [];
+            if (selectedDifficulty >= 1) result.push(`Prétérit: ${answers.preterit}`);
+            if (selectedDifficulty >= 2) result.push(`Participe passé: ${answers.pastParticiple}`);
+            if (selectedDifficulty >= 3) result.push(`Traduction: ${answers.translation}`);
+            return result.join(', ');
+        }
+
+        function showFeedback(success, message) {
+            const feedbackElement = document.getElementById('feedback-message');
+            if (!feedbackElement) return;
+
+            feedbackElement.textContent = message;
+            feedbackElement.className = `feedback-message ${success ? 'success' : 'error'} show`;
+
+            setTimeout(() => {
+                feedbackElement.classList.remove('show');
+            }, success ? 1500 : 3000);
+        }
+
+        function updateHUD() {
+            const scoreDisplay = document.getElementById('player-score');
+            const comboDisplay = document.getElementById('combo-multiplier');
+            const levelDisplay = document.getElementById('player-level');
+
+            if (scoreDisplay) scoreDisplay.textContent = score;
+            if (comboDisplay) comboDisplay.textContent = `x${comboMultiplier.toFixed(1)}`;
+            if (levelDisplay) levelDisplay.textContent = Math.floor(score / 100) + 1;
+        }
+
+        function endGame() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+
+            // Afficher les résultats
+            const finalScoreElement = document.getElementById('final-score-value');
+            const finalLevelElement = document.getElementById('final-level');
+            const verbsCompletedElement = document.getElementById('verbs-completed');
+            const highestComboElement = document.getElementById('highest-combo');
+
+            if (finalScoreElement) finalScoreElement.textContent = score;
+            if (finalLevelElement) finalLevelElement.textContent = Math.floor(score / 100) + 1;
+            if (verbsCompletedElement) verbsCompletedElement.textContent = verbsCompleted;
+            if (highestComboElement) highestComboElement.textContent = `x${highestCombo.toFixed(1)}`;
+
+            changeGameState('game-over');
+
+            // Essayer de sauvegarder le score avec le système de récompenses
+            try {
+                if (window.rewardService && typeof window.rewardService.giveReward === 'function') {
+                    const isRecord = score > (localStorage.getItem('speedVerbBestScore') || 0);
+                    const xpGain = isRecord ? selectedDifficulty * 20 : selectedDifficulty * 2;
+                    const coinGain = isRecord ? 20 : 1;
+                    
+                    window.rewardService.giveReward('speed-verb-challenge', score, xpGain, coinGain, isRecord);
+                    
+                    if (isRecord) {
+                        localStorage.setItem('speedVerbBestScore', score);
+                    }
+                }
+            } catch (e) {
+                console.log('Système de récompenses non disponible:', e);
+            }
+
+            console.log('🏁 Jeu terminé ! Score final:', score);
+        }
+
+        function resetGame() {
+            timeLeft = 90;
+            score = 0;
+            verbsCompleted = 0;
+            correctStreak = 0;
+            comboMultiplier = 1.0;
+            highestCombo = 1.0;
+            currentVerb = null;
+            
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+            
+            updateHUD();
+        }
+
+        // Fonction de debug
+        window.debugSpeedVerb = function() {
+            console.log('🔍 Debug Speed Verb Challenge:');
+            console.log('- selectedDifficulty:', selectedDifficulty);
+            console.log('- score:', score);
+            console.log('- timeLeft:', timeLeft);
+            console.log('- currentVerb:', currentVerb);
+            console.log('- verbsCompleted:', verbsCompleted);
+            console.log('- comboMultiplier:', comboMultiplier);
+            console.log('- verbData loaded:', Object.keys(verbData).length, 'verbes');
+        };
+
+        console.log('✅ Speed Verb Challenge autonome chargé avec', Object.keys(verbData).length, 'verbes');
+    </script>
+</body>
+</html> 
