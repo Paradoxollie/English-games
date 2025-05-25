@@ -2175,11 +2175,32 @@
       let finalScore = gameState.score;
       
       if (won) {
-        // Calculer le score
-        const baseScore = 100 * gameState.wordLength;
-        const timeBonus = gameState.timeLeft * 2;
-        const attemptBonus = (gameState.maxAttempts - gameState.currentRow) * 20;
-        const totalScore = (baseScore + timeBonus + attemptBonus) * gameState.combo;
+        // NOUVEAU SYSTÈME DE POINTS ÉQUILIBRÉ
+        // Points de base selon la difficulté (drastiquement réduits)
+        const baseDifficultyScore = {
+          4: 8,   // Débutant: 8 points de base
+          5: 12,  // Intermédiaire: 12 points de base  
+          6: 18   // Avancé: 18 points de base
+        };
+        
+        const baseScore = baseDifficultyScore[gameState.wordLength] || 12;
+        
+        // Bonus de temps très réduit (maximum 15 points)
+        const timeBonus = Math.min(Math.floor(gameState.timeLeft / 6), 15);
+        
+        // Bonus d'efficacité selon le nombre d'essais (maximum 10 points)
+        const attemptsUsed = gameState.currentRow + 1;
+        const attemptBonus = Math.max(0, (gameState.maxAttempts - attemptsUsed) * 2);
+        
+        // Score brut sans combo
+        const rawScore = baseScore + timeBonus + attemptBonus;
+        
+        // Combo multiplier très modéré (max 2.5x)
+        const comboMultiplier = 1 + Math.min(gameState.combo - 1, 1.5) * 0.1;
+        
+        const totalScore = Math.floor(rawScore * comboMultiplier);
+        
+        console.log(`🎯 [Score] Base: ${baseScore}, Temps: ${timeBonus}, Essais: ${attemptBonus}, Combo: x${comboMultiplier.toFixed(1)} = ${totalScore} points`);
         
         gameState.score += totalScore;
         finalScore = gameState.score;
