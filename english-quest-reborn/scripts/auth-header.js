@@ -1,9 +1,11 @@
 /**
  * Script pour gérer l'affichage du header en fonction de l'état d'authentification
+ * Version corrigée pour toutes les pages du site reborn
  */
 
-document.addEventListener('DOMContentLoaded', async function() {
-  console.log("Initialisation du header d'authentification...");
+// Fonction d'initialisation principale qui s'exécute plusieurs fois si nécessaire
+async function initAuthHeader() {
+  console.log("🔄 [Auth Header] Initialisation du header d'authentification...");
   
   // Clés localStorage exactement comme dans firebase-config.js
   const LOCALSTORAGE_KEYS = {
@@ -123,13 +125,27 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Initialiser le service d'authentification
   await authService.init();
   
-  // Récupérer les éléments du menu utilisateur
-  const userMenu = document.getElementById('userMenu');
-  const loginButton = document.getElementById('loginButton');
-  const profileButton = document.getElementById('profileButton');
+  // Récupérer les éléments du menu utilisateur avec retry
+  let userMenu, loginButton, profileButton;
+  let retryCount = 0;
+  const maxRetries = 10;
+  
+  while (retryCount < maxRetries) {
+    userMenu = document.getElementById('userMenu');
+    loginButton = document.getElementById('loginButton');
+    profileButton = document.getElementById('profileButton');
+    
+    if (userMenu && loginButton && profileButton) {
+      break;
+    }
+    
+    console.log(`⏳ [Auth Header] Tentative ${retryCount + 1}/${maxRetries} - Éléments DOM non trouvés, retry dans 100ms...`);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    retryCount++;
+  }
   
   if (!userMenu) {
-    console.warn("Menu utilisateur non trouvé dans la page");
+    console.warn("❌ [Auth Header] Menu utilisateur non trouvé après toutes les tentatives");
     return;
   }
 
@@ -140,14 +156,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       user = await authService.getCurrentUser();
     }
     
-    console.log("🔄 Mise à jour de l'UI avec l'utilisateur:", user ? (user.username || "Utilisateur connecté") : "Déconnecté");
+    console.log("🔄 [Auth Header] Mise à jour de l'UI avec l'utilisateur:", user ? (user.username || "Utilisateur connecté") : "Déconnecté");
     
     // Supprimer tous les boutons de déconnexion existants pour éviter les doublons
     const existingLogoutButtons = document.querySelectorAll('[id^="logoutButton"], .btn-logout[id*="logout"]');
     existingLogoutButtons.forEach(btn => {
       if (btn && btn.parentNode) {
         btn.remove();
-        console.log('🗑️ Bouton de déconnexion supprimé:', btn.textContent);
+        console.log('🗑️ [Auth Header] Bouton de déconnexion supprimé:', btn.textContent);
       }
     });
     
@@ -155,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       // L'utilisateur est connecté - MASQUER le bouton de connexion
       if (loginButton) {
         loginButton.style.display = 'none';
-        console.log("✅ Bouton de connexion masqué");
+        console.log("✅ [Auth Header] Bouton de connexion masqué");
       }
       
       if (profileButton) {
@@ -171,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Pas d'email dans un site RGPD - directement "Mon Profil" en fallback
         
         profileButton.textContent = displayText;
-        console.log("✅ Bouton de profil affiché avec le texte:", displayText);
+        console.log("✅ [Auth Header] Bouton de profil affiché avec le texte:", displayText);
         
         // Ajouter un bouton de déconnexion
         const logoutButton = document.createElement('a');
@@ -182,35 +198,66 @@ document.addEventListener('DOMContentLoaded', async function() {
         logoutButton.href = '#';
         logoutButton.addEventListener('click', async (e) => {
           e.preventDefault();
-          console.log("🚪 Clic sur le bouton de déconnexion");
+          console.log("🚪 [Auth Header] Clic sur le bouton de déconnexion");
           await authService.logout();
           window.location.reload(); // Recharger pour nettoyer l'état
         });
         
         userMenu.appendChild(logoutButton);
-        console.log("✅ Bouton de déconnexion ajouté");
+        console.log("✅ [Auth Header] Bouton de déconnexion ajouté");
       }
     } else {
       // L'utilisateur n'est pas connecté - AFFICHER le bouton de connexion
       if (loginButton) {
         loginButton.style.display = 'inline-flex';
-        console.log("✅ Bouton de connexion affiché");
+        console.log("✅ [Auth Header] Bouton de connexion affiché");
       }
       
       if (profileButton) {
         profileButton.style.display = 'none';
-        console.log("✅ Bouton de profil masqué");
+        console.log("✅ [Auth Header] Bouton de profil masqué");
       }
     }
   }
 
-  // Mettre à jour l'UI avec l'état initial
-  const currentUser = await authService.getCurrentUser();
-  console.log('👤 [Auth Header] Utilisateur initial récupéré:', currentUser ? (currentUser.username || 'Connecté') : 'Déconnecté');
-  await updateUI(currentUser);
-  console.log("✅ Interface initialisée avec l'état d'authentification actuel");
+  // Mise à jour initiale de l'interface
+  try {
+    const currentUser = await authService.getCurrentUser();
+    await updateUI(currentUser);
+    
+    // Ajouter un listener pour les changements d'état d'authentification
+    authService.addAuthStateListener(updateUI);
+    
+    console.log("✅ [Auth Header] Initialisation terminée avec succès");
+  } catch (error) {
+    console.error("❌ [Auth Header] Erreur lors de l'initialisation:", error);
+  }
+}
 
-  // Ajouter un écouteur pour les changements d'état d'authentification
-  authService.addAuthStateListener(updateUI);
-  console.log("👂 Écouteur d'état d'authentification ajouté");
+// Initialisation avec plusieurs tentatives
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log("📄 [Auth Header] DOM chargé, démarrage de l'initialisation...");
+  
+  // Première tentative immédiate
+  await initAuthHeader();
+  
+  // Tentatives supplémentaires au cas où certains éléments ne seraient pas encore prêts
+  setTimeout(async () => {
+    console.log("🔄 [Auth Header] Tentative supplémentaire après 500ms...");
+    await initAuthHeader();
+  }, 500);
+  
+  setTimeout(async () => {
+    console.log("🔄 [Auth Header] Tentative supplémentaire après 1000ms...");
+    await initAuthHeader();
+  }, 1000);
 });
+
+// Initialisation supplémentaire quand la fenêtre est complètement chargée
+window.addEventListener('load', async function() {
+  console.log("🌐 [Auth Header] Fenêtre chargée, tentative supplémentaire...");
+  await initAuthHeader();
+});
+
+// Exposer la fonction d'initialisation globalement pour les autres scripts
+window.initAuthHeader = initAuthHeader;
