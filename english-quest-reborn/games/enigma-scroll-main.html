@@ -20,6 +20,7 @@
   
   <!-- Scripts d'authentification -->
   <script type="module" src="../scripts/auth-header.js"></script>
+  <script type="module" src="../scripts/reward-service.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -1938,53 +1939,79 @@
     // ===========================================
     
     async function checkAuthenticationAndStartGame(difficulty) {
+      // Clés localStorage exactement comme dans firebase-config.js et auth-header.js
+      const LOCALSTORAGE_KEYS = {
+        CURRENT_USER: 'english_quest_current_user',
+        LEGACY_CURRENT_USER: 'currentUser',
+        USER_ID: 'englishQuestUserId'
+      };
+      
       // Vérifier si l'utilisateur est connecté (même logique que auth-header.js corrigé)
       let currentUser = null;
       
       try {
         console.log('🔍 [Enigma Scroll] Vérification de l\'authentification...');
         
-        // D'abord essayer de récupérer l'ID utilisateur depuis localStorage (système principal)
-        const userId = localStorage.getItem('englishQuestUserId');
-        console.log('📋 [Enigma Scroll] ID utilisateur récupéré:', userId);
-        
-        if (!userId || userId === "undefined" || userId === "null") {
-          console.log('❌ [Enigma Scroll] Aucun ID utilisateur valide trouvé');
-          currentUser = null;
-        } else {
-          // Essayer d'utiliser le service principal pour récupérer les données complètes
-          if (window.authService && typeof window.authService.loadUserData === 'function') {
-            console.log('🔄 [Enigma Scroll] Utilisation de authService.loadUserData');
+        // MÉTHODE 1 : Exactement comme firebase-config.js et auth-header.js
+        // Essayer d'abord la nouvelle clé
+        let userData = localStorage.getItem(LOCALSTORAGE_KEYS.CURRENT_USER);
+        if (userData) {
+          try {
+            currentUser = JSON.parse(userData);
+            console.log('✅ [Enigma Scroll] Utilisateur trouvé via CURRENT_USER:', currentUser.username || currentUser.displayName || 'Utilisateur');
+          } catch (e) {
+            console.warn('⚠️ [Enigma Scroll] Erreur parsing CURRENT_USER:', e);
+            currentUser = null;
+          }
+        }
+
+        // Essayer ensuite l'ancienne clé si pas trouvé
+        if (!currentUser) {
+          userData = localStorage.getItem(LOCALSTORAGE_KEYS.LEGACY_CURRENT_USER);
+          if (userData) {
             try {
-              const userData = await window.authService.loadUserData(userId);
-              if (userData) {
-                console.log('✅ [Enigma Scroll] Données utilisateur récupérées:', userData.username || userData.displayName || 'Utilisateur');
-                currentUser = { uid: userId, ...userData };
-              } else {
-                console.warn('⚠️ [Enigma Scroll] Aucune donnée utilisateur trouvée pour l\'ID');
-                currentUser = null;
-              }
-            } catch (error) {
-              console.warn('⚠️ [Enigma Scroll] Erreur loadUserData:', error);
+              currentUser = JSON.parse(userData);
+              console.log('✅ [Enigma Scroll] Utilisateur trouvé via LEGACY_CURRENT_USER:', currentUser.username || currentUser.displayName || 'Utilisateur');
+            } catch (e) {
+              console.warn('⚠️ [Enigma Scroll] Erreur parsing LEGACY_CURRENT_USER:', e);
               currentUser = null;
             }
-          } else {
-            // Fallback : créer un objet utilisateur minimal avec l'ID
-            console.log('📝 [Enigma Scroll] Création objet utilisateur minimal');
-            currentUser = { 
-              uid: userId, 
-              id: userId,
-              username: `Utilisateur ${userId.substring(0, 8)}`,
-              displayName: `Utilisateur ${userId.substring(0, 8)}`
-            };
           }
         }
         
-        // Fallback final : essayer l'ancienne méthode userSession si rien d'autre ne marche
+        // MÉTHODE 2 : Nouvelle approche avec englishQuestUserId (fallback)
         if (!currentUser) {
-          console.log('🔄 [Enigma Scroll] Tentative fallback avec userSession...');
-          const userData = localStorage.getItem('userSession');
-          currentUser = userData ? JSON.parse(userData) : null;
+          const userId = localStorage.getItem(LOCALSTORAGE_KEYS.USER_ID);
+          if (userId && userId !== "undefined" && userId !== "null") {
+            console.log('🔄 [Enigma Scroll] ID utilisateur trouvé, recherche des données:', userId);
+            
+            // Essayer d'utiliser le service principal pour récupérer les données complètes
+            if (window.authService && typeof window.authService.loadUserData === 'function') {
+              console.log('🔄 [Enigma Scroll] Utilisation de authService.loadUserData');
+              try {
+                const userData = await window.authService.loadUserData(userId);
+                if (userData) {
+                  console.log('✅ [Enigma Scroll] Données utilisateur récupérées via authService:', userData.username || userData.displayName || 'Utilisateur');
+                  currentUser = { uid: userId, ...userData };
+                } else {
+                  console.warn('⚠️ [Enigma Scroll] Aucune donnée utilisateur trouvée pour l\'ID');
+                }
+              } catch (error) {
+                console.warn('⚠️ [Enigma Scroll] Erreur loadUserData:', error);
+              }
+            }
+            
+            // Fallback : créer un objet utilisateur minimal avec l'ID
+            if (!currentUser) {
+              console.log('📝 [Enigma Scroll] Création objet utilisateur minimal');
+              currentUser = { 
+                uid: userId, 
+                id: userId,
+                username: `Utilisateur ${userId.substring(0, 8)}`,
+                displayName: `Utilisateur ${userId.substring(0, 8)}`
+              };
+            }
+          }
         }
         
       } catch (error) {
@@ -1992,7 +2019,7 @@
         currentUser = null;
       }
       
-      console.log('🔍 [Enigma Scroll] Résultat vérification authentification:', currentUser ? 'Connecté' : 'Non connecté');
+      console.log('🔍 [Enigma Scroll] Résultat vérification authentification:', currentUser ? (currentUser.username || currentUser.displayName || 'Connecté') : 'Non connecté');
       
       if (!currentUser) {
         showMessage('Vous devez être connecté pour jouer !', 'warning', 3000);
@@ -2003,133 +2030,42 @@
         return;
       }
       
-      console.log('✅ [Enigma Scroll] Utilisateur connecté:', currentUser.displayName || currentUser.username || currentUser.email || 'Utilisateur');
+      console.log('✅ [Enigma Scroll] Utilisateur connecté:', currentUser.username || currentUser.displayName || currentUser.email || 'Utilisateur');
       startGame(difficulty);
     }
     
     async function giveRewards(isTopScore = false) {
       try {
-        // Récupérer l'utilisateur connecté (même logique que checkAuthentication)
-        let currentUser = null;
+        console.log('🎁 [Enigma Scroll] Attribution des récompenses...');
         
-        try {
-          console.log('🎁 [Enigma Scroll] Récupération utilisateur pour récompenses...');
-          
-          // Utiliser la même logique que checkAuthenticationAndStartGame
-          const userId = localStorage.getItem('englishQuestUserId');
-          console.log('📋 [Enigma Scroll] ID utilisateur pour récompenses:', userId);
-          
-          if (userId && userId !== "undefined" && userId !== "null") {
-            if (window.authService && typeof window.authService.loadUserData === 'function') {
-              console.log('🔄 [Enigma Scroll] Utilisation de authService pour récompenses');
-              try {
-                const userData = await window.authService.loadUserData(userId);
-                if (userData) {
-                  currentUser = { uid: userId, ...userData };
-                  console.log('✅ [Enigma Scroll] Utilisateur récupéré pour récompenses:', userData.username || userData.displayName || 'Utilisateur');
-                }
-              } catch (error) {
-                console.warn('⚠️ [Enigma Scroll] Erreur loadUserData pour récompenses:', error);
-              }
-            } else {
-              // Fallback avec ID uniquement
-              currentUser = { 
-                uid: userId, 
-                id: userId,
-                username: `Utilisateur ${userId.substring(0, 8)}`
-              };
-            }
-          }
-          
-          // Fallback final avec userSession
-          if (!currentUser) {
-            const userData = localStorage.getItem('userSession');
-            currentUser = userData ? JSON.parse(userData) : null;
-          }
-          
-        } catch (error) {
-          console.warn('❌ [Enigma Scroll] Erreur lors de la récupération de l\'utilisateur pour les récompenses:', error);
-        }
-        
-        if (!currentUser) {
-          console.warn('❌ [Enigma Scroll] Pas d\'utilisateur connecté pour donner des récompenses');
+        // Vérifier que le service de récompenses est disponible
+        if (!window.rewardService) {
+          console.warn('❌ [Enigma Scroll] Service de récompenses non disponible');
+          showMessage('Service de récompenses non disponible', 'warning');
           return;
         }
         
-        // Définir les récompenses
-        const baseRewards = { gold: 1, xp: 1 };
-        const topScoreRewards = { gold: 20, xp: 20 };
-        const rewards = isTopScore ? topScoreRewards : baseRewards;
-        
-        console.log(`🎁 [Enigma Scroll] Attribution des récompenses: ${rewards.gold} or, ${rewards.xp} XP`);
-        
-        // Tenter la sauvegarde via Firebase
-        if (typeof firebase !== 'undefined' && firebase.firestore) {
-          const db = firebase.firestore();
-          const userRef = db.collection('users').doc(currentUser.uid || currentUser.id || currentUser.email);
-          
-          await db.runTransaction(async (transaction) => {
-            const userDoc = await transaction.get(userRef);
-            
-            if (userDoc.exists) {
-              const userData = userDoc.data();
-              const newGold = (userData.gold || 0) + rewards.gold;
-              const newXP = (userData.xp || 0) + rewards.xp;
-              
-              transaction.update(userRef, {
-                gold: newGold,
-                xp: newXP,
-                lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
-              });
-              
-              console.log(`✅ [Enigma Scroll] Récompenses sauvegardées: ${newGold} or total, ${newXP} XP total`);
-              
-              // Afficher un message de récompense
-              const rewardMessage = isTopScore 
-                ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
-                : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
-              
-              showMessage(rewardMessage, 'success', 4000);
-            } else {
-              console.warn('❌ [Enigma Scroll] Document utilisateur non trouvé pour les récompenses');
-              
-              // Fallback : créer le document utilisateur avec les récompenses
-              const initialData = {
-                gold: rewards.gold,
-                xp: rewards.xp,
-                email: currentUser.email,
-                username: currentUser.username,
-                displayName: currentUser.displayName || currentUser.username || 'Joueur',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
-              };
-              
-              transaction.set(userRef, initialData);
-              console.log('✅ [Enigma Scroll] Nouveau profil créé avec récompenses initiales');
-              
-              const rewardMessage = isTopScore 
-                ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
-                : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
-              
-              showMessage(rewardMessage, 'success', 4000);
-            }
-          });
-        } else {
-          // Fallback: sauvegarder localement
-          const localProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-          localProfile.gold = (localProfile.gold || 0) + rewards.gold;
-          localProfile.xp = (localProfile.xp || 0) + rewards.xp;
-          localStorage.setItem('userProfile', JSON.stringify(localProfile));
-          
-          const rewardMessage = isTopScore 
-            ? `🏆 TOP SCORE ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP !`
-            : `🎮 Partie terminée ! +${rewards.gold} 🏅 or et +${rewards.xp} ⭐ XP`;
-          
-          showMessage(rewardMessage, 'success', 4000);
-          console.log(`✅ [Enigma Scroll] Récompenses sauvegardées localement: ${localProfile.gold} or total, ${localProfile.xp} XP total`);
+        // Vérifier que l'utilisateur peut recevoir des récompenses
+        if (!window.rewardService.canGiveRewards()) {
+          console.warn('❌ [Enigma Scroll] Utilisateur non connecté pour les récompenses');
+          showMessage('Vous devez être connecté pour recevoir des récompenses', 'warning');
+          return;
         }
+        
+        // Attendre un peu pour que le service soit bien initialisé
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Utiliser le nouveau service de récompenses
+        const result = await window.rewardService.giveEnigmaScrollRewards(isTopScore, gameState.score || 0);
+        
+        if (result.success) {
+          console.log(`✅ [Enigma Scroll] Récompenses sauvegardées avec succès:`, result.rewards);
+        } else {
+          console.error('❌ [Enigma Scroll] Erreur lors de la sauvegarde des récompenses:', result.error);
+        }
+        
       } catch (error) {
-        console.error('❌ [Enigma Scroll] Erreur lors de l\'attribution des récompenses:', error);
+        console.error('❌ [Enigma Scroll] Erreur critique lors de l\'attribution des récompenses:', error);
         showMessage('Erreur lors de la sauvegarde des récompenses', 'warning');
       }
     }

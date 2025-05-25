@@ -5,41 +5,78 @@
 document.addEventListener('DOMContentLoaded', async function() {
   console.log("Initialisation du header d'authentification...");
   
+  // Clés localStorage exactement comme dans firebase-config.js
+  const LOCALSTORAGE_KEYS = {
+    USERS: 'english_quest_users',
+    CURRENT_USER: 'english_quest_current_user',
+    LEGACY_USERS: 'users',
+    LEGACY_CURRENT_USER: 'currentUser',
+    USER_PROFILE: 'userProfile',
+    USER_ID: 'englishQuestUserId'
+  };
+  
   // Système d'authentification simple pour le mode standalone
   const simpleAuth = {
     getCurrentUser: async function() {
       try {
-        // Utiliser la même logique que le service principal
-        const userId = localStorage.getItem('englishQuestUserId');
-        console.log('🔍 [Auth Header] ID utilisateur récupéré:', userId);
+        console.log('🔍 [Auth Header] Recherche utilisateur avec toutes les méthodes...');
         
-        if (!userId || userId === "undefined" || userId === "null") {
-          console.log('❌ [Auth Header] Aucun ID utilisateur valide trouvé');
-          return null;
-        }
-        
-        // Si window.authService est disponible, l'utiliser pour récupérer les données complètes
-        if (window.authService && typeof window.authService.loadUserData === 'function') {
-          console.log('🔄 [Auth Header] Utilisation de authService.loadUserData');
+        // MÉTHODE 1 : Exactement comme firebase-config.js
+        // Essayer d'abord la nouvelle clé
+        let userData = localStorage.getItem(LOCALSTORAGE_KEYS.CURRENT_USER);
+        if (userData) {
           try {
-            const userData = await window.authService.loadUserData(userId);
-            if (userData) {
-              console.log('✅ [Auth Header] Données utilisateur récupérées:', userData.username || userData.displayName || 'Utilisateur');
-              return { uid: userId, ...userData };
-            }
-          } catch (error) {
-            console.warn('⚠️ [Auth Header] Erreur loadUserData:', error);
+            const user = JSON.parse(userData);
+            console.log('✅ [Auth Header] Utilisateur trouvé via CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
+            return user;
+          } catch (e) {
+            console.warn('⚠️ [Auth Header] Erreur parsing CURRENT_USER:', e);
+          }
+        }
+
+        // Essayer ensuite l'ancienne clé
+        userData = localStorage.getItem(LOCALSTORAGE_KEYS.LEGACY_CURRENT_USER);
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            console.log('✅ [Auth Header] Utilisateur trouvé via LEGACY_CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
+            return user;
+          } catch (e) {
+            console.warn('⚠️ [Auth Header] Erreur parsing LEGACY_CURRENT_USER:', e);
           }
         }
         
-        // Fallback : créer un objet utilisateur minimal avec l'ID
-        console.log('📝 [Auth Header] Création objet utilisateur minimal');
-        return { 
-          uid: userId, 
-          id: userId,
-          username: `Utilisateur ${userId.substring(0, 8)}`,
-          displayName: `Utilisateur ${userId.substring(0, 8)}`
-        };
+        // MÉTHODE 2 : Nouvelle approche avec englishQuestUserId
+        const userId = localStorage.getItem(LOCALSTORAGE_KEYS.USER_ID);
+        if (userId && userId !== "undefined" && userId !== "null") {
+          console.log('🔄 [Auth Header] ID utilisateur trouvé, recherche des données:', userId);
+          
+          // Si window.authService est disponible, l'utiliser pour récupérer les données complètes
+          if (window.authService && typeof window.authService.loadUserData === 'function') {
+            console.log('🔄 [Auth Header] Utilisation de authService.loadUserData');
+            try {
+              const userData = await window.authService.loadUserData(userId);
+              if (userData) {
+                console.log('✅ [Auth Header] Données utilisateur récupérées via authService:', userData.username || userData.displayName || 'Utilisateur');
+                return { uid: userId, ...userData };
+              }
+            } catch (error) {
+              console.warn('⚠️ [Auth Header] Erreur loadUserData:', error);
+            }
+          }
+          
+          // Fallback : créer un objet utilisateur minimal avec l'ID
+          console.log('📝 [Auth Header] Création objet utilisateur minimal');
+          return { 
+            uid: userId, 
+            id: userId,
+            username: `Utilisateur ${userId.substring(0, 8)}`,
+            displayName: `Utilisateur ${userId.substring(0, 8)}`
+          };
+        }
+        
+        console.log('❌ [Auth Header] Aucun utilisateur trouvé');
+        return null;
         
       } catch (e) {
         console.warn('❌ [Auth Header] Erreur lecture session:', e);
@@ -47,21 +84,23 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     },
     logout: function() {
-      localStorage.removeItem('englishQuestUserId');
+      // Nettoyer toutes les clés d'authentification
+      localStorage.removeItem(LOCALSTORAGE_KEYS.CURRENT_USER);
+      localStorage.removeItem(LOCALSTORAGE_KEYS.LEGACY_CURRENT_USER);
+      localStorage.removeItem(LOCALSTORAGE_KEYS.USER_ID);
       localStorage.removeItem('englishQuestIsAdmin');
       console.log('🚪 [Auth Header] Session supprimée');
     },
     addAuthStateListener: function(callback) {
       // Simple polling pour détecter les changements
-      let lastUserId = localStorage.getItem('englishQuestUserId');
+      let lastState = null;
       setInterval(async () => {
-        const currentUserId = localStorage.getItem('englishQuestUserId');
-        const userChanged = (lastUserId && !currentUserId) || (!lastUserId && currentUserId) || 
-                           (lastUserId !== currentUserId);
-        if (userChanged) {
+        const currentUser = await this.getCurrentUser();
+        const currentState = currentUser ? (currentUser.username || currentUser.uid) : null;
+        
+        if (lastState !== currentState) {
           console.log('🔄 [Auth Header] Changement d\'état détecté');
-          lastUserId = currentUserId;
-          const currentUser = await this.getCurrentUser();
+          lastState = currentState;
           callback(currentUser);
         }
       }, 2000);
@@ -101,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       user = await authService.getCurrentUser();
     }
     
-    console.log("🔄 Mise à jour de l'UI avec l'utilisateur:", user ? (user.displayName || user.username || user.email || "Utilisateur connecté") : "Déconnecté");
+    console.log("🔄 Mise à jour de l'UI avec l'utilisateur:", user ? (user.username || "Utilisateur connecté") : "Déconnecté");
     
     // Supprimer tous les boutons de déconnexion existants pour éviter les doublons
     const existingLogoutButtons = document.querySelectorAll('[id^="logoutButton"], .btn-logout[id*="logout"]');
@@ -122,18 +161,17 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (profileButton) {
         profileButton.style.display = 'inline-flex';
         
-        // Mettre à jour le texte du bouton (nom d'utilisateur ou texte par défaut)
-        if (user.displayName) {
-          profileButton.textContent = user.displayName;
-        } else if (user.username) {
-          profileButton.textContent = user.username;
-        } else if (user.email) {
-          profileButton.textContent = user.email.split('@')[0];
-        } else {
-          profileButton.textContent = 'Mon Profil';
-        }
+        // Mettre à jour le texte du bouton EXACTEMENT comme sur la page index
+        // Priorité : username UNIQUEMENT (site RGPD sans email)
+        let displayText = 'Mon Profil';
         
-        console.log("✅ Bouton de profil affiché avec le texte:", profileButton.textContent);
+        if (user.username && user.username !== '') {
+          displayText = user.username;
+        }
+        // Pas d'email dans un site RGPD - directement "Mon Profil" en fallback
+        
+        profileButton.textContent = displayText;
+        console.log("✅ Bouton de profil affiché avec le texte:", displayText);
         
         // Ajouter un bouton de déconnexion
         const logoutButton = document.createElement('a');
@@ -168,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Mettre à jour l'UI avec l'état initial
   const currentUser = await authService.getCurrentUser();
-  console.log('👤 [Auth Header] Utilisateur initial récupéré:', currentUser ? 'Connecté' : 'Déconnecté');
+  console.log('👤 [Auth Header] Utilisateur initial récupéré:', currentUser ? (currentUser.username || 'Connecté') : 'Déconnecté');
   await updateUI(currentUser);
   console.log("✅ Interface initialisée avec l'état d'authentification actuel");
 
