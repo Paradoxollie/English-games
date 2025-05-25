@@ -2133,6 +2133,16 @@
       gameState.keyboardState = {};
       gameState.validatingWord = false;
       
+      // CORRECTION: Réinitialiser le score seulement au tout début d'une nouvelle session
+      if (!gameState.sessionStarted) {
+        gameState.score = 0;
+        gameState.combo = 1;
+        gameState.wordsFound = 0;
+        gameState.bestCombo = 1;
+        gameState.sessionStarted = true;
+        console.log('🎮 [Enigma Scroll] Nouvelle session de jeu - Score remis à zéro');
+      }
+      
       // Reset des couleurs du clavier pour chaque nouveau mot
       resetKeyboardColors();
       
@@ -2201,11 +2211,9 @@
         
         // Vérifier si temps écoulé ou plus de place pour continuer
         if (gameState.timeLeft <= 0) {
-          // Temps écoulé - fin de partie
+          // Temps écoulé - fin de session complète
           showMessage('⏰ Temps écoulé ! Partie terminée', 'warning', 3000);
-          setTimeout(() => {
-            document.getElementById('new-game-button').style.display = 'inline-flex';
-          }, 2000);
+          endGameSession();
         } else {
           // Continuer avec un nouveau mot
           setTimeout(() => {
@@ -2241,10 +2249,8 @@
         gameState.combo = 1;
         showMessage(message, 'error', 3000);
         
-        // Afficher le bouton nouveau jeu
-        setTimeout(() => {
-          document.getElementById('new-game-button').style.display = 'inline-flex';
-        }, 2000);
+        // Fin de session pour une défaite
+        endGameSession();
       }
       
       updateDisplay();
@@ -2287,8 +2293,31 @@
       gameState.keyboardState = {};
     }
     
+    // Fonction pour terminer complètement une session de jeu
+    function endGameSession() {
+      // Marquer la fin de session
+      gameState.sessionStarted = false;
+      
+      // Afficher le bouton nouveau jeu
+      setTimeout(() => {
+        document.getElementById('new-game-button').style.display = 'inline-flex';
+      }, 2000);
+      
+      console.log('🏁 [Enigma Scroll] Session terminée - Score final:', gameState.score);
+    }
+    
     function newGame() {
       document.getElementById('new-game-button').style.display = 'none';
+      
+      // CORRECTION: Réinitialiser complètement la session pour une nouvelle partie
+      gameState.sessionStarted = false;
+      gameState.score = 0;
+      gameState.combo = 1;
+      gameState.wordsFound = 0;
+      gameState.bestCombo = 1;
+      
+      console.log('🔄 [Enigma Scroll] Réinitialisation complète pour nouvelle partie');
+      
       if (gameState.selectedDifficulty) {
         checkAuthenticationAndStartGame(gameState.selectedDifficulty);
       }
@@ -2320,6 +2349,16 @@
           showMessage('Veuillez sélectionner une difficulté !', 'warning');
           return;
         }
+        
+        // CORRECTION: Réinitialiser complètement la session au démarrage
+        gameState.sessionStarted = false;
+        gameState.score = 0;
+        gameState.combo = 1;
+        gameState.wordsFound = 0;
+        gameState.bestCombo = 1;
+        
+        console.log('🚀 [Enigma Scroll] Démarrage nouvelle session de jeu');
+        
         checkAuthenticationAndStartGame(gameState.selectedDifficulty);
       });
       
