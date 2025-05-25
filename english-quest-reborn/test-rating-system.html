@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Système de Notation</title>
+    
+    <!-- Styles de base -->
+    <style>
+        :root {
+            --color-primary: #2ecc71;
+            --color-secondary: #27ae60;
+            --color-surface: #1e1e1e;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--color-surface);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .test-button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: var(--color-secondary);
+            transform: translateY(-2px);
+        }
+        
+        .test-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .status.success { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .status.error { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        .status.warning { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .status.info { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        
+        .service-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .service-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .service-card.available {
+            border: 2px solid #2ecc71;
+        }
+        
+        .service-card.unavailable {
+            border: 2px solid #e74c3c;
+        }
+    </style>
+    
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Scripts nécessaires -->
+    <script type="module" src="scripts/auth-header.js"></script>
+    <script type="module" src="scripts/game-stats-service.js"></script>
+    <script type="module" src="scripts/end-game-rating.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Test du Système de Notation</h1>
+        <p>Cette page teste le nouveau système de notation pour identifier les problèmes de clics.</p>
+        
+        <!-- État des services -->
+        <div class="test-section">
+            <h2>📊 État des Services</h2>
+            <div class="service-status" id="service-status">
+                <!-- Sera rempli par JavaScript -->
+            </div>
+            <button class="test-button" onclick="checkServices()">🔄 Vérifier les Services</button>
+        </div>
+        
+        <!-- Tests de base -->
+        <div class="test-section">
+            <h2>🧪 Tests de Base</h2>
+            <button class="test-button" onclick="testRatingModal('test-game', null, 'Jeu de Test')">
+                🌟 Tester Modal de Notation
+            </button>
+            <button class="test-button" onclick="testRatingWithUser()">
+                👤 Tester avec Utilisateur Connecté
+            </button>
+            <button class="test-button" onclick="testExistingRating()">
+                ✏️ Tester Modification de Note
+            </button>
+            <div id="test-results"></div>
+        </div>
+        
+        <!-- Tests spécifiques aux jeux -->
+        <div class="test-section">
+            <h2>🎮 Tests Spécifiques aux Jeux</h2>
+            <button class="test-button" onclick="testEnigmaScrollRating()">
+                📜 Tester Enigma Scroll
+            </button>
+            <button class="test-button" onclick="testSpeedVerbRating()">
+                ⚡ Tester Speed Verb Challenge
+            </button>
+        </div>
+        
+        <!-- Journal des événements -->
+        <div class="test-section">
+            <h2>📝 Journal des Événements</h2>
+            <button class="test-button" onclick="clearLog()">🗑️ Effacer</button>
+            <div id="log" class="log"></div>
+        </div>
+        
+        <!-- Tests de clics -->
+        <div class="test-section">
+            <h2>🖱️ Test de Détection des Clics</h2>
+            <p>Cliquez sur les éléments ci-dessous pour tester la détection des événements :</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                <i class="fas fa-star test-star" data-rating="1" style="font-size: 2rem; color: #666; cursor: pointer; transition: color 0.2s;"></i>
+                <i class="fas fa-star test-star" data-rating="2" style="font-size: 2rem; color: #666; cursor: pointer; transition: color 0.2s;"></i>
+                <i class="fas fa-star test-star" data-rating="3" style="font-size: 2rem; color: #666; cursor: pointer; transition: color 0.2s;"></i>
+                <i class="fas fa-star test-star" data-rating="4" style="font-size: 2rem; color: #666; cursor: pointer; transition: color 0.2s;"></i>
+                <i class="fas fa-star test-star" data-rating="5" style="font-size: 2rem; color: #666; cursor: pointer; transition: color 0.2s;"></i>
+            </div>
+            <p id="click-result">Cliquez sur une étoile pour tester...</p>
+        </div>
+    </div>
+
+    <script>
+        let logElement;
+        
+        // Fonction de logging
+        function log(message, type = 'info') {
+            if (!logElement) logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[Test Rating] ${message}`);
+        }
+        
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+        
+        // Vérification des services
+        function checkServices() {
+            log('Vérification des services...');
+            const statusContainer = document.getElementById('service-status');
+            
+            const services = [
+                { name: 'endGameRating', obj: window.endGameRating, desc: 'Service de notation' },
+                { name: 'gameStatsService', obj: window.gameStatsService, desc: 'Service de statistiques' },
+                { name: 'authService', obj: window.authService, desc: 'Service d\'authentification' }
+            ];
+            
+            statusContainer.innerHTML = '';
+            
+            services.forEach(service => {
+                const card = document.createElement('div');
+                card.className = `service-card ${service.obj ? 'available' : 'unavailable'}`;
+                
+                const status = service.obj ? '✅ Disponible' : '❌ Non disponible';
+                const icon = service.obj ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                
+                card.innerHTML = `
+                    <i class="${icon}" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <h3>${service.name}</h3>
+                    <p>${service.desc}</p>
+                    <div class="status ${service.obj ? 'success' : 'error'}">${status}</div>
+                `;
+                
+                statusContainer.appendChild(card);
+                log(`${service.name}: ${service.obj ? 'OK' : 'MANQUANT'}`, service.obj ? 'success' : 'error');
+            });
+        }
+        
+        // Test de la modal de notation
+        function testRatingModal(gameId, playerId, gameTitle) {
+            log(`Test modal de notation pour ${gameTitle}...`);
+            
+            if (!window.endGameRating) {
+                log('Service endGameRating non disponible', 'error');
+                showResult('Service endGameRating non disponible', 'error');
+                return;
+            }
+            
+            try {
+                window.endGameRating.showRating(gameId, playerId, gameTitle);
+                log('Modal de notation affichée avec succès', 'success');
+                showResult('Modal de notation affichée avec succès', 'success');
+            } catch (error) {
+                log(`Erreur lors de l'affichage de la modal: ${error.message}`, 'error');
+                showResult(`Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test avec utilisateur connecté
+        function testRatingWithUser() {
+            log('Test avec utilisateur connecté...');
+            
+            let playerId = null;
+            let playerName = 'Utilisateur Test';
+            
+            if (window.authService && window.authService.currentUser) {
+                playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+                playerName = window.authService.currentUser.username || window.authService.currentUser.displayName || 'Utilisateur Connecté';
+                log(`Utilisateur connecté trouvé: ${playerName}`, 'success');
+            } else {
+                log('Aucun utilisateur connecté, utilisation d\'un ID de test', 'warning');
+                playerId = 'test-user-' + Date.now();
+            }
+            
+            testRatingModal('test-game-user', playerId, `Jeu de Test (${playerName})`);
+        }
+        
+        // Test de modification de note existante
+        async function testExistingRating() {
+            log('Test modification de note existante...');
+            
+            if (!window.gameStatsService) {
+                log('Service gameStatsService non disponible', 'error');
+                showResult('Service gameStatsService non disponible', 'error');
+                return;
+            }
+            
+            try {
+                // Simuler une note existante
+                const testGameId = 'test-existing-rating';
+                const testPlayerId = 'test-player-existing';
+                
+                // D'abord soumettre une note
+                await window.gameStatsService.submitRating(testGameId, 3, testPlayerId);
+                log('Note de test créée (3/5)', 'info');
+                
+                // Puis afficher l'interface pour la modifier
+                if (window.endGameRating) {
+                    window.endGameRating.showRating(testGameId, testPlayerId, 'Test Modification de Note');
+                    log('Interface de modification affichée', 'success');
+                    showResult('Interface de modification affichée - vous devriez voir "Note actuelle: 3/5"', 'success');
+                }
+            } catch (error) {
+                log(`Erreur lors du test de modification: ${error.message}`, 'error');
+                showResult(`Erreur: ${error.message}`, 'error');
+            }
+        }
+        
+        // Tests spécifiques aux jeux
+        function testEnigmaScrollRating() {
+            log('Test notation Enigma Scroll...');
+            testRatingModal('enigma-scroll', 'test-player-enigma', 'Enigma Scroll');
+        }
+        
+        function testSpeedVerbRating() {
+            log('Test notation Speed Verb Challenge...');
+            testRatingModal('speed-verb-challenge', 'test-player-speed', 'Speed Verb Challenge');
+        }
+        
+        // Affichage des résultats
+        function showResult(message, type) {
+            const resultsDiv = document.getElementById('test-results');
+            const resultElement = document.createElement('div');
+            resultElement.className = `status ${type}`;
+            resultElement.textContent = message;
+            resultsDiv.appendChild(resultElement);
+            
+            // Supprimer après 5 secondes
+            setTimeout(() => {
+                if (resultElement.parentNode) {
+                    resultElement.parentNode.removeChild(resultElement);
+                }
+            }, 5000);
+        }
+        
+        // Test de détection des clics
+        function setupClickTests() {
+            const testStars = document.querySelectorAll('.test-star');
+            const clickResult = document.getElementById('click-result');
+            
+            testStars.forEach((star, index) => {
+                star.addEventListener('click', (e) => {
+                    const rating = parseInt(e.target.dataset.rating);
+                    clickResult.textContent = `✅ Clic détecté sur l'étoile ${rating}`;
+                    clickResult.style.color = '#2ecc71';
+                    log(`Clic détecté sur étoile ${rating}`, 'success');
+                    
+                    // Mettre en surbrillance les étoiles
+                    testStars.forEach((s, i) => {
+                        if (i < rating) {
+                            s.style.color = '#f39c12';
+                        } else {
+                            s.style.color = '#666';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseenter', () => {
+                    log(`Survol étoile ${index + 1}`, 'info');
+                });
+            });
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page de test chargée');
+            setupClickTests();
+            
+            // Vérifier les services après un délai
+            setTimeout(() => {
+                checkServices();
+            }, 1000);
+            
+            // Ajouter des listeners pour détecter les erreurs
+            window.addEventListener('error', (e) => {
+                log(`Erreur JavaScript: ${e.message}`, 'error');
+            });
+            
+            // Détecter les clics sur le document
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('rating-star')) {
+                    log(`Clic détecté sur étoile de notation (classe: ${e.target.className})`, 'info');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
