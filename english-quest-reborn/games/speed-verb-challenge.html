@@ -1830,13 +1830,16 @@
 
             // Sauvegarder le score avec le système de leaderboard
             let playerName = 'Joueur Anonyme';
-            let playerId = null;
+            let playerId = `anonymous-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             
             // Essayer de récupérer le nom du joueur connecté
             try {
                 if (window.authService && window.authService.currentUser) {
                     playerName = window.authService.currentUser.username || window.authService.currentUser.displayName || 'Joueur Connecté';
                     playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+                    console.log('🔍 [Speed Verb Challenge] Joueur connecté détecté:', playerName, playerId);
+                } else {
+                    console.log('🔍 [Speed Verb Challenge] Joueur anonyme, ID généré:', playerId);
                 }
             } catch (e) {
                 console.log('Impossible de récupérer le nom du joueur:', e);

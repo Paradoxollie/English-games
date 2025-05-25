@@ -2415,9 +2415,12 @@
       
       // Afficher l'interface de notation après un délai
       setTimeout(() => {
-        let playerId = null;
+        let playerId = `anonymous-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         if (window.authService && window.authService.currentUser) {
           playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+          console.log('🔍 [Enigma Scroll] Joueur connecté détecté:', playerId);
+        } else {
+          console.log('🔍 [Enigma Scroll] Joueur anonyme, ID généré:', playerId);
         }
         
         // Vérifier que le service de notation est disponible
