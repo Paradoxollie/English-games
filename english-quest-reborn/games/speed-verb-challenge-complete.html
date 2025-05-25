@@ -1109,7 +1109,7 @@
                     this.scores.sort((a, b) => b.score - a.score);
                     this.scores = this.scores.slice(0, 50);
                     
-                    localStorage.setItem('speedVerbChallengeScores', JSON.stringify(this.scores));
+                                            localStorage.setItem('speedVerbScores', JSON.stringify(this.scores));
                     console.log('✅ Score sauvegardé localement:', newScore);
                     
                     // Mettre à jour l'affichage si on est en mode local
@@ -1130,7 +1130,7 @@
             // Lecture des scores
             getScores: function() {
                 try {
-                    this.scores = JSON.parse(localStorage.getItem('speedVerbChallengeScores') || '[]');
+                    this.scores = JSON.parse(localStorage.getItem('speedVerbScores') || '[]');
                     return this.scores;
                 } catch (e) {
                     console.error('❌ Erreur lecture scores:', e);
@@ -1271,9 +1271,9 @@
                 
                 try {
                     const db = firebase.firestore();
-                    console.log('🔍 Chargement des scores Firebase depuis speed_verb_challenge_scores...');
+                    console.log('🔍 Chargement des scores Firebase depuis speed_verb_scores...');
                     
-                    db.collection('speed_verb_challenge_scores')
+                    db.collection('speed_verb_scores')
                         .orderBy('score', 'desc')
                         .limit(10)
                         .get()
@@ -1363,7 +1363,7 @@
                         gameType: 'speed-verb-challenge'
                     };
                     
-                    db.collection('speed_verb_challenge_scores').add(firebaseData)
+                    db.collection('speed_verb_scores').add(firebaseData)
                         .then(docRef => {
                             console.log('✅ Score sauvegardé dans Firebase:', docRef.id);
                             
