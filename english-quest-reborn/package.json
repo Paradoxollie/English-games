@@ -8,6 +8,7 @@
     "dev": "vite",
     "dev-safe": "vite --mode development --host 0.0.0.0 --port 3003 --no-open",
     "dev-simple": "vite --host localhost --port 3005 --force",
+    "serve": "node serve.js",
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "firebase deploy",
