@@ -29,16 +29,14 @@
         return;
     }
 
-    // Configuration Firebase
+    // Configuration Firebase (mise à jour pour correspondre au site principal)
     const firebaseConfig = {
-        apiKey: "AIzaSyAm_fvXFh9Iv1EkoCJniaLkmXOelC6CRv0",
+        apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
         authDomain: "english-games-41017.firebaseapp.com",
         projectId: "english-games-41017",
         storageBucket: "english-games-41017.appspot.com",
-        messagingSenderId: "452279652544",
-        appId: "1:452279652544:web:916f93e0ab29183e739d25",
-        measurementId: "G-RMCQTMKDVP",
-        databaseURL: "https://english-games-41017-default-rtdb.europe-west1.firebasedatabase.app"
+        messagingSenderId: "1062036556501",
+        appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
     };
 
     // Variable globale pour suivre l'état de la connexion

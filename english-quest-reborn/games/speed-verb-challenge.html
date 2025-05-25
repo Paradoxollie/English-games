@@ -16,6 +16,25 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
+    <!-- Configuration Firebase -->
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
+            authDomain: "english-games-41017.firebaseapp.com",
+            projectId: "english-games-41017",
+            storageBucket: "english-games-41017.appspot.com",
+            messagingSenderId: "1062036556501",
+            appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
+        };
+
+        // Initialiser Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('✅ Firebase initialisé pour Speed Verb Challenge');
+        }
+    </script>
+
     <!-- Scripts d'authentification -->
     <script type="module" src="../scripts/auth-service.js"></script>
     <script type="module" src="../scripts/auth-header.js"></script>
@@ -871,20 +890,7 @@
 
     <!-- JavaScript intégré -->
     <script>
-        // Configuration Firebase (même que le site principal)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
-            authDomain: "english-games-41017.firebaseapp.com",
-            projectId: "english-games-41017",
-            storageBucket: "english-games-41017.appspot.com",
-            messagingSenderId: "1062036556501",
-            appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
-        };
-
-        // Initialiser Firebase seulement si pas déjà fait
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        // Firebase déjà initialisé dans le head
 
         // Base de données complète de verbes irréguliers (200+ verbes)
         const verbData = {
