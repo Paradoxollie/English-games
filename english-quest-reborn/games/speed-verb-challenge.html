@@ -30,6 +30,9 @@
     <script type="module" src="../scripts/auth-header.js"></script>
     <script type="module" src="../scripts/reward-service.js"></script>
 
+    <!-- Données de verbes simplifiées -->
+    <script src="speed-verb-data-simple.js"></script>
+
     <style>
         /* Variables exactes du site reborn avec thème Speed Verb */
         :root {
@@ -551,6 +554,55 @@
             margin-top: 2rem;
         }
 
+        /* Message de feedback */
+        .feedback-message {
+            text-align: center;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all var(--transition-normal);
+        }
+
+        .feedback-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feedback-message.success {
+            background-color: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--verb-correct);
+            color: var(--verb-correct);
+        }
+
+        .feedback-message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--verb-incorrect);
+            color: var(--verb-incorrect);
+        }
+
+        /* Réponses du verbe */
+        .current-verb-answers {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--color-background);
+            border-radius: var(--border-radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .current-verb-answers h3 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            font-family: var(--font-family-secondary);
+        }
+
+        .verb-answer {
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
         /* Sidebar - Leaderboard */
         .leaderboard-panel {
             background: var(--color-surface);
@@ -1068,38 +1120,70 @@
 
     <!-- Script d'initialisation -->
     <script>
+        // Variables globales pour le jeu
+        let selectedDifficulty = 1;
+        let gameInitialized = false;
+
         // Initialisation du jeu
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎮 Initialisation de Speed Verb Challenge...');
+
             // Gestion de la sélection de difficulté
             const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-            let selectedDifficulty = 1;
 
             difficultyBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     difficultyBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     selectedDifficulty = parseInt(this.dataset.difficulty);
+                    console.log('🎯 Difficulté sélectionnée:', selectedDifficulty);
                 });
             });
+
+            // Gestion du bouton "Commencer le Défi"
+            const startGameBtn = document.getElementById('start-game-btn');
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', function() {
+                    console.log('🚀 Démarrage du jeu avec difficulté:', selectedDifficulty);
+                    
+                    // Définir la difficulté globale
+                    if (window.difficulty !== undefined) {
+                        window.difficulty = selectedDifficulty.toString();
+                    }
+                    
+                    // Démarrer le jeu
+                    if (typeof window.startGame === 'function') {
+                        window.startGame();
+                    } else if (typeof startGame === 'function') {
+                        startGame();
+                    } else {
+                        console.error('❌ Fonction startGame non trouvée');
+                        // Fallback : changer d'état manuellement
+                        changeGameState('playing');
+                    }
+                });
+            }
 
             // Gestion du modal des règles
             const showRulesBtn = document.getElementById('show-rules-btn');
             const rulesModal = document.getElementById('rules-modal');
             const closeRulesBtn = document.getElementById('close-rules-btn');
 
-            showRulesBtn.addEventListener('click', () => {
-                rulesModal.classList.add('active');
-            });
+            if (showRulesBtn && rulesModal && closeRulesBtn) {
+                showRulesBtn.addEventListener('click', () => {
+                    rulesModal.classList.add('active');
+                });
 
-            closeRulesBtn.addEventListener('click', () => {
-                rulesModal.classList.remove('active');
-            });
-
-            rulesModal.addEventListener('click', (e) => {
-                if (e.target === rulesModal) {
+                closeRulesBtn.addEventListener('click', () => {
                     rulesModal.classList.remove('active');
-                }
-            });
+                });
+
+                rulesModal.addEventListener('click', (e) => {
+                    if (e.target === rulesModal) {
+                        rulesModal.classList.remove('active');
+                    }
+                });
+            }
 
             // Gestion du menu mobile
             const menuToggle = document.querySelector('.menu-toggle');
@@ -1111,8 +1195,393 @@
                 });
             }
 
-            console.log('Speed Verb Challenge initialisé avec le nouveau style');
+            // Initialiser le jeu principal si disponible
+            setTimeout(() => {
+                if (typeof window.initGame === 'function') {
+                    console.log('🎮 Initialisation du jeu principal...');
+                    window.initGame();
+                    gameInitialized = true;
+                } else if (typeof initGame === 'function') {
+                    console.log('🎮 Initialisation du jeu principal (local)...');
+                    initGame();
+                    gameInitialized = true;
+                } else {
+                    console.warn('⚠️ Fonction initGame non trouvée, initialisation basique');
+                    initBasicGame();
+                }
+            }, 100);
+
+            console.log('✅ Speed Verb Challenge initialisé avec le nouveau style');
         });
+
+        // Fonction de changement d'état de jeu (fallback)
+        function changeGameState(state) {
+            console.log('🔄 Changement d\'état vers:', state);
+            
+            const states = ['welcome-screen', 'playing', 'game-over'];
+            states.forEach(stateId => {
+                const element = document.getElementById(stateId);
+                if (element) {
+                    element.classList.remove('active');
+                }
+            });
+
+            const targetState = document.getElementById(state);
+            if (targetState) {
+                targetState.classList.add('active');
+                console.log('✅ État changé vers:', state);
+            } else {
+                console.error('❌ État non trouvé:', state);
+            }
+        }
+
+        // Initialisation basique si le jeu principal n'est pas disponible
+        function initBasicGame() {
+            console.log('🔧 Initialisation basique du jeu...');
+            
+            // Variables de jeu
+            let gameTimer = null;
+            let timeLeft = 90;
+            let score = 0;
+            let currentVerb = null;
+            let verbsCompleted = 0;
+            let correctStreak = 0;
+            let comboMultiplier = 1.0;
+            
+            // Créer des fonctions de base
+            window.startGame = function() {
+                console.log('🎮 Démarrage du jeu avec difficulté:', selectedDifficulty);
+                changeGameState('playing');
+                
+                // Réinitialiser les variables
+                timeLeft = 90;
+                score = 0;
+                verbsCompleted = 0;
+                correctStreak = 0;
+                comboMultiplier = 1.0;
+                
+                // Afficher le premier verbe
+                displayNewVerb();
+                
+                // Démarrer le timer
+                startGameTimer();
+                
+                // Ajouter les event listeners pour les boutons de jeu
+                addGameEventListeners();
+            };
+
+            function startGameTimer() {
+                const timeDisplay = document.getElementById('time-left');
+                
+                gameTimer = setInterval(() => {
+                    timeLeft--;
+                    if (timeDisplay) {
+                        timeDisplay.textContent = timeLeft;
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+            }
+
+            function displayNewVerb() {
+                if (!window.getRandomVerb) {
+                    console.error('❌ Fonction getRandomVerb non disponible');
+                    return;
+                }
+
+                currentVerb = window.getRandomVerb();
+                console.log('🎯 Nouveau verbe:', currentVerb);
+
+                // Afficher le verbe
+                const verbDisplay = document.getElementById('current-verb');
+                const verbTranslation = document.getElementById('verb-translation');
+                
+                if (verbDisplay) {
+                    verbDisplay.textContent = currentVerb.infinitive.toUpperCase();
+                }
+                if (verbTranslation) {
+                    verbTranslation.textContent = `(${currentVerb.translation})`;
+                }
+
+                // Créer les inputs selon la difficulté
+                createVerbInputs();
+            }
+
+            function createVerbInputs() {
+                const inputsContainer = document.getElementById('verb-form-inputs');
+                if (!inputsContainer) return;
+
+                inputsContainer.innerHTML = '';
+
+                // Prétérit (toujours présent)
+                if (selectedDifficulty >= 1) {
+                    const preteritGroup = document.createElement('div');
+                    preteritGroup.className = 'verb-input-group';
+                    preteritGroup.innerHTML = `
+                        <label class="verb-input-label">Prétérit</label>
+                        <input type="text" class="verb-input" id="preterit-input" placeholder="Entrez le prétérit">
+                    `;
+                    inputsContainer.appendChild(preteritGroup);
+                }
+
+                // Participe passé
+                if (selectedDifficulty >= 2) {
+                    const pastParticipleGroup = document.createElement('div');
+                    pastParticipleGroup.className = 'verb-input-group';
+                    pastParticipleGroup.innerHTML = `
+                        <label class="verb-input-label">Participe passé</label>
+                        <input type="text" class="verb-input" id="past-participle-input" placeholder="Entrez le participe passé">
+                    `;
+                    inputsContainer.appendChild(pastParticipleGroup);
+                }
+
+                // Traduction
+                if (selectedDifficulty >= 3) {
+                    const translationGroup = document.createElement('div');
+                    translationGroup.className = 'verb-input-group';
+                    translationGroup.innerHTML = `
+                        <label class="verb-input-label">Traduction</label>
+                        <input type="text" class="verb-input" id="translation-input" placeholder="Entrez la traduction">
+                    `;
+                    inputsContainer.appendChild(translationGroup);
+                }
+
+                // Focus sur le premier input
+                setTimeout(() => {
+                    const firstInput = inputsContainer.querySelector('.verb-input');
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+                }, 100);
+            }
+
+            function addGameEventListeners() {
+                // Bouton Valider
+                const checkBtn = document.getElementById('check-answer-btn');
+                if (checkBtn) {
+                    checkBtn.onclick = checkAnswer;
+                }
+
+                // Bouton Passer
+                const skipBtn = document.getElementById('skip-verb-btn');
+                if (skipBtn) {
+                    skipBtn.onclick = skipVerb;
+                }
+
+                // Bouton Rejouer
+                const playAgainBtn = document.getElementById('play-again-btn');
+                if (playAgainBtn) {
+                    playAgainBtn.onclick = () => {
+                        changeGameState('welcome-screen');
+                    };
+                }
+
+                // Entrée sur les inputs
+                document.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && e.target.classList.contains('verb-input')) {
+                        checkAnswer();
+                    }
+                });
+            }
+
+            function checkAnswer() {
+                if (!currentVerb || !window.checkVerbAnswer) return;
+
+                // Récupérer les réponses de l'utilisateur
+                const userAnswers = {};
+                
+                const preteritInput = document.getElementById('preterit-input');
+                const pastParticipleInput = document.getElementById('past-participle-input');
+                const translationInput = document.getElementById('translation-input');
+
+                if (preteritInput) userAnswers.preterit = preteritInput.value;
+                if (pastParticipleInput) userAnswers.pastParticiple = pastParticipleInput.value;
+                if (translationInput) userAnswers.translation = translationInput.value;
+
+                // Vérifier la réponse
+                const result = window.checkVerbAnswer(currentVerb.key, userAnswers, selectedDifficulty);
+                
+                if (result.correct) {
+                    // Réponse correcte
+                    correctStreak++;
+                    comboMultiplier = Math.min(3.0, 1.0 + (correctStreak * 0.1));
+                    
+                    const points = selectedDifficulty * Math.floor(comboMultiplier * 10);
+                    score += points;
+                    verbsCompleted++;
+                    
+                    showFeedback(true, `Excellent ! +${points} points (Combo x${comboMultiplier.toFixed(1)})`);
+                    
+                    // Afficher les inputs comme corrects
+                    markInputsCorrect();
+                    
+                    setTimeout(() => {
+                        displayNewVerb();
+                    }, 1500);
+                } else {
+                    // Réponse incorrecte
+                    correctStreak = 0;
+                    comboMultiplier = 1.0;
+                    
+                    showFeedback(false, `Incorrect ! Les bonnes réponses : ${formatCorrectAnswers(result.correctAnswers)}`);
+                    
+                    // Afficher les inputs comme incorrects
+                    markInputsIncorrect(result.results);
+                    
+                    setTimeout(() => {
+                        displayNewVerb();
+                    }, 3000);
+                }
+
+                updateHUD();
+            }
+
+            function skipVerb() {
+                correctStreak = 0;
+                comboMultiplier = 1.0;
+                showFeedback(false, 'Verbe passé !');
+                
+                setTimeout(() => {
+                    displayNewVerb();
+                }, 1000);
+                
+                updateHUD();
+            }
+
+            function markInputsCorrect() {
+                document.querySelectorAll('.verb-input').forEach(input => {
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                });
+            }
+
+            function markInputsIncorrect(results) {
+                const preteritInput = document.getElementById('preterit-input');
+                const pastParticipleInput = document.getElementById('past-participle-input');
+                const translationInput = document.getElementById('translation-input');
+
+                if (preteritInput) {
+                    preteritInput.classList.toggle('correct', results.preterit === true);
+                    preteritInput.classList.toggle('incorrect', results.preterit === false);
+                }
+                if (pastParticipleInput) {
+                    pastParticipleInput.classList.toggle('correct', results.pastParticiple === true);
+                    pastParticipleInput.classList.toggle('incorrect', results.pastParticiple === false);
+                }
+                if (translationInput) {
+                    translationInput.classList.toggle('correct', results.translation === true);
+                    translationInput.classList.toggle('incorrect', results.translation === false);
+                }
+            }
+
+            function formatCorrectAnswers(answers) {
+                let result = [];
+                if (selectedDifficulty >= 1) result.push(`Prétérit: ${answers.preterit}`);
+                if (selectedDifficulty >= 2) result.push(`Participe passé: ${answers.pastParticiple}`);
+                if (selectedDifficulty >= 3) result.push(`Traduction: ${answers.translation}`);
+                return result.join(', ');
+            }
+
+            function showFeedback(success, message) {
+                const feedbackElement = document.getElementById('feedback-message');
+                if (!feedbackElement) return;
+
+                feedbackElement.textContent = message;
+                feedbackElement.className = `feedback-message ${success ? 'success' : 'error'} show`;
+
+                setTimeout(() => {
+                    feedbackElement.classList.remove('show');
+                }, success ? 1500 : 3000);
+            }
+
+            function updateHUD() {
+                const scoreDisplay = document.getElementById('player-score');
+                const comboDisplay = document.getElementById('combo-multiplier');
+                const levelDisplay = document.getElementById('player-level');
+
+                if (scoreDisplay) scoreDisplay.textContent = score;
+                if (comboDisplay) comboDisplay.textContent = `x${comboMultiplier.toFixed(1)}`;
+                if (levelDisplay) levelDisplay.textContent = Math.floor(score / 100) + 1;
+            }
+
+            function endGame() {
+                if (gameTimer) {
+                    clearInterval(gameTimer);
+                    gameTimer = null;
+                }
+
+                // Afficher les résultats
+                const finalScoreElement = document.getElementById('final-score-value');
+                const finalLevelElement = document.getElementById('final-level');
+                const verbsCompletedElement = document.getElementById('verbs-completed');
+                const highestComboElement = document.getElementById('highest-combo');
+
+                if (finalScoreElement) finalScoreElement.textContent = score;
+                if (finalLevelElement) finalLevelElement.textContent = Math.floor(score / 100) + 1;
+                if (verbsCompletedElement) verbsCompletedElement.textContent = verbsCompleted;
+                if (highestComboElement) highestComboElement.textContent = `x${comboMultiplier.toFixed(1)}`;
+
+                changeGameState('game-over');
+
+                // Essayer de sauvegarder le score avec le système de récompenses
+                if (window.rewardService && typeof window.rewardService.giveReward === 'function') {
+                    const isRecord = score > (localStorage.getItem('speedVerbBestScore') || 0);
+                    const xpGain = isRecord ? selectedDifficulty * 20 : selectedDifficulty * 2;
+                    const coinGain = isRecord ? 20 : 1;
+                    
+                    window.rewardService.giveReward('speed-verb-challenge', score, xpGain, coinGain, isRecord);
+                    
+                    if (isRecord) {
+                        localStorage.setItem('speedVerbBestScore', score);
+                    }
+                }
+
+                console.log('🏁 Jeu terminé ! Score final:', score);
+            }
+
+            // Initialiser le leaderboard basique
+            initBasicLeaderboard();
+        }
+
+        // Leaderboard basique
+        function initBasicLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            if (leaderboardBody) {
+                leaderboardBody.innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td>Champion</td>
+                        <td>2500</td>
+                        <td>Aujourd'hui</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Expert</td>
+                        <td>2200</td>
+                        <td>Hier</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Maître</td>
+                        <td>1900</td>
+                        <td>Il y a 2 jours</td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Fonction pour déboguer
+        window.debugSpeedVerb = function() {
+            console.log('🔍 Debug Speed Verb Challenge:');
+            console.log('- selectedDifficulty:', selectedDifficulty);
+            console.log('- gameInitialized:', gameInitialized);
+            console.log('- window.initGame:', typeof window.initGame);
+            console.log('- window.startGame:', typeof window.startGame);
+            console.log('- window.verbData:', typeof window.verbData);
+            console.log('- window.authService:', typeof window.authService);
+        };
     </script>
 </body>
 </html>
