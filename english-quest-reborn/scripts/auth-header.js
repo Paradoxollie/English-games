@@ -72,8 +72,7 @@ async function initAuthHeader() {
           return { 
             uid: userId, 
             id: userId,
-            username: `Utilisateur ${userId.substring(0, 8)}`,
-            displayName: `Utilisateur ${userId.substring(0, 8)}`
+            username: `Utilisateur ${userId.substring(0, 8)}`
           };
         }
         
@@ -114,12 +113,14 @@ async function initAuthHeader() {
   };
 
   // Utiliser authService si disponible, sinon utiliser simpleAuth
-  let authService = window.authService || simpleAuth;
+  let authService;
   
-  if (!window.authService) {
-    console.log("Utilisation du système d'authentification simplifié");
-  } else {
+  if (window.authService) {
     console.log("✅ Service d'authentification principal détecté");
+    authService = window.authService;
+  } else {
+    console.log("⚠️ Utilisation du système d'authentification simplifié");
+    authService = simpleAuth;
   }
 
   // Initialiser le service d'authentification
