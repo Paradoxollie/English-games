@@ -225,18 +225,12 @@ class GameStatsService {
      * Statistiques par défaut si Firebase n'est pas disponible
      */
     getDefaultStats(gameId) {
-        const defaults = {
-            'enigma-scroll': { playCount: 156, averageRating: 4.2, ratingCount: 89 },
-            'speed-verb-challenge': { playCount: 203, averageRating: 4.5, ratingCount: 127 },
-            'grammar-quest': { playCount: 98, averageRating: 4.1, ratingCount: 67 },
-            'word-builder': { playCount: 134, averageRating: 4.3, ratingCount: 78 }
-        };
-
+        // Retourner 0 pour les vraies statistiques, pas de fausses données
         return {
             gameId: gameId,
-            playCount: defaults[gameId]?.playCount || 50,
-            averageRating: defaults[gameId]?.averageRating || 4.0,
-            ratingCount: defaults[gameId]?.ratingCount || 30,
+            playCount: 0,
+            averageRating: 0,
+            ratingCount: 0,
             averageScore: 0,
             lastPlayed: null
         };

@@ -383,6 +383,7 @@
   <script type="module" src="scripts/gender-selection.js"></script>
   <script src="scripts/debug.js"></script>
   <script src="scripts/particles.js"></script>
+  <script type="module" src="scripts/game-rating-component.js"></script>
   
   <!-- Firebase et statistiques -->
   <script>
@@ -404,10 +405,17 @@
   <script type="module" src="scripts/game-stats-service.js"></script>
   <script type="module">
     import { gameStatsService } from './scripts/game-stats-service.js';
+    import { gameRatingComponent } from './scripts/game-rating-component.js';
     
     // Initialiser et charger les statistiques
     document.addEventListener('DOMContentLoaded', async () => {
       console.log('🎮 Initialisation des statistiques des jeux...');
+      
+      // Ajouter les styles CSS pour les notations
+      gameRatingComponent.addStyles();
+      
+      // Initialiser les événements de notation
+      gameRatingComponent.initializeEvents();
       
       await gameStatsService.init();
       
@@ -439,11 +447,15 @@
         const featuredRating = document.querySelector('.featured-game .game-stats .game-stat:last-child span');
         
         if (featuredPlayerCount) {
-          featuredPlayerCount.textContent = `${gameStatsService.formatPlayerCount(stats.playCount)} joueurs`;
+          featuredPlayerCount.textContent = `${stats.playCount || 0} joueurs`;
         }
         if (featuredRating) {
-          featuredRating.textContent = `${stats.averageRating}/5`;
+          featuredRating.textContent = `${stats.averageRating || 0}/5`;
         }
+        
+        // Ajouter l'interface de notation
+        addRatingInterface('speed-verb-challenge', stats, '.featured-game .featured-game-footer');
+        
       } else if (gameId === 'enigma-scroll') {
         // Enigma Scroll
         const enigmaCard = document.querySelector('.game-card:nth-child(4)'); // 4ème carte
@@ -452,11 +464,14 @@
           const rating = enigmaCard.querySelector('.game-stats .game-stat:last-child span');
           
           if (playerCount) {
-            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+            playerCount.textContent = stats.playCount || 0;
           }
           if (rating) {
-            rating.textContent = `${stats.averageRating}/5`;
+            rating.textContent = `${stats.averageRating || 0}/5`;
           }
+          
+          // Ajouter l'interface de notation
+          addRatingInterface('enigma-scroll', stats, '.game-card:nth-child(4) .game-footer');
         }
       } else if (gameId === 'word-memory') {
         // Word Memory Game
@@ -464,8 +479,11 @@
         if (wordMemoryCard) {
           const playerCount = wordMemoryCard.querySelector('.game-stats .game-stat span');
           if (playerCount) {
-            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+            playerCount.textContent = stats.playCount || 0;
           }
+          
+          // Ajouter l'interface de notation
+          addRatingInterface('word-memory', stats, '.game-card:nth-child(2) .game-footer');
         }
       } else if (gameId === 'memory-matrix') {
         // Memory Matrix
@@ -473,9 +491,24 @@
         if (memoryMatrixCard) {
           const playerCount = memoryMatrixCard.querySelector('.game-stats .game-stat span');
           if (playerCount) {
-            playerCount.textContent = gameStatsService.formatPlayerCount(stats.playCount);
+            playerCount.textContent = stats.playCount || 0;
           }
+          
+          // Ajouter l'interface de notation
+          addRatingInterface('memory-matrix', stats, '.game-card:nth-child(3) .game-footer');
         }
+      }
+    }
+    
+    function addRatingInterface(gameId, stats, containerSelector) {
+      const container = document.querySelector(containerSelector);
+      if (container && !container.querySelector('.game-rating-interface')) {
+        const ratingHtml = gameRatingComponent.createRatingInterface(
+          gameId, 
+          stats.averageRating || 0, 
+          stats.ratingCount || 0
+        );
+        container.insertAdjacentHTML('beforeend', ratingHtml);
       }
     }
   </script>

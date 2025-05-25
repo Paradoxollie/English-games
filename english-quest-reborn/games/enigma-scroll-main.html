@@ -21,6 +21,7 @@
   <!-- Scripts d'authentification -->
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
+  <script type="module" src="../scripts/game-stats-service.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -1009,6 +1010,21 @@
             <div style="display: flex; justify-content: space-between;">
               <span>Score total :</span>
               <span id="total-score-stat">0</span>
+            </div>
+          </div>
+
+          <!-- Panel de notation -->
+          <div class="game-panel rating-panel" id="rating-panel" style="display: none;">
+            <h2>Noter votre expérience</h2>
+            <div class="rating-section">
+              <div class="star-rating" style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="star" data-rating="1" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                <span class="star" data-rating="2" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                <span class="star" data-rating="3" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                <span class="star" data-rating="4" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+                <span class="star" data-rating="5" style="font-size: 2rem; cursor: pointer; color: #666; transition: color 0.2s;">⭐</span>
+              </div>
+              <p id="rating-message" style="text-align: center; color: var(--color-text-secondary); font-size: 0.9rem; opacity: 0.8;">Cliquez sur les étoiles pour noter le jeu</p>
             </div>
           </div>
 
@@ -2223,6 +2239,16 @@
           gameState.wordLength
         );
         
+        // Enregistrer les statistiques de jeu
+        if (window.gameStatsService) {
+          let playerId = null;
+          if (window.authService && window.authService.currentUser) {
+            playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+          }
+          window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
+          console.log('📊 Statistiques Enigma Scroll enregistrées');
+        }
+
         // Donner les récompenses en fonction du résultat
         setTimeout(() => {
           giveRewards(isTopScore);
@@ -2262,6 +2288,16 @@
           gameState.wordLength
         );
         
+        // Enregistrer les statistiques de jeu (même en cas d'échec)
+        if (window.gameStatsService) {
+          let playerId = null;
+          if (window.authService && window.authService.currentUser) {
+            playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+          }
+          window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
+          console.log('📊 Statistiques Enigma Scroll enregistrées (échec)');
+        }
+
         // Donner les récompenses (de base si pas de top score)
         setTimeout(() => {
           giveRewards(isTopScore);
@@ -2324,11 +2360,25 @@
         document.getElementById('new-game-button').style.display = 'inline-flex';
       }, 2000);
       
+      // Afficher le panel de notation après un délai
+      setTimeout(() => {
+        const ratingPanel = document.getElementById('rating-panel');
+        if (ratingPanel) {
+          ratingPanel.style.display = 'block';
+        }
+      }, 3000);
+      
       console.log('🏁 [Enigma Scroll] Session terminée - Score final:', gameState.score);
     }
     
     function newGame() {
       document.getElementById('new-game-button').style.display = 'none';
+      
+      // Cacher le panel de notation
+      const ratingPanel = document.getElementById('rating-panel');
+      if (ratingPanel) {
+        ratingPanel.style.display = 'none';
+      }
       
       // CORRECTION: Réinitialiser complètement la session pour une nouvelle partie
       gameState.sessionStarted = false;
@@ -2428,6 +2478,9 @@
       // Nouveau jeu
       document.getElementById('new-game-button').addEventListener('click', newGame);
       
+      // Système de notation
+      setupRatingSystem();
+      
       console.log('🎮 Jeu Enigma Scroll initialisé avec système de scores reborn !');
       console.log('🌐 Validation API activée pour TOUS les mots anglais');
       console.log('🎮 Raccourcis: 1=Indice, 2=Temps, 3=Passer');
@@ -2443,6 +2496,70 @@
         deleteLetter();
       } else if (key.match(/^[A-Z]$/)) {
         addLetter(key);
+      }
+    }
+
+    // Système de notation
+    function setupRatingSystem() {
+      const stars = document.querySelectorAll('.star');
+      const ratingMessage = document.getElementById('rating-message');
+      let selectedRating = 0;
+
+      stars.forEach((star, index) => {
+        star.addEventListener('mouseenter', () => {
+          highlightStars(index + 1);
+        });
+
+        star.addEventListener('mouseleave', () => {
+          highlightStars(selectedRating);
+        });
+
+        star.addEventListener('click', () => {
+          selectedRating = index + 1;
+          highlightStars(selectedRating);
+          submitRating(selectedRating);
+        });
+      });
+
+      function highlightStars(rating) {
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.style.color = '#f39c12';
+          } else {
+            star.style.color = '#666';
+          }
+        });
+      }
+
+      async function submitRating(rating) {
+        try {
+          let playerId = null;
+          if (window.authService && window.authService.currentUser) {
+            playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
+          }
+
+          if (window.gameStatsService) {
+            const success = await window.gameStatsService.submitRating('enigma-scroll', rating, playerId);
+            
+            if (success) {
+              ratingMessage.textContent = `Merci ! Vous avez noté le jeu ${rating}/5 ⭐`;
+              ratingMessage.style.color = 'var(--color-primary)';
+              
+              // Désactiver les étoiles après soumission
+              stars.forEach(star => {
+                star.style.cursor = 'default';
+                star.style.pointerEvents = 'none';
+              });
+            } else {
+              ratingMessage.textContent = 'Erreur lors de l\'envoi de la note';
+              ratingMessage.style.color = 'var(--color-danger)';
+            }
+          }
+        } catch (error) {
+          console.error('Erreur soumission note:', error);
+          ratingMessage.textContent = 'Erreur lors de l\'envoi de la note';
+          ratingMessage.style.color = 'var(--color-danger)';
+        }
       }
     }
 
