@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Responsivité Mobile - English Quest</title>
+    <link rel="stylesheet" href="styles/new-design.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--color-background);
+            color: var(--color-text-primary);
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 1rem;
+        }
+
+        .test-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--color-surface);
+            border-radius: 1rem;
+        }
+
+        .test-section h2 {
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .page-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-link {
+            display: block;
+            padding: 1rem;
+            background: var(--color-background);
+            border: 1px solid var(--color-primary);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--color-text-primary);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .page-link:hover {
+            background: var(--color-primary);
+            color: var(--color-background);
+            transform: translateY(-2px);
+        }
+
+        .test-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-card {
+            background: var(--color-background);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-card-image {
+            height: 150px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .test-card-content {
+            padding: 1rem;
+        }
+
+        .test-card-title {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .test-card-description {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .test-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .test-btn {
+            padding: 0.5rem 1rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            background: var(--color-secondary);
+        }
+
+        .test-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+        }
+
+        .responsive-info {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--color-primary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .responsive-info h3 {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .responsive-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .responsive-info li {
+            padding: 0.25rem 0;
+            color: var(--color-text-secondary);
+        }
+
+        .responsive-info li::before {
+            content: "✓ ";
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .device-sizes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .device-size {
+            padding: 1rem;
+            background: var(--color-background);
+            border-radius: 0.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .device-size h4 {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .device-size p {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Test du système de notation */
+        .rating-test {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 1rem;
+            }
+
+            .test-header, .test-section {
+                padding: 1.5rem;
+            }
+
+            .page-links {
+                grid-template-columns: 1fr;
+            }
+
+            .test-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .test-card-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .test-btn {
+                width: 100%;
+            }
+
+            .device-sizes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .test-container {
+                padding: 0.5rem;
+            }
+
+            .test-header, .test-section {
+                padding: 1rem;
+            }
+
+            .test-section h2 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1 class="text-gradient">Test de Responsivité Mobile</h1>
+            <p>Vérification de l'adaptation mobile de toutes les pages English Quest</p>
+        </div>
+
+        <div class="test-section">
+            <h2>Pages Principales</h2>
+            <div class="page-links">
+                <a href="index.html" class="page-link">🏠 Page d'Accueil</a>
+                <a href="games.html" class="page-link">🎮 Jeux</a>
+                <a href="courses.html" class="page-link">📚 Cours</a>
+                <a href="gallery.html" class="page-link">🖼️ Galerie</a>
+                <a href="leaderboard.html" class="page-link">🏆 Classement</a>
+                <a href="profile.html" class="page-link">👤 Profil</a>
+                <a href="login.html" class="page-link">🔐 Connexion</a>
+                <a href="register.html" class="page-link">📝 Inscription</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Jeux Disponibles</h2>
+            <div class="page-links">
+                <a href="games/speed-verb-challenge.html" class="page-link">⚡ Speed Verb Challenge</a>
+                <a href="games/enigma-scroll-main.html" class="page-link">📜 Enigma Scroll</a>
+                <a href="games/word-memory-game.html" class="page-link">🧠 Word Memory Game</a>
+                <a href="games/memory-matrix.html" class="page-link">🔲 Memory Matrix</a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test des Cartes de Jeux</h2>
+            <div class="responsive-info">
+                <h3>Améliorations Apportées</h3>
+                <ul>
+                    <li>Interface de notation compacte et optimisée</li>
+                    <li>Cartes adaptatives pour tous les écrans</li>
+                    <li>Boutons tactiles avec zones de clic optimales (44px minimum)</li>
+                    <li>Texte lisible sur petits écrans</li>
+                    <li>Espacement adaptatif selon la taille d'écran</li>
+                    <li>Suppression des effets de survol sur écrans tactiles</li>
+                </ul>
+            </div>
+
+            <div class="test-cards">
+                <div class="test-card">
+                    <div class="test-card-image">Jeu Test 1</div>
+                    <div class="test-card-content">
+                        <h3 class="test-card-title">Speed Verb Challenge</h3>
+                        <p class="test-card-description">Testez votre connaissance des verbes irréguliers anglais dans une course contre la montre.</p>
+                        <div class="test-card-footer">
+                            <button class="test-btn">Jouer</button>
+                            <div class="test-stats">
+                                <span>👥 1.2K</span>
+                                <span>⭐ 4.8/5</span>
+                            </div>
+                        </div>
+                        <div class="rating-test">
+                            <!-- Test du système de notation -->
+                            <div class="game-rating-interface" data-game-id="test-game">
+                                <div class="rating-display">
+                                    <div class="stars-display">
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="far fa-star star-empty"></i>
+                                    </div>
+                                    <span class="rating-text">4.2/5</span>
+                                    <span class="rating-count">(156)</span>
+                                </div>
+                                <button class="btn-rate-game" data-game-id="test-game">
+                                    <i class="fas fa-star"></i> Noter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <div class="test-card-image">Jeu Test 2</div>
+                    <div class="test-card-content">
+                        <h3 class="test-card-title">Enigma Scroll</h3>
+                        <p class="test-card-description">Déchiffrez les parchemins mystérieux et devinez des mots cachés en anglais.</p>
+                        <div class="test-card-footer">
+                            <button class="test-btn">Jouer</button>
+                            <div class="test-stats">
+                                <span>👥 950</span>
+                                <span>⭐ 4.7/5</span>
+                            </div>
+                        </div>
+                        <div class="rating-test">
+                            <div class="game-rating-interface" data-game-id="test-game-2">
+                                <div class="rating-display">
+                                    <div class="stars-display">
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star star-filled"></i>
+                                        <i class="fas fa-star-half-alt star-half"></i>
+                                    </div>
+                                    <span class="rating-text">4.7/5</span>
+                                    <span class="rating-count">(89)</span>
+                                </div>
+                                <button class="btn-rate-game" data-game-id="test-game-2">
+                                    <i class="fas fa-star"></i> Noter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Tailles d'Écran Supportées</h2>
+            <div class="device-sizes">
+                <div class="device-size">
+                    <h4>📱 Mobile Portrait</h4>
+                    <p>320px - 768px<br>iPhone, Android</p>
+                </div>
+                <div class="device-size">
+                    <h4>📱 Mobile Paysage</h4>
+                    <p>568px - 768px<br>Optimisé pour le jeu</p>
+                </div>
+                <div class="device-size">
+                    <h4>📟 Tablette</h4>
+                    <p>768px - 1024px<br>iPad, Android tablets</p>
+                </div>
+                <div class="device-size">
+                    <h4>💻 Desktop</h4>
+                    <p>1024px+<br>Ordinateurs</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Instructions de Test</h2>
+            <div class="responsive-info">
+                <h3>Comment Tester</h3>
+                <ul>
+                    <li>Ouvrez les outils de développement (F12)</li>
+                    <li>Activez le mode responsive (Ctrl+Shift+M)</li>
+                    <li>Testez différentes tailles d'écran</li>
+                    <li>Vérifiez que tous les éléments sont visibles</li>
+                    <li>Testez les interactions tactiles</li>
+                    <li>Vérifiez la lisibilité du texte</li>
+                    <li>Assurez-vous que les boutons sont facilement cliquables</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts pour tester le système de notation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script type="module" src="scripts/game-rating-component.js"></script>
+    <script type="module">
+        import { gameRatingComponent } from './scripts/game-rating-component.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ajouter les styles pour le test
+            gameRatingComponent.addStyles();
+            
+            // Initialiser les événements
+            gameRatingComponent.initializeEvents();
+            
+            console.log('✅ Page de test de responsivité chargée');
+            console.log('📱 Testez sur différentes tailles d\'écran');
+        });
+    </script>
+</body>
+</html> 

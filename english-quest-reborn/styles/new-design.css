@@ -1105,6 +1105,152 @@ p {
   h3 {
     font-size: var(--font-size-lg);
   }
+
+  /* Améliorations pour les cartes de jeux sur mobile */
+  .game-card {
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .game-content {
+    padding: 1rem;
+  }
+
+  .game-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .game-description {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .game-tags {
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+  }
+
+  .game-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .game-footer {
+    gap: 0.75rem;
+  }
+
+  .btn-play {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .game-stats {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .game-stat {
+    font-size: 0.8rem;
+    min-width: auto;
+  }
+
+  /* Featured game sur mobile */
+  .featured-game {
+    margin-bottom: 2rem;
+  }
+
+  .featured-game-content {
+    padding: 1.25rem;
+  }
+
+  .featured-game-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .featured-game-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .featured-game-tags {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .featured-game-footer {
+    gap: 1rem;
+  }
+
+  /* Navigation mobile améliorée */
+  .header-container {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  /* Hero section mobile */
+  .hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  /* Section headers mobile */
+  .section-title {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  /* Feature cards mobile */
+  .feature-card {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .feature-icon {
+    margin-bottom: 1rem;
+  }
+
+  .feature-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
 }
 
 @media (max-width: 576px) {
@@ -1116,6 +1262,138 @@ p {
 
   .btn {
     width: 100%;
+  }
+
+  /* Très petits écrans - optimisations supplémentaires */
+  .container {
+    width: 95%;
+    padding: 0 0.75rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+  }
+
+  .game-card {
+    margin-bottom: 1.25rem;
+  }
+
+  .game-content {
+    padding: 0.875rem;
+  }
+
+  .game-title {
+    font-size: 1.1rem;
+  }
+
+  .game-description {
+    font-size: 0.8rem;
+  }
+
+  .btn-play {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .featured-game-content {
+    padding: 1rem;
+  }
+
+  .featured-game-title {
+    font-size: 1.3rem;
+  }
+
+  .featured-game-description {
+    font-size: 0.85rem;
+  }
+
+  /* Navigation très compacte */
+  .header-container {
+    padding: 0 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+  }
+
+  /* Boutons plus accessibles sur très petits écrans */
+  .btn-login {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Améliorations pour les écrans tactiles */
+@media (hover: none) and (pointer: coarse) {
+  .game-card:hover {
+    transform: none;
+  }
+
+  .btn-play:hover {
+    transform: none;
+  }
+
+  .feature-card:hover {
+    transform: none;
+  }
+
+  /* Augmenter la zone de clic pour les éléments tactiles */
+  .btn, .btn-play, .btn-login {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .game-tag {
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Améliorations pour l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mode paysage sur mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero {
+    min-height: 60vh;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .game-card {
+    margin-bottom: 1rem;
   }
 }
 
@@ -1579,4 +1857,353 @@ p {
     .customization-options {
         grid-template-columns: 1fr;
     }
+}
+
+/* Améliorations spécifiques pour les pages */
+
+/* Page de profil - Mobile */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0.5rem;
+  }
+
+  .profile-header {
+    margin: 4rem 0 1.5rem 0;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .profile-header h1 {
+    font-size: 2rem;
+    margin: 0.75rem 0 0.5rem 0;
+  }
+
+  .profile-header p {
+    font-size: 1rem;
+  }
+
+  .profile-layout {
+    gap: 1.5rem;
+  }
+
+  .avatar-section, .stats-section, .tabs-section {
+    padding: 1.5rem;
+  }
+
+  .avatar-container {
+    width: 200px;
+    height: 350px;
+    margin: 0 auto 1rem;
+  }
+
+  .avatar-head {
+    top: -110px;
+    width: 130px;
+  }
+
+  .avatar-body {
+    top: 50px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .profile-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .profile-tab {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Page de connexion/inscription - Mobile */
+@media (max-width: 768px) {
+  .auth-container {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: none;
+    width: calc(100% - 2rem);
+  }
+
+  .auth-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-group input {
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .auth-button {
+    padding: 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    min-height: 48px;
+  }
+
+  .auth-links {
+    margin-top: 1.25rem;
+  }
+
+  .auth-links p {
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+/* Page de classement - Mobile */
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 1rem;
+  }
+
+  .leaderboard-header {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .leaderboard-title {
+    font-size: 2rem;
+  }
+
+  .leaderboard-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-table {
+    font-size: 0.8rem;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .rank-position {
+    font-size: 1rem;
+  }
+
+  .player-name {
+    font-size: 0.85rem;
+  }
+
+  .player-score {
+    font-size: 0.9rem;
+  }
+}
+
+/* Page de galerie - Mobile */
+@media (max-width: 768px) {
+  .gallery-container {
+    padding: 1rem;
+  }
+
+  .gallery-header {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .gallery-title {
+    font-size: 2rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .gallery-item {
+    border-radius: 0.75rem;
+  }
+
+  .gallery-image {
+    height: 200px;
+  }
+
+  .gallery-content {
+    padding: 1rem;
+  }
+
+  .gallery-item-title {
+    font-size: 1.1rem;
+  }
+
+  .gallery-item-description {
+    font-size: 0.85rem;
+  }
+}
+
+/* Page de cours - Mobile */
+@media (max-width: 768px) {
+  .courses-container {
+    padding: 1rem;
+  }
+
+  .course-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .course-content {
+    padding: 1rem;
+  }
+
+  .course-title {
+    font-size: 1.2rem;
+  }
+
+  .course-description {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .course-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .course-duration,
+  .course-level {
+    font-size: 0.8rem;
+  }
+
+  .course-progress {
+    margin: 1rem 0;
+  }
+
+  .progress-bar {
+    height: 8px;
+  }
+
+  .course-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-course {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Améliorations générales pour tous les formulaires sur mobile */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important; /* Évite le zoom sur iOS */
+    -webkit-appearance: none;
+    border-radius: 0.5rem;
+  }
+
+  button {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Améliorer les zones de clic */
+  a, button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Éviter les problèmes de débordement */
+  .container {
+    overflow-x: hidden;
+  }
+
+  /* Améliorer la lisibilité */
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Optimiser les images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Très petits écrans (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .container {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .hero-title {
+    font-size: 1.75rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .game-card {
+    margin-bottom: 1rem;
+  }
+
+  .game-content {
+    padding: 0.75rem;
+  }
+
+  .btn-play {
+    padding: 0.625rem;
+    font-size: 0.8rem;
+  }
+
+  .auth-container {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .profile-header {
+    padding: 1rem;
+  }
+
+  .profile-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .avatar-container {
+    width: 180px;
+    height: 320px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

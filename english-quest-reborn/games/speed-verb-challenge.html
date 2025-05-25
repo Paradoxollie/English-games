@@ -674,29 +674,29 @@
     <div class="container">
         <div class="game-content">
             <!-- Interface de jeu principale -->
-            <main class="game-interface">
+        <main class="game-interface">
                 <!-- En-tête du jeu -->
-                <div class="game-header-content">
+            <div class="game-header-content">
                     <h1 class="section-title">Speed Verb Challenge</h1>
                     <p class="game-subtitle">Maîtrisez les verbes irréguliers anglais dans une course contre la montre</p>
-                </div>
+            </div>
 
                 <!-- États du jeu -->
-                <div class="game-states">
+                    <div class="game-states">
                     <!-- État: écran de bienvenue -->
-                    <div id="welcome-screen" class="game-state active">
-                        <div class="welcome-content">
+                        <div id="welcome-screen" class="game-state active">
+                            <div class="welcome-content">
                             <h2 class="panel-title">Bienvenue, Maître des Verbes</h2>
-                            <p class="welcome-text">
+                                <p class="welcome-text">
                                 Préparez-vous à tester votre connaissance des verbes irréguliers anglais dans une course effrénée contre la montre.
                                 Chaque verbe correctement conjugué vous rapportera des points et de l'expérience précieuse.
                                 <br><br>
                                 <strong>🎯 Plus de 200 verbes irréguliers</strong> vous attendent !
-                            </p>
+                                </p>
 
-                            <div class="difficulty-selection">
+                                <div class="difficulty-selection">
                                 <h3>Choisissez votre niveau de défi :</h3>
-                                <div class="difficulty-options">
+                                    <div class="difficulty-options">
                                     <div class="difficulty-btn active" data-difficulty="1">
                                         <div class="difficulty-icon">⚡</div>
                                         <div style="font-weight: 600;">Apprenti</div>
@@ -714,8 +714,8 @@
                                         <div style="font-weight: 600;">Maître</div>
                                         <div style="font-size: 0.8rem; opacity: 0.7;">Tout + Traduction</div>
                                     </div>
+                                    </div>
                                 </div>
-                            </div>
 
                             <div class="game-buttons">
                                 <button id="start-game-btn" class="game-button primary-button">
@@ -723,96 +723,96 @@
                                     <i class="fas fa-bolt"></i>
                                 </button>
                             </div>
+                            </div>
                         </div>
-                    </div>
 
                     <!-- État: jeu en cours -->
-                    <div id="playing" class="game-state">
+                        <div id="playing" class="game-state">
                         <!-- HUD du jeu -->
-                        <div class="game-hud">
-                            <div class="hud-item">
+                            <div class="game-hud">
+                                <div class="hud-item">
                                 <div class="hud-icon">🏆</div>
                                 <div class="hud-label">Score</div>
                                 <div id="player-score" class="hud-value">0</div>
-                            </div>
+                                </div>
 
-                            <div class="hud-item">
+                                <div class="hud-item">
                                 <div class="hud-icon">⏱️</div>
                                 <div class="hud-label">Temps</div>
                                 <div id="time-left" class="hud-value">90</div>
-                            </div>
+                                </div>
 
-                            <div class="hud-item">
+                                <div class="hud-item">
                                 <div class="hud-icon">📈</div>
                                 <div class="hud-label">Niveau</div>
                                 <div id="player-level" class="hud-value">1</div>
-                            </div>
+                                </div>
 
-                            <div class="hud-item">
+                                <div class="hud-item">
                                 <div class="hud-icon">🔥</div>
                                 <div class="hud-label">Combo</div>
                                 <div id="combo-multiplier" class="hud-value">x1.0</div>
+                                </div>
                             </div>
-                        </div>
 
                         <!-- Défi de verbe -->
-                        <div class="verb-challenge">
-                            <div class="verb-card">
-                                <div class="verb-info">
+                            <div class="verb-challenge">
+                                <div class="verb-card">
+                                    <div class="verb-info">
                                     <div style="font-size: 1.1rem; color: var(--color-text-secondary); margin-bottom: 1rem; font-family: 'Spectral', serif;">Conjuguez le verbe :</div>
                                     <div id="current-verb" class="verb-display">BEGIN</div>
-                                    <div id="verb-translation" class="verb-translation">(commencer)</div>
-                                </div>
+                                        <div id="verb-translation" class="verb-translation">(commencer)</div>
+                                    </div>
 
-                                <div id="verb-form-inputs" class="verb-inputs">
+                                    <div id="verb-form-inputs" class="verb-inputs">
                                     <!-- Les inputs seront générés dynamiquement -->
-                                </div>
+                                    </div>
 
-                                <div class="verb-actions">
+                                    <div class="verb-actions">
                                     <button id="check-answer-btn" class="game-button primary-button">
                                         <span>Valider</span>
                                         <i class="fas fa-check"></i>
-                                    </button>
+                                        </button>
 
                                     <button id="skip-verb-btn" class="game-button secondary-button">
                                         <span>Passer</span>
                                         <i class="fas fa-forward"></i>
-                                    </button>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
                         <!-- Message de feedback -->
-                        <div id="feedback-message" class="feedback-message"></div>
-                    </div>
+                            <div id="feedback-message" class="feedback-message"></div>
+                        </div>
 
                     <!-- État: fin de jeu -->
-                    <div id="game-over" class="game-state">
-                        <div class="results-container">
+                        <div id="game-over" class="game-state">
+                            <div class="results-container">
                             <h2 class="panel-title">Défi Terminé !</h2>
                             <p class="welcome-text">Votre performance dans cette course contre la montre :</p>
 
-                            <div class="final-score">
-                                <div class="score-label">Score Final</div>
-                                <div id="final-score-value" class="score-value">0</div>
-                            </div>
-
-                            <div class="stats-container">
-                                <div class="stat-item">
-                                    <div class="stat-label">Niveau Atteint</div>
-                                    <div id="final-level" class="stat-value">1</div>
+                                <div class="final-score">
+                                    <div class="score-label">Score Final</div>
+                                    <div id="final-score-value" class="score-value">0</div>
                                 </div>
 
-                                <div class="stat-item">
+                                <div class="stats-container">
+                                    <div class="stat-item">
+                                        <div class="stat-label">Niveau Atteint</div>
+                                        <div id="final-level" class="stat-value">1</div>
+                                    </div>
+
+                                    <div class="stat-item">
                                     <div class="stat-label">Verbes Réussis</div>
-                                    <div id="verbs-completed" class="stat-value">0</div>
-                                </div>
+                                        <div id="verbs-completed" class="stat-value">0</div>
+                                    </div>
 
-                                <div class="stat-item">
-                                    <div class="stat-label">Combo Maximum</div>
-                                    <div id="highest-combo" class="stat-value">x1.0</div>
+                                    <div class="stat-item">
+                                        <div class="stat-label">Combo Maximum</div>
+                                        <div id="highest-combo" class="stat-value">x1.0</div>
+                                    </div>
                                 </div>
-                            </div>
 
                             <!-- Système de notation -->
                             <div class="rating-section" style="margin: 2rem 0; padding: 1.5rem; background: var(--color-surface); border-radius: var(--border-radius-lg); border: 1px solid rgba(255, 255, 255, 0.1);">
@@ -875,7 +875,7 @@
                     </div>
                 </div>
             </aside>
-        </div>
+            </div>
     </div>
 
     <!-- JavaScript intégré -->
@@ -1328,7 +1328,7 @@
                             
                             if (scores.length > 0) {
                                 this.displayOnlineScores(scores);
-                            } else {
+                } else {
                                 this.showNoOnlineScores();
                             }
                         })
@@ -1967,4 +1967,4 @@
         console.log('✅ Speed Verb Challenge complet chargé avec', Object.keys(verbData).length, 'verbes et système de leaderboard intégré');
     </script>
 </body>
-</html> 
+</html>

@@ -18,20 +18,20 @@ class GameRatingComponent {
                     <div class="stars-display">
                         ${this.generateStarsDisplay(currentRating)}
                     </div>
-                    <span class="rating-text">${currentRating > 0 ? currentRating.toFixed(1) : 'Pas de note'}/5</span>
-                    <span class="rating-count">(${ratingCount} avis)</span>
+                    <span class="rating-text">${currentRating > 0 ? currentRating.toFixed(1) : '0'}/5</span>
+                    <span class="rating-count">(${ratingCount})</span>
                 </div>
                 <div class="rating-input" style="display: none;">
                     <div class="stars-input">
                         ${this.generateStarsInput(gameId)}
                     </div>
                     <div class="rating-actions">
-                        <button class="btn-submit-rating" data-game-id="${gameId}">Noter</button>
-                        <button class="btn-cancel-rating" data-game-id="${gameId}">Annuler</button>
+                        <button class="btn-submit-rating" data-game-id="${gameId}">✓</button>
+                        <button class="btn-cancel-rating" data-game-id="${gameId}">✕</button>
                     </div>
                 </div>
                 <button class="btn-rate-game" data-game-id="${gameId}">
-                    <i class="fas fa-star"></i> Noter ce jeu
+                    <i class="fas fa-star"></i> Noter
                 </button>
             </div>
         `;
@@ -289,22 +289,29 @@ class GameRatingComponent {
             <style id="game-rating-styles">
                 .game-rating-interface {
                     margin-top: 0.5rem;
-                    padding: 0.75rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    border-radius: 0.5rem;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    padding: 0.5rem;
+                    background: rgba(255, 255, 255, 0.03);
+                    border-radius: 0.375rem;
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    font-size: 0.85rem;
                 }
 
                 .rating-display {
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
-                    margin-bottom: 0.5rem;
+                    justify-content: space-between;
+                    gap: 0.25rem;
+                    margin-bottom: 0.375rem;
+                    flex-wrap: wrap;
                 }
 
                 .stars-display, .stars-input {
                     display: flex;
-                    gap: 0.2rem;
+                    gap: 0.1rem;
+                }
+
+                .stars-display i, .stars-input i {
+                    font-size: 0.9rem;
                 }
 
                 .star-filled {
@@ -316,13 +323,13 @@ class GameRatingComponent {
                 }
 
                 .star-empty {
-                    color: #666;
+                    color: #555;
                 }
 
                 .star-input {
                     cursor: pointer;
                     transition: color 0.2s ease;
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                 }
 
                 .star-input:hover {
@@ -336,12 +343,14 @@ class GameRatingComponent {
                 .rating-text {
                     font-weight: 600;
                     color: var(--color-text-primary);
-                    font-size: 0.9rem;
+                    font-size: 0.8rem;
+                    white-space: nowrap;
                 }
 
                 .rating-count {
-                    font-size: 0.8rem;
+                    font-size: 0.75rem;
                     color: var(--color-text-secondary);
+                    opacity: 0.8;
                 }
 
                 .rating-input {
@@ -350,19 +359,24 @@ class GameRatingComponent {
 
                 .rating-actions {
                     display: flex;
-                    gap: 0.5rem;
+                    gap: 0.375rem;
                     justify-content: center;
-                    margin-top: 0.75rem;
+                    margin-top: 0.5rem;
                 }
 
                 .btn-submit-rating, .btn-cancel-rating {
-                    padding: 0.4rem 0.8rem;
+                    padding: 0.25rem 0.5rem;
                     border: none;
                     border-radius: 0.25rem;
                     cursor: pointer;
                     font-size: 0.8rem;
-                    font-weight: 500;
+                    font-weight: 600;
                     transition: all 0.2s ease;
+                    min-width: 28px;
+                    height: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
 
                 .btn-submit-rating {
@@ -386,30 +400,33 @@ class GameRatingComponent {
 
                 .btn-rate-game {
                     width: 100%;
-                    padding: 0.5rem;
+                    padding: 0.375rem 0.5rem;
                     background: transparent;
                     border: 1px solid var(--color-primary);
                     color: var(--color-primary);
                     border-radius: 0.25rem;
                     cursor: pointer;
-                    font-size: 0.8rem;
+                    font-size: 0.75rem;
                     transition: all 0.2s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 0.3rem;
+                    gap: 0.25rem;
+                    font-weight: 500;
                 }
 
                 .btn-rate-game:hover {
                     background: rgba(243, 156, 18, 0.1);
+                    border-color: var(--color-secondary);
                 }
 
                 .rating-message {
-                    margin-top: 0.5rem;
-                    padding: 0.5rem;
+                    margin-top: 0.375rem;
+                    padding: 0.375rem;
                     border-radius: 0.25rem;
-                    font-size: 0.8rem;
+                    font-size: 0.75rem;
                     text-align: center;
+                    line-height: 1.2;
                 }
 
                 .rating-message-success {
@@ -422,6 +439,48 @@ class GameRatingComponent {
                     background: rgba(231, 76, 60, 0.2);
                     border: 1px solid #e74c3c;
                     color: #e74c3c;
+                }
+
+                /* Responsive pour mobile */
+                @media (max-width: 768px) {
+                    .game-rating-interface {
+                        padding: 0.375rem;
+                        margin-top: 0.375rem;
+                    }
+
+                    .rating-display {
+                        font-size: 0.8rem;
+                        gap: 0.2rem;
+                    }
+
+                    .stars-display i, .stars-input i {
+                        font-size: 0.85rem;
+                    }
+
+                    .rating-text {
+                        font-size: 0.75rem;
+                    }
+
+                    .rating-count {
+                        font-size: 0.7rem;
+                    }
+
+                    .btn-rate-game {
+                        font-size: 0.7rem;
+                        padding: 0.3rem 0.4rem;
+                    }
+
+                    .btn-submit-rating, .btn-cancel-rating {
+                        min-width: 24px;
+                        height: 24px;
+                        font-size: 0.75rem;
+                    }
+                }
+
+                /* Styles spéciaux pour les cartes featured */
+                .featured-game .game-rating-interface {
+                    background: rgba(255, 255, 255, 0.05);
+                    border-color: rgba(255, 255, 255, 0.1);
                 }
             </style>
         `;
