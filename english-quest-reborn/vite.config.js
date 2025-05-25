@@ -23,10 +23,17 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true,
+    open: false,
     hmr: {
-      overlay: false
-    }
+      overlay: false,
+      clientPort: 3000
+    },
+    strictPort: false,
+    host: true,
+    cors: true
+  },
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
   build: {
     outDir: 'dist',

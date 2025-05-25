@@ -1,12 +1,16 @@
 {
   "name": "english-quest-reborn",
+  "private": true,
   "version": "1.0.0",
   "description": "Une plateforme d'apprentissage de l'anglais gamifiée et compétitive",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev-safe": "vite --mode development --host 0.0.0.0 --port 3003 --no-open",
+    "dev-simple": "vite --host localhost --port 3005 --force",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "firebase deploy",
     "lint": "eslint src --ext .js",
     "format": "prettier --write \"src/**/*.{js,html,css,scss}\"",
     "test": "vitest run",
