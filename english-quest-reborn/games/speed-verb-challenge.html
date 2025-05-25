@@ -1803,7 +1803,7 @@
             }
         }
 
-        function endGame() {
+        async function endGame() {
             if (gameTimer) {
                 clearInterval(gameTimer);
                 gameTimer = null;
@@ -1845,9 +1845,11 @@
             });
 
             // Enregistrer les statistiques de jeu
-            if (window.gameStatsService) {
-                window.gameStatsService.recordGamePlay('speed-verb-challenge', playerId, score);
-                console.log('📊 Statistiques de jeu enregistrées');
+            if (window.gameStatsService && window.gameStatsService.isInitialized) {
+                await window.gameStatsService.recordGamePlay('speed-verb-challenge', playerId, score);
+                console.log('📊 Statistiques de jeu enregistrées pour Speed Verb Challenge');
+            } else {
+                console.warn('⚠️ GameStatsService non disponible pour enregistrer les statistiques');
             }
 
             // Vérifier si c'est un top score AVANT de donner les récompenses

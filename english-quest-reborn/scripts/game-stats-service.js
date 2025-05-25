@@ -38,9 +38,10 @@ class GameStatsService {
         if (!this.isInitialized) return false;
 
         try {
+            const playerIdToUse = playerId || 'anonymous';
             const gamePlayData = {
                 gameId: gameId,
-                playerId: playerId || 'anonymous',
+                playerId: playerIdToUse,
                 score: score,
                 rating: rating,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -51,9 +52,9 @@ class GameStatsService {
             await this.db.collection('game_plays').add(gamePlayData);
 
             // Mettre à jour les statistiques du jeu
-            await this.updateGameStats(gameId, score, rating);
+            await this.updateGameStats(gameId, score, rating, playerIdToUse);
 
-            console.log(`✅ Partie enregistrée pour ${gameId}`);
+            console.log(`✅ Partie enregistrée pour ${gameId} (joueur: ${playerIdToUse})`);
             return true;
         } catch (error) {
             console.error('❌ Erreur enregistrement partie:', error);
@@ -62,14 +63,54 @@ class GameStatsService {
     }
 
     /**
-     * Met à jour les statistiques d'un jeu
+     * Met à jour les statistiques d'un jeu avec gestion des joueurs uniques
      */
-    async updateGameStats(gameId, score = 0, rating = null) {
+    async updateGameStats(gameId, score = 0, rating = null, playerId = null) {
         if (!this.isInitialized) return false;
 
         try {
             const gameStatsRef = this.db.collection('game_statistics').doc(gameId);
             const doc = await gameStatsRef.get();
+
+            // Gérer les joueurs uniques
+            let uniquePlayersCount = 0;
+            if (playerId && playerId !== 'anonymous') {
+                const uniquePlayersRef = this.db.collection('unique_players').doc(gameId);
+                const uniquePlayersDoc = await uniquePlayersRef.get();
+                
+                if (uniquePlayersDoc.exists) {
+                    const data = uniquePlayersDoc.data();
+                    const players = data.players || [];
+                    
+                    if (!players.includes(playerId)) {
+                        // Nouveau joueur unique
+                        players.push(playerId);
+                        await uniquePlayersRef.update({
+                            players: players,
+                            count: players.length,
+                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        uniquePlayersCount = players.length;
+                    } else {
+                        uniquePlayersCount = players.length;
+                    }
+                } else {
+                    // Premier joueur unique pour ce jeu
+                    await uniquePlayersRef.set({
+                        gameId: gameId,
+                        players: [playerId],
+                        count: 1,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    uniquePlayersCount = 1;
+                }
+            } else {
+                // Récupérer le nombre actuel de joueurs uniques
+                const uniquePlayersRef = this.db.collection('unique_players').doc(gameId);
+                const uniquePlayersDoc = await uniquePlayersRef.get();
+                uniquePlayersCount = uniquePlayersDoc.exists ? (uniquePlayersDoc.data().count || 0) : 0;
+            }
 
             if (doc.exists) {
                 const currentStats = doc.data();
@@ -87,6 +128,7 @@ class GameStatsService {
 
                 await gameStatsRef.update({
                     playCount: newPlayCount,
+                    uniquePlayersCount: uniquePlayersCount,
                     totalScore: newTotalScore,
                     averageScore: newTotalScore / newPlayCount,
                     averageRating: newRating,
@@ -98,6 +140,7 @@ class GameStatsService {
                 await gameStatsRef.set({
                     gameId: gameId,
                     playCount: 1,
+                    uniquePlayersCount: uniquePlayersCount,
                     totalScore: score,
                     averageScore: score,
                     averageRating: rating || 0,
@@ -141,6 +184,7 @@ class GameStatsService {
                 stats = {
                     gameId: gameId,
                     playCount: data.playCount || 0,
+                    uniquePlayersCount: data.uniquePlayersCount || 0,
                     averageRating: Math.round((data.averageRating || 0) * 10) / 10,
                     ratingCount: data.ratingCount || 0,
                     averageScore: Math.round(data.averageScore || 0),
@@ -180,6 +224,7 @@ class GameStatsService {
                 allStats[doc.id] = {
                     gameId: doc.id,
                     playCount: data.playCount || 0,
+                    uniquePlayersCount: data.uniquePlayersCount || 0,
                     averageRating: Math.round((data.averageRating || 0) * 10) / 10,
                     ratingCount: data.ratingCount || 0,
                     averageScore: Math.round(data.averageScore || 0),
@@ -370,6 +415,7 @@ class GameStatsService {
         return {
             gameId: gameId,
             playCount: 0,
+            uniquePlayersCount: 0,
             averageRating: 0,
             ratingCount: 0,
             averageScore: 0,

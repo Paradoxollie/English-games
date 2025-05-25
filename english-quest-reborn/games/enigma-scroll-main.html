@@ -2221,7 +2221,7 @@
     // FIN DE JEU MODIFIÉE AVEC RÉCOMPENSES
     // ===========================================
     
-    function endGame(won, message) {
+    async function endGame(won, message) {
       gameState.gameActive = false;
       gameState.validatingWord = false;
       stopTimer();
@@ -2276,13 +2276,15 @@
         );
         
         // Enregistrer les statistiques de jeu
-        if (window.gameStatsService) {
+        if (window.gameStatsService && window.gameStatsService.isInitialized) {
           let playerId = null;
           if (window.authService && window.authService.currentUser) {
             playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
           }
-          window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
+          await window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
           console.log('📊 Statistiques Enigma Scroll enregistrées');
+        } else {
+          console.warn('⚠️ GameStatsService non disponible pour enregistrer les statistiques');
         }
 
         // NE PAS donner les récompenses ici - elles seront données à la fin de la session complète
@@ -2319,13 +2321,15 @@
         );
         
         // Enregistrer les statistiques de jeu (même en cas d'échec)
-        if (window.gameStatsService) {
+        if (window.gameStatsService && window.gameStatsService.isInitialized) {
           let playerId = null;
           if (window.authService && window.authService.currentUser) {
             playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
           }
-          window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
+          await window.gameStatsService.recordGamePlay('enigma-scroll', playerId, gameState.score);
           console.log('📊 Statistiques Enigma Scroll enregistrées (échec)');
+        } else {
+          console.warn('⚠️ GameStatsService non disponible pour enregistrer les statistiques');
         }
 
         // NE PAS donner les récompenses ici - elles seront données à la fin de la session complète

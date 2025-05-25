@@ -251,6 +251,9 @@ class EndGameRating {
                     
                     this.showMessage(message, 'success');
                     
+                    // Déclencher la mise à jour des statistiques sur la page
+                    this.triggerStatsUpdate();
+                    
                     // Fermer après 2 secondes
                     setTimeout(() => {
                         this.hideRating();
@@ -303,6 +306,22 @@ class EndGameRating {
         this.isVisible = false;
         this.currentGameId = null;
         this.currentPlayerId = null;
+    }
+
+    /**
+     * Déclenche la mise à jour des statistiques sur la page
+     */
+    triggerStatsUpdate() {
+        // Émettre un événement personnalisé pour notifier la page
+        const event = new CustomEvent('gameRatingUpdated', {
+            detail: {
+                gameId: this.currentGameId,
+                playerId: this.currentPlayerId
+            }
+        });
+        window.dispatchEvent(event);
+        
+        console.log('🔄 [EndGameRating] Événement de mise à jour des stats déclenché');
     }
 
     /**
