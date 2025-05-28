@@ -621,7 +621,7 @@ class SimpleRatingSystem {
     }
 
     /**
-     * Gère la soumission d'une note
+     * Gère la soumission d'une note (nouvelle ou modification)
      */
     async handleSubmitRating(gameId) {
         const rating = this.getSelectedRating(gameId);
@@ -632,19 +632,31 @@ class SimpleRatingSystem {
         }
 
         const submitBtn = document.getElementById(`submit-rating-${gameId}`);
+        const isModification = submitBtn && submitBtn.classList.contains('btn-modify-rating');
+        
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Envoi en cours...';
+            submitBtn.textContent = isModification ? 'Modification en cours...' : 'Envoi en cours...';
         }
 
         try {
-            await this.submitRating(gameId, rating);
-            this.showMessage(gameId, `Merci ! Vous avez noté le jeu ${rating}/5 ⭐`, 'success');
+            // Vérifier si l'utilisateur avait déjà une note
+            const previousRating = await this.getUserRating(gameId);
             
-            // Désactiver l'interface après soumission
+            await this.submitRating(gameId, rating);
+            
+            if (isModification && previousRating) {
+                this.showMessage(gameId, `Note modifiée avec succès : ${rating}/5 ⭐ (ancienne note : ${previousRating}/5)`, 'success');
+                console.log(`✅ Note modifiée pour ${gameId}: ${previousRating}/5 → ${rating}/5`);
+            } else {
+                this.showMessage(gameId, `Merci ! Vous avez noté le jeu ${rating}/5 ⭐`, 'success');
+                console.log(`✅ Nouvelle note pour ${gameId}: ${rating}/5`);
+            }
+            
+            // Mettre à jour l'interface pour refléter la nouvelle note
             setTimeout(() => {
-                this.disableRatingInterface(gameId);
-            }, 2000);
+                this.updateInterfaceAfterRating(gameId, rating);
+            }, 1500);
 
             // Déclencher la mise à jour des cartes de jeux
             this.triggerStatsUpdate(gameId);
@@ -652,17 +664,64 @@ class SimpleRatingSystem {
         } catch (error) {
             this.showMessage(gameId, 'Erreur lors de l\'envoi de la note', 'error');
             console.error('Erreur soumission note:', error);
-        }
-
-        // Réactiver le bouton
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Noter le jeu';
+            
+            // Réactiver le bouton en cas d'erreur
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isModification ? 'Modifier ma note' : 'Noter le jeu';
+            }
         }
     }
 
     /**
-     * Charge la note existante de l'utilisateur
+     * Met à jour l'interface après qu'une note ait été soumise ou modifiée
+     */
+    updateInterfaceAfterRating(gameId, newRating) {
+        const ratingInterface = document.querySelector(`[data-game-id="${gameId}"]`);
+        if (!ratingInterface) return;
+
+        // Supprimer l'ancien affichage de note actuelle s'il existe
+        const oldDisplay = ratingInterface.querySelector('.current-rating-display');
+        if (oldDisplay) {
+            oldDisplay.remove();
+        }
+
+        // Créer le nouvel affichage
+        const submitBtn = document.getElementById(`submit-rating-${gameId}`);
+        const messageDiv = document.getElementById(`rating-message-${gameId}`);
+
+        const currentRatingDisplay = document.createElement('div');
+        currentRatingDisplay.className = 'current-rating-display';
+        currentRatingDisplay.innerHTML = `
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Votre note actuelle :</strong>
+            </div>
+            <div class="rating-value">${newRating}/5 ⭐</div>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.8;">
+                Vous pouvez modifier votre note ci-dessus
+            </div>
+        `;
+
+        // Insérer l'affichage avant le bouton
+        if (submitBtn) {
+            submitBtn.parentNode.insertBefore(currentRatingDisplay, submitBtn);
+            submitBtn.textContent = 'Modifier ma note';
+            submitBtn.className = 'btn-modify-rating';
+            submitBtn.disabled = false;
+        }
+
+        // Masquer le message après un délai
+        if (messageDiv) {
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 4000);
+        }
+
+        console.log(`🔄 Interface mise à jour pour ${gameId} avec la nouvelle note: ${newRating}/5`);
+    }
+
+    /**
+     * Charge et affiche la note existante de l'utilisateur
      */
     async loadExistingRating(gameId) {
         if (!this.canRate()) return;
@@ -671,7 +730,7 @@ class SimpleRatingSystem {
             const existingRating = await this.getUserRating(gameId);
             if (existingRating) {
                 this.selectRating(gameId, existingRating);
-                this.disableRatingInterface(gameId, `Vous avez déjà noté ce jeu : ${existingRating}/5 ⭐`);
+                this.showExistingRatingInterface(gameId, existingRating);
             }
         } catch (error) {
             console.error('Erreur chargement note existante:', error);
@@ -679,9 +738,48 @@ class SimpleRatingSystem {
     }
 
     /**
-     * Désactive l'interface de notation
+     * Affiche l'interface pour une note existante avec possibilité de modification
      */
-    disableRatingInterface(gameId, message = 'Merci pour votre note !') {
+    showExistingRatingInterface(gameId, currentRating) {
+        const ratingInterface = document.querySelector(`[data-game-id="${gameId}"]`);
+        if (!ratingInterface) return;
+
+        const submitBtn = document.getElementById(`submit-rating-${gameId}`);
+        const messageDiv = document.getElementById(`rating-message-${gameId}`);
+
+        // Créer l'affichage de la note actuelle
+        const currentRatingDisplay = document.createElement('div');
+        currentRatingDisplay.className = 'current-rating-display';
+        currentRatingDisplay.innerHTML = `
+            <div style="margin-bottom: 0.5rem;">
+                <strong>Votre note actuelle :</strong>
+            </div>
+            <div class="rating-value">${currentRating}/5 ⭐</div>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.8;">
+                Vous pouvez modifier votre note ci-dessus
+            </div>
+        `;
+
+        // Insérer l'affichage avant le bouton
+        if (submitBtn) {
+            submitBtn.parentNode.insertBefore(currentRatingDisplay, submitBtn);
+            submitBtn.textContent = 'Modifier ma note';
+            submitBtn.className = 'btn-modify-rating';
+        }
+
+        // Masquer le message par défaut
+        if (messageDiv) {
+            messageDiv.style.display = 'none';
+        }
+
+        // Garder les étoiles et labels interactifs pour permettre la modification
+        console.log(`✅ Interface de modification affichée pour ${gameId} (note actuelle: ${currentRating}/5)`);
+    }
+
+    /**
+     * Désactive l'interface de notation (utilisé seulement en cas d'erreur)
+     */
+    disableRatingInterface(gameId, message = 'Erreur lors du chargement') {
         const ratingInterface = document.querySelector(`[data-game-id="${gameId}"]`);
         if (!ratingInterface) return;
 
@@ -692,18 +790,18 @@ class SimpleRatingSystem {
         // Désactiver les interactions
         stars.forEach(star => {
             star.style.pointerEvents = 'none';
-            star.style.opacity = '0.7';
+            star.style.opacity = '0.5';
         });
 
         labels.forEach(label => {
             label.style.pointerEvents = 'none';
-            label.style.opacity = '0.7';
+            label.style.opacity = '0.5';
         });
 
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.textContent = message;
-            submitBtn.style.opacity = '0.7';
+            submitBtn.style.opacity = '0.5';
         }
     }
 
@@ -798,67 +896,81 @@ class SimpleRatingSystem {
                 .rating-interface {
                     background: var(--color-surface, #1e1e1e);
                     border: 1px solid rgba(255, 255, 255, 0.1);
-                    border-radius: 1rem;
-                    padding: 1.5rem;
-                    margin: 1rem 0;
+                    border-radius: 0.75rem;
+                    padding: 1rem;
+                    margin: 0;
                     text-align: center;
+                    width: 100%;
+                    box-sizing: border-box;
                 }
 
                 .rating-header h4 {
                     color: var(--color-text-primary, #ffffff);
-                    margin-bottom: 0.5rem;
-                    font-size: 1.2rem;
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.1rem;
+                    font-weight: 600;
                 }
 
                 .rating-subtitle {
                     color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
-                    margin-bottom: 1rem;
-                    font-size: 0.9rem;
+                    margin: 0 0 1rem 0;
+                    font-size: 0.85rem;
                 }
 
                 .rating-stars {
                     display: flex;
                     justify-content: center;
-                    gap: 0.5rem;
+                    gap: 0.4rem;
                     margin: 1rem 0;
+                    flex-wrap: wrap;
                 }
 
                 .rating-star {
-                    font-size: 2rem;
+                    font-size: 1.6rem;
                     color: #555;
                     cursor: pointer;
                     transition: all 0.2s ease;
+                    user-select: none;
                 }
 
                 .rating-star:hover {
                     transform: scale(1.1);
+                    color: #f39c12;
                 }
 
                 .rating-star.highlighted {
                     color: #f39c12;
-                    text-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+                    text-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+                }
+
+                .rating-star.selected {
+                    color: #f39c12;
+                    text-shadow: 0 0 10px rgba(243, 156, 18, 0.7);
                 }
 
                 .rating-labels {
-                    display: flex;
-                    justify-content: space-between;
-                    margin: 1rem 0;
-                    gap: 0.5rem;
+                    display: grid;
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 0.25rem;
+                    margin: 0.75rem 0;
                 }
 
                 .rating-label {
-                    font-size: 0.8rem;
+                    font-size: 0.7rem;
                     color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
                     cursor: pointer;
-                    padding: 0.25rem 0.5rem;
+                    padding: 0.2rem 0.1rem;
                     border-radius: 0.25rem;
                     transition: all 0.2s ease;
+                    text-align: center;
+                    line-height: 1.2;
                 }
 
                 .rating-label:hover,
                 .rating-label.selected {
                     background: var(--color-primary, #2ecc71);
                     color: var(--color-background, #121212);
+                    font-weight: 600;
                 }
 
                 .btn-submit-rating {
@@ -866,16 +978,19 @@ class SimpleRatingSystem {
                     color: var(--color-background, #121212);
                     border: none;
                     border-radius: 0.5rem;
-                    padding: 0.75rem 1.5rem;
+                    padding: 0.6rem 1.2rem;
                     font-weight: 600;
                     cursor: pointer;
                     transition: all 0.3s ease;
-                    margin-top: 1rem;
+                    margin-top: 0.75rem;
+                    font-size: 0.9rem;
+                    width: 100%;
+                    max-width: 200px;
                 }
 
                 .btn-submit-rating:hover:not(:disabled) {
                     transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+                    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
                 }
 
                 .btn-submit-rating:disabled {
@@ -884,11 +999,32 @@ class SimpleRatingSystem {
                     transform: none;
                 }
 
+                .btn-modify-rating {
+                    background: linear-gradient(135deg, var(--color-warning, #f39c12), var(--color-accent, #f1c40f));
+                    color: var(--color-background, #121212);
+                    border: none;
+                    border-radius: 0.5rem;
+                    padding: 0.5rem 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    margin-top: 0.5rem;
+                    font-size: 0.85rem;
+                    width: 100%;
+                    max-width: 180px;
+                }
+
+                .btn-modify-rating:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+                }
+
                 .rating-message {
-                    margin-top: 1rem;
-                    padding: 0.75rem;
+                    margin-top: 0.75rem;
+                    padding: 0.6rem;
                     border-radius: 0.5rem;
                     font-weight: 500;
+                    font-size: 0.85rem;
                 }
 
                 .rating-message.success {
@@ -907,6 +1043,7 @@ class SimpleRatingSystem {
                     color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
                     font-style: italic;
                     padding: 1rem;
+                    font-size: 0.9rem;
                 }
 
                 .rating-login-message i {
@@ -914,22 +1051,67 @@ class SimpleRatingSystem {
                     color: var(--color-primary, #2ecc71);
                 }
 
-                @media (max-width: 768px) {
-                    .rating-labels {
-                        flex-direction: column;
-                        gap: 0.25rem;
-                    }
-                    
-                    .rating-label {
-                        text-align: center;
+                .current-rating-display {
+                    background: rgba(46, 204, 113, 0.1);
+                    border: 1px solid var(--color-primary, #2ecc71);
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+                    margin: 0.75rem 0;
+                    font-size: 0.9rem;
+                }
+
+                .current-rating-display .rating-value {
+                    color: var(--color-primary, #2ecc71);
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                }
+
+                /* Responsive pour sidebar étroite */
+                @media (max-width: 1200px) {
+                    .rating-interface {
+                        padding: 0.8rem;
                     }
                     
                     .rating-stars {
-                        gap: 0.25rem;
+                        gap: 0.3rem;
                     }
                     
                     .rating-star {
-                        font-size: 1.5rem;
+                        font-size: 1.4rem;
+                    }
+                    
+                    .rating-labels {
+                        grid-template-columns: repeat(5, 1fr);
+                        gap: 0.2rem;
+                    }
+                    
+                    .rating-label {
+                        font-size: 0.65rem;
+                        padding: 0.15rem 0.05rem;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    .rating-interface {
+                        padding: 1rem;
+                    }
+                    
+                    .rating-labels {
+                        grid-template-columns: 1fr;
+                        gap: 0.3rem;
+                    }
+                    
+                    .rating-label {
+                        font-size: 0.8rem;
+                        padding: 0.3rem;
+                    }
+                    
+                    .rating-stars {
+                        gap: 0.4rem;
+                    }
+                    
+                    .rating-star {
+                        font-size: 1.8rem;
                     }
                 }
             </style>
