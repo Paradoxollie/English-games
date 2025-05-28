@@ -1826,6 +1826,13 @@
         return;
       }
 
+      // Vérifier si les récompenses ont déjà été données pour cette section
+      if (gameState.rewardsGiven.sections.includes(sectionNumber)) {
+        console.log(`🚫 [Conditional Course] Récompenses déjà données pour la section ${sectionNumber}`);
+        showCourseRewardMessage(`🎓 Section ${sectionNumber} terminée ! (Récompenses déjà reçues)`, false, 'info');
+        return;
+      }
+
       try {
         console.log(`🎁 [Conditional Course] Attribution des récompenses pour la section ${sectionNumber}`);
         
@@ -1833,6 +1840,10 @@
         const result = await rewardService.giveRewards(rewards, false, 'conditional-course');
         
         if (result.success) {
+          // Marquer les récompenses comme données
+          gameState.rewardsGiven.sections.push(sectionNumber);
+          saveGameState();
+          
           console.log(`✅ [Conditional Course] Récompenses de section ${sectionNumber} attribuées: +1 XP, +1 or`);
           showCourseRewardMessage(`🎓 Section ${sectionNumber} terminée ! +1 ⭐ XP et +1 🪙 or`);
         }
@@ -1845,6 +1856,18 @@
     async function giveFinalQuizReward(score, totalQuestions) {
       if (!rewardService || !rewardService.canGiveRewards()) {
         console.log('🔒 [Conditional Course] Pas d\'utilisateur connecté pour les récompenses du quiz final');
+        return;
+      }
+
+      // Vérifier si les récompenses du quiz final ont déjà été données
+      if (gameState.rewardsGiven.finalQuiz) {
+        console.log('🚫 [Conditional Course] Récompenses du quiz final déjà données');
+        if (score >= 16) {
+          const message = score >= 18 ? 
+            '🏆 MAÎTRE DES CONDITIONNELS ! (Récompenses déjà reçues)' : 
+            '🎉 COURS VALIDÉ ! (Récompenses déjà reçues)';
+          showCourseRewardMessage(message, score >= 18, 'info');
+        }
         return;
       }
 
@@ -1871,6 +1894,10 @@
         const result = await rewardService.giveRewards(rewards, score >= 18, 'conditional-course-final');
         
         if (result.success) {
+          // Marquer les récompenses du quiz final comme données
+          gameState.rewardsGiven.finalQuiz = true;
+          saveGameState();
+          
           console.log(`✅ [Conditional Course] Récompenses du quiz final attribuées: +${rewards.xp} XP, +${rewards.coins} or`);
           showCourseRewardMessage(message, score >= 18);
         }
@@ -1880,25 +1907,35 @@
     }
 
     // Fonction pour afficher les messages de récompense du cours
-    function showCourseRewardMessage(message, isTopReward = false) {
+    function showCourseRewardMessage(message, isTopReward = false, type = 'success') {
       // Créer un élément de notification
       const notification = document.createElement('div');
-      notification.className = `course-reward-notification ${isTopReward ? 'top-reward' : ''}`;
+      notification.className = `course-reward-notification ${isTopReward ? 'top-reward' : ''} ${type}`;
       notification.innerHTML = `
         <div class="reward-content">
           <div class="reward-icon">
-            ${isTopReward ? '🏆' : '🎓'}
+            ${type === 'info' ? 'ℹ️' : isTopReward ? '🏆' : '🎓'}
           </div>
           <div class="reward-text">${message}</div>
         </div>
       `;
+
+      // Couleurs selon le type
+      let backgroundColor;
+      if (type === 'info') {
+        backgroundColor = 'linear-gradient(135deg, #3498db, #2980b9)';
+      } else if (isTopReward) {
+        backgroundColor = 'linear-gradient(135deg, #f39c12, #e67e22)';
+      } else {
+        backgroundColor = 'linear-gradient(135deg, #9b59b6, #8e44ad)';
+      }
 
       // Styles pour la notification
       notification.style.cssText = `
         position: fixed;
         top: 120px;
         right: 20px;
-        background: ${isTopReward ? 'linear-gradient(135deg, #f39c12, #e67e22)' : 'linear-gradient(135deg, #9b59b6, #8e44ad)'};
+        background: ${backgroundColor};
         color: white;
         padding: 1rem 1.5rem;
         border-radius: 12px;
@@ -1928,7 +1965,7 @@
             notification.parentNode.removeChild(notification);
           }
         }, 300);
-      }, isTopReward ? 6000 : 4000);
+      }, type === 'info' ? 3000 : isTopReward ? 6000 : 4000);
     }
 
     // État du jeu
@@ -1938,7 +1975,11 @@
       trainingQuizCompleted: false,
       finalQuizCompleted: false,
       finalScore: 0,
-      validationQuizzes: {} // Pour stocker les résultats des quiz de validation
+      validationQuizzes: {}, // Pour stocker les résultats des quiz de validation
+      rewardsGiven: {
+        sections: [], // Sections pour lesquelles les récompenses ont été données
+        finalQuiz: false // Si les récompenses du quiz final ont été données
+      }
     };
 
     // Réponses correctes pour les quiz de validation
@@ -3311,7 +3352,16 @@
       const savedState = localStorage.getItem('conditional-course-game-state');
       if (savedState) {
         try {
-          gameState = { ...gameState, ...JSON.parse(savedState) };
+          const loadedState = JSON.parse(savedState);
+          gameState = { ...gameState, ...loadedState };
+          
+          // S'assurer que la structure rewardsGiven existe (rétrocompatibilité)
+          if (!gameState.rewardsGiven) {
+            gameState.rewardsGiven = {
+              sections: [],
+              finalQuiz: false
+            };
+          }
         } catch (e) {
           console.error('Erreur chargement état:', e);
         }
@@ -3343,10 +3393,24 @@
         trainingQuizCompleted: false,
         finalQuizCompleted: false,
         finalScore: 0,
-        validationQuizzes: {}
+        validationQuizzes: {},
+        rewardsGiven: {
+          sections: [],
+          finalQuiz: false
+        }
       };
       localStorage.removeItem('conditional-course-game-state');
       location.reload();
+    }
+
+    // Fonction pour réinitialiser seulement les récompenses (pour admin)
+    function resetRewards() {
+      gameState.rewardsGiven = {
+        sections: [],
+        finalQuiz: false
+      };
+      saveGameState();
+      console.log('🔄 [Conditional Course] Récompenses réinitialisées');
     }
 
     // Ajouter un bouton de debug (temporaire)
@@ -3364,6 +3428,21 @@
       debugBtn.style.borderRadius = '5px';
       debugBtn.onclick = resetGameState;
       document.body.appendChild(debugBtn);
+
+      // Bouton pour réinitialiser seulement les récompenses
+      const resetRewardsBtn = document.createElement('button');
+      resetRewardsBtn.textContent = '💰 Reset Rewards (Debug)';
+      resetRewardsBtn.style.position = 'fixed';
+      resetRewardsBtn.style.top = '60px';
+      resetRewardsBtn.style.right = '10px';
+      resetRewardsBtn.style.zIndex = '9999';
+      resetRewardsBtn.style.background = '#f39c12';
+      resetRewardsBtn.style.color = 'white';
+      resetRewardsBtn.style.border = 'none';
+      resetRewardsBtn.style.padding = '10px';
+      resetRewardsBtn.style.borderRadius = '5px';
+      resetRewardsBtn.onclick = resetRewards;
+      document.body.appendChild(resetRewardsBtn);
     }
   </script>
 
