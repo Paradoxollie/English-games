@@ -1805,6 +1805,132 @@
       firebase.initializeApp(firebaseConfig);
     }
 
+    // Import du service de récompenses
+    let rewardService = null;
+    
+    // Initialiser le service de récompenses quand il est disponible
+    async function initializeRewardService() {
+      try {
+        const module = await import('../scripts/reward-service.js');
+        rewardService = module.rewardService;
+        console.log('✅ [Conditional Course] Service de récompenses initialisé');
+      } catch (error) {
+        console.warn('⚠️ [Conditional Course] Impossible de charger le service de récompenses:', error);
+      }
+    }
+
+    // Fonction pour donner des récompenses de section
+    async function giveSectionReward(sectionNumber) {
+      if (!rewardService || !rewardService.canGiveRewards()) {
+        console.log('🔒 [Conditional Course] Pas d\'utilisateur connecté pour les récompenses de section');
+        return;
+      }
+
+      try {
+        console.log(`🎁 [Conditional Course] Attribution des récompenses pour la section ${sectionNumber}`);
+        
+        const rewards = { xp: 1, coins: 1 }; // 1 XP et 1 or par section
+        const result = await rewardService.giveRewards(rewards, false, 'conditional-course');
+        
+        if (result.success) {
+          console.log(`✅ [Conditional Course] Récompenses de section ${sectionNumber} attribuées: +1 XP, +1 or`);
+          showCourseRewardMessage(`🎓 Section ${sectionNumber} terminée ! +1 ⭐ XP et +1 🪙 or`);
+        }
+      } catch (error) {
+        console.error('❌ [Conditional Course] Erreur lors de l\'attribution des récompenses de section:', error);
+      }
+    }
+
+    // Fonction pour donner des récompenses de quiz final
+    async function giveFinalQuizReward(score, totalQuestions) {
+      if (!rewardService || !rewardService.canGiveRewards()) {
+        console.log('🔒 [Conditional Course] Pas d\'utilisateur connecté pour les récompenses du quiz final');
+        return;
+      }
+
+      try {
+        console.log(`🏆 [Conditional Course] Attribution des récompenses pour le quiz final: ${score}/${totalQuestions}`);
+        
+        let rewards = { xp: 0, coins: 0 };
+        let message = '';
+        
+        if (score >= 18) {
+          // 18-20: Maître des Conditionnels
+          rewards = { xp: 20, coins: 20 };
+          message = `🏆 MAÎTRE DES CONDITIONNELS ! +20 ⭐ XP et +20 🪙 or !`;
+        } else if (score >= 16) {
+          // 16-17: Cours validé
+          rewards = { xp: 10, coins: 10 };
+          message = `🎉 COURS VALIDÉ ! +10 ⭐ XP et +10 🪙 or !`;
+        } else {
+          // Score insuffisant, pas de récompenses
+          console.log('📚 [Conditional Course] Score insuffisant pour les récompenses du quiz final');
+          return;
+        }
+        
+        const result = await rewardService.giveRewards(rewards, score >= 18, 'conditional-course-final');
+        
+        if (result.success) {
+          console.log(`✅ [Conditional Course] Récompenses du quiz final attribuées: +${rewards.xp} XP, +${rewards.coins} or`);
+          showCourseRewardMessage(message, score >= 18);
+        }
+      } catch (error) {
+        console.error('❌ [Conditional Course] Erreur lors de l\'attribution des récompenses du quiz final:', error);
+      }
+    }
+
+    // Fonction pour afficher les messages de récompense du cours
+    function showCourseRewardMessage(message, isTopReward = false) {
+      // Créer un élément de notification
+      const notification = document.createElement('div');
+      notification.className = `course-reward-notification ${isTopReward ? 'top-reward' : ''}`;
+      notification.innerHTML = `
+        <div class="reward-content">
+          <div class="reward-icon">
+            ${isTopReward ? '🏆' : '🎓'}
+          </div>
+          <div class="reward-text">${message}</div>
+        </div>
+      `;
+
+      // Styles pour la notification
+      notification.style.cssText = `
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        background: ${isTopReward ? 'linear-gradient(135deg, #f39c12, #e67e22)' : 'linear-gradient(135deg, #9b59b6, #8e44ad)'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-family: 'Exo 2', sans-serif;
+        font-weight: 600;
+        max-width: 350px;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.2);
+      `;
+
+      // Ajouter au DOM
+      document.body.appendChild(notification);
+
+      // Animation d'entrée
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+
+      // Animation de sortie et suppression
+      setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, isTopReward ? 6000 : 4000);
+    }
+
     // État du jeu
     let gameState = {
       completedSections: [],
@@ -2245,6 +2371,9 @@
       loadGameState();
       restoreGameState();
       updateGameDisplay();
+      
+      // Initialiser le service de récompenses
+      initializeRewardService();
     });
 
     function restoreGameState() {
@@ -2433,6 +2562,9 @@
         button.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
         button.disabled = true;
         
+        // 🎁 DONNER LES RÉCOMPENSES DE SECTION
+        giveSectionReward(sectionNumber);
+        
         // Débloquer la section suivante
         if (sectionNumber < 6) {
           unlockSection(sectionNumber + 1);
@@ -2617,6 +2749,9 @@
         button.classList.add('completed');
         button.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
         button.disabled = true;
+        
+        // 🎁 DONNER LES RÉCOMPENSES DE SECTION
+        giveSectionReward(sectionNumber);
         
         // Débloquer la section suivante
         if (sectionNumber < 6) {
@@ -2909,6 +3044,10 @@
       } else {
         gameState.finalQuizCompleted = true;
         gameState.finalScore = score;
+        
+        // 🏆 DONNER LES RÉCOMPENSES DU QUIZ FINAL
+        const questions = finalQuizQuestions;
+        giveFinalQuizReward(score, questions.length);
         
         // Vérifier si le cours est validé
         if (score >= 16) {
@@ -3231,6 +3370,7 @@
   <!-- Scripts d'authentification - exactement comme les jeux -->
   <script type="module" src="../scripts/auth-service.js"></script>
   <script type="module" src="../scripts/auth-header.js"></script>
+  <script type="module" src="../scripts/reward-service.js"></script>
   <script src="../scripts/new-design.js"></script>
 </body>
 </html> 
