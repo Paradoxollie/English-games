@@ -1,0 +1,2947 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Conditionnel - English Quest</title>
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RMCQTMKDVP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RMCQTMKDVP');
+  </script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="../styles/new-design.css">
+  <link rel="stylesheet" href="../styles/animations.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  
+  <style>
+    /* Styles spécifiques au cours */
+    .course-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: var(--spacing-lg);
+    }
+    
+    .course-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+      padding: var(--spacing-xl);
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+      border-radius: var(--border-radius-lg);
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+    
+    .course-title {
+      font-size: 3rem;
+      font-family: var(--font-family-secondary);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .course-subtitle {
+      font-size: 1.2rem;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .course-meta {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .meta-item i {
+      color: var(--color-primary);
+    }
+    
+    /* Système de progression par étapes */
+    .game-progress-bar {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      height: 20px;
+      margin: var(--spacing-lg) 0;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid rgba(46, 204, 113, 0.3);
+    }
+    
+    .game-progress-fill {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      height: 100%;
+      width: 0%;
+      transition: width 0.8s ease;
+      position: relative;
+    }
+    
+    .game-progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressShine 2s infinite;
+    }
+    
+    @keyframes progressShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .game-progress-text {
+      text-align: center;
+      margin-top: var(--spacing-sm);
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+    
+    .course-section {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* États des sections */
+    .course-section.locked {
+      opacity: 0.5;
+      pointer-events: none;
+      background: var(--color-surface-hover);
+      border-color: rgba(149, 165, 166, 0.3);
+    }
+    
+    .course-section.current {
+      border-color: rgba(46, 204, 113, 0.5);
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.2);
+      animation: currentSectionGlow 2s infinite alternate;
+    }
+    
+    .course-section.completed {
+      border-color: rgba(46, 204, 113, 0.7);
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+    }
+    
+    @keyframes currentSectionGlow {
+      0% { box-shadow: 0 8px 32px rgba(46, 204, 113, 0.2); }
+      100% { box-shadow: 0 12px 40px rgba(46, 204, 113, 0.4); }
+    }
+    
+    .course-section:hover:not(.locked) {
+      border-color: rgba(46, 204, 113, 0.3);
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.1);
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-lg);
+      font-family: var(--font-family-secondary);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-md);
+    }
+    
+    .section-number {
+      background: var(--color-primary);
+      color: var(--color-background);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      position: relative;
+      transition: all var(--transition-fast);
+    }
+    
+    .section-number.locked {
+      background: #95a5a6;
+      color: #7f8c8d;
+    }
+    
+    .section-number.completed {
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .section-number.completed::after {
+      content: '✓';
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--color-primary);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      border: 2px solid var(--color-background);
+    }
+    
+    .lock-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-lg);
+      text-align: center;
+      z-index: 10;
+    }
+    
+    .lock-overlay i {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-md);
+      color: #95a5a6;
+    }
+    
+    .section-complete-btn {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-top: var(--spacing-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+    
+    .section-complete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    }
+    
+    .section-complete-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .section-complete-btn.completed {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      cursor: default;
+    }
+    
+    .section-complete-btn.completed:hover {
+      transform: none;
+      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+    }
+    
+    .conditional-type {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      border-left: 4px solid var(--color-primary);
+      transition: all var(--transition-normal);
+    }
+    
+    .conditional-type:hover {
+      background: var(--color-surface-active);
+      transform: translateX(5px);
+    }
+    
+    .conditional-title {
+      font-size: 1.4rem;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-md);
+      font-family: var(--font-family-secondary);
+    }
+    
+    .structure-box {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      margin: var(--spacing-md) 0;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+    
+    .example-box {
+      background: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      margin: var(--spacing-md) 0;
+      font-style: italic;
+      color: var(--color-info);
+    }
+    
+    .note-box {
+      background: rgba(241, 196, 15, 0.1);
+      border: 1px solid rgba(241, 196, 15, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      margin: var(--spacing-md) 0;
+      color: var(--color-accent);
+    }
+    
+    .note-box::before {
+      content: "💡 ";
+      font-size: 1.2rem;
+    }
+    
+    .interactive-exercise {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
+      border: 1px solid rgba(155, 89, 182, 0.3);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .exercise-title {
+      font-size: 1.5rem;
+      color: #9b59b6;
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      font-family: var(--font-family-secondary);
+    }
+    
+    .quiz-info {
+      background: rgba(155, 89, 182, 0.1);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    .quiz-info p {
+      margin: var(--spacing-sm) 0;
+      color: var(--color-text-secondary);
+    }
+    
+    .quiz-controls {
+      text-align: center;
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .quiz-btn {
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+      color: white;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin: 0 var(--spacing-sm);
+      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+    }
+    
+    .quiz-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+    }
+    
+    .quiz-btn.secondary {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+    }
+    
+    .quiz-btn.secondary:hover {
+      box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+    }
+    
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--color-surface-hover);
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .quiz-progress-bar {
+      background: var(--color-surface);
+      height: 8px;
+      border-radius: 4px;
+      width: 200px;
+      margin-top: var(--spacing-sm);
+      overflow: hidden;
+    }
+    
+    .quiz-progress-fill {
+      background: linear-gradient(90deg, #9b59b6, #e74c3c);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .quiz-question-container {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+      min-height: 300px;
+    }
+    
+    .question-text {
+      font-size: 1.2rem;
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-lg);
+      line-height: 1.6;
+    }
+    
+    .question-sentence {
+      background: rgba(52, 152, 219, 0.1);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      margin: var(--spacing-md) 0;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--color-info);
+      text-align: center;
+    }
+    
+    .quiz-options {
+      display: grid;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+    
+    .quiz-option {
+      background: var(--color-surface);
+      border: 2px solid transparent;
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .quiz-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .quiz-option:hover {
+      border-color: #9b59b6;
+      background: var(--color-surface-hover);
+      transform: translateX(5px);
+    }
+    
+    .quiz-option:hover::before {
+      left: 100%;
+    }
+    
+    .quiz-option.selected {
+      border-color: #9b59b6;
+      background: rgba(155, 89, 182, 0.2);
+    }
+    
+    .quiz-option.correct {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.2);
+      animation: correctAnswer 0.5s ease;
+    }
+    
+    .quiz-option.incorrect {
+      border-color: var(--color-danger);
+      background: rgba(231, 76, 60, 0.2);
+      animation: incorrectAnswer 0.5s ease;
+    }
+    
+    @keyframes correctAnswer {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes incorrectAnswer {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
+    }
+    
+    .quiz-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--spacing-lg);
+    }
+    
+    .quiz-nav-btn {
+      background: var(--color-surface);
+      border: 2px solid #9b59b6;
+      color: #9b59b6;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-weight: 600;
+    }
+    
+    .quiz-nav-btn:hover:not(:disabled) {
+      background: #9b59b6;
+      color: white;
+    }
+    
+    .quiz-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .quiz-nav-btn.finish {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border-color: var(--color-primary);
+    }
+    
+    .quiz-final-results {
+      text-align: center;
+      padding: var(--spacing-xl);
+    }
+    
+    .result-badge {
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .badge-master {
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      color: #2c3e50;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4);
+      animation: badgeGlow 2s infinite alternate;
+    }
+    
+    .badge-good {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.3rem;
+      font-weight: bold;
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+    }
+    
+    .badge-retry {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      color: white;
+      padding: var(--spacing-lg) var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.2rem;
+      font-weight: bold;
+      box-shadow: 0 8px 25px rgba(230, 126, 34, 0.4);
+    }
+    
+    @keyframes badgeGlow {
+      0% { box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(241, 196, 15, 0.6); }
+    }
+    
+    .result-details {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+    
+    .progress-bar {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-lg);
+      height: 8px;
+      margin: var(--spacing-lg) 0;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    
+    .completion-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: var(--border-radius-lg);
+      font-weight: bold;
+      margin-top: var(--spacing-md);
+    }
+    
+    /* Styles pour les sections pliables */
+    details {
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      border-radius: var(--border-radius-md);
+      overflow: hidden;
+      transition: all var(--transition-normal);
+    }
+    
+    details:hover {
+      border-color: rgba(155, 89, 182, 0.4);
+      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.1);
+    }
+    
+    details[open] {
+      border-color: rgba(155, 89, 182, 0.5);
+      box-shadow: 0 6px 20px rgba(155, 89, 182, 0.15);
+    }
+    
+    details summary {
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    
+    details summary:hover {
+      background: rgba(155, 89, 182, 0.1) !important;
+      transform: translateX(5px);
+    }
+    
+    details summary::marker {
+      content: '';
+    }
+    
+    details summary::before {
+      content: '▶';
+      position: absolute;
+      right: var(--spacing-md);
+      top: 50%;
+      transform: translateY(-50%);
+      transition: transform var(--transition-fast);
+      color: var(--color-primary);
+      font-size: 1.2rem;
+    }
+    
+    details[open] summary::before {
+      transform: translateY(-50%) rotate(90deg);
+    }
+    
+    details > div {
+      background: var(--color-surface);
+      border-top: 1px solid rgba(155, 89, 182, 0.2);
+    }
+    
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--spacing-xl);
+      gap: var(--spacing-md);
+    }
+    
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md) var(--spacing-lg);
+      background: var(--color-surface);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--border-radius-md);
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      font-weight: 600;
+    }
+    
+    .nav-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-background);
+    }
+    
+    @media (max-width: 768px) {
+      .course-container {
+        padding: var(--spacing-md);
+      }
+      
+      .course-title {
+        font-size: 2rem;
+      }
+      
+      .course-meta {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .navigation-buttons {
+        flex-direction: column;
+      }
+      
+      .nav-btn {
+        justify-content: center;
+      }
+    }
+
+    /* Quiz final spécial */
+    .final-quiz-section {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
+      border: 2px solid rgba(155, 89, 182, 0.5);
+      position: relative;
+    }
+    
+    .final-quiz-section::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6);
+      border-radius: var(--border-radius-lg);
+      z-index: -1;
+      animation: finalQuizBorder 3s linear infinite;
+    }
+    
+    @keyframes finalQuizBorder {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+    
+    .final-quiz-title {
+      font-size: 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, #9b59b6, #e74c3c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-lg);
+      font-family: var(--font-family-secondary);
+    }
+    
+    .quiz-info-final {
+      background: rgba(155, 89, 182, 0.2);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      border: 1px solid rgba(155, 89, 182, 0.4);
+    }
+    
+    .quiz-info-final h4 {
+      color: #9b59b6;
+      margin-bottom: var(--spacing-md);
+      font-size: 1.3rem;
+    }
+    
+    .quiz-info-final p {
+      margin: var(--spacing-sm) 0;
+      color: var(--color-text-secondary);
+    }
+    
+    .final-quiz-requirements {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .final-quiz-requirements h5 {
+      color: #e74c3c;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+    
+    .course-completion-badge {
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      color: #2c3e50;
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      text-align: center;
+      margin: var(--spacing-xl) 0;
+      box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4);
+      animation: completionBadgeGlow 2s infinite alternate;
+    }
+    
+    @keyframes completionBadgeGlow {
+      0% { box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(241, 196, 15, 0.6); }
+    }
+    
+    .course-completion-badge h3 {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-md);
+      font-family: var(--font-family-secondary);
+    }
+
+    /* Styles pour les mini-quiz de validation */
+    .section-validation-quiz {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
+      border: 2px solid rgba(52, 152, 219, 0.3);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+      display: none;
+    }
+    
+    .validation-quiz-title {
+      font-size: 1.3rem;
+      color: var(--color-info);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      font-family: var(--font-family-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-sm);
+    }
+    
+    .validation-question {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      border-left: 4px solid var(--color-info);
+    }
+    
+    .validation-question-text {
+      font-size: 1.1rem;
+      color: var(--color-text-primary);
+      margin-bottom: var(--spacing-md);
+      font-weight: 600;
+    }
+    
+    .validation-options {
+      display: grid;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-md);
+    }
+    
+    .validation-option {
+      background: var(--color-surface);
+      border: 2px solid transparent;
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 0.95rem;
+      position: relative;
+    }
+    
+    .validation-option:hover {
+      border-color: var(--color-info);
+      background: var(--color-surface-hover);
+      transform: translateX(3px);
+    }
+    
+    .validation-option.selected {
+      border-color: var(--color-info);
+      background: rgba(52, 152, 219, 0.2);
+    }
+    
+    .validation-option.correct {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.2);
+      animation: correctValidation 0.5s ease;
+    }
+    
+    .validation-option.incorrect {
+      border-color: var(--color-danger);
+      background: rgba(231, 76, 60, 0.2);
+      animation: incorrectValidation 0.5s ease;
+    }
+    
+    @keyframes correctValidation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes incorrectValidation {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+      100% { transform: translateX(0); }
+    }
+    
+    .validation-feedback {
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-md);
+      border-radius: var(--border-radius-md);
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .validation-feedback.correct {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      color: var(--color-primary);
+    }
+    
+    .validation-feedback.incorrect {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      color: var(--color-danger);
+    }
+    
+    .validation-controls {
+      text-align: center;
+      margin-top: var(--spacing-lg);
+    }
+    
+    .validation-btn {
+      background: linear-gradient(135deg, var(--color-info), #2980b9);
+      color: white;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin: 0 var(--spacing-sm);
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .validation-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    }
+    
+    .validation-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .validation-btn.success {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+    
+    .validation-btn.success:hover {
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+    }
+    
+    .validation-score {
+      text-align: center;
+      margin-top: var(--spacing-lg);
+      padding: var(--spacing-md);
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      display: none;
+    }
+    
+    .validation-score.success {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      color: var(--color-primary);
+    }
+    
+    .validation-score.retry {
+      background: rgba(230, 126, 34, 0.1);
+      border: 1px solid rgba(230, 126, 34, 0.3);
+      color: #e67e22;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="../index.html" class="nav-link">Accueil</a></li>
+          <li><a href="../games.html" class="nav-link">Jeux</a></li>
+          <li><a href="../courses.html" class="nav-link active">Cours</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-menu" id="userMenu">
+        <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh;">
+    <div class="course-container">
+      <!-- Course Header -->
+      <div class="course-header">
+        <h1 class="course-title">Le Conditionnel en Anglais</h1>
+        <p class="course-subtitle">Maîtrisez toutes les formes du conditionnel pour exprimer des situations hypothétiques avec précision</p>
+        
+        <div class="course-meta">
+          <div class="meta-item">
+            <i class="fas fa-clock"></i>
+            <span>45 minutes</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-signal"></i>
+            <span>Niveau Avancé</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Mode Jeu Activé</span>
+          </div>
+        </div>
+        
+        <div class="game-progress-bar">
+          <div class="game-progress-fill" id="gameProgressFill"></div>
+        </div>
+        <div class="game-progress-text" id="gameProgressText">Progression : 0/6 étapes complétées</div>
+      </div>
+
+      <!-- Section 1: Introduction -->
+      <section class="course-section current" id="section-1" data-section="1">
+        <h2 class="section-title">
+          <span class="section-number" id="number-1">1</span>
+          Introduction au Conditionnel
+        </h2>
+        
+        <p>Le conditionnel en anglais est un outil linguistique puissant qui vous permet d'exprimer des situations hypothétiques, des conséquences potentielles, et des scénarios imaginaires. C'est l'une des structures grammaticales les plus importantes pour communiquer avec nuance et précision.</p>
+        
+        <div class="note-box">
+          <strong>Pourquoi maîtriser le conditionnel ?</strong><br>
+          • Exprimer des hypothèses et des possibilités<br>
+          • Faire des suggestions polies<br>
+          • Parler de regrets ou de situations alternatives<br>
+          • Négocier et discuter de scénarios futurs
+        </div>
+        
+        <p>Nous allons étudier <strong>cinq types principaux</strong> de conditionnels. Bien que la catégorisation puisse parfois varier légèrement selon les grammairiens, cette classification est largement acceptée et couvre l'essentiel des usages :</p>
+        
+        <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
+          <li><strong style="color: var(--color-primary);">Zero Conditional</strong> - Vérités générales et faits scientifiques</li>
+          <li><strong style="color: var(--color-primary);">First Conditional</strong> - Situations probables dans le futur</li>
+          <li><strong style="color: var(--color-primary);">Second Conditional</strong> - Situations imaginaires ou peu probables</li>
+          <li><strong style="color: var(--color-primary);">Third Conditional</strong> - Situations hypothétiques dans le passé</li>
+          <li><strong style="color: var(--color-primary);">Mixed Conditional</strong> - Combinaisons temporelles complexes</li>
+        </ul>
+        
+        <button class="section-complete-btn" id="complete-1" onclick="completeSection(1)">
+          <i class="fas fa-question-circle"></i>
+          Passer le Quiz de Validation
+        </button>
+        
+        <!-- Quiz de Validation Section 1 -->
+            <button class="validation-btn success" id="continue-validation-1" onclick="continueAfterValidation(1)" style="display: none;">
+              <i class="fas fa-arrow-right"></i> Continuer vers la Section 2
+            </button>
+          </div>
+          
+          <div class="validation-score" id="validation-score-1">
+            <span class="score-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Les 5 Types de Conditionnels -->
+      <section class="course-section locked" id="section-2" data-section="2">
+        <div class="lock-overlay" id="lock-2">
+          <i class="fas fa-lock"></i>
+          <p>Terminez l'introduction pour débloquer cette section</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-2">2</span>
+          Les Cinq Types de Conditionnels
+        </h2>
+
+        <!-- Zero Conditional -->
+        <div class="conditional-type">
+          <h3 class="conditional-title">🔬 Zero Conditional - Les Vérités Universelles</h3>
+          
+          <div class="structure-box">
+            <strong>Structure :</strong> If + Present Simple, Present Simple
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • If you heat water to 100°C, it boils.<br>
+            • If you don't water plants, they die.<br>
+            • When the sun sets, it gets dark.
+          </div>
+          
+          <p><strong>Usage :</strong> Pour exprimer des vérités générales, des lois scientifiques, des habitudes, ou donner des instructions. "If" peut souvent être remplacé par "when" ou "whenever".</p>
+          
+          <div class="note-box">
+            <strong>Astuce :</strong> Le zero conditional exprime une relation de cause à effet qui est toujours vraie. C'est parfait pour expliquer des processus naturels ou des règles.
+          </div>
+        </div>
+
+        <!-- First Conditional -->
+        <div class="conditional-type">
+          <h3 class="conditional-title">🎯 First Conditional - Le Futur Probable</h3>
+          
+          <div class="structure-box">
+            <strong>Structure :</strong> If + Present Simple, will + base verbale
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • If it rains tomorrow, I will stay home.<br>
+            • If you study hard, you will pass the exam.<br>
+            • If we leave now, we'll arrive on time.
+          </div>
+          
+          <p><strong>Usage :</strong> Pour parler de situations probables dans le futur et de leurs conséquences. C'est le conditionnel le plus utilisé dans la conversation quotidienne.</p>
+          
+          <div class="note-box">
+            <strong>⚠️ Erreur très commune :</strong> N'utilisez jamais "will" dans la clause conditionnelle (après "if"). Cette erreur vient souvent d'une interférence directe du français ("si j'aurai..."). En anglais, on dit toujours "If I see him" et jamais "If I will see him".
+          </div>
+        </div>
+
+        <!-- Second Conditional -->
+        <div class="conditional-type">
+          <h3 class="conditional-title">💭 Second Conditional - L'Imaginaire du Présent</h3>
+          
+          <div class="structure-box">
+            <strong>Structure :</strong> If + Past Simple, would + base verbale
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • If I had a million dollars, I would travel the world.<br>
+            • If I were you, I would accept the job offer.<br>
+            • If we lived in Paris, we would visit museums every weekend.
+          </div>
+          
+          <p><strong>Usage :</strong> Pour exprimer des situations imaginaires, des rêves, des conseils, ou des situations peu probables dans le présent ou le futur.</p>
+          
+          <div class="note-box">
+            <strong>Particularité avec "to be" :</strong> Avec le verbe "to be", on utilise "were" pour toutes les personnes dans un registre formel : "If I were rich..." Cette forme est recommandée à l'écrit et dans un contexte soutenu. En anglais informel, "If I was rich..." est également accepté.
+          </div>
+        </div>
+
+        <!-- Third Conditional -->
+        <div class="conditional-type">
+          <h3 class="conditional-title">⏰ Third Conditional - Les Regrets du Passé</h3>
+          
+          <div class="structure-box">
+            <strong>Structure :</strong> If + Past Perfect, would have + participe passé
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • If I had studied harder, I would have passed the exam.<br>
+            • If you had told me earlier, I would have helped you.<br>
+            • If we had left earlier, we wouldn't have missed the train.
+          </div>
+          
+          <p><strong>Usage :</strong> Pour parler de situations hypothétiques dans le passé qui ne se sont pas produites. Souvent utilisé pour exprimer des regrets ou imaginer des alternatives.</p>
+          
+          <div class="note-box">
+            <strong>Nuance émotionnelle :</strong> Le third conditional porte souvent une charge émotionnelle (regret, frustration, nostalgie). C'est un outil puissant pour exprimer "ce qui aurait pu être".
+          </div>
+        </div>
+
+        <!-- Mixed Conditional -->
+        <div class="conditional-type">
+          <h3 class="conditional-title">🔄 Mixed Conditional - Les Connexions Temporelles</h3>
+          
+          <div class="structure-box">
+            <strong>Type 1 :</strong> If + Past Perfect, would + base verbale (condition passée → résultat présent)<br>
+            <strong>Type 2 :</strong> If + Past Simple, would have + participe passé (condition présente → résultat passé)
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples Type 1 (Condition passée → Résultat présent) :</strong><br>
+            • If I had studied medicine, I would be a doctor now.<br><br>
+            <strong>Exemples Type 2 (Condition présente → Résultat passé) :</strong><br>
+            • If I were more organized, I would have finished the project yesterday.
+          </div>
+          
+          <p><strong>Usage :</strong> Pour connecter différentes périodes temporelles, montrant comment une condition dans un temps affecte un résultat dans un autre temps.</p>
+          
+          <div class="note-box">
+            <strong>Complexité avancée :</strong> Les mixed conditionals demandent une bonne maîtrise des temps. Ils sont très utiles pour exprimer des relations causales complexes entre le passé et le présent.
+          </div>
+        </div>
+        
+        <button class="section-complete-btn" id="complete-2" onclick="completeSection(2)" disabled>
+          <i class="fas fa-check"></i>
+          Maîtriser les 5 Types
+        </button>
+        
+        <!-- Quiz de Validation Section 2 -->
+        <div class="section-validation-quiz" id="validation-quiz-2">
+          <h3 class="validation-quiz-title">
+            <i class="fas fa-question-circle"></i>
+            Quiz de Validation - Les 5 Types de Conditionnels
+          </h3>
+          
+          <div class="validation-question" data-question="1">
+            <div class="validation-question-text">
+              Question 1: Quel conditionnel utilise-t-on pour exprimer des vérités générales ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">Zero Conditional</div>
+              <div class="validation-option" data-answer="1">First Conditional</div>
+              <div class="validation-option" data-answer="2">Second Conditional</div>
+              <div class="validation-option" data-answer="3">Third Conditional</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="2">
+            <div class="validation-question-text">
+              Question 2: Quelle est la structure du Second Conditional ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">If + Present Simple, will + base verbale</div>
+              <div class="validation-option" data-answer="1">If + Past Simple, would + base verbale</div>
+              <div class="validation-option" data-answer="2">If + Past Perfect, would have + participe passé</div>
+              <div class="validation-option" data-answer="3">If + Present Simple, Present Simple</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="3">
+            <div class="validation-question-text">
+              Question 3: "If I had studied harder, I would have passed the exam." - Quel type de conditionnel ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">Second Conditional</div>
+              <div class="validation-option" data-answer="1">Third Conditional</div>
+              <div class="validation-option" data-answer="2">Mixed Conditional</div>
+              <div class="validation-option" data-answer="3">First Conditional</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-controls">
+            <button class="validation-btn" id="check-validation-2" onclick="checkValidationQuiz(2)" disabled>
+              <i class="fas fa-check"></i> Vérifier mes Réponses
+            </button>
+            <button class="validation-btn success" id="continue-validation-2" onclick="continueAfterValidation(2)" style="display: none;">
+              <i class="fas fa-arrow-right"></i> Continuer vers la Section 3
+            </button>
+          </div>
+          
+          <div class="validation-score" id="validation-score-2">
+            <span class="score-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Conseils Avancés -->
+      <section class="course-section locked" id="section-3" data-section="3">
+        <div class="lock-overlay" id="lock-3">
+          <i class="fas fa-lock"></i>
+          <p>Maîtrisez les 5 types pour débloquer cette section</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-3">3</span>
+          Conseils et Nuances Avancées
+        </h2>
+
+        <div class="conditional-type">
+          <h3 class="conditional-title">🎭 Alternatives à "if"</h3>
+          
+          <p><strong>Alternatives courantes :</strong></p>
+          <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
+            <li><strong>Unless</strong> = if not → "Unless you hurry, you'll be late."</li>
+            <li><strong>Provided/Providing that</strong> = à condition que → "I'll help you provided that you ask nicely."</li>
+            <li><strong>As long as</strong> = tant que → "You can stay as long as you're quiet."</li>
+            <li><strong>In case</strong> = au cas où (précaution) → "Take an umbrella in case it rains."</li>
+          </ul>
+        </div>
+
+        <div class="conditional-type">
+          <h3 class="conditional-title">💡 Erreurs Communes à Éviter</h3>
+          
+          <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
+            <li>❌ "If I will see him..." → ✅ "If I see him..." (interférence du français "si j'aurai")</li>
+            <li>❌ "If I would be rich..." → ✅ "If I were rich..."</li>
+            <li>❌ "If I would have known..." → ✅ "If I had known..."</li>
+          </ul>
+        </div>
+
+        <div class="conditional-type">
+          <h3 class="conditional-title">🎩 Style Formel et Inversion</h3>
+          
+          <p><strong>Dans un registre très formel :</strong></p>
+          <div class="example-box">
+            <strong>Inversion formelle :</strong><br>
+            • "Had I known" au lieu de "If I had known"<br>
+            • "Were I rich..." au lieu de "If I were rich..."<br>
+            • "Should you see him..." au lieu de "If you should see him..."
+          </div>
+        </div>
+        
+        <button class="section-complete-btn" id="complete-3" onclick="completeSection(3)" disabled>
+          <i class="fas fa-check"></i>
+          Maîtriser les Nuances
+        </button>
+        
+        <!-- Quiz de Validation Section 3 -->
+        <div class="section-validation-quiz" id="validation-quiz-3">
+          <h3 class="validation-quiz-title">
+            <i class="fas fa-question-circle"></i>
+            Quiz de Validation - Nuances Avancées
+          </h3>
+          
+          <div class="validation-question" data-question="1">
+            <div class="validation-question-text">
+              Question 1: Que signifie "Unless you hurry, you'll be late" ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">If you hurry, you'll be late</div>
+              <div class="validation-option" data-answer="1">If you don't hurry, you'll be late</div>
+              <div class="validation-option" data-answer="2">When you hurry, you'll be late</div>
+              <div class="validation-option" data-answer="3">Because you hurry, you'll be late</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="2">
+            <div class="validation-question-text">
+              Question 2: Quelle phrase contient une erreur commune ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">If I see him, I will tell him</div>
+              <div class="validation-option" data-answer="1">If I will see him, I will tell him</div>
+              <div class="validation-option" data-answer="2">If I were rich, I would travel</div>
+              <div class="validation-option" data-answer="3">If I had known, I would have come</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="3">
+            <div class="validation-question-text">
+              Question 3: Dans un registre formel, comment dit-on "If I were rich..." ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">Were I rich...</div>
+              <div class="validation-option" data-answer="1">Would I be rich...</div>
+              <div class="validation-option" data-answer="2">Rich I were...</div>
+              <div class="validation-option" data-answer="3">If rich I were...</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-controls">
+            <button class="validation-btn" id="check-validation-3" onclick="checkValidationQuiz(3)" disabled>
+              <i class="fas fa-check"></i> Vérifier mes Réponses
+            </button>
+            <button class="validation-btn success" id="continue-validation-3" onclick="continueAfterValidation(3)" style="display: none;">
+              <i class="fas fa-arrow-right"></i> Continuer vers l'Entraînement
+            </button>
+          </div>
+          
+          <div class="validation-score" id="validation-score-3">
+            <span class="score-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Quiz d'Entraînement -->
+      <section class="course-section locked" id="section-4" data-section="4">
+        <div class="lock-overlay" id="lock-4">
+          <i class="fas fa-lock"></i>
+          <p>Terminez les nuances avancées pour débloquer l'entraînement</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-4">4</span>
+          Quiz d'Entraînement
+        </h2>
+
+        <div class="interactive-exercise">
+          <h3 class="exercise-title">🎮 Entraînement Interactif</h3>
+          
+          <div class="quiz-info">
+            <p><strong>🎯 Format :</strong> 10 questions sélectionnées aléatoirement parmi une banque de 40 questions</p>
+            <p><strong>🔀 Variété garantie :</strong> Chaque quiz est unique grâce à la sélection aléatoire !</p>
+            <p><strong>🏆 Objectif :</strong> Obtenez au moins 7/10 pour vous préparer au quiz final</p>
+            <p><strong>🎮 Rejouabilité :</strong> Refaites le quiz pour découvrir de nouvelles questions</p>
+          </div>
+
+          <div class="quiz-controls">
+            <button id="startTrainingQuiz" class="quiz-btn" disabled>🚀 Commencer l'Entraînement</button>
+            <button id="resetTrainingQuiz" class="quiz-btn secondary" style="display: none;">🔄 Recommencer</button>
+          </div>
+
+          <div id="trainingQuizContainer" style="display: none;">
+            <div class="quiz-header">
+              <div class="quiz-progress">
+                <span id="trainingQuestionCounter">Question 1/10</span>
+                <div class="quiz-progress-bar">
+                  <div class="quiz-progress-fill" id="trainingQuizProgressFill"></div>
+                </div>
+              </div>
+              <div class="quiz-score">
+                <span id="trainingCurrentScore">Score: 0/0</span>
+              </div>
+            </div>
+
+            <div id="trainingCurrentQuestion" class="quiz-question-container">
+              <!-- Questions will be inserted here dynamically -->
+            </div>
+
+            <div class="quiz-navigation">
+              <button id="trainingPrevQuestion" class="quiz-nav-btn" disabled>⬅️ Précédent</button>
+              <button id="trainingNextQuestion" class="quiz-nav-btn" disabled>Suivant ➡️</button>
+              <button id="trainingFinishQuiz" class="quiz-nav-btn finish" style="display: none;">🏁 Terminer</button>
+            </div>
+          </div>
+
+          <div id="trainingQuizResults" style="display: none;">
+            <div class="quiz-final-results">
+              <div id="trainingResultBadge" class="result-badge">
+                <!-- Badge will be inserted here -->
+              </div>
+              <div class="result-details">
+                <h4>📊 Résultats d'Entraînement</h4>
+                <div id="trainingResultBreakdown"></div>
+              </div>
+              <div class="result-actions">
+                <button id="trainingReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
+                <button id="trainingRetakeQuiz" class="quiz-btn">🔄 Refaire l'Entraînement</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button class="section-complete-btn" id="complete-4" onclick="completeSection(4)" disabled>
+          <i class="fas fa-check"></i>
+          Terminer l'Entraînement
+        </button>
+      </section>
+
+      <!-- Section 5: Pour Aller Plus Loin (Contenu Avancé Optionnel) -->
+      <section class="course-section locked" style="border: 2px dashed rgba(155, 89, 182, 0.3); background: rgba(155, 89, 182, 0.05);" id="section-5" data-section="5">
+        <div class="lock-overlay" id="lock-5">
+          <i class="fas fa-lock"></i>
+          <p>Terminez l'entraînement pour débloquer le contenu avancé</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-5">5</span>
+          Pour Aller Plus Loin (Optionnel)
+        </h2>
+        
+        <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);">
+          <em>Cette section contient des concepts avancés pour les apprenants souhaitant approfondir leurs connaissances.</em>
+        </p>
+
+        <details style="margin-bottom: var(--spacing-lg);">
+          <summary style="cursor: pointer; font-weight: bold; color: var(--color-primary); padding: var(--spacing-md); background: var(--color-surface-hover); border-radius: var(--border-radius-md);">
+            🔄 Formes Continues dans les Conditionnels
+          </summary>
+          <div style="padding: var(--spacing-lg); margin-top: var(--spacing-md);">
+            <p><strong>Les temps progressifs peuvent être utilisés pour plus de précision :</strong></p>
+            <div class="example-box">
+              <strong>Second Conditional :</strong> "If it were raining now, I would take my umbrella."<br>
+              <strong>Third Conditional :</strong> "If I had been listening more carefully, I would have understood."
+            </div>
+          </div>
+        </details>
+
+        <details style="margin-bottom: var(--spacing-lg);">
+          <summary style="cursor: pointer; font-weight: bold; color: var(--color-primary); padding: var(--spacing-md); background: var(--color-surface-hover); border-radius: var(--border-radius-md);">
+            🧩 Conditionnels Implicites
+          </summary>
+          <div style="padding: var(--spacing-lg); margin-top: var(--spacing-md);">
+            <p><strong>Parfois, la condition n'est pas introduite par "if" :</strong></p>
+            <div class="example-box">
+              <strong>Condition sous-entendue :</strong> "Someone more organized would have finished the project yesterday."<br>
+              <strong>Avec "but for" :</strong> "But for your help, I would have failed."
+            </div>
+          </div>
+        </details>
+
+        <details style="margin-bottom: var(--spacing-lg);">
+          <summary style="cursor: pointer; font-weight: bold; color: var(--color-primary); padding: var(--spacing-md); background: var(--color-surface-hover); border-radius: var(--border-radius-md);">
+            🌟 Structures Similaires : Wish / If only
+          </summary>
+          <div style="padding: var(--spacing-lg); margin-top: var(--spacing-md);">
+            <p><strong>Ces structures expriment des regrets ou des désirs irréels :</strong></p>
+            <div class="example-box">
+              <strong>Désir présent :</strong> "I wish I had a million dollars." (similaire au 2nd Conditional)<br>
+              <strong>Regret passé :</strong> "If only I had studied harder." (similaire au 3rd Conditional)
+            </div>
+          </div>
+        </details>
+
+        <details>
+          <summary style="cursor: pointer; font-weight: bold; color: var(--color-primary); padding: var(--spacing-md); background: var(--color-surface-hover); border-radius: var(--border-radius-md);">
+            🗣️ Registres de Langue Avancés
+          </summary>
+          <div style="padding: var(--spacing-lg); margin-top: var(--spacing-md);">
+            <p><strong>Comparaison des registres :</strong></p>
+            <div class="example-box">
+              <strong>Très formel :</strong> "Should you require assistance, please contact us."<br>
+              <strong>Formel :</strong> "Were I to receive the position, I would be honored."<br>
+              <strong>Informel :</strong> "If I got the job, I'd be really happy!"
+            </div>
+          </div>
+        </details>
+        
+        <button class="section-complete-btn" id="complete-5" onclick="completeSection(5)" disabled>
+          <i class="fas fa-check"></i>
+          Explorer le Contenu Avancé
+        </button>
+        
+        <!-- Quiz de Validation Section 5 -->
+        <div class="section-validation-quiz" id="validation-quiz-5">
+          <h3 class="validation-quiz-title">
+            <i class="fas fa-question-circle"></i>
+            Quiz de Validation - Contenu Avancé
+          </h3>
+          
+          <div class="validation-question" data-question="1">
+            <div class="validation-question-text">
+              Question 1: "I wish I had a million dollars" est similaire à quel type de conditionnel ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">First Conditional</div>
+              <div class="validation-option" data-answer="1">Second Conditional</div>
+              <div class="validation-option" data-answer="2">Third Conditional</div>
+              <div class="validation-option" data-answer="3">Zero Conditional</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="2">
+            <div class="validation-question-text">
+              Question 2: Quel registre de langue utilise "Should you require assistance..." ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">Informel</div>
+              <div class="validation-option" data-answer="1">Très formel</div>
+              <div class="validation-option" data-answer="2">Familier</div>
+              <div class="validation-option" data-answer="3">Argotique</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-controls">
+            <button class="validation-btn" id="check-validation-5" onclick="checkValidationQuiz(5)" disabled>
+              <i class="fas fa-check"></i> Vérifier mes Réponses
+            </button>
+            <button class="validation-btn success" id="continue-validation-5" onclick="continueAfterValidation(5)" style="display: none;">
+              <i class="fas fa-arrow-right"></i> Accéder au Quiz Final
+            </button>
+          </div>
+          
+          <div class="validation-score" id="validation-score-5">
+            <span class="score-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Quiz Final de Validation -->
+      <section class="course-section locked final-quiz-section" id="section-6" data-section="6">
+        <div class="lock-overlay" id="lock-6">
+          <i class="fas fa-lock"></i>
+          <p>Terminez toutes les sections pour débloquer le quiz final</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-6">🏆</span>
+          Quiz Final de Validation
+        </h2>
+        
+        <div class="final-quiz-title">
+          🎯 DÉFI FINAL : MAÎTRE DES CONDITIONNELS
+        </div>
+
+        <div class="quiz-info-final">
+          <h4>🏆 Quiz de Certification</h4>
+          <p><strong>🎯 Format :</strong> 20 questions sélectionnées parmi les 40 de la banque</p>
+          <p><strong>⏱️ Temps :</strong> Pas de limite, prenez votre temps</p>
+          <p><strong>🎖️ Certification :</strong> 16/20 minimum pour valider le cours</p>
+          <p><strong>🏅 Excellence :</strong> 18/20 pour le titre de "Maître des Conditionnels"</p>
+        </div>
+        
+        <div class="final-quiz-requirements">
+          <h5><i class="fas fa-exclamation-triangle"></i> Conditions de Validation</h5>
+          <ul>
+            <li>✅ Toutes les sections précédentes doivent être complétées</li>
+            <li>🎯 Score minimum : 16/20 (80%)</li>
+            <li>🏆 Une seule tentative pour la certification officielle</li>
+            <li>📜 Certificat de réussite délivré automatiquement</li>
+          </ul>
+        </div>
+
+        <div class="interactive-exercise">
+          <div class="quiz-controls">
+            <button id="startFinalQuiz" class="quiz-btn" disabled style="font-size: 1.2rem; padding: var(--spacing-lg) var(--spacing-xl);">
+              🚀 COMMENCER LE DÉFI FINAL
+            </button>
+            <button id="resetFinalQuiz" class="quiz-btn secondary" style="display: none;">🔄 Recommencer (Entraînement)</button>
+          </div>
+
+          <div id="finalQuizContainer" style="display: none;">
+            <div class="quiz-header">
+              <div class="quiz-progress">
+                <span id="finalQuestionCounter">Question 1/20</span>
+                <div class="quiz-progress-bar">
+                  <div class="quiz-progress-fill" id="finalQuizProgressFill"></div>
+                </div>
+              </div>
+              <div class="quiz-score">
+                <span id="finalCurrentScore">Score: 0/0</span>
+              </div>
+            </div>
+
+            <div id="finalCurrentQuestion" class="quiz-question-container">
+              <!-- Questions will be inserted here dynamically -->
+            </div>
+
+            <div class="quiz-navigation">
+              <button id="finalPrevQuestion" class="quiz-nav-btn" disabled>⬅️ Précédent</button>
+              <button id="finalNextQuestion" class="quiz-nav-btn" disabled>Suivant ➡️</button>
+              <button id="finalFinishQuiz" class="quiz-nav-btn finish" style="display: none;">🏁 VALIDER LE COURS</button>
+            </div>
+          </div>
+
+          <div id="finalQuizResults" style="display: none;">
+            <div class="quiz-final-results">
+              <div id="finalResultBadge" class="result-badge">
+                <!-- Badge will be inserted here -->
+              </div>
+              <div class="result-details">
+                <h4>📊 Résultats de Certification</h4>
+                <div id="finalResultBreakdown"></div>
+              </div>
+              <div class="result-actions">
+                <button id="finalReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
+                <button id="downloadCertificate" class="quiz-btn" style="display: none;">📜 Télécharger le Certificat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section de Completion du Cours -->
+      <div id="courseCompletionSection" style="display: none;">
+        <div class="course-completion-badge">
+          <h3>🎉 FÉLICITATIONS ! 🎉</h3>
+          <p>Vous avez officiellement terminé le cours sur les Conditionnels en Anglais !</p>
+          <div style="margin-top: var(--spacing-lg);">
+            <div style="display: inline-block; background: white; color: #2c3e50; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius-md); margin: 0 var(--spacing-sm);">
+              <strong>Score Final :</strong> <span id="finalCourseScore">--/20</span>
+            </div>
+            <div style="display: inline-block; background: white; color: #2c3e50; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius-md); margin: 0 var(--spacing-sm);">
+              <strong>Titre :</strong> <span id="finalCourseTitle">Maître des Conditionnels</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: var(--spacing-xl);">
+    <div class="container">
+      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+        <div class="footer-brand">
+          <a href="../index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="../index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
+            <li><a href="../games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
+            <li><a href="../courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
+            <li><a href="../gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
+            <li><a href="../leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Navigation -->
+  <div class="navigation-buttons">
+    <a href="../courses.html" class="nav-btn">
+      <i class="fas fa-arrow-left"></i>
+      Retour aux cours
+    </a>
+    <a href="#" class="nav-btn" id="nextCourse">
+      Cours suivant
+      <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
+      authDomain: "english-games-41017.firebaseapp.com",
+      projectId: "english-games-41017",
+      storageBucket: "english-games-41017.appspot.com",
+      messagingSenderId: "1062036556501",
+      appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
+    };
+
+    // Initialiser Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    // État du jeu
+    let gameState = {
+      completedSections: [],
+      currentSection: 1,
+      trainingQuizCompleted: false,
+      finalQuizCompleted: false,
+      finalScore: 0,
+      validationQuizzes: {} // Pour stocker les résultats des quiz de validation
+    };
+
+    // Réponses correctes pour les quiz de validation
+    const validationAnswers = {
+      1: [1, 1], // Section 1: 5 types, exprimer situations hypothétiques
+      2: [0, 1, 1], // Section 2: Zero Conditional, Past Simple + would, Third Conditional
+      3: [1, 1, 0], // Section 3: Unless = if not, erreur avec will, inversion formelle
+      5: [1, 1] // Section 5: wish = Second Conditional, registre très formel
+    };
+
+    // Feedbacks pour les quiz de validation
+    const validationFeedbacks = {
+      1: [
+        {
+          correct: "✅ Exact ! Nous étudions 5 types principaux de conditionnels.",
+          incorrect: "❌ Non, nous étudions 5 types principaux : Zero, First, Second, Third et Mixed Conditional."
+        },
+        {
+          correct: "✅ Parfait ! Les conditionnels permettent d'exprimer des situations hypothétiques avec précision.",
+          incorrect: "❌ L'objectif principal est d'exprimer des situations hypothétiques, des conséquences potentielles et des scénarios imaginaires."
+        }
+      ],
+      2: [
+        {
+          correct: "✅ Correct ! Le Zero Conditional exprime des vérités générales et des lois scientifiques.",
+          incorrect: "❌ Le Zero Conditional (If + Present Simple, Present Simple) exprime les vérités générales."
+        },
+        {
+          correct: "✅ Excellent ! Le Second Conditional utilise If + Past Simple, would + base verbale.",
+          incorrect: "❌ Le Second Conditional a la structure : If + Past Simple, would + base verbale."
+        },
+        {
+          correct: "✅ Parfait ! C'est un Third Conditional qui exprime un regret du passé.",
+          incorrect: "❌ C'est un Third Conditional (If + Past Perfect, would have + participe passé) pour les regrets du passé."
+        }
+      ],
+      3: [
+        {
+          correct: "✅ Exact ! 'Unless' signifie 'if not', donc 'Unless you hurry' = 'If you don't hurry'.",
+          incorrect: "❌ 'Unless' signifie 'if not'. 'Unless you hurry' équivaut à 'If you don't hurry'."
+        },
+        {
+          correct: "✅ Bien vu ! On ne dit jamais 'If I will see' - c'est une erreur très commune.",
+          incorrect: "❌ 'If I will see him' est incorrect. On ne met jamais 'will' après 'if' dans les conditionnels."
+        },
+        {
+          correct: "✅ Parfait ! L'inversion formelle donne 'Were I rich...' au lieu de 'If I were rich...'.",
+          incorrect: "❌ Dans un registre formel, on utilise l'inversion : 'Were I rich...' au lieu de 'If I were rich...'."
+        }
+      ],
+      5: [
+        {
+          correct: "✅ Correct ! 'I wish I had...' exprime un désir irréel, comme le Second Conditional.",
+          incorrect: "❌ 'I wish I had...' exprime un désir présent irréel, similaire au Second Conditional."
+        },
+        {
+          correct: "✅ Exact ! 'Should you require...' est une forme très formelle et soutenue.",
+          incorrect: "❌ 'Should you require assistance...' est une forme très formelle, équivalant à 'If you need...'."
+        }
+      ]
+    };
+
+    // Variables pour les quiz de validation
+    let currentValidationQuiz = null;
+    let validationAnswersSelected = {};
+
+    // Banque de 40 questions pour les quiz
+    const quizQuestions = [
+      // Questions sur Zero Conditional
+      {
+        id: 1,
+        question: "Identifiez le type de conditionnel dans cette phrase :",
+        sentence: "If water reaches 100°C, it boils.",
+        options: ["Zero Conditional", "First Conditional", "Second Conditional", "Third Conditional"],
+        correct: 0,
+        explanation: "C'est un Zero Conditional car il exprime une vérité générale/scientifique."
+      },
+      {
+        id: 2,
+        question: "Quel type de conditionnel exprime une vérité universelle ?",
+        sentence: "If you don't water plants, they die.",
+        options: ["First Conditional", "Zero Conditional", "Second Conditional", "Mixed Conditional"],
+        correct: 1,
+        explanation: "Le Zero Conditional exprime des vérités générales et des lois naturelles."
+      },
+      {
+        id: 3,
+        question: "Complétez avec la forme correcte :",
+        sentence: "If you heat ice, it _____.",
+        options: ["will melt", "melts", "would melt", "had melted"],
+        correct: 1,
+        explanation: "Zero Conditional : If + présent simple, présent simple pour les vérités générales."
+      },
+      {
+        id: 4,
+        question: "Analysez cette phrase :",
+        sentence: "When the sun sets, it gets dark.",
+        options: ["First Conditional", "Zero Conditional", "Second Conditional", "Third Conditional"],
+        correct: 1,
+        explanation: "Zero Conditional avec 'when' au lieu de 'if' pour exprimer une vérité générale."
+      },
+
+      // Questions sur First Conditional
+      {
+        id: 5,
+        question: "Quel type de conditionnel est utilisé ici ?",
+        sentence: "If it rains tomorrow, I will stay home.",
+        options: ["Zero Conditional", "First Conditional", "Second Conditional", "Third Conditional"],
+        correct: 1,
+        explanation: "First Conditional : situation probable dans le futur avec if + présent, will + verbe."
+      },
+      {
+        id: 6,
+        question: "Complétez la phrase avec la forme correcte :",
+        sentence: "If it _____ tomorrow, we will cancel the picnic.",
+        options: ["rains", "will rain", "would rain", "had rained"],
+        correct: 0,
+        explanation: "Dans le First Conditional, on utilise le présent simple après 'if'."
+      },
+      {
+        id: 7,
+        question: "Identifiez l'erreur :",
+        sentence: "If you will study hard, you will pass the exam.",
+        options: ["Pas d'erreur", "Il faut 'study' sans will", "Il faut 'would study'", "Il faut 'studied'"],
+        correct: 1,
+        explanation: "On n'utilise jamais 'will' après 'if' dans les conditionnels. Correct : 'If you study hard'."
+      },
+      {
+        id: 8,
+        question: "Quelle phrase est correcte ?",
+        sentence: "Choisissez la bonne option :",
+        options: ["If I will see him, I'll tell him", "If I see him, I'll tell him", "If I would see him, I'll tell him", "If I saw him, I'll tell him"],
+        correct: 1,
+        explanation: "First Conditional correct : If + présent simple, will + verbe de base."
+      },
+
+      // Questions sur Second Conditional
+      {
+        id: 9,
+        question: "Quel type de conditionnel est utilisé ici ?",
+        sentence: "If I were rich, I would buy a yacht.",
+        options: ["First Conditional", "Second Conditional", "Third Conditional", "Mixed Conditional"],
+        correct: 1,
+        explanation: "C'est un Second Conditional car il exprime une situation imaginaire dans le présent."
+      },
+      {
+        id: 10,
+        question: "Quelle est la forme correcte ?",
+        sentence: "If I _____ you, I would accept the job offer.",
+        options: ["am", "was", "were", "will be"],
+        correct: 2,
+        explanation: "Dans le Second Conditional, on utilise 'were' pour toutes les personnes avec le verbe 'to be'."
+      },
+      {
+        id: 11,
+        question: "Complétez correctement :",
+        sentence: "If I _____ a million dollars, I _____ around the world.",
+        options: ["have / will travel", "had / would travel", "have / would travel", "had / will travel"],
+        correct: 1,
+        explanation: "Second Conditional : If + past simple, would + verbe de base."
+      },
+      {
+        id: 12,
+        question: "Analysez cette phrase :",
+        sentence: "If we lived in Paris, we would visit museums every weekend.",
+        options: ["Situation réelle", "Situation imaginaire présente", "Situation passée", "Situation future certaine"],
+        correct: 1,
+        explanation: "Second Conditional exprime une situation imaginaire ou peu probable dans le présent."
+      },
+
+      // Questions sur Third Conditional
+      {
+        id: 13,
+        question: "Analysez cette phrase conditionnelle :",
+        sentence: "If you had called me, I would have come.",
+        options: ["Second Conditional", "Third Conditional", "Mixed Conditional", "Zero Conditional"],
+        correct: 1,
+        explanation: "C'est un Third Conditional car il parle d'une situation hypothétique dans le passé."
+      },
+      {
+        id: 14,
+        question: "Choisissez la forme correcte :",
+        sentence: "If you _____ harder last year, you _____ the exam.",
+        options: ["studied / would pass", "had studied / would have passed", "study / will pass", "would study / passed"],
+        correct: 1,
+        explanation: "Third Conditional : If + past perfect, would have + past participle."
+      },
+      {
+        id: 15,
+        question: "Complétez la phrase :",
+        sentence: "If I _____ earlier, I _____ the train.",
+        options: ["left / wouldn't miss", "had left / wouldn't have missed", "leave / won't miss", "would leave / didn't miss"],
+        correct: 1,
+        explanation: "Third Conditional pour exprimer un regret : If + past perfect, would have + past participle."
+      },
+      {
+        id: 16,
+        question: "Que exprime cette phrase ?",
+        sentence: "If we had known about the party, we would have come.",
+        options: ["Un plan futur", "Un regret du passé", "Une habitude", "Une vérité générale"],
+        correct: 1,
+        explanation: "Third Conditional exprime souvent des regrets ou des situations alternatives dans le passé."
+      },
+
+      // Questions sur Mixed Conditional
+      {
+        id: 17,
+        question: "Identifiez le type de cette phrase :",
+        sentence: "If I had studied medicine, I would be a doctor now.",
+        options: ["Second Conditional", "Third Conditional", "Mixed Conditional", "First Conditional"],
+        correct: 2,
+        explanation: "C'est un Mixed Conditional : condition passée (had studied) avec résultat présent (would be)."
+      },
+      {
+        id: 18,
+        question: "Analysez ce Mixed Conditional :",
+        sentence: "If I were more organized, I would have finished the project yesterday.",
+        options: ["Condition présente → résultat passé", "Condition passée → résultat présent", "Condition future → résultat présent", "Condition présente → résultat futur"],
+        correct: 0,
+        explanation: "Mixed Conditional : condition présente (were) avec résultat passé (would have finished)."
+      },
+
+      // Questions sur les alternatives à "if"
+      {
+        id: 19,
+        question: "Analysez cette alternative à 'if' :",
+        sentence: "Unless you hurry, you'll be late.",
+        options: ["Équivaut à 'If you hurry'", "Équivaut à 'If you don't hurry'", "Équivaut à 'When you hurry'", "Équivaut à 'Because you hurry'"],
+        correct: 1,
+        explanation: "'Unless' signifie 'if not', donc 'Unless you hurry' = 'If you don't hurry'."
+      },
+      {
+        id: 20,
+        question: "Que signifie cette phrase ?",
+        sentence: "Provided that you study, you will pass.",
+        options: ["Si tu étudies", "Quand tu étudies", "Parce que tu étudies", "Bien que tu étudies"],
+        correct: 0,
+        explanation: "'Provided that' est une alternative formelle à 'if' qui signifie 'si' ou 'à condition que'."
+      },
+      {
+        id: 21,
+        question: "Analysez cette phrase :",
+        sentence: "As long as you're quiet, you can stay.",
+        options: ["Condition temporelle", "Condition de durée", "Condition simple", "Condition de cause"],
+        correct: 2,
+        explanation: "'As long as' signifie 'si' ou 'à condition que' - c'est une condition simple."
+      },
+      {
+        id: 22,
+        question: "Complétez avec l'alternative correcte :",
+        sentence: "_____ it rains, take an umbrella.",
+        options: ["Unless", "In case", "Provided", "As long as"],
+        correct: 1,
+        explanation: "'In case' exprime une précaution : 'au cas où il pleuvrait'."
+      },
+
+      // Questions sur les erreurs communes
+      {
+        id: 23,
+        question: "Identifiez l'erreur dans cette phrase :",
+        sentence: "If I will see him tomorrow, I will tell him.",
+        options: ["Pas d'erreur", "Il faut 'would see'", "Il faut 'see' (sans will)", "Il faut 'saw'"],
+        correct: 2,
+        explanation: "On n'utilise jamais 'will' après 'if' dans les conditionnels. La forme correcte est 'If I see him'."
+      },
+      {
+        id: 24,
+        question: "Corrigez cette erreur :",
+        sentence: "If I would be rich, I would buy a car.",
+        options: ["If I will be rich", "If I were rich", "If I am rich", "If I was rich"],
+        correct: 1,
+        explanation: "Dans le Second Conditional, on utilise 'If I were' (pas 'would be' après if)."
+      },
+      {
+        id: 25,
+        question: "Quelle phrase contient une erreur ?",
+        sentence: "Identifiez la phrase incorrecte :",
+        options: ["If I had known, I would have come", "If I would have known, I would have come", "If I knew, I would come", "If I know, I will come"],
+        correct: 1,
+        explanation: "On ne dit jamais 'If I would have known'. Correct : 'If I had known'."
+      },
+
+      // Questions sur les conditionnels habituels
+      {
+        id: 26,
+        question: "Quel conditionnel exprime une habitude ?",
+        sentence: "When I was young, if it snowed, we would build snowmen.",
+        options: ["Zero Conditional", "First Conditional", "Second Conditional", "Conditionnel habituel"],
+        correct: 3,
+        explanation: "C'est un conditionnel habituel qui exprime une action répétée dans le passé."
+      },
+      {
+        id: 27,
+        question: "Analysez cette habitude passée :",
+        sentence: "If my mother was cooking, the whole house would smell amazing.",
+        options: ["Vérité générale", "Habitude passée", "Situation imaginaire", "Regret"],
+        correct: 1,
+        explanation: "Conditionnel habituel : If + past simple, would + verbe pour les habitudes passées."
+      },
+
+      // Questions sur l'inversion formelle
+      {
+        id: 28,
+        question: "Analysez cette inversion formelle :",
+        sentence: "Were I to receive the position, I would be honored.",
+        options: ["Équivaut à 'If I were to receive'", "Équivaut à 'If I will receive'", "Équivaut à 'If I received'", "Équivaut à 'If I had received'"],
+        correct: 0,
+        explanation: "L'inversion formelle 'Were I to...' équivaut à 'If I were to...' dans un style soutenu."
+      },
+      {
+        id: 29,
+        question: "Transformez en style formel :",
+        sentence: "If I had known, I would have helped.",
+        options: ["Had I known, I would have helped", "Would I have known, I had helped", "Known I had, I would have helped", "I had known, would I have helped"],
+        correct: 0,
+        explanation: "Inversion formelle : 'Had I known' au lieu de 'If I had known'."
+      },
+
+      // Questions sur les nuances et registres
+      {
+        id: 30,
+        question: "Quel registre utilise cette phrase ?",
+        sentence: "Should you need assistance, please contact us.",
+        options: ["Informel", "Formel", "Familier", "Argotique"],
+        correct: 1,
+        explanation: "'Should you need' est une forme très formelle équivalant à 'If you need'."
+      },
+      {
+        id: 31,
+        question: "Comparez ces deux phrases :",
+        sentence: "A) If I got the job, I'd be happy! B) Were I to obtain the position, I would be delighted.",
+        options: ["A est plus formel", "B est plus formel", "Même niveau", "A est incorrect"],
+        correct: 1,
+        explanation: "La phrase B utilise un registre très formel avec l'inversion et un vocabulaire soutenu."
+      },
+
+      // Questions sur les temps et aspects
+      {
+        id: 32,
+        question: "Analysez l'aspect temporel :",
+        sentence: "If you have finished your work, you can leave.",
+        options: ["Present perfect dans la condition", "Past perfect dans la condition", "Future perfect dans la condition", "Present simple dans la condition"],
+        correct: 0,
+        explanation: "On peut utiliser le present perfect après 'if' pour indiquer une action complétée."
+      },
+      {
+        id: 33,
+        question: "Quelle nuance exprime cette phrase ?",
+        sentence: "If you should see him, tell him I called.",
+        options: ["Certitude", "Possibilité faible", "Impossibilité", "Habitude"],
+        correct: 1,
+        explanation: "'Should' après 'if' exprime une possibilité faible ou peu probable."
+      },
+
+      // Questions sur les conditionnels avec modaux
+      {
+        id: 34,
+        question: "Analysez l'usage du modal :",
+        sentence: "If you could help me, I would be grateful.",
+        options: ["Demande polie", "Capacité passée", "Possibilité future", "Habitude"],
+        correct: 0,
+        explanation: "'Could' dans un conditionnel rend la demande plus polie et moins directe."
+      },
+      {
+        id: 35,
+        question: "Comparez ces phrases :",
+        sentence: "A) If you can help... B) If you could help...",
+        options: ["A est plus poli", "B est plus poli", "Même politesse", "A est incorrect"],
+        correct: 1,
+        explanation: "'Could' est plus poli et moins direct que 'can' dans les demandes."
+      },
+
+      // Questions sur les conditionnels complexes
+      {
+        id: 36,
+        question: "Analysez cette phrase complexe :",
+        sentence: "If it hadn't been raining, we would have gone to the beach, and we would be tanned now.",
+        options: ["Third Conditional simple", "Mixed Conditional complexe", "Second Conditional", "First Conditional"],
+        correct: 1,
+        explanation: "Mixed Conditional complexe : condition passée avec deux résultats (passé et présent)."
+      },
+      {
+        id: 37,
+        question: "Identifiez la structure :",
+        sentence: "If I were to win the lottery, I would quit my job and travel the world.",
+        options: ["Second Conditional avec 'were to'", "Third Conditional", "Mixed Conditional", "First Conditional"],
+        correct: 0,
+        explanation: "'Were to' + infinitif est une forme du Second Conditional pour les situations très hypothétiques."
+      },
+
+      // Questions sur les expressions idiomatiques
+      {
+        id: 38,
+        question: "Analysez cette expression :",
+        sentence: "If worst comes to worst, we'll have to sell the house.",
+        options: ["Expression idiomatique", "Erreur grammaticale", "Conditionnel incorrect", "Phrase incomplète"],
+        correct: 0,
+        explanation: "'If worst comes to worst' est une expression idiomatique signifiant 'dans le pire des cas'."
+      },
+      {
+        id: 39,
+        question: "Que signifie cette expression ?",
+        sentence: "If push comes to shove, I'll do it myself.",
+        options: ["Si nécessaire", "Si c'est facile", "Si c'est impossible", "Si c'est gratuit"],
+        correct: 0,
+        explanation: "'If push comes to shove' signifie 'si nécessaire' ou 'en dernier recours'."
+      },
+
+      // Question bonus sur la créativité
+      {
+        id: 40,
+        question: "Créativité linguistique :",
+        sentence: "If I were a bird, I would fly to you every morning.",
+        options: ["Métaphore poétique", "Erreur scientifique", "Conditionnel impossible", "Toutes les réponses"],
+        correct: 0,
+        explanation: "Les conditionnels permettent l'expression poétique et métaphorique, même pour des situations impossibles."
+      }
+    ];
+
+    // Variables pour les quiz
+    let trainingQuizQuestions = [];
+    let finalQuizQuestions = [];
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let score = 0;
+    let isTrainingQuiz = true;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeGame();
+      loadGameState();
+      updateGameDisplay();
+    });
+
+    function initializeGame() {
+      // Initialiser les événements pour les quiz
+      document.getElementById('startTrainingQuiz').addEventListener('click', () => startQuiz(true));
+      document.getElementById('resetTrainingQuiz').addEventListener('click', () => resetQuiz(true));
+      document.getElementById('startFinalQuiz').addEventListener('click', () => startQuiz(false));
+      document.getElementById('resetFinalQuiz').addEventListener('click', () => resetQuiz(false));
+      
+      // Navigation quiz d'entraînement
+      document.getElementById('trainingPrevQuestion').addEventListener('click', () => previousQuestion(true));
+      document.getElementById('trainingNextQuestion').addEventListener('click', () => nextQuestion(true));
+      document.getElementById('trainingFinishQuiz').addEventListener('click', () => finishQuiz(true));
+      document.getElementById('trainingReviewAnswers').addEventListener('click', () => reviewAnswers(true));
+      document.getElementById('trainingRetakeQuiz').addEventListener('click', () => resetQuiz(true));
+      
+      // Navigation quiz final
+      document.getElementById('finalPrevQuestion').addEventListener('click', () => previousQuestion(false));
+      document.getElementById('finalNextQuestion').addEventListener('click', () => nextQuestion(false));
+      document.getElementById('finalFinishQuiz').addEventListener('click', () => finishQuiz(false));
+      document.getElementById('finalReviewAnswers').addEventListener('click', () => reviewAnswers(false));
+      
+      // Certificat
+      document.getElementById('downloadCertificate').addEventListener('click', downloadCertificate);
+    }
+
+    function completeSection(sectionNumber) {
+      // Vérifier si le quiz de validation est requis et complété
+      if ([1, 2, 3, 5].includes(sectionNumber)) {
+        if (!gameState.validationQuizzes[sectionNumber] || !gameState.validationQuizzes[sectionNumber].passed) {
+          // Afficher le quiz de validation
+          showValidationQuiz(sectionNumber);
+          return;
+        }
+      }
+      
+      if (!gameState.completedSections.includes(sectionNumber)) {
+        gameState.completedSections.push(sectionNumber);
+        
+        // Marquer la section comme complétée
+        const section = document.getElementById(`section-${sectionNumber}`);
+        const number = document.getElementById(`number-${sectionNumber}`);
+        const button = document.getElementById(`complete-${sectionNumber}`);
+        
+        section.classList.remove('current');
+        section.classList.add('completed');
+        number.classList.remove('locked');
+        number.classList.add('completed');
+        button.classList.add('completed');
+        button.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
+        button.disabled = true;
+        
+        // Débloquer la section suivante
+        if (sectionNumber < 6) {
+          unlockSection(sectionNumber + 1);
+        }
+        
+        // Cas spéciaux
+        if (sectionNumber === 4) {
+          // Activer le bouton du quiz d'entraînement
+          document.getElementById('startTrainingQuiz').disabled = false;
+        }
+        
+        if (sectionNumber === 5) {
+          // Vérifier si toutes les sections sont complétées pour débloquer le quiz final
+          if (gameState.completedSections.length === 5 && gameState.trainingQuizCompleted) {
+            document.getElementById('startFinalQuiz').disabled = false;
+          }
+        }
+        
+        updateGameDisplay();
+        saveGameState();
+        
+        // Animation de célébration
+        showSectionCompletionAnimation(sectionNumber);
+      }
+    }
+
+    function showValidationQuiz(sectionNumber) {
+      const quiz = document.getElementById(`validation-quiz-${sectionNumber}`);
+      const button = document.getElementById(`complete-${sectionNumber}`);
+      
+      quiz.style.display = 'block';
+      button.style.display = 'none';
+      
+      // Initialiser les événements pour ce quiz
+      initializeValidationQuiz(sectionNumber);
+      
+      // Scroll vers le quiz
+      quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function initializeValidationQuiz(sectionNumber) {
+      currentValidationQuiz = sectionNumber;
+      validationAnswersSelected[sectionNumber] = {};
+      
+      // Ajouter les événements de clic aux options
+      const quiz = document.getElementById(`validation-quiz-${sectionNumber}`);
+      const options = quiz.querySelectorAll('.validation-option');
+      
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          const questionDiv = this.closest('.validation-question');
+          const questionNumber = parseInt(questionDiv.dataset.question);
+          const answerValue = parseInt(this.dataset.answer);
+          
+          selectValidationAnswer(sectionNumber, questionNumber, answerValue, this);
+        });
+      });
+    }
+
+    function selectValidationAnswer(sectionNumber, questionNumber, answerValue, optionElement) {
+      // Retirer la sélection précédente dans cette question
+      const questionDiv = optionElement.closest('.validation-question');
+      questionDiv.querySelectorAll('.validation-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      // Ajouter la nouvelle sélection
+      optionElement.classList.add('selected');
+      
+      // Sauvegarder la réponse
+      if (!validationAnswersSelected[sectionNumber]) {
+        validationAnswersSelected[sectionNumber] = {};
+      }
+      validationAnswersSelected[sectionNumber][questionNumber] = answerValue;
+      
+      // Vérifier si toutes les questions ont été répondues
+      const totalQuestions = validationAnswers[sectionNumber].length;
+      const answeredQuestions = Object.keys(validationAnswersSelected[sectionNumber]).length;
+      
+      if (answeredQuestions === totalQuestions) {
+        document.getElementById(`check-validation-${sectionNumber}`).disabled = false;
+      }
+    }
+
+    function checkValidationQuiz(sectionNumber) {
+      const correctAnswers = validationAnswers[sectionNumber];
+      const userAnswers = validationAnswersSelected[sectionNumber];
+      const feedbacks = validationFeedbacks[sectionNumber];
+      
+      let score = 0;
+      const totalQuestions = correctAnswers.length;
+      
+      // Vérifier chaque question
+      for (let i = 1; i <= totalQuestions; i++) {
+        const questionDiv = document.querySelector(`#validation-quiz-${sectionNumber} [data-question="${i}"]`);
+        const options = questionDiv.querySelectorAll('.validation-option');
+        const feedbackDiv = questionDiv.querySelector('.validation-feedback');
+        const feedbackText = feedbackDiv.querySelector('.feedback-text');
+        
+        const userAnswer = userAnswers[i];
+        const correctAnswer = correctAnswers[i - 1];
+        const isCorrect = userAnswer === correctAnswer;
+        
+        if (isCorrect) score++;
+        
+        // Marquer les options
+        options.forEach((option, index) => {
+          option.classList.remove('selected');
+          if (index === correctAnswer) {
+            option.classList.add('correct');
+          } else if (index === userAnswer && !isCorrect) {
+            option.classList.add('incorrect');
+          }
+        });
+        
+        // Afficher le feedback
+        feedbackText.textContent = isCorrect ? feedbacks[i - 1].correct : feedbacks[i - 1].incorrect;
+        feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+        feedbackDiv.style.display = 'block';
+      }
+      
+      // Afficher le score
+      const scoreDiv = document.getElementById(`validation-score-${sectionNumber}`);
+      const scoreText = scoreDiv.querySelector('.score-text');
+      const percentage = Math.round((score / totalQuestions) * 100);
+      const passed = score >= Math.ceil(totalQuestions * 0.7); // 70% minimum
+      
+      scoreText.textContent = `Score: ${score}/${totalQuestions} (${percentage}%) - ${passed ? 'VALIDÉ ✅' : 'À REFAIRE ❌'}`;
+      scoreDiv.classList.add(passed ? 'success' : 'retry');
+      scoreDiv.style.display = 'block';
+      
+      // Sauvegarder le résultat
+      gameState.validationQuizzes[sectionNumber] = {
+        score: score,
+        total: totalQuestions,
+        passed: passed,
+        attempts: (gameState.validationQuizzes[sectionNumber]?.attempts || 0) + 1
+      };
+      
+      // Afficher le bouton approprié
+      document.getElementById(`check-validation-${sectionNumber}`).style.display = 'none';
+      
+      if (passed) {
+        document.getElementById(`continue-validation-${sectionNumber}`).style.display = 'inline-block';
+      } else {
+        // Permettre de refaire le quiz
+        setTimeout(() => {
+          resetValidationQuiz(sectionNumber);
+        }, 3000);
+      }
+      
+      saveGameState();
+    }
+
+    function continueAfterValidation(sectionNumber) {
+      // Cacher le quiz et afficher le bouton de completion
+      document.getElementById(`validation-quiz-${sectionNumber}`).style.display = 'none';
+      document.getElementById(`complete-${sectionNumber}`).style.display = 'inline-block';
+      
+      // Compléter automatiquement la section
+      completeSection(sectionNumber);
+    }
+
+    function resetValidationQuiz(sectionNumber) {
+      // Réinitialiser les sélections
+      validationAnswersSelected[sectionNumber] = {};
+      
+      const quiz = document.getElementById(`validation-quiz-${sectionNumber}`);
+      
+      // Retirer toutes les classes de style
+      quiz.querySelectorAll('.validation-option').forEach(option => {
+        option.classList.remove('selected', 'correct', 'incorrect');
+      });
+      
+      // Cacher les feedbacks
+      quiz.querySelectorAll('.validation-feedback').forEach(feedback => {
+        feedback.style.display = 'none';
+        feedback.classList.remove('correct', 'incorrect');
+      });
+      
+      // Réinitialiser les boutons
+      document.getElementById(`check-validation-${sectionNumber}`).disabled = true;
+      document.getElementById(`check-validation-${sectionNumber}`).style.display = 'inline-block';
+      document.getElementById(`continue-validation-${sectionNumber}`).style.display = 'none';
+      
+      // Cacher le score
+      const scoreDiv = document.getElementById(`validation-score-${sectionNumber}`);
+      scoreDiv.style.display = 'none';
+      scoreDiv.classList.remove('success', 'retry');
+    }
+
+    function unlockSection(sectionNumber) {
+      const section = document.getElementById(`section-${sectionNumber}`);
+      const number = document.getElementById(`number-${sectionNumber}`);
+      const lock = document.getElementById(`lock-${sectionNumber}`);
+      const button = document.getElementById(`complete-${sectionNumber}`);
+      
+      section.classList.remove('locked');
+      section.classList.add('current');
+      number.classList.remove('locked');
+      if (lock) lock.style.display = 'none';
+      if (button) button.disabled = false;
+      
+      gameState.currentSection = sectionNumber;
+      
+      // Scroll vers la nouvelle section
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateGameDisplay() {
+      const completedCount = gameState.completedSections.length;
+      const totalSections = 6;
+      const progressPercentage = (completedCount / totalSections) * 100;
+      
+      document.getElementById('gameProgressFill').style.width = progressPercentage + '%';
+      document.getElementById('gameProgressText').textContent = `Progression : ${completedCount}/${totalSections} étapes complétées`;
+      
+      // Mettre à jour les états des sections
+      for (let i = 1; i <= 6; i++) {
+        const section = document.getElementById(`section-${i}`);
+        const number = document.getElementById(`number-${i}`);
+        
+        if (gameState.completedSections.includes(i)) {
+          section.classList.add('completed');
+          section.classList.remove('current', 'locked');
+          number.classList.add('completed');
+          number.classList.remove('locked');
+        } else if (i === gameState.currentSection) {
+          section.classList.add('current');
+          section.classList.remove('completed', 'locked');
+          number.classList.remove('locked', 'completed');
+        } else if (i > gameState.currentSection) {
+          section.classList.add('locked');
+          section.classList.remove('current', 'completed');
+          number.classList.add('locked');
+          number.classList.remove('completed');
+        }
+      }
+      
+      // Vérifier si le quiz final peut être débloqué
+      if (gameState.completedSections.length === 5 && gameState.trainingQuizCompleted) {
+        document.getElementById('startFinalQuiz').disabled = false;
+        const lock6 = document.getElementById('lock-6');
+        if (lock6) lock6.style.display = 'none';
+      }
+    }
+
+    function startQuiz(isTraining) {
+      isTrainingQuiz = isTraining;
+      const questionCount = isTraining ? 10 : 20;
+      
+      // Mélanger les questions et sélectionner le bon nombre
+      const shuffledQuestions = [...quizQuestions].sort(() => Math.random() - 0.5);
+      const selectedQuestions = shuffledQuestions.slice(0, questionCount);
+      
+      if (isTraining) {
+        trainingQuizQuestions = selectedQuestions;
+      } else {
+        finalQuizQuestions = selectedQuestions;
+      }
+      
+      currentQuestionIndex = 0;
+      userAnswers = new Array(questionCount).fill(null);
+      score = 0;
+
+      // Afficher le conteneur approprié
+      const prefix = isTraining ? 'training' : 'final';
+      document.getElementById(`${prefix}QuizContainer`).style.display = 'block';
+      document.getElementById(`start${isTraining ? 'Training' : 'Final'}Quiz`).style.display = 'none';
+      document.getElementById(`reset${isTraining ? 'Training' : 'Final'}Quiz`).style.display = 'inline-block';
+      document.getElementById(`${prefix}QuizResults`).style.display = 'none';
+
+      displayQuestion(isTraining);
+      updateQuizProgress(isTraining);
+    }
+
+    function displayQuestion(isTraining) {
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      const question = questions[currentQuestionIndex];
+      const prefix = isTraining ? 'training' : 'final';
+      const container = document.getElementById(`${prefix}CurrentQuestion`);
+      
+      container.innerHTML = `
+        <div class="question-text">
+          <strong>Question ${currentQuestionIndex + 1}:</strong> ${question.question}
+        </div>
+        <div class="question-sentence">
+          "${question.sentence}"
+        </div>
+        <div class="quiz-options">
+          ${question.options.map((option, index) => `
+            <div class="quiz-option" data-option="${index}" onclick="selectOption(${index}, ${isTraining})">
+              ${String.fromCharCode(65 + index)}. ${option}
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Restaurer la sélection précédente si elle existe
+      if (userAnswers[currentQuestionIndex] !== null) {
+        const selectedOption = container.querySelector(`[data-option="${userAnswers[currentQuestionIndex]}"]`);
+        if (selectedOption) {
+          selectedOption.classList.add('selected');
+        }
+      }
+
+      updateNavigationButtons(isTraining);
+    }
+
+    function selectOption(optionIndex, isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      
+      // Retirer la sélection précédente
+      document.querySelectorAll(`#${prefix}CurrentQuestion .quiz-option`).forEach(option => {
+        option.classList.remove('selected');
+      });
+
+      // Ajouter la nouvelle sélection
+      const selectedOption = document.querySelector(`#${prefix}CurrentQuestion [data-option="${optionIndex}"]`);
+      selectedOption.classList.add('selected');
+
+      // Sauvegarder la réponse
+      userAnswers[currentQuestionIndex] = optionIndex;
+
+      updateNavigationButtons(isTraining);
+      updateQuizProgress(isTraining);
+    }
+
+    function updateNavigationButtons(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      
+      const prevBtn = document.getElementById(`${prefix}PrevQuestion`);
+      const nextBtn = document.getElementById(`${prefix}NextQuestion`);
+      const finishBtn = document.getElementById(`${prefix}FinishQuiz`);
+
+      prevBtn.disabled = currentQuestionIndex === 0;
+      
+      if (currentQuestionIndex === questions.length - 1) {
+        nextBtn.style.display = 'none';
+        finishBtn.style.display = 'inline-block';
+        finishBtn.disabled = userAnswers[currentQuestionIndex] === null;
+      } else {
+        nextBtn.style.display = 'inline-block';
+        finishBtn.style.display = 'none';
+        nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+      }
+    }
+
+    function previousQuestion(isTraining) {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion(isTraining);
+        updateQuizProgress(isTraining);
+      }
+    }
+
+    function nextQuestion(isTraining) {
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        displayQuestion(isTraining);
+        updateQuizProgress(isTraining);
+      }
+    }
+
+    function updateQuizProgress(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+      document.getElementById(`${prefix}QuizProgressFill`).style.width = progress + '%';
+      document.getElementById(`${prefix}QuestionCounter`).textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+      
+      const answeredQuestions = userAnswers.filter(answer => answer !== null).length;
+      document.getElementById(`${prefix}CurrentScore`).textContent = `Répondu: ${answeredQuestions}/${questions.length}`;
+    }
+
+    function finishQuiz(isTraining) {
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      
+      // Calculer le score
+      score = 0;
+      for (let i = 0; i < questions.length; i++) {
+        if (userAnswers[i] === questions[i].correct) {
+          score++;
+        }
+      }
+
+      // Marquer le quiz comme terminé
+      if (isTraining) {
+        gameState.trainingQuizCompleted = true;
+        // Débloquer le bouton de completion de la section 4
+        document.getElementById('complete-4').disabled = false;
+      } else {
+        gameState.finalQuizCompleted = true;
+        gameState.finalScore = score;
+        
+        // Vérifier si le cours est validé
+        if (score >= 16) {
+          showCourseCompletion(score);
+        }
+      }
+
+      displayResults(isTraining);
+      saveGameState();
+    }
+
+    function displayResults(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      const minScore = isTraining ? 7 : 16;
+      
+      document.getElementById(`${prefix}QuizContainer`).style.display = 'none';
+      document.getElementById(`${prefix}QuizResults`).style.display = 'block';
+
+      const percentage = (score / questions.length) * 100;
+      let badgeClass, badgeText, badgeIcon;
+
+      if (isTraining) {
+        if (score >= 8) {
+          badgeClass = 'badge-master';
+          badgeText = `🏆 EXCELLENT ENTRAÎNEMENT ! ${score}/${questions.length}`;
+          badgeIcon = '👑';
+        } else if (score >= 7) {
+          badgeClass = 'badge-good';
+          badgeText = `✅ Bon Entraînement ! ${score}/${questions.length}`;
+          badgeIcon = '🎉';
+        } else {
+          badgeClass = 'badge-retry';
+          badgeText = `📚 Continuez à Vous Entraîner ${score}/${questions.length}`;
+          badgeIcon = '💪';
+        }
+      } else {
+        if (score >= 18) {
+          badgeClass = 'badge-master';
+          badgeText = `🏆 MAÎTRE DES CONDITIONNELS ! ${score}/${questions.length}`;
+          badgeIcon = '👑';
+        } else if (score >= 16) {
+          badgeClass = 'badge-good';
+          badgeText = `✅ COURS VALIDÉ ! ${score}/${questions.length}`;
+          badgeIcon = '🎉';
+        } else {
+          badgeClass = 'badge-retry';
+          badgeText = `📚 Score Insuffisant ${score}/${questions.length}`;
+          badgeIcon = '💪';
+        }
+      }
+
+      document.getElementById(`${prefix}ResultBadge`).innerHTML = `
+        <div class="${badgeClass}">
+          ${badgeIcon} ${badgeText}
+        </div>
+      `;
+
+      // Détails des résultats
+      const breakdown = questions.map((question, index) => {
+        const userAnswer = userAnswers[index];
+        const isCorrect = userAnswer === question.correct;
+        const userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Non répondu';
+        const correctAnswerText = question.options[question.correct];
+
+        return `
+          <div style="margin: 1rem 0; padding: 1rem; border-radius: 8px; background: ${isCorrect ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)'};">
+            <strong>Q${index + 1}:</strong> ${question.sentence}<br>
+            <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'};">
+              Votre réponse: ${userAnswerText} ${isCorrect ? '✅' : '❌'}
+            </span><br>
+            ${!isCorrect ? `<span style="color: #2ecc71;">Bonne réponse: ${correctAnswerText}</span><br>` : ''}
+            <small style="color: #95a5a6;">${question.explanation}</small>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById(`${prefix}ResultBreakdown`).innerHTML = breakdown;
+      
+      // Afficher le bouton de certificat si quiz final réussi
+      if (!isTraining && score >= 16) {
+        document.getElementById('downloadCertificate').style.display = 'inline-block';
+      }
+    }
+
+    function reviewAnswers(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      
+      document.getElementById(`${prefix}QuizResults`).style.display = 'none';
+      document.getElementById(`${prefix}QuizContainer`).style.display = 'block';
+      
+      currentQuestionIndex = 0;
+      displayQuestionWithAnswers(isTraining);
+    }
+
+    function displayQuestionWithAnswers(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      const questions = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      const question = questions[currentQuestionIndex];
+      const container = document.getElementById(`${prefix}CurrentQuestion`);
+      
+      container.innerHTML = `
+        <div class="question-text">
+          <strong>Question ${currentQuestionIndex + 1}:</strong> ${question.question}
+        </div>
+        <div class="question-sentence">
+          "${question.sentence}"
+        </div>
+        <div class="quiz-options">
+          ${question.options.map((option, index) => {
+            let className = 'quiz-option';
+            if (index === question.correct) className += ' correct';
+            else if (index === userAnswers[currentQuestionIndex] && index !== question.correct) className += ' incorrect';
+            else if (index === userAnswers[currentQuestionIndex]) className += ' selected';
+            
+            return `<div class="${className}">${String.fromCharCode(65 + index)}. ${option}</div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top: 1rem; padding: 1rem; background: rgba(52, 152, 219, 0.1); border-radius: 8px;">
+          <strong>💡 Explication :</strong> ${question.explanation}
+        </div>
+      `;
+
+      // Mettre à jour les boutons de navigation pour la révision
+      const questions_array = isTraining ? trainingQuizQuestions : finalQuizQuestions;
+      const prevBtn = document.getElementById(`${prefix}PrevQuestion`);
+      const nextBtn = document.getElementById(`${prefix}NextQuestion`);
+      const finishBtn = document.getElementById(`${prefix}FinishQuiz`);
+
+      prevBtn.disabled = currentQuestionIndex === 0;
+      prevBtn.onclick = () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          displayQuestionWithAnswers(isTraining);
+        }
+      };
+
+      if (currentQuestionIndex === questions_array.length - 1) {
+        nextBtn.style.display = 'none';
+        finishBtn.style.display = 'inline-block';
+        finishBtn.textContent = '🔙 Retour aux Résultats';
+        finishBtn.disabled = false;
+        finishBtn.onclick = () => displayResults(isTraining);
+      } else {
+        nextBtn.style.display = 'inline-block';
+        finishBtn.style.display = 'none';
+        nextBtn.disabled = false;
+        nextBtn.onclick = () => {
+          currentQuestionIndex++;
+          displayQuestionWithAnswers(isTraining);
+        };
+      }
+    }
+
+    function resetQuiz(isTraining) {
+      const prefix = isTraining ? 'training' : 'final';
+      
+      currentQuestionIndex = 0;
+      userAnswers = [];
+      score = 0;
+
+      document.getElementById(`${prefix}QuizContainer`).style.display = 'none';
+      document.getElementById(`${prefix}QuizResults`).style.display = 'none';
+      document.getElementById(`start${isTraining ? 'Training' : 'Final'}Quiz`).style.display = 'inline-block';
+      document.getElementById(`reset${isTraining ? 'Training' : 'Final'}Quiz`).style.display = 'none';
+    }
+
+    function showCourseCompletion(finalScore) {
+      const title = finalScore >= 18 ? "Maître des Conditionnels" : "Spécialiste des Conditionnels";
+      
+      document.getElementById('finalCourseScore').textContent = `${finalScore}/20`;
+      document.getElementById('finalCourseTitle').textContent = title;
+      document.getElementById('courseCompletionSection').style.display = 'block';
+      
+      // Scroll vers la section de completion
+      document.getElementById('courseCompletionSection').scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+
+    function downloadCertificate() {
+      const score = gameState.finalScore;
+      const title = score >= 18 ? "Maître des Conditionnels" : "Spécialiste des Conditionnels";
+      const date = new Date().toLocaleDateString('fr-FR');
+      
+      // Créer un certificat simple en HTML
+      const certificateHTML = `
+        <div style="width: 800px; height: 600px; border: 10px solid #2ecc71; padding: 50px; text-align: center; font-family: 'Cinzel', serif; background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+          <h1 style="color: #2ecc71; font-size: 3rem; margin-bottom: 30px;">CERTIFICAT DE RÉUSSITE</h1>
+          <h2 style="color: #34495e; font-size: 2rem; margin-bottom: 40px;">English Quest</h2>
+          <p style="font-size: 1.5rem; margin-bottom: 30px;">Certifie que</p>
+          <h3 style="color: #2c3e50; font-size: 2.5rem; margin-bottom: 40px; border-bottom: 3px solid #2ecc71; padding-bottom: 10px;">L'Apprenant</h3>
+          <p style="font-size: 1.3rem; margin-bottom: 20px;">a réussi avec succès le cours</p>
+          <h4 style="color: #9b59b6; font-size: 2rem; margin-bottom: 30px;">"Les Conditionnels en Anglais"</h4>
+          <p style="font-size: 1.2rem; margin-bottom: 20px;">avec un score de <strong>${score}/20</strong></p>
+          <p style="font-size: 1.2rem; margin-bottom: 40px;">et obtient le titre de <strong>"${title}"</strong></p>
+          <p style="font-size: 1rem; color: #7f8c8d;">Délivré le ${date}</p>
+          <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+            <div style="text-align: center;">
+              <div style="border-top: 2px solid #2c3e50; width: 200px; margin: 0 auto;"></div>
+              <p style="margin-top: 10px; font-size: 0.9rem;">English Quest</p>
+            </div>
+            <div style="text-align: center;">
+              <div style="border-top: 2px solid #2c3e50; width: 200px; margin: 0 auto;"></div>
+              <p style="margin-top: 10px; font-size: 0.9rem;">Signature</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Ouvrir dans une nouvelle fenêtre pour impression
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Certificat - Les Conditionnels en Anglais</title>
+            <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+          </head>
+          <body style="margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+            ${certificateHTML}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+
+    function showSectionCompletionAnimation(sectionNumber) {
+      // Animation simple de célébration
+      const section = document.getElementById(`section-${sectionNumber}`);
+      section.style.transform = 'scale(1.02)';
+      section.style.transition = 'transform 0.3s ease';
+      
+      setTimeout(() => {
+        section.style.transform = 'scale(1)';
+      }, 300);
+    }
+
+    function saveGameState() {
+      localStorage.setItem('conditional-course-game-state', JSON.stringify(gameState));
+      
+      // Sauvegarder dans Firebase si connecté
+      const currentUser = localStorage.getItem('english_quest_current_user');
+      if (currentUser) {
+        try {
+          const user = JSON.parse(currentUser);
+          if (user.uid) {
+            const db = firebase.firestore();
+            db.collection('users').doc(user.uid).collection('courseProgress').doc('conditional-course-game').set(gameState)
+              .then(() => console.log('État du jeu sauvegardé'))
+              .catch(error => console.error('Erreur sauvegarde:', error));
+          }
+        } catch (e) {
+          console.error('Erreur parsing user:', e);
+        }
+      }
+    }
+
+    function loadGameState() {
+      const savedState = localStorage.getItem('conditional-course-game-state');
+      if (savedState) {
+        try {
+          gameState = { ...gameState, ...JSON.parse(savedState) };
+        } catch (e) {
+          console.error('Erreur chargement état:', e);
+        }
+      }
+    }
+
+    // Gestion du cours suivant
+    document.getElementById('nextCourse').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const nextCourses = [
+        { title: 'The Superlative', url: 'superlative-course.html' },
+        { title: 'For and Since', url: 'for-since-course.html' },
+        { title: 'Modal Verbs', url: 'modal-verbs-course.html' }
+      ];
+      
+      const randomCourse = nextCourses[Math.floor(Math.random() * nextCourses.length)];
+      
+      if (confirm(`Voulez-vous continuer avec le cours "${randomCourse.title}" ?`)) {
+        window.location.href = randomCourse.url;
+      }
+    });
+  </script>
+
+  <script type="module" src="../scripts/auth-header.js"></script>
+  <script src="../scripts/new-design.js"></script>
+</body>
+</html> 
