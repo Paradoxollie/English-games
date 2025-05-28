@@ -2892,14 +2892,46 @@
     let score = 0;
     let isTrainingQuiz = true;
 
+    // Fonction pour écouter les changements d'authentification
+    function setupAuthListener() {
+      // Écouter les changements dans localStorage pour l'utilisateur connecté
+      let lastUser = localStorage.getItem('english_quest_current_user');
+      
+      setInterval(() => {
+        const currentUser = localStorage.getItem('english_quest_current_user');
+        
+        if (currentUser !== lastUser) {
+          console.log('🔄 [Conditional Course] Changement d\'utilisateur détecté');
+          lastUser = currentUser;
+          
+          // Recharger la progression pour le nouvel utilisateur
+          setTimeout(async () => {
+            await loadGameState();
+            restoreGameState();
+            updateGameDisplay();
+            console.log('🔄 [Conditional Course] Progression rechargée pour le nouvel utilisateur');
+          }, 500);
+        }
+      }, 1000); // Vérifier toutes les secondes
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       initializeGame();
-      loadGameState();
-      restoreGameState();
-      updateGameDisplay();
       
-      // Initialiser le service de récompenses
-      initializeRewardService();
+      // Configurer l'écoute des changements d'auth
+      setupAuthListener();
+      
+      // Attendre que Firebase soit initialisé et que l'utilisateur soit chargé
+      setTimeout(async () => {
+        await loadGameState();
+        restoreGameState();
+        updateGameDisplay();
+        
+        // Initialiser le service de récompenses
+        initializeRewardService();
+        
+        console.log('🎮 [Conditional Course] Jeu initialisé avec la progression:', gameState);
+      }, 1000); // Attendre 1 seconde pour que l'auth soit prête
     });
 
     function restoreGameState() {
@@ -3814,6 +3846,7 @@
     }
 
     function saveGameState() {
+      // Sauvegarder localement
       localStorage.setItem('conditional-course-game-state', JSON.stringify(gameState));
       
       // Sauvegarder dans Firebase si connecté
@@ -3823,33 +3856,96 @@
           const user = JSON.parse(currentUser);
           if (user.uid) {
             const db = firebase.firestore();
-            db.collection('users').doc(user.uid).collection('courseProgress').doc('conditional-course-game').set(gameState)
-              .then(() => console.log('État du jeu sauvegardé'))
-              .catch(error => console.error('Erreur sauvegarde:', error));
+            db.collection('users').doc(user.uid).collection('courseProgress').doc('conditional-course').set({
+              ...gameState,
+              lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+              courseId: 'conditional-course'
+            })
+              .then(() => {
+                console.log('✅ [Conditional Course] Progression sauvegardée dans Firebase');
+              })
+              .catch(error => {
+                console.error('❌ [Conditional Course] Erreur sauvegarde Firebase:', error);
+              });
           }
         } catch (e) {
-          console.error('Erreur parsing user:', e);
+          console.error('❌ [Conditional Course] Erreur parsing user:', e);
         }
+      } else {
+        console.log('💾 [Conditional Course] Sauvegarde locale uniquement (utilisateur non connecté)');
       }
     }
 
-    function loadGameState() {
+    async function loadGameState() {
+      console.log('🔄 [Conditional Course] Chargement de la progression...');
+      
+      // Vérifier si l'utilisateur est connecté
+      const currentUser = localStorage.getItem('english_quest_current_user');
+      
+      if (currentUser) {
+        try {
+          const user = JSON.parse(currentUser);
+          if (user.uid) {
+            console.log('👤 [Conditional Course] Utilisateur connecté, chargement depuis Firebase...');
+            
+            const db = firebase.firestore();
+            const doc = await db.collection('users').doc(user.uid).collection('courseProgress').doc('conditional-course').get();
+            
+            if (doc.exists) {
+              const firebaseState = doc.data();
+              console.log('☁️ [Conditional Course] Progression trouvée dans Firebase:', firebaseState);
+              
+              // Fusionner avec l'état par défaut pour s'assurer que toutes les propriétés existent
+              gameState = {
+                ...gameState,
+                ...firebaseState,
+                // S'assurer que la structure rewardsGiven existe
+                rewardsGiven: {
+                  sections: [],
+                  finalQuiz: false,
+                  ...(firebaseState.rewardsGiven || {})
+                }
+              };
+              
+              console.log('✅ [Conditional Course] Progression chargée depuis Firebase');
+              return;
+            } else {
+              console.log('📝 [Conditional Course] Aucune progression trouvée dans Firebase, vérification locale...');
+            }
+          }
+        } catch (error) {
+          console.error('❌ [Conditional Course] Erreur chargement Firebase:', error);
+        }
+      }
+      
+      // Fallback : charger depuis localStorage
       const savedState = localStorage.getItem('conditional-course-game-state');
       if (savedState) {
         try {
           const loadedState = JSON.parse(savedState);
-          gameState = { ...gameState, ...loadedState };
+          console.log('💾 [Conditional Course] Progression chargée depuis localStorage:', loadedState);
           
-          // S'assurer que la structure rewardsGiven existe (rétrocompatibilité)
-          if (!gameState.rewardsGiven) {
-            gameState.rewardsGiven = {
+          gameState = {
+            ...gameState,
+            ...loadedState,
+            // S'assurer que la structure rewardsGiven existe (rétrocompatibilité)
+            rewardsGiven: {
               sections: [],
-              finalQuiz: false
-            };
+              finalQuiz: false,
+              ...(loadedState.rewardsGiven || {})
+            }
+          };
+          
+          // Si l'utilisateur est connecté, sauvegarder cette progression dans Firebase
+          if (currentUser) {
+            console.log('🔄 [Conditional Course] Migration de la progression locale vers Firebase...');
+            saveGameState();
           }
         } catch (e) {
-          console.error('Erreur chargement état:', e);
+          console.error('❌ [Conditional Course] Erreur chargement localStorage:', e);
         }
+      } else {
+        console.log('🆕 [Conditional Course] Nouvelle progression initialisée');
       }
     }
 
@@ -3871,7 +3967,9 @@
     });
 
     // Fonction pour réinitialiser complètement la progression (pour debug)
-    function resetGameState() {
+    async function resetGameState() {
+      console.log('🔄 [Conditional Course] Réinitialisation complète de la progression...');
+      
       gameState = {
         completedSections: [],
         currentSection: 1,
@@ -3884,7 +3982,26 @@
           finalQuiz: false
         }
       };
+      
+      // Supprimer de localStorage
       localStorage.removeItem('conditional-course-game-state');
+      
+      // Supprimer de Firebase si connecté
+      const currentUser = localStorage.getItem('english_quest_current_user');
+      if (currentUser) {
+        try {
+          const user = JSON.parse(currentUser);
+          if (user.uid) {
+            const db = firebase.firestore();
+            await db.collection('users').doc(user.uid).collection('courseProgress').doc('conditional-course').delete();
+            console.log('🗑️ [Conditional Course] Progression supprimée de Firebase');
+          }
+        } catch (error) {
+          console.error('❌ [Conditional Course] Erreur suppression Firebase:', error);
+        }
+      }
+      
+      console.log('✅ [Conditional Course] Progression réinitialisée');
       location.reload();
     }
 
@@ -3935,61 +4052,87 @@
   <script type="module" src="../scripts/auth-service.js"></script>
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
+  
+  <!-- Désactiver la fonction initMobileMenu de new-design.js pour éviter les conflits -->
+  <script>
+    window.disableNewDesignMobileMenu = true;
+  </script>
   <script src="../scripts/new-design.js"></script>
 
   <!-- JavaScript pour le menu mobile -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const menuToggle = document.getElementById('menuToggle');
-      const nav = document.querySelector('.nav');
-      const navLinks = document.querySelectorAll('.nav-link');
+      // Attendre un peu pour s'assurer que new-design.js est chargé
+      setTimeout(() => {
+        const menuToggle = document.getElementById('menuToggle');
+        const nav = document.querySelector('.nav');
+        const navLinks = document.querySelectorAll('.nav-link');
 
-      // Toggle du menu mobile
-      if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-          menuToggle.classList.toggle('active');
+        // Vérifier si les éléments existent
+        if (!menuToggle || !nav) {
+          console.warn('Menu mobile: éléments non trouvés');
+          return;
+        }
+
+        // Supprimer les anciens event listeners pour éviter les conflits
+        const newMenuToggle = menuToggle.cloneNode(true);
+        menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+
+        // Toggle du menu mobile avec une approche robuste
+        newMenuToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('Menu toggle clicked');
+          
+          // Toggle des classes
+          newMenuToggle.classList.toggle('active');
           nav.classList.toggle('active');
           
-          // Empêcher le scroll du body quand le menu est ouvert
+          // Gestion du scroll du body
           if (nav.classList.contains('active')) {
             document.body.style.overflow = 'hidden';
+            console.log('Menu ouvert');
           } else {
             document.body.style.overflow = 'auto';
+            console.log('Menu fermé');
           }
         });
-      }
 
-      // Fermer le menu quand on clique sur un lien
-      navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-          if (menuToggle && nav) {
-            menuToggle.classList.remove('active');
+        // Fermer le menu quand on clique sur un lien
+        navLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            if (newMenuToggle && nav) {
+              newMenuToggle.classList.remove('active');
+              nav.classList.remove('active');
+              document.body.style.overflow = 'auto';
+            }
+          });
+        });
+
+        // Fermer le menu quand on clique en dehors
+        document.addEventListener('click', function(event) {
+          if (newMenuToggle && nav && 
+              !newMenuToggle.contains(event.target) && 
+              !nav.contains(event.target) && 
+              nav.classList.contains('active')) {
+            newMenuToggle.classList.remove('active');
             nav.classList.remove('active');
             document.body.style.overflow = 'auto';
           }
         });
-      });
 
-      // Fermer le menu quand on clique en dehors
-      document.addEventListener('click', function(event) {
-        if (menuToggle && nav && 
-            !menuToggle.contains(event.target) && 
-            !nav.contains(event.target) && 
-            nav.classList.contains('active')) {
-          menuToggle.classList.remove('active');
-          nav.classList.remove('active');
-          document.body.style.overflow = 'auto';
-        }
-      });
+        // Fermer le menu lors du redimensionnement de la fenêtre
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 768 && newMenuToggle && nav) {
+            newMenuToggle.classList.remove('active');
+            nav.classList.remove('active');
+            document.body.style.overflow = 'auto';
+          }
+        });
 
-      // Fermer le menu lors du redimensionnement de la fenêtre
-      window.addEventListener('resize', function() {
-        if (window.innerWidth > 768 && menuToggle && nav) {
-          menuToggle.classList.remove('active');
-          nav.classList.remove('active');
-          document.body.style.overflow = 'auto';
-        }
-      });
+        console.log('Menu mobile initialisé avec succès');
+      }, 100);
     });
   </script>
 

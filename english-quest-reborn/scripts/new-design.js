@@ -90,6 +90,12 @@ function initAnimations() {
  * Initialise le menu mobile
  */
 function initMobileMenu() {
+  // Vérifier si la fonction doit être désactivée (pour éviter les conflits sur certaines pages)
+  if (window.disableNewDesignMobileMenu) {
+    console.log('initMobileMenu désactivé pour cette page');
+    return;
+  }
+
   const menuToggle = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.nav');
   const navList = document.querySelector('.nav-list');
