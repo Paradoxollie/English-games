@@ -2423,7 +2423,7 @@
       const percentage = Math.round((score / totalQuestions) * 100);
       const passed = score >= Math.ceil(totalQuestions * 0.7); // 70% minimum
       
-      scoreText.textContent = `Score: ${score}/${totalQuestions} (${percentage}%) - ${passed ? 'VALIDÉ? : 'À REFAIRE?'` : ''}`;
+      scoreText.textContent = `Score: ${score}/${totalQuestions} (${percentage}%) - ${passed ? 'VALIDÉ' : 'À REFAIRE'}`;
       scoreDiv.classList.add(passed ? 'success' : 'retry');
       scoreDiv.style.display = 'block';
       
@@ -2455,8 +2455,47 @@
       document.getElementById(`validation-quiz-${sectionNumber}`).style.display = 'none';
       document.getElementById(`complete-${sectionNumber}`).style.display = 'inline-block';
       
-      // Compléter automatiquement la section
-      completeSection(sectionNumber);
+      // Compléter la section directement sans re-vérifier le quiz de validation
+      if (!gameState.completedSections.includes(sectionNumber)) {
+        gameState.completedSections.push(sectionNumber);
+        
+        // Marquer la section comme complétée
+        const section = document.getElementById(`section-${sectionNumber}`);
+        const number = document.getElementById(`number-${sectionNumber}`);
+        const button = document.getElementById(`complete-${sectionNumber}`);
+        
+        section.classList.remove('current');
+        section.classList.add('completed');
+        number.classList.remove('locked');
+        number.classList.add('completed');
+        button.classList.add('completed');
+        button.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
+        button.disabled = true;
+        
+        // Débloquer la section suivante
+        if (sectionNumber < 6) {
+          unlockSection(sectionNumber + 1);
+        }
+        
+        // Cas spéciaux
+        if (sectionNumber === 4) {
+          // Activer le bouton du quiz d'entraînement
+          document.getElementById('startTrainingQuiz').disabled = false;
+        }
+        
+        if (sectionNumber === 5) {
+          // Vérifier si toutes les sections sont complétées pour débloquer le quiz final
+          if (gameState.completedSections.length === 5 && gameState.trainingQuizCompleted) {
+            document.getElementById('startFinalQuiz').disabled = false;
+          }
+        }
+        
+        updateGameDisplay();
+        saveGameState();
+        
+        // Animation de célébration
+        showSectionCompletionAnimation(sectionNumber);
+      }
     }
 
     function resetValidationQuiz(sectionNumber) {
@@ -2517,21 +2556,29 @@
       for (let i = 1; i <= 6; i++) {
         const section = document.getElementById(`section-${i}`);
         const number = document.getElementById(`number-${i}`);
+        const lock = document.getElementById(`lock-${i}`);
+        const button = document.getElementById(`complete-${i}`);
         
         if (gameState.completedSections.includes(i)) {
           section.classList.add('completed');
           section.classList.remove('current', 'locked');
           number.classList.add('completed');
           number.classList.remove('locked');
+          if (lock) lock.style.display = 'none';
+          if (button) button.disabled = true;
         } else if (i === gameState.currentSection) {
           section.classList.add('current');
           section.classList.remove('completed', 'locked');
           number.classList.remove('locked', 'completed');
+          if (lock) lock.style.display = 'none';
+          if (button) button.disabled = false;
         } else if (i > gameState.currentSection) {
           section.classList.add('locked');
           section.classList.remove('current', 'completed');
           number.classList.add('locked');
           number.classList.remove('completed');
+          if (lock) lock.style.display = 'block';
+          if (button) button.disabled = true;
         }
       }
       
@@ -2762,7 +2809,7 @@
           <div style="margin: 1rem 0; padding: 1rem; border-radius: 8px; background: ${isCorrect ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)'};">
             <strong>Q${index + 1}:</strong> ${question.sentence}<br>
             <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'};">
-              Votre réponse: ${userAnswerText} ${isCorrect ? '? : '?` : ''}
+              Votre réponse: ${userAnswerText} ${isCorrect ? '✅' : '❌'}
             </span><br>
             ${!isCorrect ? `<span style="color: #2ecc71;">Bonne réponse: ${correctAnswerText}</span><br>` : ''}
             <small style="color: #95a5a6;">${question.explanation}</small>
