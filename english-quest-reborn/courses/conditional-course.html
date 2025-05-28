@@ -2243,14 +2243,86 @@
     document.addEventListener('DOMContentLoaded', function() {
       initializeGame();
       loadGameState();
+      restoreGameState();
       updateGameDisplay();
     });
+
+    function restoreGameState() {
+      // Restaurer l'état de chaque section selon la progression sauvegardée
+      for (let i = 1; i <= 6; i++) {
+        const section = document.getElementById(`section-${i}`);
+        const number = document.getElementById(`number-${i}`);
+        const lock = document.getElementById(`lock-${i}`);
+        const button = document.getElementById(`complete-${i}`);
+        
+        if (gameState.completedSections.includes(i)) {
+          // Section complétée
+          section.classList.remove('locked', 'current');
+          section.classList.add('completed');
+          number.classList.remove('locked');
+          number.classList.add('completed');
+          if (lock) lock.style.display = 'none';
+          if (button) {
+            button.classList.add('completed');
+            button.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
+            button.disabled = true;
+          }
+        } else if (i <= gameState.currentSection) {
+          // Section courante ou déverrouillée
+          section.classList.remove('locked', 'completed');
+          section.classList.add('current');
+          number.classList.remove('locked', 'completed');
+          if (lock) lock.style.display = 'none';
+          if (button) button.disabled = false;
+        } else {
+          // Section verrouillée
+          section.classList.remove('current', 'completed');
+          section.classList.add('locked');
+          number.classList.remove('completed');
+          number.classList.add('locked');
+          if (lock) lock.style.display = 'block';
+          if (button) button.disabled = true;
+        }
+      }
+      
+      // Restaurer l'état des boutons de quiz
+      if (gameState.currentSection >= 4) {
+        document.getElementById('startTrainingQuiz').disabled = false;
+      }
+      
+      if (gameState.trainingQuizCompleted) {
+        document.getElementById('complete-4').disabled = false;
+      }
+      
+      if (gameState.completedSections.includes(5) && gameState.trainingQuizCompleted) {
+        document.getElementById('startFinalQuiz').disabled = false;
+        const lock6 = document.getElementById('lock-6');
+        if (lock6) lock6.style.display = 'none';
+      }
+      
+      // Restaurer l'état des quiz de validation
+      for (const sectionNumber in gameState.validationQuizzes) {
+        const validationData = gameState.validationQuizzes[sectionNumber];
+        if (validationData && validationData.passed) {
+          // Cacher le quiz de validation et afficher le bouton de completion
+          const quiz = document.getElementById(`validation-quiz-${sectionNumber}`);
+          const button = document.getElementById(`complete-${sectionNumber}`);
+          if (quiz) quiz.style.display = 'none';
+          if (button) button.style.display = 'inline-block';
+        }
+      }
+    }
 
     function initializeGame() {
       // Initialiser les événements pour les quiz
       document.getElementById('startTrainingQuiz').addEventListener('click', () => startQuiz(true));
       document.getElementById('resetTrainingQuiz').addEventListener('click', () => resetQuiz(true));
-      document.getElementById('startFinalQuiz').addEventListener('click', () => startQuiz(false));
+      document.getElementById('startFinalQuiz').addEventListener('click', () => {
+        console.log('🎯 Final Quiz Button Clicked!');
+        console.log('Button disabled:', document.getElementById('startFinalQuiz').disabled);
+        console.log('Game State:', gameState);
+        startQuiz(false);
+      });
       document.getElementById('resetFinalQuiz').addEventListener('click', () => resetQuiz(false));
       
       // Navigation quiz d'entraînement
@@ -2268,6 +2340,71 @@
       
       // Certificat
       document.getElementById('downloadCertificate').addEventListener('click', downloadCertificate);
+    }
+
+    // Fonction de debug pour vérifier l'état du quiz final
+    function debugFinalQuiz() {
+      const button = document.getElementById('startFinalQuiz');
+      const lock6 = document.getElementById('lock-6');
+      
+      console.log('🔍 DEBUG FINAL QUIZ:');
+      console.log('Button exists:', !!button);
+      console.log('Button disabled:', button ? button.disabled : 'N/A');
+      console.log('Button visible:', button ? button.style.display !== 'none' : 'N/A');
+      console.log('Lock 6 visible:', lock6 ? lock6.style.display : 'N/A');
+      console.log('Completed sections:', gameState.completedSections);
+      console.log('Training completed:', gameState.trainingQuizCompleted);
+      console.log('Section 5 completed:', gameState.completedSections.includes(5));
+      console.log('Conditions met:', gameState.completedSections.includes(5) && gameState.trainingQuizCompleted);
+      
+      return {
+        buttonExists: !!button,
+        buttonDisabled: button ? button.disabled : null,
+        conditionsMet: gameState.completedSections.includes(5) && gameState.trainingQuizCompleted
+      };
+    }
+
+    // Ajouter un bouton de debug pour le quiz final
+    if (window.location.search.includes('debug=true')) {
+      const debugFinalBtn = document.createElement('button');
+      debugFinalBtn.textContent = '🔍 Debug Final Quiz';
+      debugFinalBtn.style.position = 'fixed';
+      debugFinalBtn.style.top = '60px';
+      debugFinalBtn.style.right = '10px';
+      debugFinalBtn.style.zIndex = '9999';
+      debugFinalBtn.style.background = '#3498db';
+      debugFinalBtn.style.color = 'white';
+      debugFinalBtn.style.border = 'none';
+      debugFinalBtn.style.padding = '10px';
+      debugFinalBtn.style.borderRadius = '5px';
+      debugFinalBtn.onclick = debugFinalQuiz;
+      document.body.appendChild(debugFinalBtn);
+
+      // Bouton pour forcer l'activation du quiz final
+      const forceEnableBtn = document.createElement('button');
+      forceEnableBtn.textContent = '🚀 Force Enable Final Quiz';
+      forceEnableBtn.style.position = 'fixed';
+      forceEnableBtn.style.top = '110px';
+      forceEnableBtn.style.right = '10px';
+      forceEnableBtn.style.zIndex = '9999';
+      forceEnableBtn.style.background = '#27ae60';
+      forceEnableBtn.style.color = 'white';
+      forceEnableBtn.style.border = 'none';
+      forceEnableBtn.style.padding = '10px';
+      forceEnableBtn.style.borderRadius = '5px';
+      forceEnableBtn.onclick = function() {
+        console.log('🚀 Forcing final quiz activation...');
+        gameState.completedSections = [1, 2, 3, 4, 5];
+        gameState.trainingQuizCompleted = true;
+        document.getElementById('startFinalQuiz').disabled = false;
+        const lock6 = document.getElementById('lock-6');
+        if (lock6) lock6.style.display = 'none';
+        restoreGameState();
+        updateGameDisplay();
+        saveGameState();
+        console.log('✅ Final quiz should now be enabled!');
+      };
+      document.body.appendChild(forceEnableBtn);
     }
 
     function completeSection(sectionNumber) {
@@ -2309,8 +2446,17 @@
         
         if (sectionNumber === 5) {
           // Vérifier si toutes les sections sont complétées pour débloquer le quiz final
-          if (gameState.completedSections.length === 5 && gameState.trainingQuizCompleted) {
+          console.log('🔍 Section 5 completed, checking final quiz conditions...');
+          console.log('Completed sections:', gameState.completedSections);
+          console.log('Training completed:', gameState.trainingQuizCompleted);
+          
+          if (gameState.completedSections.includes(5) && gameState.trainingQuizCompleted) {
+            console.log('✅ Unlocking final quiz!');
             document.getElementById('startFinalQuiz').disabled = false;
+            const lock6 = document.getElementById('lock-6');
+            if (lock6) lock6.style.display = 'none';
+          } else {
+            console.log('❌ Final quiz conditions not met yet');
           }
         }
         
@@ -2485,8 +2631,17 @@
         
         if (sectionNumber === 5) {
           // Vérifier si toutes les sections sont complétées pour débloquer le quiz final
-          if (gameState.completedSections.length === 5 && gameState.trainingQuizCompleted) {
+          console.log('🔍 Section 5 completed, checking final quiz conditions...');
+          console.log('Completed sections:', gameState.completedSections);
+          console.log('Training completed:', gameState.trainingQuizCompleted);
+          
+          if (gameState.completedSections.includes(5) && gameState.trainingQuizCompleted) {
+            console.log('✅ Unlocking final quiz!');
             document.getElementById('startFinalQuiz').disabled = false;
+            const lock6 = document.getElementById('lock-6');
+            if (lock6) lock6.style.display = 'none';
+          } else {
+            console.log('❌ Final quiz conditions not met yet');
           }
         }
         
@@ -2737,6 +2892,20 @@
         gameState.trainingQuizCompleted = true;
         // Débloquer le bouton de completion de la section 4
         document.getElementById('complete-4').disabled = false;
+        
+        // Vérifier si on peut débloquer le quiz final
+        console.log('🎯 Training quiz completed, checking final quiz conditions...');
+        console.log('Completed sections:', gameState.completedSections);
+        console.log('Section 5 completed:', gameState.completedSections.includes(5));
+        
+        if (gameState.completedSections.includes(5)) {
+          console.log('✅ All conditions met, unlocking final quiz!');
+          document.getElementById('startFinalQuiz').disabled = false;
+          const lock6 = document.getElementById('lock-6');
+          if (lock6) lock6.style.display = 'none';
+        } else {
+          console.log('❌ Section 5 not completed yet, final quiz remains locked');
+        }
       } else {
         gameState.finalQuizCompleted = true;
         gameState.finalScore = score;
@@ -3026,6 +3195,37 @@
         window.location.href = randomCourse.url;
       }
     });
+
+    // Fonction pour réinitialiser complètement la progression (pour debug)
+    function resetGameState() {
+      gameState = {
+        completedSections: [],
+        currentSection: 1,
+        trainingQuizCompleted: false,
+        finalQuizCompleted: false,
+        finalScore: 0,
+        validationQuizzes: {}
+      };
+      localStorage.removeItem('conditional-course-game-state');
+      location.reload();
+    }
+
+    // Ajouter un bouton de debug (temporaire)
+    if (window.location.search.includes('debug=true')) {
+      const debugBtn = document.createElement('button');
+      debugBtn.textContent = '🔄 Reset Progression (Debug)';
+      debugBtn.style.position = 'fixed';
+      debugBtn.style.top = '10px';
+      debugBtn.style.right = '10px';
+      debugBtn.style.zIndex = '9999';
+      debugBtn.style.background = '#e74c3c';
+      debugBtn.style.color = 'white';
+      debugBtn.style.border = 'none';
+      debugBtn.style.padding = '10px';
+      debugBtn.style.borderRadius = '5px';
+      debugBtn.onclick = resetGameState;
+      document.body.appendChild(debugBtn);
+    }
   </script>
 
   <!-- Scripts d'authentification - exactement comme les jeux -->
