@@ -1,24 +1,40 @@
 /**
- * English Quest - Outils de débogage
- * Fonctions utiles pour le débogage
+ * English Quest - Système de débogage avancé (Admin uniquement)
+ * Fonctions utiles pour le débogage et l'administration
  */
+
+// Vérifier si l'utilisateur actuel est admin
+function isCurrentUserAdmin() {
+  try {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    // Vérifier si c'est Ollie (super admin)
+    if (currentUser.username && currentUser.username.toLowerCase() === 'ollie') {
+      return true;
+    }
+    
+    // Vérifier la propriété isAdmin
+    return currentUser.isAdmin === true;
+  } catch (error) {
+    console.error('Erreur lors de la vérification admin:', error);
+    return false;
+  }
+}
+
+// === FONCTIONS DE GESTION DES UTILISATEURS ===
 
 // Réinitialiser le choix de genre
 function resetGenderChoice() {
-  // Récupérer l'utilisateur courant
   const currentUser = getCurrentUser();
-
   if (!currentUser) {
     console.log("Aucun utilisateur connecté");
     return;
   }
 
   console.log("Réinitialisation du choix de genre pour", currentUser.username);
-
-  // Réinitialiser hasSelectedGender
   currentUser.hasSelectedGender = false;
 
-  // Sauvegarder les modifications
   const users = getUsers();
   const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
 
@@ -26,374 +42,234 @@ function resetGenderChoice() {
     users[userId] = currentUser;
     localStorage.setItem('users', JSON.stringify(users));
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
     console.log("Choix de genre réinitialisé avec succès");
-
-    // Recharger la page
     window.location.reload();
   } else {
     console.error("Impossible de trouver l'utilisateur");
   }
 }
 
-// Afficher les informations de débogage
+// Afficher les informations de débogage détaillées
 function showDebugInfo() {
-  // Récupérer l'utilisateur courant
   const currentUser = getCurrentUser();
-
   if (!currentUser) {
     console.log("Aucun utilisateur connecté");
     return;
   }
 
-  console.log("Informations de débogage pour", currentUser.username);
-  console.log("hasSelectedGender:", currentUser.hasSelectedGender);
-  console.log("hasAllSkins:", currentUser.hasAllSkins);
-  console.log("skinsUnlocked:", currentUser.skinsUnlocked);
-  console.log("isAdmin:", currentUser.isAdmin);
-  console.log("Avatar:", currentUser.avatar);
-  console.log("Skins débloqués:", currentUser.skins);
-  console.log("Pièces:", currentUser.coins);
+  const debugInfo = {
+    'Utilisateur': currentUser.username,
+    'ID': currentUser.id,
+    'Email': currentUser.email || 'Non défini',
+    'Niveau': currentUser.level || 0,
+    'XP': currentUser.xp || 0,
+    'Pièces': currentUser.coins || 0,
+    'Admin': currentUser.isAdmin ? 'Oui' : 'Non',
+    'Genre sélectionné': currentUser.hasSelectedGender ? 'Oui' : 'Non',
+    'Avatar tête': currentUser.avatar?.head || 'Non défini',
+    'Avatar corps': currentUser.avatar?.body || 'Non défini',
+    'Skins débloqués': currentUser.skinsUnlocked ? 'Oui' : 'Non',
+    'Jeux complétés': currentUser.completedGames?.length || 0,
+    'Cours complétés': currentUser.completedCourses?.length || 0,
+    'Dernière connexion': currentUser.lastLogin || 'Jamais'
+  };
 
-  // Afficher les informations dans une alerte
-  alert(`
-    Utilisateur: ${currentUser.username}
-    hasSelectedGender: ${currentUser.hasSelectedGender}
-    hasAllSkins: ${currentUser.hasAllSkins}
-    skinsUnlocked: ${currentUser.skinsUnlocked}
-    isAdmin: ${currentUser.isAdmin}
-    Pièces: ${currentUser.coins}
-    Avatar tête: ${currentUser.avatar.head}
-    Avatar corps: ${currentUser.avatar.body}
-  `);
-}
-
-// Réinitialiser les skins débloqués
-function resetSkinsUnlocked() {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    console.log("Aucun utilisateur connecté");
-    return;
-  }
-
-  console.log("Réinitialisation des skins débloqués pour", currentUser.username);
-
-  // Réinitialiser les propriétés liées aux skins
-  currentUser.skinsUnlocked = false;
-
-  // Sauvegarder les modifications
-  const users = getUsers();
-  const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
-
-  if (userId) {
-    users[userId] = currentUser;
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-    console.log("Skins débloqués réinitialisés avec succès");
-
-    // Recharger la page
-    if (confirm("Skins débloqués réinitialisés avec succès. Voulez-vous recharger la page ?")) {
-      window.location.reload();
-    }
-  } else {
-    console.error("Impossible de trouver l'utilisateur");
-  }
-}
-
-// Débloquer spécifiquement les skins d'ours
-function unlockBearSkins() {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    console.log("Aucun utilisateur connecté");
-    return;
-  }
-
-  console.log("Débloquage des skins d'ours pour", currentUser.username);
-
-  // Initialiser les skins débloqués si nécessaire
-  if (!currentUser.skins) {
-    currentUser.skins = {
-      head: ['default_boy', 'default_girl'],
-      body: ['default_boy', 'default_girl'],
-      accessory: ['none'],
-      background: ['default']
-    };
-  }
-
-  // S'assurer que les skins d'ours sont débloqués
-  if (!currentUser.skins.head.includes('bear')) {
-    currentUser.skins.head.push('bear');
-  }
-
-  if (!currentUser.skins.body.includes('bear')) {
-    currentUser.skins.body.push('bear');
-  }
-
-  // Sauvegarder les modifications
-  const users = getUsers();
-  const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
-
-  if (userId) {
-    users[userId] = currentUser;
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-    console.log("Skins d'ours débloqués avec succès");
-    alert("Skins d'ours débloqués avec succès ! Vous pouvez maintenant les équiper dans votre inventaire.");
-
-    // Recharger la page
-    window.location.reload();
-  } else {
-    console.error("Impossible de trouver l'utilisateur");
-  }
-}
-
-// Ajouter un million de pièces d'or
-function addMillionCoins() {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    console.log("Aucun utilisateur connecté");
-    return;
-  }
-
-  console.log("Ajout d'un million de pièces pour", currentUser.username);
-
-  // Ajouter un million de pièces
-  currentUser.coins = (currentUser.coins || 0) + 1000000;
-
-  // Sauvegarder les modifications
-  const users = getUsers();
-  const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
-
-  if (userId) {
-    users[userId] = currentUser;
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-    console.log("Un million de pièces ajoutées avec succès");
-    alert(`Félicitations ! Vous avez maintenant ${currentUser.coins.toLocaleString()} pièces d'or !`);
-
-    // Mettre à jour l'affichage des pièces si possible
-    const userCoinsElement = document.getElementById('user-coins');
-    if (userCoinsElement) {
-      userCoinsElement.textContent = currentUser.coins.toLocaleString();
-    }
-  } else {
-    console.error("Impossible de trouver l'utilisateur");
-  }
-}
-
-// Acheter tous les skins disponibles
-function buyAllSkins() {
-  // Récupérer l'utilisateur courant
-  const currentUser = getCurrentUser();
-
-  if (!currentUser) {
-    console.log("Aucun utilisateur connecté");
-    return;
-  }
-
-  console.log("Achat de tous les skins pour", currentUser.username);
-
-  // Créer un catalogue de skins minimal si skinCatalog n'est pas disponible
-  let catalog = {};
-
-  if (typeof skinCatalog === 'undefined') {
-    console.log("Le catalogue de skins n'est pas disponible, utilisation d'un catalogue minimal");
-
-    // Catalogue minimal avec les skins de base et les skins d'ours
-    catalog = {
-      head: [
-        { id: 'default_boy', price: 0 },
-        { id: 'default_girl', price: 0 },
-        { id: 'bear', price: 500 }
-      ],
-      body: [
-        { id: 'default_boy', price: 0 },
-        { id: 'default_girl', price: 0 },
-        { id: 'bear', price: 500 }
-      ],
-      accessory: [
-        { id: 'none', price: 0 }
-      ],
-      background: [
-        { id: 'default', price: 0 }
-      ]
-    };
-  } else {
-    catalog = skinCatalog;
-  }
-
-  // Initialiser les skins débloqués si nécessaire
-  if (!currentUser.skins) {
-    currentUser.skins = {
-      head: ['default_boy', 'default_girl'],
-      body: ['default_boy', 'default_girl'],
-      accessory: ['none'],
-      background: ['default']
-    };
-  }
-
-  // Parcourir toutes les catégories du catalogue
-  let totalCost = 0;
-
-  Object.keys(catalog).forEach(category => {
-    // Parcourir tous les skins de la catégorie
-    catalog[category].forEach(skin => {
-      // Si le skin n'est pas déjà débloqué et a un prix
-      if (!currentUser.skins[category].includes(skin.id) && skin.price > 0) {
-        // Ajouter le skin à la liste des skins débloqués
-        currentUser.skins[category].push(skin.id);
-
-        // Ajouter le coût du skin au coût total
-        totalCost += skin.price;
-      }
-    });
+  console.log("=== INFORMATIONS DE DÉBOGAGE ===");
+  Object.entries(debugInfo).forEach(([key, value]) => {
+    console.log(`${key}: ${value}`);
   });
 
-  // S'assurer que les skins d'ours sont débloqués
-  if (!currentUser.skins.head.includes('bear')) {
-    currentUser.skins.head.push('bear');
+  // Afficher dans une alerte formatée
+  const alertText = Object.entries(debugInfo)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n');
+  
+  alert(`=== INFORMATIONS DE DÉBOGAGE ===\n\n${alertText}`);
+}
+
+// === FONCTIONS DE GESTION DES RÉCOMPENSES ===
+
+// Ajouter de l'XP
+function addXP(amount = 1000) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    console.log("Aucun utilisateur connecté");
+    return;
   }
 
-  if (!currentUser.skins.body.includes('bear')) {
-    currentUser.skins.body.push('bear');
+  const oldXP = currentUser.xp || 0;
+  currentUser.xp = oldXP + amount;
+  
+  // Recalculer le niveau
+  currentUser.level = Math.floor(currentUser.xp / 100) + 1;
+
+  saveCurrentUser(currentUser);
+  console.log(`+${amount} XP ajoutés. Total: ${currentUser.xp} XP (Niveau ${currentUser.level})`);
+  alert(`+${amount} XP ajoutés !\nTotal: ${currentUser.xp} XP (Niveau ${currentUser.level})`);
+  
+  // Mettre à jour l'affichage si possible
+  updateUserDisplay();
+}
+
+// Ajouter des pièces
+function addCoins(amount = 10000) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    console.log("Aucun utilisateur connecté");
+    return;
   }
 
-  // Sauvegarder les modifications
-  const users = getUsers();
-  const userId = Object.keys(users).find(id => users[id].username === currentUser.username);
+  const oldCoins = currentUser.coins || 0;
+  currentUser.coins = oldCoins + amount;
 
-  if (userId) {
-    users[userId] = currentUser;
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  saveCurrentUser(currentUser);
+  console.log(`+${amount} pièces ajoutées. Total: ${currentUser.coins} pièces`);
+  alert(`+${amount} pièces ajoutées !\nTotal: ${currentUser.coins.toLocaleString()} pièces`);
+  
+  // Mettre à jour l'affichage si possible
+  updateUserDisplay();
+}
 
-    console.log("Tous les skins ont été achetés avec succès");
-    alert(`Félicitations ! Vous avez débloqué tous les skins disponibles pour un coût total de ${totalCost} pièces d'or.`);
-
-    // Recharger la page pour appliquer les changements
-    window.location.reload();
+// Réinitialiser les récompenses d'un cours
+function resetCourseRewards(courseName = 'conditional-course') {
+  const key = `${courseName}-game-state`;
+  const savedState = localStorage.getItem(key);
+  
+  if (savedState) {
+    try {
+      const gameState = JSON.parse(savedState);
+      if (gameState.rewardsGiven) {
+        gameState.rewardsGiven = {
+          sections: [],
+          finalQuiz: false
+        };
+        localStorage.setItem(key, JSON.stringify(gameState));
+        console.log(`Récompenses du cours ${courseName} réinitialisées`);
+        alert(`Récompenses du cours ${courseName} réinitialisées avec succès !`);
+      } else {
+        alert(`Aucune donnée de récompenses trouvée pour ${courseName}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation:', error);
+      alert('Erreur lors de la réinitialisation des récompenses');
+    }
   } else {
-    console.error("Impossible de trouver l'utilisateur");
+    alert(`Aucune sauvegarde trouvée pour ${courseName}`);
   }
 }
 
-// Créer des utilisateurs de test pour la galerie
+// === FONCTIONS DE GESTION DES SKINS ===
+
+// Débloquer tous les skins
+function unlockAllSkins() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    console.log("Aucun utilisateur connecté");
+    return;
+  }
+
+  // Initialiser les skins si nécessaire
+  if (!currentUser.skins) {
+    currentUser.skins = {
+      head: [],
+      body: [],
+      accessory: [],
+      background: []
+    };
+  }
+
+  // Liste complète des skins disponibles
+  const allSkins = {
+    head: ['default_boy', 'default_girl', 'bear', 'cat', 'robot', 'wizard', 'ninja'],
+    body: ['default_boy', 'default_girl', 'bear', 'cat', 'robot', 'wizard', 'ninja'],
+    accessory: ['none', 'glasses', 'hat', 'crown', 'mask'],
+    background: ['default', 'forest', 'space', 'underwater', 'castle']
+  };
+
+  // Débloquer tous les skins
+  Object.keys(allSkins).forEach(category => {
+    currentUser.skins[category] = [...allSkins[category]];
+  });
+
+  currentUser.skinsUnlocked = true;
+  saveCurrentUser(currentUser);
+  
+  console.log("Tous les skins ont été débloqués");
+  alert("Tous les skins ont été débloqués avec succès !");
+  window.location.reload();
+}
+
+// Réinitialiser les skins
+function resetSkins() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    console.log("Aucun utilisateur connecté");
+    return;
+  }
+
+  currentUser.skins = {
+    head: ['default_boy', 'default_girl'],
+    body: ['default_boy', 'default_girl'],
+    accessory: ['none'],
+    background: ['default']
+  };
+  currentUser.skinsUnlocked = false;
+
+  saveCurrentUser(currentUser);
+  console.log("Skins réinitialisés");
+  alert("Skins réinitialisés avec succès !");
+  window.location.reload();
+}
+
+// === FONCTIONS DE GESTION DES DONNÉES ===
+
+// Créer des utilisateurs de test
 function createTestUsers() {
+  if (!confirm("Voulez-vous créer 15 utilisateurs de test pour la galerie ?")) {
+    return;
+  }
+
   try {
-    if (!confirm("Voulez-vous créer 15 utilisateurs de test pour la galerie ?")) {
-      return;
-    }
-
-    console.log("Création d'utilisateurs de test");
-
-    // Récupérer les utilisateurs existants en utilisant la fonction getUsers()
     const users = getUsers();
-
-    console.log("Utilisateurs existants:", users);
-
-    // Noms aléatoires pour les utilisateurs de test
-    const firstNames = ["Emma", "Lucas", "Léa", "Hugo", "Chloé", "Louis", "Inès", "Jules", "Sarah", "Noah", "Jade", "Théo", "Manon", "Raphaël", "Camille", "Liam", "Zoé", "Ethan", "Lina", "Gabriel"];
-    const lastNames = ["Martin", "Bernard", "Dubois", "Thomas", "Robert", "Richard", "Petit", "Durand", "Leroy", "Moreau", "Simon", "Laurent", "Lefebvre", "Michel", "Garcia", "Roux", "Fournier", "Girard", "Bonnet", "Dupont"];
-
-    // Options d'avatar
-    const headOptions = ["default_boy", "default_girl", "bear"];
-    const bodyOptions = ["default_boy", "default_girl", "bear"];
-
-    // Compteur d'utilisateurs créés
+    const firstNames = ["Emma", "Lucas", "Léa", "Hugo", "Chloé", "Louis", "Inès", "Jules", "Sarah", "Noah", "Jade", "Théo", "Manon", "Raphaël", "Camille"];
+    const lastNames = ["Martin", "Bernard", "Dubois", "Thomas", "Robert", "Richard", "Petit", "Durand", "Leroy", "Moreau"];
+    
     let createdCount = 0;
 
-    // Créer 15 utilisateurs de test
     for (let i = 1; i <= 15; i++) {
-      // Générer un nom aléatoire
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const username = `${firstName}${Math.floor(Math.random() * 100)}`;
 
-      // Vérifier si l'utilisateur existe déjà
-      if (getUserByUsername(username)) {
-        continue;
-      }
+      if (getUserByUsername(username)) continue;
 
-      // Générer un avatar aléatoire avec une chance d'avoir un skin d'ours
       const isBoy = Math.random() > 0.5;
-      let head = isBoy ? "default_boy" : "default_girl";
-      let body = isBoy ? "default_boy" : "default_girl";
-
-      // 20% de chance d'avoir un skin d'ours
-      if (Math.random() < 0.2) {
-        head = "bear";
-        body = "bear";
-      }
-
-      // Générer des statistiques aléatoires
-      const level = Math.floor(Math.random() * 20) + 1; // Niveau entre 1 et 20
+      const level = Math.floor(Math.random() * 20) + 1;
       const xp = level * 100 + Math.floor(Math.random() * 100);
       const coins = Math.floor(Math.random() * 10000);
 
-      // Générer des jeux et cours complétés aléatoires
-      const completedGames = [];
-      const completedCourses = [];
-
-      const numGames = Math.floor(Math.random() * 5);
-      for (let j = 0; j < numGames; j++) {
-        completedGames.push(`game_${j + 1}`);
-      }
-
-      const numCourses = Math.floor(Math.random() * 3);
-      for (let j = 0; j < numCourses; j++) {
-        completedCourses.push(`course_${j + 1}`);
-      }
-
-      // Créer l'utilisateur
       const user = new User(username, "password123");
-
-      // Mettre à jour les propriétés de l'utilisateur
       user.firstName = firstName;
       user.lastName = lastName;
       user.email = `${username.toLowerCase()}@example.com`;
-      user.isAdmin = false;
-      user.lastLogin = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString();
       user.level = level;
       user.xp = xp;
       user.coins = coins;
-      user.completedGames = completedGames;
-      user.completedCourses = completedCourses;
       user.avatar = {
-        head: head,
-        body: body,
+        head: isBoy ? "default_boy" : "default_girl",
+        body: isBoy ? "default_boy" : "default_girl",
         accessory: "none",
         background: "default"
       };
-      user.skins = {
-        head: ["default_boy", "default_girl", head],
-        body: ["default_boy", "default_girl", body],
-        accessory: ["none"],
-        background: ["default"]
-      };
       user.hasSelectedGender = true;
-      user.skinsUnlocked = head === "bear"; // Les utilisateurs avec des skins d'ours ont débloqué tous les skins
 
-      // Ajouter l'utilisateur à la liste
       users[user.id] = user;
       createdCount++;
     }
 
-    // Sauvegarder les utilisateurs
     saveUsers(users);
-
-    console.log("Utilisateurs de test créés avec succès:", createdCount);
-    alert(`${createdCount} utilisateurs de test ont été créés avec succès. La page va être rechargée.`);
-
-    // Recharger la page
+    console.log(`${createdCount} utilisateurs de test créés`);
+    alert(`${createdCount} utilisateurs de test créés avec succès !`);
     window.location.reload();
   } catch (error) {
     console.error("Erreur lors de la création des utilisateurs de test:", error);
@@ -401,74 +277,343 @@ function createTestUsers() {
   }
 }
 
-// Réinitialiser complètement le localStorage
-function resetLocalStorage() {
-  if (confirm("Attention ! Cette action va supprimer toutes vos données (utilisateurs, progression, etc.). Êtes-vous sûr de vouloir continuer ?")) {
-    console.log("Réinitialisation du localStorage");
+// Nettoyer les données corrompues
+function cleanCorruptedData() {
+  if (!confirm("Voulez-vous nettoyer les données corrompues ? Cette action peut supprimer des données invalides.")) {
+    return;
+  }
 
-    // Supprimer toutes les données du localStorage
-    localStorage.clear();
+  try {
+    const users = getUsers();
+    let cleanedCount = 0;
 
-    console.log("localStorage réinitialisé avec succès");
+    Object.keys(users).forEach(userId => {
+      const user = users[userId];
+      let needsCleaning = false;
 
-    // Recharger la page
-    alert("localStorage réinitialisé avec succès. La page va être rechargée.");
-    window.location.reload();
+      // Vérifier et corriger les propriétés manquantes
+      if (!user.id) {
+        user.id = userId;
+        needsCleaning = true;
+      }
+      if (typeof user.level !== 'number') {
+        user.level = 1;
+        needsCleaning = true;
+      }
+      if (typeof user.xp !== 'number') {
+        user.xp = 0;
+        needsCleaning = true;
+      }
+      if (typeof user.coins !== 'number') {
+        user.coins = 0;
+        needsCleaning = true;
+      }
+      if (!user.avatar) {
+        user.avatar = {
+          head: 'default_boy',
+          body: 'default_boy',
+          accessory: 'none',
+          background: 'default'
+        };
+        needsCleaning = true;
+      }
+
+      if (needsCleaning) {
+        users[userId] = user;
+        cleanedCount++;
+      }
+    });
+
+    if (cleanedCount > 0) {
+      saveUsers(users);
+      console.log(`${cleanedCount} utilisateurs nettoyés`);
+      alert(`${cleanedCount} utilisateurs ont été nettoyés avec succès !`);
+    } else {
+      alert("Aucune donnée corrompue trouvée !");
+    }
+  } catch (error) {
+    console.error("Erreur lors du nettoyage:", error);
+    alert("Erreur lors du nettoyage des données: " + error.message);
   }
 }
 
-// Ajouter un bouton de débogage
-document.addEventListener('DOMContentLoaded', function() {
+// Exporter les données
+function exportData() {
+  try {
+    const data = {
+      users: getUsers(),
+      currentUser: getCurrentUser(),
+      timestamp: new Date().toISOString(),
+      version: '2.0'
+    };
+
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `english-quest-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    console.log("Données exportées avec succès");
+    alert("Données exportées avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de l'export:", error);
+    alert("Erreur lors de l'export des données: " + error.message);
+  }
+}
+
+// Réinitialiser complètement le localStorage
+function resetLocalStorage() {
+  if (confirm("⚠️ ATTENTION ! Cette action va supprimer TOUTES vos données (utilisateurs, progression, etc.). Êtes-vous absolument sûr de vouloir continuer ?")) {
+    if (confirm("Dernière chance ! Voulez-vous vraiment tout supprimer ? Cette action est IRRÉVERSIBLE !")) {
+      console.log("Réinitialisation complète du localStorage");
+      localStorage.clear();
+      alert("localStorage réinitialisé avec succès. La page va être rechargée.");
+      window.location.reload();
+    }
+  }
+}
+
+// === FONCTIONS UTILITAIRES ===
+
+// Sauvegarder l'utilisateur actuel
+function saveCurrentUser(user) {
+  const users = getUsers();
+  const userId = Object.keys(users).find(id => users[id].username === user.username);
+  
+  if (userId) {
+    users[userId] = user;
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  }
+}
+
+// Mettre à jour l'affichage utilisateur
+function updateUserDisplay() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  // Mettre à jour les éléments d'affichage si ils existent
+  const elements = {
+    'user-coins': currentUser.coins?.toLocaleString(),
+    'user-xp': currentUser.xp,
+    'user-level': currentUser.level
+  };
+
+  Object.entries(elements).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element && value !== undefined) {
+      element.textContent = value;
+    }
+  });
+}
+
+// === INTERFACE DE DÉBOGAGE ===
+
+// Créer l'interface de débogage
+function createDebugInterface() {
+  // Vérifier si l'utilisateur est admin
+  if (!isCurrentUserAdmin()) {
+    console.log("🔒 Interface de débogage réservée aux administrateurs");
+    return;
+  }
+
+  console.log("🛠️ Chargement de l'interface de débogage admin");
+
   // Créer le bouton de débogage
   const debugButton = document.createElement('div');
-  debugButton.style.position = 'fixed';
-  debugButton.style.bottom = '10px';
-  debugButton.style.right = '10px';
-  debugButton.style.zIndex = '9999';
-  debugButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-  debugButton.style.color = 'white';
-  debugButton.style.padding = '5px 10px';
-  debugButton.style.borderRadius = '5px';
-  debugButton.style.cursor = 'pointer';
-  debugButton.style.fontSize = '12px';
-  debugButton.textContent = 'Debug';
-
-  // Ajouter le menu de débogage
-  const debugMenu = document.createElement('div');
-  debugMenu.style.position = 'fixed';
-  debugMenu.style.bottom = '40px';
-  debugMenu.style.right = '10px';
-  debugMenu.style.zIndex = '9999';
-  debugMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-  debugMenu.style.color = 'white';
-  debugMenu.style.padding = '10px';
-  debugMenu.style.borderRadius = '5px';
-  debugMenu.style.display = 'none';
-  debugMenu.style.flexDirection = 'column';
-  debugMenu.style.gap = '5px';
-
-  // Ajouter les options de débogage
-  debugMenu.innerHTML = `
-    <div style="cursor: pointer; padding: 5px;" onclick="resetGenderChoice()">Réinitialiser choix de genre</div>
-    <div style="cursor: pointer; padding: 5px;" onclick="showDebugInfo()">Afficher infos de débogage</div>
-    <div style="cursor: pointer; padding: 5px;" onclick="resetSkinsUnlocked()">Réinitialiser skins débloqués</div>
-    <div style="cursor: pointer; padding: 5px; color: #9c27b0;" onclick="unlockBearSkins()">Débloquer skins d'ours</div>
-    <div style="cursor: pointer; padding: 5px; color: #ffc107;" onclick="addMillionCoins()">Ajouter 1 million de pièces</div>
-    <div style="cursor: pointer; padding: 5px; color: #4caf50;" onclick="buyAllSkins()">Acheter tous les skins</div>
-    <div style="cursor: pointer; padding: 5px; color: #2196f3;" onclick="createTestUsers()">Créer utilisateurs de test</div>
-    <div style="cursor: pointer; padding: 5px; color: #ff5555;" onclick="resetLocalStorage()">Réinitialiser localStorage</div>
+  debugButton.id = 'debug-button';
+  debugButton.innerHTML = '🛠️ Admin';
+  debugButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    font-family: 'Exo 2', sans-serif;
   `;
 
-  // Ajouter les éléments au document
+  // Effet hover
+  debugButton.addEventListener('mouseenter', () => {
+    debugButton.style.transform = 'translateY(-2px)';
+    debugButton.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
+  });
+
+  debugButton.addEventListener('mouseleave', () => {
+    debugButton.style.transform = 'translateY(0)';
+    debugButton.style.boxShadow = '0 4px 15px rgba(231, 76, 60, 0.3)';
+  });
+
+  // Créer le menu de débogage
+  const debugMenu = document.createElement('div');
+  debugMenu.id = 'debug-menu';
+  debugMenu.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 280px;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Exo 2', sans-serif;
+  `;
+
+  // Titre du menu
+  const menuTitle = document.createElement('div');
+  menuTitle.innerHTML = '🛠️ <strong>Interface Admin</strong>';
+  menuTitle.style.cssText = `
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+  `;
+  debugMenu.appendChild(menuTitle);
+
+  // Sections du menu
+  const sections = [
+    {
+      title: '👤 Gestion Utilisateur',
+      color: '#3498db',
+      items: [
+        { text: 'Infos de débogage', func: 'showDebugInfo()' },
+        { text: 'Réinitialiser genre', func: 'resetGenderChoice()' }
+      ]
+    },
+    {
+      title: '💰 Récompenses',
+      color: '#f39c12',
+      items: [
+        { text: '+1000 XP', func: 'addXP(1000)' },
+        { text: '+10K pièces', func: 'addCoins(10000)' },
+        { text: 'Reset récompenses cours', func: 'resetCourseRewards()' }
+      ]
+    },
+    {
+      title: '🎨 Skins & Avatar',
+      color: '#9b59b6',
+      items: [
+        { text: 'Débloquer tous les skins', func: 'unlockAllSkins()' },
+        { text: 'Réinitialiser skins', func: 'resetSkins()' }
+      ]
+    },
+    {
+      title: '🗄️ Gestion Données',
+      color: '#2ecc71',
+      items: [
+        { text: 'Créer utilisateurs test', func: 'createTestUsers()' },
+        { text: 'Nettoyer données corrompues', func: 'cleanCorruptedData()' },
+        { text: 'Exporter données', func: 'exportData()' }
+      ]
+    },
+    {
+      title: '⚠️ Actions Dangereuses',
+      color: '#e74c3c',
+      items: [
+        { text: 'RESET COMPLET', func: 'resetLocalStorage()' }
+      ]
+    }
+  ];
+
+  // Créer les sections
+  sections.forEach(section => {
+    // Titre de section
+    const sectionTitle = document.createElement('div');
+    sectionTitle.innerHTML = section.title;
+    sectionTitle.style.cssText = `
+      font-weight: bold;
+      color: ${section.color};
+      margin: 10px 0 5px 0;
+      font-size: 14px;
+    `;
+    debugMenu.appendChild(sectionTitle);
+
+    // Items de section
+    section.items.forEach(item => {
+      const menuItem = document.createElement('div');
+      menuItem.innerHTML = item.text;
+      menuItem.style.cssText = `
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        font-size: 13px;
+        background: rgba(255, 255, 255, 0.05);
+        margin: 2px 0;
+      `;
+
+      menuItem.addEventListener('mouseenter', () => {
+        menuItem.style.background = section.color;
+        menuItem.style.transform = 'translateX(5px)';
+      });
+
+      menuItem.addEventListener('mouseleave', () => {
+        menuItem.style.background = 'rgba(255, 255, 255, 0.05)';
+        menuItem.style.transform = 'translateX(0)';
+      });
+
+      menuItem.addEventListener('click', () => {
+        try {
+          eval(item.func);
+        } catch (error) {
+          console.error('Erreur lors de l\'exécution:', error);
+          alert('Erreur lors de l\'exécution: ' + error.message);
+        }
+      });
+
+      debugMenu.appendChild(menuItem);
+    });
+  });
+
+  // Ajouter les éléments au DOM
   document.body.appendChild(debugButton);
   document.body.appendChild(debugMenu);
 
-  // Ajouter l'écouteur d'événement pour afficher/masquer le menu
-  debugButton.addEventListener('click', function() {
-    if (debugMenu.style.display === 'none') {
-      debugMenu.style.display = 'flex';
-    } else {
+  // Gestion de l'affichage du menu
+  let menuVisible = false;
+  debugButton.addEventListener('click', () => {
+    menuVisible = !menuVisible;
+    debugMenu.style.display = menuVisible ? 'flex' : 'none';
+  });
+
+  // Fermer le menu en cliquant ailleurs
+  document.addEventListener('click', (e) => {
+    if (!debugButton.contains(e.target) && !debugMenu.contains(e.target)) {
+      menuVisible = false;
       debugMenu.style.display = 'none';
     }
   });
-});
+
+  console.log("✅ Interface de débogage admin chargée");
+}
+
+// Initialiser l'interface de débogage quand le DOM est prêt
+document.addEventListener('DOMContentLoaded', createDebugInterface);
+
+// Si le DOM est déjà chargé
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', createDebugInterface);
+} else {
+  createDebugInterface();
+}
