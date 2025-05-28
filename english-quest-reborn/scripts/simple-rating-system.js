@@ -46,36 +46,120 @@ class SimpleRatingSystem {
             // Essayer plusieurs méthodes pour récupérer l'utilisateur
             let user = null;
             
+            // Clés localStorage exactement comme dans le système d'authentification
+            const LOCALSTORAGE_KEYS = {
+                CURRENT_USER: 'english_quest_current_user',
+                LEGACY_CURRENT_USER: 'currentUser',
+                USER_ID: 'englishQuestUserId'
+            };
+            
+            console.log('🔍 [SimpleRatingSystem] Vérification authentification...');
+            
             // Méthode 1: localStorage avec nouvelle clé
-            const userData = localStorage.getItem('english_quest_current_user');
-            if (userData) {
+            let userData = localStorage.getItem(LOCALSTORAGE_KEYS.CURRENT_USER);
+            if (userData && userData !== 'undefined' && userData !== 'null') {
                 try {
                     user = JSON.parse(userData);
+                    console.log('✅ [SimpleRatingSystem] Utilisateur trouvé via CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
                 } catch (e) {
-                    console.warn('Erreur parsing user data:', e);
+                    console.warn('⚠️ [SimpleRatingSystem] Erreur parsing CURRENT_USER:', e);
+                    user = null;
                 }
             }
             
             // Méthode 2: localStorage avec ancienne clé
             if (!user) {
-                const legacyUserData = localStorage.getItem('currentUser');
-                if (legacyUserData) {
+                userData = localStorage.getItem(LOCALSTORAGE_KEYS.LEGACY_CURRENT_USER);
+                if (userData && userData !== 'undefined' && userData !== 'null') {
                     try {
-                        user = JSON.parse(legacyUserData);
+                        user = JSON.parse(userData);
+                        console.log('✅ [SimpleRatingSystem] Utilisateur trouvé via LEGACY_CURRENT_USER:', user.username || user.displayName || 'Utilisateur');
                     } catch (e) {
-                        console.warn('Erreur parsing legacy user data:', e);
+                        console.warn('⚠️ [SimpleRatingSystem] Erreur parsing LEGACY_CURRENT_USER:', e);
+                        user = null;
                     }
                 }
             }
             
-            // Méthode 3: authService global
+            // Méthode 3: englishQuestUserId (nouvelle approche)
+            if (!user) {
+                const userId = localStorage.getItem(LOCALSTORAGE_KEYS.USER_ID);
+                if (userId && userId !== "undefined" && userId !== "null") {
+                    console.log('🔄 [SimpleRatingSystem] ID utilisateur trouvé, création objet minimal:', userId);
+                    
+                    // Essayer d'utiliser authService pour récupérer les données complètes
+                    if (window.authService && typeof window.authService.loadUserData === 'function') {
+                        console.log('🔄 [SimpleRatingSystem] Tentative récupération via authService');
+                        try {
+                            // Note: loadUserData est async, mais on ne peut pas await ici
+                            // On crée un objet minimal pour l'instant
+                            user = { 
+                                uid: userId, 
+                                id: userId,
+                                username: `Utilisateur ${userId.substring(0, 8)}`,
+                                displayName: `Utilisateur ${userId.substring(0, 8)}`
+                            };
+                            console.log('✅ [SimpleRatingSystem] Objet utilisateur minimal créé');
+                        } catch (error) {
+                            console.warn('⚠️ [SimpleRatingSystem] Erreur authService:', error);
+                        }
+                    } else {
+                        // Créer un objet utilisateur minimal avec l'ID
+                        user = { 
+                            uid: userId, 
+                            id: userId,
+                            username: `Utilisateur ${userId.substring(0, 8)}`,
+                            displayName: `Utilisateur ${userId.substring(0, 8)}`
+                        };
+                        console.log('✅ [SimpleRatingSystem] Objet utilisateur minimal créé (fallback)');
+                    }
+                }
+            }
+            
+            // Méthode 4: authService global (fallback)
             if (!user && window.authService && window.authService.currentUser) {
                 user = window.authService.currentUser;
+                console.log('✅ [SimpleRatingSystem] Utilisateur trouvé via authService global');
+            }
+            
+            // Méthode 5: Vérifier Firebase Auth directement
+            if (!user && typeof firebase !== 'undefined' && firebase.auth) {
+                try {
+                    const firebaseUser = firebase.auth().currentUser;
+                    if (firebaseUser) {
+                        user = {
+                            uid: firebaseUser.uid,
+                            id: firebaseUser.uid,
+                            username: firebaseUser.displayName || firebaseUser.email || `Utilisateur ${firebaseUser.uid.substring(0, 8)}`,
+                            displayName: firebaseUser.displayName || firebaseUser.email || `Utilisateur ${firebaseUser.uid.substring(0, 8)}`,
+                            email: firebaseUser.email
+                        };
+                        console.log('✅ [SimpleRatingSystem] Utilisateur trouvé via Firebase Auth:', user.username);
+                    }
+                } catch (error) {
+                    console.warn('⚠️ [SimpleRatingSystem] Erreur Firebase Auth:', error);
+                }
+            }
+            
+            if (user) {
+                console.log('✅ [SimpleRatingSystem] Utilisateur final détecté:', {
+                    username: user.username || user.displayName || 'Inconnu',
+                    uid: user.uid || user.id || 'Pas d\'ID'
+                });
+            } else {
+                console.log('❌ [SimpleRatingSystem] Aucun utilisateur détecté');
+                
+                // Debug: afficher toutes les clés localStorage pour diagnostic
+                console.log('🔍 [SimpleRatingSystem] Debug localStorage:');
+                Object.values(LOCALSTORAGE_KEYS).forEach(key => {
+                    const value = localStorage.getItem(key);
+                    console.log(`  ${key}: ${value ? 'PRÉSENT' : 'ABSENT'} (${value ? value.substring(0, 50) + '...' : 'null'})`);
+                });
             }
             
             return user;
         } catch (error) {
-            console.error('Erreur récupération utilisateur:', error);
+            console.error('❌ [SimpleRatingSystem] Erreur récupération utilisateur:', error);
             return null;
         }
     }
@@ -84,8 +168,28 @@ class SimpleRatingSystem {
      * Vérifie si l'utilisateur peut noter (connecté)
      */
     canRate() {
+        console.log('🔍 [SimpleRatingSystem] Vérification canRate...');
+        
+        // Toujours récupérer l'utilisateur actuel
         this.currentUser = this.getCurrentUser();
-        return this.currentUser && (this.currentUser.uid || this.currentUser.id);
+        
+        if (!this.currentUser) {
+            console.log('❌ [SimpleRatingSystem] canRate: Aucun utilisateur détecté');
+            return false;
+        }
+        
+        const userId = this.currentUser.uid || this.currentUser.id;
+        if (!userId) {
+            console.log('❌ [SimpleRatingSystem] canRate: Utilisateur sans ID valide', this.currentUser);
+            return false;
+        }
+        
+        console.log('✅ [SimpleRatingSystem] canRate: Utilisateur peut noter', {
+            username: this.currentUser.username || this.currentUser.displayName || 'Inconnu',
+            userId: userId
+        });
+        
+        return true;
     }
 
     /**
@@ -824,6 +928,10 @@ async function autoInitializeRatingSystem() {
         await window.simpleRatingSystem.init();
         window.simpleRatingSystem.addStyles();
         
+        // Attendre que l'authentification soit complètement chargée
+        console.log('🔐 [SimpleRatingSystem] Attente de l\'authentification...');
+        await waitForAuthentication();
+        
         // Détecter le jeu actuel depuis l'URL ou le titre
         const currentPath = window.location.pathname;
         let gameId = null;
@@ -871,6 +979,38 @@ async function autoInitializeRatingSystem() {
     } catch (error) {
         console.error('❌ [SimpleRatingSystem] Erreur lors de l\'initialisation:', error);
     }
+}
+
+// Fonction pour attendre que l'authentification soit chargée
+function waitForAuthentication() {
+    return new Promise((resolve) => {
+        let attempts = 0;
+        const maxAttempts = 20; // 10 secondes maximum
+        
+        const checkAuth = () => {
+            attempts++;
+            
+            // Vérifier si l'authentification est disponible
+            const hasAuth = localStorage.getItem('english_quest_current_user') ||
+                           localStorage.getItem('currentUser') ||
+                           localStorage.getItem('englishQuestUserId') ||
+                           (window.authService && window.authService.currentUser) ||
+                           (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
+            
+            if (hasAuth) {
+                console.log('✅ [SimpleRatingSystem] Authentification détectée');
+                resolve();
+            } else if (attempts >= maxAttempts) {
+                console.log('⏰ [SimpleRatingSystem] Timeout authentification - continuation sans utilisateur');
+                resolve();
+            } else {
+                console.log(`🔄 [SimpleRatingSystem] Attente authentification... (${attempts}/${maxAttempts})`);
+                setTimeout(checkAuth, 500);
+            }
+        };
+        
+        checkAuth();
+    });
 }
 
 // Initialiser automatiquement quand le DOM est prêt
