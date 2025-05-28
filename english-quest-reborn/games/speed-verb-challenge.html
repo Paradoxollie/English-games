@@ -40,7 +40,10 @@
     <script type="module" src="../scripts/auth-header.js"></script>
     <script type="module" src="../scripts/reward-service.js"></script>
     <script type="module" src="../scripts/game-stats-service.js"></script>
-    <script type="module" src="../scripts/end-game-rating.js"></script>
+    
+    <!-- Nouveau système de notation simplifié -->
+    <script src="../scripts/simple-rating-system.js" defer></script>
+    <script src="../scripts/update-rating-system.js" defer></script>
 
     <style>
         :root {
@@ -1871,19 +1874,19 @@
 
             // Afficher l'interface de notation après 3 secondes
             setTimeout(() => {
-                // Vérifier que le service de notation est disponible
-                if (window.endGameRating) {
-                    console.log('🌟 [Speed Verb Challenge] Affichage interface de notation');
-                    window.endGameRating.showRating('speed-verb-challenge', playerId, 'Speed Verb Challenge');
+                // Utiliser le nouveau système de notation simplifié
+                if (window.SimpleRatingSystem) {
+                    console.log('🌟 [Speed Verb Challenge] Affichage interface de notation (nouveau système)');
+                    // Le nouveau système détecte automatiquement le jeu depuis l'URL/titre
+                    // Pas besoin de paramètres spécifiques
                 } else {
-                    console.warn('⚠️ [Speed Verb Challenge] Service endGameRating non disponible');
+                    console.warn('⚠️ [Speed Verb Challenge] Nouveau système de notation non disponible');
                     // Réessayer après un délai supplémentaire
                     setTimeout(() => {
-                        if (window.endGameRating) {
+                        if (window.SimpleRatingSystem) {
                             console.log('🌟 [Speed Verb Challenge] Affichage interface de notation (2ème tentative)');
-                            window.endGameRating.showRating('speed-verb-challenge', playerId, 'Speed Verb Challenge');
                         } else {
-                            console.error('❌ [Speed Verb Challenge] Service endGameRating toujours non disponible');
+                            console.error('❌ [Speed Verb Challenge] Nouveau système de notation toujours non disponible');
                         }
                     }, 2000);
                 }
@@ -1909,8 +1912,8 @@
             updateHUD();
         }
 
-        // Ancien système de notation - SUPPRIMÉ car remplacé par endGameRating
-        // L'interface de notation moderne est maintenant gérée par scripts/end-game-rating.js
+        // Ancien système de notation - REMPLACÉ par le nouveau système simplifié
+        // L'interface de notation moderne est maintenant gérée par scripts/simple-rating-system.js
 
         // Fonction de debug
         window.debugSpeedVerb = function() {

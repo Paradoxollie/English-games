@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nouveau Système de Notation - English Quest Reborn</title>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="src/js/firebase-init.js"></script>
+    
+    <!-- Scripts d'authentification -->
+    <script type="module" src="scripts/auth-service.js"></script>
+    
+    <!-- Nouveau système de notation simplifié -->
+    <script src="scripts/simple-rating-system.js" defer></script>
+    <script src="scripts/update-rating-system.js" defer></script>
+    
+    <style>
+        :root {
+            --color-primary: #2ecc71;
+            --color-background: #121212;
+            --color-surface: #1e1e1e;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: rgba(255, 255, 255, 0.7);
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--color-surface);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--color-primary);
+        }
+        
+        .test-section h2 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .game-card {
+            background: var(--color-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .btn {
+            background: var(--color-primary);
+            color: var(--color-background);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .status {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+        
+        .status.error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .status.info {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Test Nouveau Système de Notation</h1>
+        <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: 2rem;">
+            Vérification du fonctionnement du nouveau système de notation simplifié dans English Quest Reborn
+        </p>
+        
+        <div class="test-section">
+            <h2>📊 État du Système</h2>
+            <div id="system-status" class="status info">
+                🔄 Initialisation en cours...
+            </div>
+            
+            <button class="btn" onclick="checkSystemStatus()">🔍 Vérifier l'État</button>
+            <button class="btn" onclick="testRatingInterface()">🌟 Tester Interface de Notation</button>
+            <button class="btn" onclick="clearLogs()">🧹 Effacer les Logs</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 Cartes de Jeux Test</h2>
+            <p>Ces cartes simulent les jeux de la partie reborn :</p>
+            
+            <!-- Carte Enigma Scroll -->
+            <div class="game-card" data-game-id="enigma-scroll">
+                <div class="game-title">Enigma Scroll</div>
+                <div class="game-description">Jeu de mots mystérieux</div>
+                <div class="game-stats">
+                    <span>👥 <span>0 joueurs</span></span>
+                    <span>⭐ <span>4.2/5</span></span>
+                </div>
+                <div id="rating-enigma-scroll"></div>
+            </div>
+            
+            <!-- Carte Speed Verb Challenge -->
+            <div class="game-card" data-game-id="speed-verb-challenge">
+                <div class="game-title">Speed Verb Challenge</div>
+                <div class="game-description">Maîtrisez les verbes irréguliers</div>
+                <div class="game-stats">
+                    <span>👥 <span>0 joueurs</span></span>
+                    <span>⭐ <span>4.5/5</span></span>
+                </div>
+                <div id="rating-speed-verb-challenge"></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Logs du Système</h2>
+            <div id="logs" class="log">
+                Logs d'initialisation...<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Système de logs
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#e74c3c' : type === 'success' ? '#2ecc71' : '#3498db';
+            logs.innerHTML += `<span style="color: ${color};">[${timestamp}] ${message}</span><br>`;
+            logs.scrollTop = logs.scrollHeight;
+            console.log(`[Test Rating] ${message}`);
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = 'Logs effacés...<br>';
+        }
+        
+        // Vérifier l'état du système
+        function checkSystemStatus() {
+            const statusDiv = document.getElementById('system-status');
+            
+            addLog('🔍 Vérification de l\'état du système...');
+            
+            // Vérifier Firebase
+            if (typeof firebase !== 'undefined') {
+                addLog('✅ Firebase disponible', 'success');
+            } else {
+                addLog('❌ Firebase non disponible', 'error');
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Firebase non disponible';
+                return;
+            }
+            
+            // Vérifier SimpleRatingSystem
+            if (window.SimpleRatingSystem) {
+                addLog('✅ SimpleRatingSystem disponible', 'success');
+            } else {
+                addLog('❌ SimpleRatingSystem non disponible', 'error');
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ SimpleRatingSystem non disponible';
+                return;
+            }
+            
+            // Vérifier RatingSystemUpdater
+            if (window.RatingSystemUpdater) {
+                addLog('✅ RatingSystemUpdater disponible', 'success');
+            } else {
+                addLog('⚠️ RatingSystemUpdater non disponible', 'error');
+            }
+            
+            // Vérifier authService
+            if (window.authService) {
+                addLog('✅ AuthService disponible', 'success');
+            } else {
+                addLog('⚠️ AuthService non disponible');
+            }
+            
+            statusDiv.className = 'status success';
+            statusDiv.textContent = '✅ Système opérationnel !';
+            addLog('🎉 Vérification terminée avec succès', 'success');
+        }
+        
+        // Tester l'interface de notation
+        function testRatingInterface() {
+            addLog('🌟 Test de l\'interface de notation...');
+            
+            if (!window.SimpleRatingSystem) {
+                addLog('❌ SimpleRatingSystem non disponible pour le test', 'error');
+                return;
+            }
+            
+            try {
+                // Tester pour Enigma Scroll
+                const enigmaContainer = document.getElementById('rating-enigma-scroll');
+                if (enigmaContainer) {
+                    addLog('🎮 Création interface pour Enigma Scroll...');
+                    window.SimpleRatingSystem.createRatingInterface('enigma-scroll', '#rating-enigma-scroll');
+                }
+                
+                // Tester pour Speed Verb Challenge
+                const speedContainer = document.getElementById('rating-speed-verb-challenge');
+                if (speedContainer) {
+                    addLog('🎮 Création interface pour Speed Verb Challenge...');
+                    window.SimpleRatingSystem.createRatingInterface('speed-verb-challenge', '#rating-speed-verb-challenge');
+                }
+                
+                addLog('✅ Interfaces de notation créées avec succès', 'success');
+                
+            } catch (error) {
+                addLog(`❌ Erreur lors de la création des interfaces: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialisation automatique
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('🚀 Initialisation du test...');
+            
+            // Attendre que les scripts soient chargés
+            setTimeout(() => {
+                checkSystemStatus();
+                
+                // Tester automatiquement l'interface après 2 secondes
+                setTimeout(() => {
+                    testRatingInterface();
+                }, 2000);
+            }, 1000);
+        });
+        
+        // Écouter les événements du système de notation
+        window.addEventListener('gameRatingUpdated', function(event) {
+            addLog(`🌟 Notation mise à jour: ${event.detail.gameId} - Note: ${event.detail.rating}/5`, 'success');
+        });
+        
+        // Debug global
+        window.testRatingSystem = {
+            checkStatus: checkSystemStatus,
+            testInterface: testRatingInterface,
+            clearLogs: clearLogs,
+            addLog: addLog
+        };
+        
+        addLog('📋 Page de test chargée - Utilisez les boutons pour tester le système');
+    </script>
+</body>
+</html> 

@@ -23,7 +23,10 @@
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
   <script type="module" src="../scripts/game-stats-service.js"></script>
-  <script type="module" src="../scripts/end-game-rating.js"></script>
+  
+  <!-- Nouveau système de notation simplifié -->
+  <script src="../scripts/simple-rating-system.js" defer></script>
+  <script src="../scripts/update-rating-system.js" defer></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -2415,27 +2418,19 @@
       
       // Afficher l'interface de notation après un délai
       setTimeout(() => {
-        let playerId = `anonymous-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        if (window.authService && window.authService.currentUser) {
-          playerId = window.authService.currentUser.uid || window.authService.currentUser.id;
-          console.log('🔍 [Enigma Scroll] Joueur connecté détecté:', playerId);
+        // Utiliser le nouveau système de notation simplifié
+        if (window.SimpleRatingSystem) {
+          console.log('🌟 [Enigma Scroll] Affichage interface de notation (nouveau système)');
+          // Le nouveau système détecte automatiquement le jeu depuis l'URL/titre
+          // Pas besoin de paramètres spécifiques
         } else {
-          console.log('🔍 [Enigma Scroll] Joueur anonyme, ID généré:', playerId);
-        }
-        
-        // Vérifier que le service de notation est disponible
-        if (window.endGameRating) {
-          console.log('🌟 [Enigma Scroll] Affichage interface de notation');
-          window.endGameRating.showRating('enigma-scroll', playerId, 'Enigma Scroll');
-        } else {
-          console.warn('⚠️ [Enigma Scroll] Service endGameRating non disponible');
+          console.warn('⚠️ [Enigma Scroll] Nouveau système de notation non disponible');
           // Réessayer après un délai supplémentaire
           setTimeout(() => {
-            if (window.endGameRating) {
+            if (window.SimpleRatingSystem) {
               console.log('🌟 [Enigma Scroll] Affichage interface de notation (2ème tentative)');
-              window.endGameRating.showRating('enigma-scroll', playerId, 'Enigma Scroll');
             } else {
-              console.error('❌ [Enigma Scroll] Service endGameRating toujours non disponible');
+              console.error('❌ [Enigma Scroll] Nouveau système de notation toujours non disponible');
             }
           }, 2000);
         }
@@ -2555,7 +2550,7 @@
       console.log('🌐 Validation API activée pour TOUS les mots anglais');
       console.log('🎮 Raccourcis: 1=Indice, 2=Temps, 3=Passer');
       console.log('🔐 Authentification requise pour jouer');
-      console.log('🌟 Système de notation moderne activé (endGameRating)');
+      console.log('🌟 Nouveau système de notation simplifié activé');
     });
     
     function handleKeyPress(key) {
@@ -2570,8 +2565,8 @@
       }
     }
 
-    // Ancien système de notation - SUPPRIMÉ car remplacé par endGameRating
-    // L'interface de notation moderne est maintenant gérée par scripts/end-game-rating.js
+    // Ancien système de notation - REMPLACÉ par le nouveau système simplifié
+    // L'interface de notation moderne est maintenant gérée par scripts/simple-rating-system.js
 
     // Animation de secousse pour les erreurs
     const shakeStyle = document.createElement('style');
