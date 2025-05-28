@@ -441,8 +441,17 @@ class SimpleRatingSystem {
             return;
         }
 
-        // Vérifier si l'utilisateur peut noter
-        if (!this.canRate()) {
+        console.log(`🎮 [SimpleRatingSystem] Création interface pour ${gameId} dans ${containerSelector}`);
+        
+        // Force une nouvelle vérification de l'authentification
+        console.log('🔍 [SimpleRatingSystem] Vérification authentification pour interface...');
+        
+        // Vérifier si l'utilisateur peut noter (avec logs détaillés)
+        const canUserRate = this.canRate();
+        console.log(`🔍 [SimpleRatingSystem] Résultat canRate: ${canUserRate}`);
+        
+        if (!canUserRate) {
+            console.log('❌ [SimpleRatingSystem] Utilisateur ne peut pas noter - affichage message connexion');
             container.innerHTML = `
                 <div class="rating-interface">
                     <p class="rating-login-message">
@@ -451,8 +460,21 @@ class SimpleRatingSystem {
                     </p>
                 </div>
             `;
+            
+            // Essayer de re-vérifier l'authentification après un délai
+            setTimeout(() => {
+                console.log('🔄 [SimpleRatingSystem] Re-vérification authentification après délai...');
+                const canUserRateRetry = this.canRate();
+                if (canUserRateRetry) {
+                    console.log('✅ [SimpleRatingSystem] Authentification détectée en retry - recréation interface');
+                    this.createRatingInterface(gameId, containerSelector);
+                }
+            }, 2000);
+            
             return;
         }
+
+        console.log('✅ [SimpleRatingSystem] Utilisateur peut noter - création interface complète');
 
         // Créer l'interface de notation
         container.innerHTML = `
@@ -483,6 +505,8 @@ class SimpleRatingSystem {
         
         // Charger la note existante si elle existe
         this.loadExistingRating(gameId);
+        
+        console.log(`✅ [SimpleRatingSystem] Interface créée avec succès pour ${gameId}`);
     }
 
     /**
@@ -985,26 +1009,62 @@ async function autoInitializeRatingSystem() {
 function waitForAuthentication() {
     return new Promise((resolve) => {
         let attempts = 0;
-        const maxAttempts = 20; // 10 secondes maximum
+        const maxAttempts = 30; // 15 secondes maximum
         
         const checkAuth = () => {
             attempts++;
             
-            // Vérifier si l'authentification est disponible
-            const hasAuth = localStorage.getItem('english_quest_current_user') ||
+            console.log(`🔄 [SimpleRatingSystem] Vérification authentification (${attempts}/${maxAttempts})...`);
+            
+            // Vérifier si authService est complètement initialisé
+            let authServiceReady = false;
+            if (window.authService) {
+                try {
+                    const currentUser = window.authService.getCurrentUser();
+                    if (currentUser && (currentUser.uid || currentUser.id)) {
+                        console.log('✅ [SimpleRatingSystem] AuthService utilisateur détecté:', currentUser.username || currentUser.displayName || 'Utilisateur');
+                        authServiceReady = true;
+                    }
+                } catch (error) {
+                    console.log('⚠️ [SimpleRatingSystem] Erreur authService:', error);
+                }
+            }
+            
+            // Vérifier localStorage comme fallback
+            let localStorageAuth = false;
+            const userData = localStorage.getItem('english_quest_current_user') ||
                            localStorage.getItem('currentUser') ||
-                           localStorage.getItem('englishQuestUserId') ||
-                           (window.authService && window.authService.currentUser) ||
-                           (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
+                           localStorage.getItem('englishQuestUserId');
+            
+            if (userData && userData !== 'undefined' && userData !== 'null') {
+                console.log('✅ [SimpleRatingSystem] Données localStorage détectées');
+                localStorageAuth = true;
+            }
+            
+            // Vérifier Firebase Auth directement
+            let firebaseAuthReady = false;
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                try {
+                    const firebaseUser = firebase.auth().currentUser;
+                    if (firebaseUser) {
+                        console.log('✅ [SimpleRatingSystem] Firebase Auth utilisateur détecté:', firebaseUser.displayName || firebaseUser.email);
+                        firebaseAuthReady = true;
+                    }
+                } catch (error) {
+                    console.log('⚠️ [SimpleRatingSystem] Erreur Firebase Auth:', error);
+                }
+            }
+            
+            const hasAuth = authServiceReady || localStorageAuth || firebaseAuthReady;
             
             if (hasAuth) {
-                console.log('✅ [SimpleRatingSystem] Authentification détectée');
-                resolve();
+                console.log('✅ [SimpleRatingSystem] Authentification confirmée - création interface');
+                // Attendre encore un peu pour que tout soit stable
+                setTimeout(resolve, 500);
             } else if (attempts >= maxAttempts) {
                 console.log('⏰ [SimpleRatingSystem] Timeout authentification - continuation sans utilisateur');
                 resolve();
             } else {
-                console.log(`🔄 [SimpleRatingSystem] Attente authentification... (${attempts}/${maxAttempts})`);
                 setTimeout(checkAuth, 500);
             }
         };
