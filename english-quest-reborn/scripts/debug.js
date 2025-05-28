@@ -207,27 +207,27 @@ function resetSkins() {
     return;
   }
 
-  currentUser.skins = {
-    head: ['default_boy', 'default_girl'],
-    body: ['default_boy', 'default_girl'],
-    accessory: ['none'],
-    background: ['default']
-  };
+    currentUser.skins = {
+      head: ['default_boy', 'default_girl'],
+      body: ['default_boy', 'default_girl'],
+      accessory: ['none'],
+      background: ['default']
+    };
   currentUser.skinsUnlocked = false;
 
   saveCurrentUser(currentUser);
   console.log("Skins réinitialisés");
   alert("Skins réinitialisés avec succès !");
-  window.location.reload();
+    window.location.reload();
 }
 
 // === FONCTIONS DE GESTION DES DONNÉES ===
 
 // Créer des utilisateurs de test
 function createTestUsers() {
-  if (!confirm("Voulez-vous créer 15 utilisateurs de test pour la galerie ?")) {
-    return;
-  }
+    if (!confirm("Voulez-vous créer 15 utilisateurs de test pour la galerie ?")) {
+      return;
+    }
 
   try {
     const users = getUsers();
@@ -370,11 +370,11 @@ function resetLocalStorage() {
   if (confirm("⚠️ ATTENTION ! Cette action va supprimer TOUTES vos données (utilisateurs, progression, etc.). Êtes-vous absolument sûr de vouloir continuer ?")) {
     if (confirm("Dernière chance ! Voulez-vous vraiment tout supprimer ? Cette action est IRRÉVERSIBLE !")) {
       console.log("Réinitialisation complète du localStorage");
-      localStorage.clear();
-      alert("localStorage réinitialisé avec succès. La page va être rechargée.");
-      window.location.reload();
-    }
+    localStorage.clear();
+    alert("localStorage réinitialisé avec succès. La page va être rechargée.");
+    window.location.reload();
   }
+}
 }
 
 // === FONCTIONS UTILITAIRES ===
