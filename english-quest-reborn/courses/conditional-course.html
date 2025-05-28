@@ -1077,12 +1077,52 @@
           <li><strong style="color: var(--color-primary);">Mixed Conditional</strong> - Combinaisons temporelles complexes</li>
         </ul>
         
-        <button class="section-complete-btn" id="complete-1" onclick="completeSection(1)">
+        <button class="section-complete-btn" id="complete-1" onclick="showValidationQuiz(1)">
           <i class="fas fa-question-circle"></i>
           Passer le Quiz de Validation
         </button>
         
         <!-- Quiz de Validation Section 1 -->
+        <div class="section-validation-quiz" id="validation-quiz-1">
+          <h3 class="validation-quiz-title">
+            <i class="fas fa-question-circle"></i>
+            Quiz de Validation - Introduction aux Conditionnels
+          </h3>
+          
+          <div class="validation-question" data-question="1">
+            <div class="validation-question-text">
+              Question 1: Combien de types principaux de conditionnels allons-nous étudier ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">3 types</div>
+              <div class="validation-option" data-answer="1">4 types</div>
+              <div class="validation-option" data-answer="2">5 types</div>
+              <div class="validation-option" data-answer="3">6 types</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="2">
+            <div class="validation-question-text">
+              Question 2: Quel est l'objectif principal de ce cours ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">Apprendre seulement la grammaire</div>
+              <div class="validation-option" data-answer="1">Maîtriser les conditionnels pour s'exprimer avec nuance</div>
+              <div class="validation-option" data-answer="2">Mémoriser des règles par cœur</div>
+              <div class="validation-option" data-answer="3">Éviter les erreurs communes</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-controls">
+            <button class="validation-btn" id="check-validation-1" onclick="checkValidationQuiz(1)" disabled>
+              <i class="fas fa-check"></i> Vérifier mes Réponses
+            </button>
             <button class="validation-btn success" id="continue-validation-1" onclick="continueAfterValidation(1)" style="display: none;">
               <i class="fas fa-arrow-right"></i> Continuer vers la Section 2
             </button>
@@ -1116,9 +1156,9 @@
           
           <div class="example-box">
             <strong>Exemples :</strong><br>
-            �?If you heat water to 100°C, it boils.<br>
-            �?If you don't water plants, they die.<br>
-            �?When the sun sets, it gets dark.
+            ?If you heat water to 100°C, it boils.<br>
+            ?If you don't water plants, they die.<br>
+            ?When the sun sets, it gets dark.
           </div>
           
           <p><strong>Usage :</strong> Pour exprimer des vérités générales, des lois scientifiques, des habitudes, ou donner des instructions. "If" peut souvent être remplacé par "when" ou "whenever".</p>
@@ -1138,9 +1178,9 @@
           
           <div class="example-box">
             <strong>Exemples :</strong><br>
-            �?If it rains tomorrow, I will stay home.<br>
-            �?If you study hard, you will pass the exam.<br>
-            �?If we leave now, we'll arrive on time.
+            ?If it rains tomorrow, I will stay home.<br>
+            ?If you study hard, you will pass the exam.<br>
+            ?If we leave now, we'll arrive on time.
           </div>
           
           <p><strong>Usage :</strong> Pour parler de situations probables dans le futur et de leurs conséquences. C'est le conditionnel le plus utilisé dans la conversation quotidienne.</p>
@@ -1160,9 +1200,9 @@
           
           <div class="example-box">
             <strong>Exemples :</strong><br>
-            �?If I had a million dollars, I would travel the world.<br>
-            �?If I were you, I would accept the job offer.<br>
-            �?If we lived in Paris, we would visit museums every weekend.
+            ?If I had a million dollars, I would travel the world.<br>
+            ?If I were you, I would accept the job offer.<br>
+            ?If we lived in Paris, we would visit museums every weekend.
           </div>
           
           <p><strong>Usage :</strong> Pour exprimer des situations imaginaires, des rêves, des conseils, ou des situations peu probables dans le présent ou le futur.</p>
@@ -1174,7 +1214,7 @@
 
         <!-- Third Conditional -->
         <div class="conditional-type">
-          <h3 class="conditional-title">�?Third Conditional - Les Regrets du Passé</h3>
+          <h3 class="conditional-title">?Third Conditional - Les Regrets du Passé</h3>
           
           <div class="structure-box">
             <strong>Structure :</strong> If + Past Perfect, would have + participe passé
@@ -1182,9 +1222,9 @@
           
           <div class="example-box">
             <strong>Exemples :</strong><br>
-            �?If I had studied harder, I would have passed the exam.<br>
-            �?If you had told me earlier, I would have helped you.<br>
-            �?If we had left earlier, we wouldn't have missed the train.
+            ?If I had studied harder, I would have passed the exam.<br>
+            ?If you had told me earlier, I would have helped you.<br>
+            ?If we had left earlier, we wouldn't have missed the train.
           </div>
           
           <p><strong>Usage :</strong> Pour parler de situations hypothétiques dans le passé qui ne se sont pas produites. Souvent utilisé pour exprimer des regrets ou imaginer des alternatives.</p>
@@ -1199,15 +1239,15 @@
           <h3 class="conditional-title">🔄 Mixed Conditional - Les Connexions Temporelles</h3>
           
           <div class="structure-box">
-            <strong>Type 1 :</strong> If + Past Perfect, would + base verbale (condition passée �?résultat présent)<br>
-            <strong>Type 2 :</strong> If + Past Simple, would have + participe passé (condition présente �?résultat passé)
+            <strong>Type 1 :</strong> If + Past Perfect, would + base verbale (condition passée?résultat présent)<br>
+            <strong>Type 2 :</strong> If + Past Simple, would have + participe passé (condition présente?résultat passé)
           </div>
           
           <div class="example-box">
-            <strong>Exemples Type 1 (Condition passée �?Résultat présent) :</strong><br>
-            �?If I had studied medicine, I would be a doctor now.<br><br>
-            <strong>Exemples Type 2 (Condition présente �?Résultat passé) :</strong><br>
-            �?If I were more organized, I would have finished the project yesterday.
+            <strong>Exemples Type 1 (Condition passée?Résultat présent) :</strong><br>
+            ?If I had studied medicine, I would be a doctor now.<br><br>
+            <strong>Exemples Type 2 (Condition présente?Résultat passé) :</strong><br>
+            ?If I were more organized, I would have finished the project yesterday.
           </div>
           
           <p><strong>Usage :</strong> Pour connecter différentes périodes temporelles, montrant comment une condition dans un temps affecte un résultat dans un autre temps.</p>
@@ -1217,7 +1257,7 @@
           </div>
         </div>
         
-        <button class="section-complete-btn" id="complete-2" onclick="completeSection(2)" disabled>
+        <button class="section-complete-btn" id="complete-2" onclick="showValidationQuiz(2)" disabled>
           <i class="fas fa-check"></i>
           Maîtriser les 5 Types
         </button>
@@ -1306,10 +1346,10 @@
           
           <p><strong>Alternatives courantes :</strong></p>
           <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
-            <li><strong>Unless</strong> = if not �?"Unless you hurry, you'll be late."</li>
-            <li><strong>Provided/Providing that</strong> = à condition que �?"I'll help you provided that you ask nicely."</li>
-            <li><strong>As long as</strong> = tant que �?"You can stay as long as you're quiet."</li>
-            <li><strong>In case</strong> = au cas où (précaution) �?"Take an umbrella in case it rains."</li>
+            <li><strong>Unless</strong> = if not ?Unless you hurry, you'll be late."</li>
+            <li><strong>Provided/Providing that</strong> = à condition que ?I'll help you provided that you ask nicely."</li>
+            <li><strong>As long as</strong> = tant que ?You can stay as long as you're quiet."</li>
+            <li><strong>In case</strong> = au cas où (précaution) ?Take an umbrella in case it rains."</li>
           </ul>
         </div>
 
@@ -1317,9 +1357,9 @@
           <h3 class="conditional-title">💡 Erreurs Communes à Éviter</h3>
           
           <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
-            <li>�?"If I will see him..." �?�?"If I see him..." (interférence du français "si j'aurai")</li>
-            <li>�?"If I would be rich..." �?�?"If I were rich..."</li>
-            <li>�?"If I would have known..." �?�?"If I had known..."</li>
+            ?If I will see him..." ??"If I see him..." (interférence du français "si j'aurai")</li>
+            <li>?"If I would be rich..." ???"If I were rich..."</li>
+            <li>?"If I would have known..." ???"If I had known..."</li>
           </ul>
         </div>
 
@@ -1329,14 +1369,14 @@
           <p><strong>Dans un registre très formel :</strong></p>
           <div class="example-box">
             <strong>Inversion formelle :</strong><br>
-            �?"Had I known" au lieu de "If I had known"<br>
-            �?"Were I rich..." au lieu de "If I were rich..."<br>
-            �?"Should you see him..." au lieu de "If you should see him..."
+            ?"Had I known" au lieu de "If I had known"<br>
+            ?"Were I rich..." au lieu de "If I were rich..."<br>
+            ?"Should you see him..." au lieu de "If you should see him..."
           </div>
         </div>
         
-        <button class="section-complete-btn" id="complete-3" onclick="completeSection(3)" disabled>
-          <i class="fas fa-check"></i>
+        <button class="section-complete-btn" id="complete-3" onclick="showValidationQuiz(3)" disabled>
+          <i class="fas fa-lightbulb"></i>
           Maîtriser les Nuances
         </button>
         
@@ -1538,7 +1578,7 @@
 
         <details>
           <summary style="cursor: pointer; font-weight: bold; color: var(--color-primary); padding: var(--spacing-md); background: var(--color-surface-hover); border-radius: var(--border-radius-md);">
-            🗣�?Registres de Langue Avancés
+            🗣?Registres de Langue Avancés
           </summary>
           <div style="padding: var(--spacing-lg); margin-top: var(--spacing-md);">
             <p><strong>Comparaison des registres :</strong></p>
@@ -1550,7 +1590,7 @@
           </div>
         </details>
         
-        <button class="section-complete-btn" id="complete-5" onclick="completeSection(5)" disabled>
+        <button class="section-complete-btn" id="complete-5" onclick="showValidationQuiz(5)" disabled>
           <i class="fas fa-check"></i>
           Explorer le Contenu Avancé
         </button>
@@ -1627,14 +1667,14 @@
           <h4>🏆 Quiz de Certification</h4>
           <p><strong>🎯 Format :</strong> 20 questions sélectionnées parmi les 40 de la banque</p>
           <p><strong>⏱️ Temps :</strong> Pas de limite, prenez votre temps</p>
-          <p><strong>🎖�?Certification :</strong> 16/20 minimum pour valider le cours</p>
+          <p><strong>🎖?Certification :</strong> 16/20 minimum pour valider le cours</p>
           <p><strong>🏅 Excellence :</strong> 18/20 pour le titre de "Maître des Conditionnels"</p>
         </div>
         
         <div class="final-quiz-requirements">
           <h5><i class="fas fa-exclamation-triangle"></i> Conditions de Validation</h5>
           <ul>
-            <li>�?Toutes les sections précédentes doivent être complétées</li>
+            <li>?Toutes les sections précédentes doivent être complétées</li>
             <li>🎯 Score minimum : 16/20 (80%)</li>
             <li>🏆 Une seule tentative pour la certification officielle</li>
             <li>📜 Certificat de réussite délivré automatiquement</li>
@@ -1777,7 +1817,7 @@
 
     // Réponses correctes pour les quiz de validation
     const validationAnswers = {
-      1: [1, 1], // Section 1: 5 types, exprimer situations hypothétiques
+      1: [2, 1], // Section 1: 5 types, exprimer situations hypothétiques
       2: [0, 1, 1], // Section 2: Zero Conditional, Past Simple + would, Third Conditional
       3: [1, 1, 0], // Section 3: Unless = if not, erreur avec will, inversion formelle
       5: [1, 1] // Section 5: wish = Second Conditional, registre très formel
@@ -1787,50 +1827,50 @@
     const validationFeedbacks = {
       1: [
         {
-          correct: "�?Exact ! Nous étudions 5 types principaux de conditionnels.",
-          incorrect: "�?Non, nous étudions 5 types principaux : Zero, First, Second, Third et Mixed Conditional."
+          correct: "?Exact ! Nous étudions 5 types principaux de conditionnels.",
+          incorrect: "?Non, nous étudions 5 types principaux : Zero, First, Second, Third et Mixed Conditional."
         },
         {
-          correct: "�?Parfait ! Les conditionnels permettent d'exprimer des situations hypothétiques avec précision.",
-          incorrect: "�?L'objectif principal est d'exprimer des situations hypothétiques, des conséquences potentielles et des scénarios imaginaires."
+          correct: "?Parfait ! Les conditionnels permettent d'exprimer des situations hypothétiques avec précision.",
+          incorrect: "?L'objectif principal est d'exprimer des situations hypothétiques, des conséquences potentielles et des scénarios imaginaires."
         }
       ],
       2: [
         {
-          correct: "�?Correct ! Le Zero Conditional exprime des vérités générales et des lois scientifiques.",
-          incorrect: "�?Le Zero Conditional (If + Present Simple, Present Simple) exprime les vérités générales."
+          correct: "?Correct ! Le Zero Conditional exprime des vérités générales et des lois scientifiques.",
+          incorrect: "?Le Zero Conditional (If + Present Simple, Present Simple) exprime les vérités générales."
         },
         {
-          correct: "�?Excellent ! Le Second Conditional utilise If + Past Simple, would + base verbale.",
-          incorrect: "�?Le Second Conditional a la structure : If + Past Simple, would + base verbale."
+          correct: "?Excellent ! Le Second Conditional utilise If + Past Simple, would + base verbale.",
+          incorrect: "?Le Second Conditional a la structure : If + Past Simple, would + base verbale."
         },
         {
-          correct: "�?Parfait ! C'est un Third Conditional qui exprime un regret du passé.",
-          incorrect: "�?C'est un Third Conditional (If + Past Perfect, would have + participe passé) pour les regrets du passé."
+          correct: "?Parfait ! C'est un Third Conditional qui exprime un regret du passé.",
+          incorrect: "?C'est un Third Conditional (If + Past Perfect, would have + participe passé) pour les regrets du passé."
         }
       ],
       3: [
         {
-          correct: "�?Exact ! 'Unless' signifie 'if not', donc 'Unless you hurry' = 'If you don't hurry'.",
-          incorrect: "�?'Unless' signifie 'if not'. 'Unless you hurry' équivaut à 'If you don't hurry'."
+          correct: "?Exact ! 'Unless' signifie 'if not', donc 'Unless you hurry' = 'If you don't hurry'.",
+          incorrect: "?'Unless' signifie 'if not'. 'Unless you hurry' équivaut à 'If you don't hurry'."
         },
         {
-          correct: "�?Bien vu ! On ne dit jamais 'If I will see' - c'est une erreur très commune.",
-          incorrect: "�?'If I will see him' est incorrect. On ne met jamais 'will' après 'if' dans les conditionnels."
+          correct: "?Bien vu ! On ne dit jamais 'If I will see' - c'est une erreur très commune.",
+          incorrect: "?'If I will see him' est incorrect. On ne met jamais 'will' après 'if' dans les conditionnels."
         },
         {
-          correct: "�?Parfait ! L'inversion formelle donne 'Were I rich...' au lieu de 'If I were rich...'.",
-          incorrect: "�?Dans un registre formel, on utilise l'inversion : 'Were I rich...' au lieu de 'If I were rich...'."
+          correct: "?Parfait ! L'inversion formelle donne 'Were I rich...' au lieu de 'If I were rich...'.",
+          incorrect: "?Dans un registre formel, on utilise l'inversion : 'Were I rich...' au lieu de 'If I were rich...'."
         }
       ],
       5: [
         {
-          correct: "�?Correct ! 'I wish I had...' exprime un désir irréel, comme le Second Conditional.",
-          incorrect: "�?'I wish I had...' exprime un désir présent irréel, similaire au Second Conditional."
+          correct: "?Correct ! 'I wish I had...' exprime un désir irréel, comme le Second Conditional.",
+          incorrect: "?'I wish I had...' exprime un désir présent irréel, similaire au Second Conditional."
         },
         {
-          correct: "�?Exact ! 'Should you require...' est une forme très formelle et soutenue.",
-          incorrect: "�?'Should you require assistance...' est une forme très formelle, équivalant à 'If you need...'."
+          correct: "?Exact ! 'Should you require...' est une forme très formelle et soutenue.",
+          incorrect: "?'Should you require assistance...' est une forme très formelle, équivalant à 'If you need...'."
         }
       ]
     };
@@ -1990,7 +2030,7 @@
         id: 18,
         question: "Analysez ce Mixed Conditional :",
         sentence: "If I were more organized, I would have finished the project yesterday.",
-        options: ["Condition présente �?résultat passé", "Condition passée �?résultat présent", "Condition future �?résultat présent", "Condition présente �?résultat futur"],
+        options: ["Condition présente?résultat passé", "Condition passée?résultat présent", "Condition future?résultat présent", "Condition présente?résultat futur"],
         correct: 0,
         explanation: "Mixed Conditional : condition présente (were) avec résultat passé (would have finished)."
       },
@@ -2383,7 +2423,7 @@
       const percentage = Math.round((score / totalQuestions) * 100);
       const passed = score >= Math.ceil(totalQuestions * 0.7); // 70% minimum
       
-      scoreText.textContent = `Score: ${score}/${totalQuestions} (${percentage}%) - ${passed ? 'VALIDÉ �? : 'À REFAIRE �?}`;
+      scoreText.textContent = `Score: ${score}/${totalQuestions} (${percentage}%) - ${passed ? 'VALIDÉ? : 'À REFAIRE?'` : ''}`;
       scoreDiv.classList.add(passed ? 'success' : 'retry');
       scoreDiv.style.display = 'block';
       
@@ -2682,7 +2722,7 @@
           badgeIcon = '👑';
         } else if (score >= 7) {
           badgeClass = 'badge-good';
-          badgeText = `�?Bon Entraînement ! ${score}/${questions.length}`;
+          badgeText = `?Bon Entraînement ! ${score}/${questions.length}`;
           badgeIcon = '🎉';
         } else {
           badgeClass = 'badge-retry';
@@ -2696,7 +2736,7 @@
           badgeIcon = '👑';
         } else if (score >= 16) {
           badgeClass = 'badge-good';
-          badgeText = `�?COURS VALIDÉ ! ${score}/${questions.length}`;
+          badgeText = `?COURS VALIDÉ ! ${score}/${questions.length}`;
           badgeIcon = '🎉';
         } else {
           badgeClass = 'badge-retry';
@@ -2722,7 +2762,7 @@
           <div style="margin: 1rem 0; padding: 1rem; border-radius: 8px; background: ${isCorrect ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)'};">
             <strong>Q${index + 1}:</strong> ${question.sentence}<br>
             <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'};">
-              Votre réponse: ${userAnswerText} ${isCorrect ? '�? : '�?}
+              Votre réponse: ${userAnswerText} ${isCorrect ? '? : '?` : ''}
             </span><br>
             ${!isCorrect ? `<span style="color: #2ecc71;">Bonne réponse: ${correctAnswerText}</span><br>` : ''}
             <small style="color: #95a5a6;">${question.explanation}</small>
