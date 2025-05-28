@@ -288,15 +288,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             addLog('🚀 Initialisation du test...');
             
-            // Attendre que les scripts soient chargés
-            setTimeout(() => {
-                checkSystemStatus();
+            // Attendre que les scripts soient chargés avec plusieurs tentatives
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            const waitForScripts = () => {
+                attempts++;
                 
-                // Tester automatiquement l'interface après 2 secondes
-                setTimeout(() => {
-                    testRatingInterface();
-                }, 2000);
-            }, 1000);
+                if (window.SimpleRatingSystem && window.RatingSystemUpdater) {
+                    addLog('✅ Scripts chargés avec succès', 'success');
+                    checkSystemStatus();
+                    
+                    // Tester automatiquement l'interface après 2 secondes
+                    setTimeout(() => {
+                        testRatingInterface();
+                    }, 2000);
+                } else if (attempts < maxAttempts) {
+                    addLog(`🔄 Tentative ${attempts}/${maxAttempts} - Scripts en cours de chargement...`);
+                    setTimeout(waitForScripts, 1000);
+                } else {
+                    addLog('❌ Échec du chargement des scripts après 10 tentatives', 'error');
+                    checkSystemStatus();
+                }
+            };
+            
+            // Commencer à vérifier après 500ms
+            setTimeout(waitForScripts, 500);
         });
         
         // Écouter les événements du système de notation

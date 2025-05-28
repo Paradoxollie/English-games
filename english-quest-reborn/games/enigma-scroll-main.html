@@ -25,8 +25,8 @@
   <script type="module" src="../scripts/game-stats-service.js"></script>
   
   <!-- Nouveau système de notation simplifié -->
-  <script src="../scripts/simple-rating-system.js" defer></script>
-  <script src="../scripts/update-rating-system.js" defer></script>
+  <script src="../scripts/simple-rating-system.js"></script>
+  <script src="../scripts/update-rating-system.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -1018,7 +1018,13 @@
             </div>
           </div>
 
-          <!-- Panel de notation - SUPPRIMÉ car remplacé par endGameRating -->
+          <!-- Panel de notation - NOUVEAU SYSTÈME SIMPLIFIÉ -->
+          <div class="game-panel rating-panel">
+            <h2>Noter ce jeu</h2>
+            <div id="enigma-scroll-rating-container">
+              <!-- L'interface de notation sera ajoutée ici automatiquement -->
+            </div>
+          </div>
 
           <!-- Leaderboard panel -->
           <div class="game-panel leaderboard-panel">

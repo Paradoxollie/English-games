@@ -815,12 +815,71 @@ class SimpleRatingSystem {
 window.simpleRatingSystem = new SimpleRatingSystem();
 window.SimpleRatingSystem = window.simpleRatingSystem; // Alias avec majuscule pour compatibilité
 
+// Fonction d'initialisation automatique pour les jeux
+async function autoInitializeRatingSystem() {
+    try {
+        console.log('🌟 [SimpleRatingSystem] Initialisation automatique...');
+        
+        // Attendre que Firebase soit prêt
+        await window.simpleRatingSystem.init();
+        window.simpleRatingSystem.addStyles();
+        
+        // Détecter le jeu actuel depuis l'URL ou le titre
+        const currentPath = window.location.pathname;
+        let gameId = null;
+        let containerId = null;
+        
+        if (currentPath.includes('enigma-scroll')) {
+            gameId = 'enigma-scroll';
+            containerId = '#enigma-scroll-rating-container';
+        } else if (currentPath.includes('speed-verb-challenge')) {
+            gameId = 'speed-verb-challenge';
+            containerId = '#speed-verb-challenge-rating-container';
+        }
+        
+        // Si on a détecté un jeu, créer l'interface
+        if (gameId && containerId) {
+            console.log(`🎮 [SimpleRatingSystem] Jeu détecté: ${gameId}`);
+            
+            // Attendre que le conteneur soit disponible
+            const waitForContainer = () => {
+                return new Promise((resolve) => {
+                    const checkContainer = () => {
+                        const container = document.querySelector(containerId);
+                        if (container) {
+                            resolve(container);
+                        } else {
+                            setTimeout(checkContainer, 100);
+                        }
+                    };
+                    checkContainer();
+                });
+            };
+            
+            await waitForContainer();
+            console.log(`📦 [SimpleRatingSystem] Conteneur trouvé: ${containerId}`);
+            
+            // Créer l'interface de notation
+            window.simpleRatingSystem.createRatingInterface(gameId, containerId);
+            console.log(`✅ [SimpleRatingSystem] Interface créée pour ${gameId}`);
+        } else {
+            console.log('ℹ️ [SimpleRatingSystem] Aucun jeu détecté sur cette page');
+        }
+        
+        console.log('🌟 [SimpleRatingSystem] Système de notation simplifié prêt');
+        
+    } catch (error) {
+        console.error('❌ [SimpleRatingSystem] Erreur lors de l\'initialisation:', error);
+    }
+}
+
 // Initialiser automatiquement quand le DOM est prêt
-document.addEventListener('DOMContentLoaded', async () => {
-    await window.simpleRatingSystem.init();
-    window.simpleRatingSystem.addStyles();
-    console.log('🌟 Système de notation simplifié prêt');
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInitializeRatingSystem);
+} else {
+    // Le DOM est déjà prêt
+    autoInitializeRatingSystem();
+}
 
 // Exporter pour les modules
 if (typeof module !== 'undefined' && module.exports) {
