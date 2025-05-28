@@ -711,24 +711,395 @@
     
     @media (max-width: 768px) {
       .course-container {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
+        max-width: 100%;
+      }
+      
+      .course-header {
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
       }
       
       .course-title {
         font-size: 2rem;
+        line-height: 1.2;
+      }
+      
+      .course-subtitle {
+        font-size: 1rem;
       }
       
       .course-meta {
         flex-direction: column;
         align-items: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .meta-item {
+        font-size: 0.9rem;
       }
       
       .navigation-buttons {
         flex-direction: column;
+        gap: var(--spacing-sm);
       }
       
       .nav-btn {
         justify-content: center;
+        width: 100%;
+        padding: var(--spacing-md);
+      }
+      
+      /* Sections du cours */
+      .course-section {
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .section-title {
+        font-size: 1.4rem;
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .section-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      /* Types de conditionnels */
+      .conditional-type {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .conditional-title {
+        font-size: 1.2rem;
+      }
+      
+      .structure-box, .example-box, .note-box {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+        overflow-x: auto;
+      }
+      
+      /* Quiz et exercices */
+      .interactive-exercise {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md) 0;
+      }
+      
+      .exercise-title {
+        font-size: 1.2rem;
+      }
+      
+      .quiz-controls {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .quiz-btn {
+        width: 100%;
+        margin: 0;
+        padding: var(--spacing-md);
+        font-size: 1rem;
+      }
+      
+      .quiz-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+      }
+      
+      .quiz-score {
+        font-size: 1rem;
+      }
+      
+      /* Questions du quiz */
+      .quiz-question {
+        padding: var(--spacing-md);
+      }
+      
+      .quiz-question h4 {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+      
+      .quiz-options {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+      }
+      
+      .quiz-option {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+        text-align: left;
+      }
+      
+      /* Quiz de validation */
+      .section-validation-quiz {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md) 0;
+      }
+      
+      .validation-quiz-title {
+        font-size: 1.1rem;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+      }
+      
+      .validation-question {
+        padding: var(--spacing-md);
+      }
+      
+      .validation-question-text {
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+      
+      .validation-options {
+        gap: var(--spacing-xs);
+      }
+      
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+        line-height: 1.3;
+      }
+      
+      /* Quiz final */
+      .final-quiz-section {
+        padding: var(--spacing-lg);
+      }
+      
+      .final-quiz-title {
+        font-size: 1.5rem;
+        line-height: 1.2;
+      }
+      
+      .quiz-info-final {
+        padding: var(--spacing-lg);
+      }
+      
+      .quiz-info-final h4 {
+        font-size: 1.1rem;
+      }
+      
+      .final-quiz-requirements {
+        padding: var(--spacing-md);
+      }
+      
+      /* Boutons de section */
+      .section-complete-btn {
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: 1rem;
+        justify-content: center;
+      }
+      
+      /* Badge de completion */
+      .course-completion-badge {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-lg) 0;
+      }
+      
+      .course-completion-badge h3 {
+        font-size: 1.5rem;
+      }
+      
+      /* Feedback des quiz */
+      .quiz-feedback {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+      
+      .validation-feedback {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+      }
+      
+      /* Barre de progression */
+      .game-progress-bar {
+        height: 15px;
+        margin: var(--spacing-md) 0;
+      }
+      
+      .game-progress-text {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Media queries pour très petits écrans (smartphones en portrait) */
+    @media (max-width: 480px) {
+      .course-container {
+        padding: var(--spacing-xs);
+      }
+      
+      .course-header {
+        padding: var(--spacing-md);
+      }
+      
+      .course-title {
+        font-size: 1.6rem;
+      }
+      
+      .course-subtitle {
+        font-size: 0.9rem;
+      }
+      
+      .section-title {
+        font-size: 1.2rem;
+      }
+      
+      .conditional-title {
+        font-size: 1.1rem;
+      }
+      
+      .structure-box, .example-box, .note-box {
+        font-size: 0.8rem;
+        padding: var(--spacing-xs);
+      }
+      
+      .quiz-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.9rem;
+      }
+      
+      .validation-option {
+        padding: var(--spacing-xs);
+        font-size: 0.8rem;
+      }
+      
+      .final-quiz-title {
+        font-size: 1.3rem;
+      }
+      
+      .course-completion-badge h3 {
+        font-size: 1.3rem;
+      }
+      
+      /* Réduire les marges pour économiser l'espace */
+      .course-section {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+      }
+      
+      .interactive-exercise {
+        padding: var(--spacing-md);
+      }
+      
+      .section-validation-quiz {
+        padding: var(--spacing-md);
+      }
+      
+      .final-quiz-section {
+        padding: var(--spacing-md);
+      }
+    }
+
+    /* Media queries pour tablettes en portrait */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .course-container {
+        padding: var(--spacing-lg);
+        max-width: 900px;
+      }
+      
+      .course-title {
+        font-size: 2.5rem;
+      }
+      
+      .quiz-options {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+      }
+      
+      .validation-options {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+      }
+      
+      .quiz-controls {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: var(--spacing-md);
+      }
+      
+      .quiz-btn {
+        width: auto;
+        min-width: 150px;
+      }
+    }
+
+    /* Améliorations pour l'accessibilité mobile */
+    @media (max-width: 768px) {
+      /* Augmenter la taille des zones cliquables */
+      .quiz-option, .validation-option {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .quiz-btn, .section-complete-btn {
+        min-height: 44px;
+      }
+      
+      /* Améliorer la lisibilité */
+      .structure-box {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      
+      /* Optimiser les animations pour mobile */
+      .course-section.current {
+        animation: none;
+        border-color: rgba(46, 204, 113, 0.5);
+        box-shadow: 0 4px 16px rgba(46, 204, 113, 0.2);
+      }
+      
+      /* Réduire les effets de hover sur mobile */
+      .conditional-type:hover {
+        transform: none;
+      }
+      
+      .validation-option:hover {
+        transform: none;
+      }
+      
+      .quiz-btn:hover, .section-complete-btn:hover {
+        transform: none;
+      }
+    }
+
+    /* Mode paysage pour smartphones */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .course-header {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+      }
+      
+      .course-title {
+        font-size: 1.8rem;
+      }
+      
+      .quiz-options {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-sm);
+      }
+      
+      .quiz-controls {
+        flex-direction: row;
+        justify-content: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .quiz-btn {
+        width: auto;
+        min-width: 120px;
+        padding: var(--spacing-sm) var(--spacing-md);
       }
     }
 
