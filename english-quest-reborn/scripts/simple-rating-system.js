@@ -813,6 +813,7 @@ class SimpleRatingSystem {
 
 // Créer une instance globale
 window.simpleRatingSystem = new SimpleRatingSystem();
+window.SimpleRatingSystem = window.simpleRatingSystem; // Alias avec majuscule pour compatibilité
 
 // Initialiser automatiquement quand le DOM est prêt
 document.addEventListener('DOMContentLoaded', async () => {

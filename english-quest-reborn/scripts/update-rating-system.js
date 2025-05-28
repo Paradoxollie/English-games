@@ -262,6 +262,7 @@ class RatingSystemUpdater {
 
 // Créer une instance globale
 window.ratingSystemUpdater = new RatingSystemUpdater();
+window.RatingSystemUpdater = window.ratingSystemUpdater; // Alias avec majuscule pour compatibilité
 
 // Initialiser automatiquement
 document.addEventListener('DOMContentLoaded', async () => {
