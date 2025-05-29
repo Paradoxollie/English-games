@@ -1425,15 +1425,11 @@
       }
 
       .nav-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
         padding: 1rem;
         border-radius: var(--border-radius-md);
         background: var(--color-surface);
         transition: all var(--transition-normal);
-        font-size: 1.1rem;
-        min-height: 44px;
       }
 
       .nav-link:hover {
@@ -1441,105 +1437,13 @@
         transform: translateY(-2px);
       }
 
-      /* Afficher les éléments mobile */
+      /* Afficher les éléments mobile uniquement sur mobile */
       .mobile-only {
-        display: block;
-      }
-
-      /* Cacher les boutons desktop en mobile */
-      .user-menu .btn-login {
-        display: none;
-      }
-
-      /* Conserver seulement le menu toggle */
-      .user-menu {
-        gap: 0;
+        display: block !important;
       }
 
       .header-container {
         padding: 0 0.5rem;
-      }
-
-      .logo {
-        font-size: 1.5rem;
-      }
-
-      /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
-      .course-container {
-        padding: var(--spacing-md);
-      }
-
-      .course-title {
-        font-size: 2.5rem;
-      }
-
-      .course-subtitle {
-        font-size: 1rem;
-      }
-
-      .course-meta {
-        flex-direction: column;
-        gap: var(--spacing-md);
-      }
-
-      .section-title {
-        font-size: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-sm);
-        text-align: left;
-      }
-
-      .section-number {
-        align-self: flex-start;
-      }
-
-      .course-section {
-        padding: var(--spacing-lg);
-      }
-
-      .conditional-type {
-        margin-bottom: var(--spacing-lg);
-      }
-
-      .structure-box,
-      .example-box,
-      .note-box {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
-      }
-
-      .validation-options {
-        gap: var(--spacing-sm);
-      }
-
-      .validation-option {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
-      }
-
-      .section-complete-btn,
-      .validation-btn {
-        width: 100%;
-        padding: var(--spacing-md);
-        font-size: 1rem;
-      }
-
-      .quiz-container {
-        padding: var(--spacing-md);
-      }
-
-      .quiz-question {
-        font-size: 1rem;
-      }
-
-      .quiz-options {
-        gap: var(--spacing-sm);
-      }
-
-      .quiz-option {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
       }
     }
 
@@ -1723,6 +1627,84 @@
 
     .logo {
       font-size: 1.5rem;
+    }
+
+    /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
+    .course-container {
+      padding: var(--spacing-md);
+    }
+
+    .course-title {
+      font-size: 2.5rem;
+    }
+
+    .course-subtitle {
+      font-size: 1rem;
+    }
+
+    .course-meta {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      text-align: left;
+    }
+
+    .section-number {
+      align-self: flex-start;
+    }
+
+    .course-section {
+      padding: var(--spacing-lg);
+    }
+
+    .conditional-type {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .structure-box,
+    .example-box,
+    .note-box {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    .validation-options {
+      gap: var(--spacing-sm);
+    }
+
+    .validation-option {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    .section-complete-btn,
+    .validation-btn {
+      width: 100%;
+      padding: var(--spacing-md);
+      font-size: 1rem;
+    }
+
+    .quiz-container {
+      padding: var(--spacing-md);
+    }
+
+    .quiz-question {
+      font-size: 1rem;
+    }
+
+    .quiz-options {
+      gap: var(--spacing-sm);
+    }
+
+    .quiz-option {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -4300,12 +4282,6 @@
   <script type="module" src="../scripts/auth-service.js"></script>
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
-  
-  <!-- Désactiver la fonction initMobileMenu de new-design.js pour éviter les conflits -->
-  <script>
-    window.disableNewDesignMobileMenu = true;
-  </script>
-  <script src="../scripts/new-design.js"></script>
   
   <!-- Gestion universelle du menu mobile et synchronisation auth -->
   <script src="../scripts/universal-mobile-auth.js" defer></script>

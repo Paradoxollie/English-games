@@ -324,12 +324,40 @@ class UniversalMobileAuth {
       return true;
     }
 
-    this.log('Démarrage de l\'initialisation...');
+    this.log('🚀 DÉMARRAGE INITIALISATION UNIVERSELLE...');
+    
+    // Forcer l'affichage d'un message visible pour debug
+    const debugDiv = document.createElement('div');
+    debugDiv.style.cssText = `
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: red;
+      color: white;
+      padding: 5px;
+      z-index: 99999;
+      font-size: 12px;
+    `;
+    debugDiv.textContent = '🔧 UniversalMobileAuth ACTIF';
+    document.body.appendChild(debugDiv);
     
     // Attendre un peu que la page soit prête
     await new Promise(resolve => setTimeout(resolve, 100));
     
-    return await this.attemptInit();
+    const result = await this.attemptInit();
+    
+    // Mettre à jour le debug
+    debugDiv.textContent = result ? '✅ UniversalMobileAuth OK' : '❌ UniversalMobileAuth ERREUR';
+    debugDiv.style.background = result ? 'green' : 'red';
+    
+    // Enlever le debug après 5 secondes
+    setTimeout(() => {
+      if (debugDiv.parentNode) {
+        debugDiv.parentNode.removeChild(debugDiv);
+      }
+    }, 5000);
+    
+    return result;
   }
 
   // Nettoyage
