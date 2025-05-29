@@ -1373,163 +1373,96 @@
     /* Styles pour le menu mobile */
     .menu-toggle {
       display: none;
-      flex-direction: column;
-      justify-content: space-around;
-      width: 30px;
-      height: 30px;
-      background: transparent;
+      background: none;
       border: none;
+      color: var(--color-text-primary);
+      font-size: 1.5rem;
       cursor: pointer;
-      padding: 0;
-      z-index: 10;
+      padding: 0.5rem;
+      transition: color var(--transition-normal);
     }
 
-    .menu-toggle span {
-      width: 25px;
-      height: 3px;
-      background: var(--color-primary);
-      border-radius: 3px;
-      transition: all 0.3s linear;
-      position: relative;
-      transform-origin: 1px;
+    .menu-toggle:hover {
+      color: var(--color-primary);
     }
 
-    .menu-toggle.active span:first-child {
-      transform: rotate(45deg);
-    }
-
-    .menu-toggle.active span:nth-child(2) {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-
-    .menu-toggle.active span:nth-child(3) {
-      transform: rotate(-45deg);
+    /* Éléments mobile uniquement */
+    .mobile-only {
+      display: none;
     }
 
     /* Media queries pour le menu mobile */
     @media (max-width: 768px) {
       .menu-toggle {
-        display: flex;
+        display: block;
       }
 
       .nav {
-        position: fixed;
-        top: 80px;
-        left: -100%;
-        width: 100%;
-        height: calc(100vh - 80px);
-        background: var(--color-background);
-        transition: left 0.3s ease;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(18, 18, 18, 0.98);
+        border-top: 1px solid rgba(46, 204, 113, 0.2);
+        padding: 1rem;
+        transform: translateY(-10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-normal);
         z-index: 999;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .nav.active {
-        left: 0;
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
       }
 
       .nav-list {
         flex-direction: column;
-        padding: var(--spacing-xl);
-        gap: var(--spacing-lg);
-        height: 100%;
-        justify-content: flex-start;
+        gap: 1rem;
+        text-align: center;
       }
 
       .nav-link {
-        font-size: 1.2rem;
-        padding: var(--spacing-md) 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        width: 100%;
-        text-align: left;
+        display: block;
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        background: var(--color-surface);
+        transition: all var(--transition-normal);
+        font-size: 1.1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
+      .nav-link:hover {
+        background: var(--color-surface-hover);
+        transform: translateY(-2px);
+      }
+
+      /* Afficher les éléments mobile */
+      .mobile-only {
+        display: block;
+      }
+
+      /* Cacher les boutons desktop en mobile */
+      .user-menu .btn-login {
+        display: none;
+      }
+
+      /* Conserver seulement le menu toggle */
       .user-menu {
-        gap: var(--spacing-sm);
+        gap: 0;
       }
 
-      .btn-login {
-        font-size: 0.9rem;
-        padding: var(--spacing-sm) var(--spacing-md);
+      .header-container {
+        padding: 0 0.5rem;
       }
 
-      /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
-      .course-container {
-        padding: var(--spacing-md);
-      }
-
-      .course-title {
-        font-size: 2.5rem;
-      }
-
-      .course-subtitle {
-        font-size: 1rem;
-      }
-
-      .course-meta {
-        flex-direction: column;
-        gap: var(--spacing-md);
-      }
-
-      .section-title {
+      .logo {
         font-size: 1.5rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-sm);
-        text-align: left;
-      }
-
-      .section-number {
-        align-self: flex-start;
-      }
-
-      .course-section {
-        padding: var(--spacing-lg);
-      }
-
-      .conditional-type {
-        margin-bottom: var(--spacing-lg);
-      }
-
-      .structure-box,
-      .example-box,
-      .note-box {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
-      }
-
-      .validation-options {
-        gap: var(--spacing-sm);
-      }
-
-      .validation-option {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
-      }
-
-      .section-complete-btn,
-      .validation-btn {
-        width: 100%;
-        padding: var(--spacing-md);
-        font-size: 1rem;
-      }
-
-      .quiz-container {
-        padding: var(--spacing-md);
-      }
-
-      .quiz-question {
-        font-size: 1rem;
-      }
-
-      .quiz-options {
-        gap: var(--spacing-sm);
-      }
-
-      .quiz-option {
-        padding: var(--spacing-md);
-        font-size: 0.9rem;
       }
     }
 
@@ -1693,6 +1626,172 @@
         font-size: 1.3rem;
       }
     }
+
+    .logo {
+      font-size: 1.5rem;
+    }
+
+    /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
+    .course-container {
+      padding: var(--spacing-md);
+    }
+
+    .course-title {
+      font-size: 2.5rem;
+    }
+
+    .course-subtitle {
+      font-size: 1rem;
+    }
+
+    .course-meta {
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-sm);
+      text-align: left;
+    }
+
+    .section-number {
+      align-self: flex-start;
+    }
+
+    .course-section {
+      padding: var(--spacing-lg);
+    }
+
+    .conditional-type {
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .structure-box,
+    .example-box,
+    .note-box {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    .validation-options {
+      gap: var(--spacing-sm);
+    }
+
+    .validation-option {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    .section-complete-btn,
+    .validation-btn {
+      width: 100%;
+      padding: var(--spacing-md);
+      font-size: 1rem;
+    }
+
+    .quiz-container {
+      padding: var(--spacing-md);
+    }
+
+    .quiz-question {
+      font-size: 1rem;
+    }
+
+    .quiz-options {
+      gap: var(--spacing-sm);
+    }
+
+    .quiz-option {
+      padding: var(--spacing-md);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 769px) {
+      /* Cacher les éléments mobile sur desktop */
+      .mobile-only {
+        display: none !important;
+      }
+
+      .nav {
+        display: flex !important;
+        position: static;
+        background: none;
+        border: none;
+        padding: 0;
+        transform: none;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .menu-toggle {
+        display: none;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .header-container {
+        padding: 0 var(--spacing-md);
+      }
+
+      .logo {
+        font-size: 1.3rem;
+      }
+
+      .menu-toggle {
+        width: 25px;
+        height: 25px;
+      }
+
+      /* MOBILE TRÈS PETIT */
+      .course-container {
+        padding: var(--spacing-sm);
+      }
+
+      .course-title {
+        font-size: 2rem;
+      }
+
+      .course-header {
+        padding: var(--spacing-lg);
+      }
+
+      .section-title {
+        font-size: 1.3rem;
+      }
+
+      .section-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      .course-section {
+        padding: var(--spacing-md);
+      }
+
+      .conditional-title {
+        font-size: 1.1rem;
+      }
+
+      .structure-box,
+      .example-box,
+      .note-box {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+      }
+
+      .validation-question-text {
+        font-size: 0.9rem;
+      }
+
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1708,6 +1807,10 @@
           <li><a href="../courses.html" class="nav-link active">Cours</a></li>
           <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+          <!-- Éléments user-menu intégrés dans la navigation mobile -->
+          <li class="mobile-only"><a href="../login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="../profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">Déconnexion</a></li>
         </ul>
       </nav>
 
@@ -4275,77 +4378,157 @@
   <!-- JavaScript pour le menu mobile -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Attendre un peu pour s'assurer que new-design.js est chargé
-      setTimeout(() => {
-        const menuToggle = document.getElementById('menuToggle');
-        const nav = document.querySelector('.nav');
-        const navLinks = document.querySelectorAll('.nav-link');
+      // Menu mobile avec gestion complète
+      const menuToggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.nav');
+      const navLinks = document.querySelectorAll('.nav-link');
 
-        // Vérifier si les éléments existent
-        if (!menuToggle || !nav) {
-          console.warn('Menu mobile: éléments non trouvés');
-          return;
-        }
+      if (menuToggle && nav) {
+        console.log('🍔 Menu mobile initialisé');
 
-        // Supprimer les anciens event listeners pour éviter les conflits
-        const newMenuToggle = menuToggle.cloneNode(true);
-        menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
-
-        // Toggle du menu mobile avec une approche robuste
-        newMenuToggle.addEventListener('click', function(e) {
+        // Toggle du menu mobile
+        menuToggle.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
           
-          console.log('Menu toggle clicked');
-          
-          // Toggle des classes
-          newMenuToggle.classList.toggle('active');
+          menuToggle.classList.toggle('active');
           nav.classList.toggle('active');
           
-          // Gestion du scroll du body
           if (nav.classList.contains('active')) {
             document.body.style.overflow = 'hidden';
-            console.log('Menu ouvert');
+            console.log('📱 Menu ouvert');
           } else {
             document.body.style.overflow = 'auto';
-            console.log('Menu fermé');
+            console.log('📱 Menu fermé');
           }
         });
 
-        // Fermer le menu quand on clique sur un lien
+        // Fermer le menu sur clic de lien
         navLinks.forEach(link => {
           link.addEventListener('click', function() {
-            if (newMenuToggle && nav) {
-              newMenuToggle.classList.remove('active');
-              nav.classList.remove('active');
-              document.body.style.overflow = 'auto';
+            menuToggle.classList.remove('active');
+            nav.classList.remove('active');
+            document.body.style.overflow = 'auto';
+          });
+        });
+
+        // Fermer le menu sur clic en dehors
+        document.addEventListener('click', function(event) {
+          if (!menuToggle.contains(event.target) && 
+              !nav.contains(event.target) && 
+              nav.classList.contains('active')) {
+            menuToggle.classList.remove('active');
+            nav.classList.remove('active');
+            document.body.style.overflow = 'auto';
+          }
+        });
+
+        // Fermer le menu au redimensionnement
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 768) {
+            menuToggle.classList.remove('active');
+            nav.classList.remove('active');
+            document.body.style.overflow = 'auto';
+          }
+        });
+      }
+
+      // Synchronisation des boutons de connexion/déconnexion mobile et desktop
+      function syncAuthButtons() {
+        const loginButton = document.getElementById('loginButton');
+        const profileButton = document.getElementById('profileButton');
+        const mobileLoginButton = document.getElementById('mobileLoginButton');
+        const mobileProfileButton = document.getElementById('mobileProfileButton');
+        const mobileLogoutButton = document.getElementById('mobileLogoutButton');
+
+        // Observer les changements sur les boutons desktop
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+              // Synchroniser l'état de connexion
+              if (loginButton && mobileLoginButton) {
+                const isLoginVisible = loginButton.style.display !== 'none';
+                mobileLoginButton.style.display = isLoginVisible ? 'block' : 'none';
+                mobileLoginButton.parentElement.style.display = isLoginVisible ? 'block' : 'none';
+              }
+
+              if (profileButton && mobileProfileButton) {
+                const isProfileVisible = profileButton.style.display !== 'none';
+                mobileProfileButton.style.display = isProfileVisible ? 'block' : 'none';
+                mobileProfileButton.parentElement.style.display = isProfileVisible ? 'block' : 'none';
+              }
+
+              // Afficher/cacher le bouton de déconnexion mobile
+              if (mobileLogoutButton) {
+                const isUserConnected = profileButton && profileButton.style.display !== 'none';
+                mobileLogoutButton.style.display = isUserConnected ? 'block' : 'none';
+                mobileLogoutButton.parentElement.style.display = isUserConnected ? 'block' : 'none';
+              }
             }
           });
         });
 
-        // Fermer le menu quand on clique en dehors
-        document.addEventListener('click', function(event) {
-          if (newMenuToggle && nav && 
-              !newMenuToggle.contains(event.target) && 
-              !nav.contains(event.target) && 
-              nav.classList.contains('active')) {
-            newMenuToggle.classList.remove('active');
-            nav.classList.remove('active');
-            document.body.style.overflow = 'auto';
-          }
-        });
+        // Observer les changements sur les boutons desktop
+        if (loginButton) observer.observe(loginButton, { attributes: true });
+        if (profileButton) observer.observe(profileButton, { attributes: true });
 
-        // Fermer le menu lors du redimensionnement de la fenêtre
-        window.addEventListener('resize', function() {
-          if (window.innerWidth > 768 && newMenuToggle && nav) {
-            newMenuToggle.classList.remove('active');
-            nav.classList.remove('active');
-            document.body.style.overflow = 'auto';
+        // Synchronisation initiale
+        setTimeout(() => {
+          if (loginButton && mobileLoginButton) {
+            const isLoginVisible = loginButton.style.display !== 'none';
+            mobileLoginButton.style.display = isLoginVisible ? 'block' : 'none';
+            mobileLoginButton.parentElement.style.display = isLoginVisible ? 'block' : 'none';
           }
-        });
 
-        console.log('Menu mobile initialisé avec succès');
-      }, 100);
+          if (profileButton && mobileProfileButton) {
+            const isProfileVisible = profileButton.style.display !== 'none';
+            mobileProfileButton.style.display = isProfileVisible ? 'block' : 'none';
+            mobileProfileButton.parentElement.style.display = isProfileVisible ? 'block' : 'none';
+          }
+
+          if (mobileLogoutButton) {
+            const isUserConnected = profileButton && profileButton.style.display !== 'none';
+            mobileLogoutButton.style.display = isUserConnected ? 'block' : 'none';
+            mobileLogoutButton.parentElement.style.display = isUserConnected ? 'block' : 'none';
+          }
+        }, 1000);
+
+        // Gestion du clic sur le bouton de déconnexion mobile
+        if (mobileLogoutButton) {
+          mobileLogoutButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (window.authService && typeof window.authService.logout === 'function') {
+              window.authService.logout();
+              console.log('🚪 Déconnexion via menu mobile');
+              
+              // Fermer le menu mobile
+              if (menuToggle && nav) {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('active');
+                document.body.style.overflow = 'auto';
+              }
+              
+              // Rediriger vers l'accueil après déconnexion
+              setTimeout(() => {
+                window.location.href = '../index.html';
+              }, 500);
+            } else {
+              console.warn('⚠️ Service d\'authentification non disponible');
+              // Fallback : supprimer manuellement les données de connexion
+              localStorage.removeItem('english_quest_current_user');
+              localStorage.removeItem('currentUser');
+              localStorage.removeItem('englishQuestUserId');
+              window.location.href = '../index.html';
+            }
+          });
+        }
+      }
+
+      // Initialiser la synchronisation après un délai pour s'assurer que auth-header.js est chargé
+      setTimeout(syncAuthButtons, 1500);
+
+      console.log('🍔 Menu burger du cours complètement initialisé avec synchronisation auth');
     });
   </script>
 
