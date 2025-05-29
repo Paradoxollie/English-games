@@ -4283,6 +4283,12 @@
   <script type="module" src="../scripts/auth-header.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
   
+  <!-- Désactiver le menu mobile de new-design.js pour éviter les conflits -->
+  <script>
+    window.disableNewDesignMobileMenu = true;
+  </script>
+  <script src="../scripts/new-design.js"></script>
+  
   <!-- Gestion universelle du menu mobile et synchronisation auth -->
   <script src="../scripts/universal-mobile-auth.js" defer></script>
 

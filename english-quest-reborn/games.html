@@ -229,10 +229,20 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="scripts/new-design.js"></script>
+  <!-- Scripts d'authentification -->
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>
+
+  <!-- Désactiver le menu mobile de new-design.js pour utiliser le système universel -->
+  <script>
+    window.disableNewDesignMobileMenu = true;
+  </script>
+  <script src="scripts/new-design.js"></script>
+  
+  <!-- Gestion universelle du menu mobile et synchronisation auth -->
+  <script src="scripts/universal-mobile-auth.js" defer></script>
+
+  <!-- Scripts -->
   <script src="scripts/debug.js"></script>
   
   <!-- Firebase et statistiques -->
@@ -483,8 +493,5 @@
   <!-- Nouveau système de notation simplifié -->
   <script src="scripts/simple-rating-system.js" defer></script>
   <script src="scripts/update-rating-system.js" defer></script>
-  
-  <!-- Gestion universelle du menu mobile et synchronisation auth -->
-  <script src="scripts/universal-mobile-auth.js" defer></script>
 </body>
 </html>
