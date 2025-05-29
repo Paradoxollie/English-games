@@ -7,28 +7,108 @@
 class UniversalMobileAuth {
   constructor() {
     this.isInitialized = false;
-    this.debug = true;
-    this.syncInterval = null;
     this.retryCount = 0;
     this.maxRetries = 10;
+    this.syncInterval = null;
+    this.elements = {};
+    this.observer = null;
+    
+    // Injecter les styles CSS manquants
+    this.injectRequiredStyles();
   }
 
   log(message, type = 'info') {
-    if (!this.debug) return;
-    const prefix = '🔗 [UniversalMobileAuth]';
-    switch (type) {
-      case 'error':
-        console.error(`${prefix} ❌`, message);
-        break;
-      case 'warn':
-        console.warn(`${prefix} ⚠️`, message);
-        break;
-      case 'success':
-        console.log(`${prefix} ✅`, message);
-        break;
-      default:
-        console.log(`${prefix}`, message);
-    }
+    const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+    console.log(`${prefix} [UniversalMobileAuth] ${message}`);
+  }
+
+  // Injecter les styles CSS critiques pour le menu mobile
+  injectRequiredStyles() {
+    const style = document.createElement('style');
+    style.id = 'universal-mobile-auth-styles';
+    style.textContent = `
+      /* Forcer la logique mobile/desktop pour les boutons d'authentification */
+      @media (min-width: 769px) {
+        .mobile-only {
+          display: none !important;
+        }
+        .menu-toggle {
+          display: none !important;
+        }
+        .nav {
+          display: flex !important;
+          position: static !important;
+          background: none !important;
+          border: none !important;
+          padding: 0 !important;
+          transform: none !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        /* Cacher les boutons desktop sur mobile */
+        .user-menu .btn-login {
+          display: none !important;
+        }
+        
+        /* Afficher les boutons mobile */
+        .mobile-only {
+          display: block !important;
+        }
+        
+        /* Menu toggle visible */
+        .menu-toggle {
+          display: block !important;
+        }
+        
+        /* Menu mobile fermé par défaut */
+        .nav {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: rgba(18, 18, 18, 0.98);
+          border-top: 1px solid rgba(46, 204, 113, 0.2);
+          padding: 1rem;
+          z-index: 999;
+        }
+        
+        /* Menu mobile ouvert */
+        .nav.active {
+          display: block !important;
+        }
+        
+        /* Navigation mobile */
+        .nav-list {
+          flex-direction: column !important;
+          gap: 1rem !important;
+          text-align: center !important;
+        }
+        
+        .nav-link {
+          display: block !important;
+          padding: 1rem !important;
+          border-radius: 0.5rem !important;
+          background: #1e1e1e !important;
+          transition: all 0.3s ease !important;
+          color: rgba(255, 255, 255, 0.7) !important;
+          text-decoration: none !important;
+        }
+        
+        .nav-link:hover {
+          background: #2a2a2a !important;
+          color: #2ecc71 !important;
+          transform: translateY(-2px) !important;
+        }
+      }
+    `;
+    
+    // Injecter les styles dans le head
+    document.head.appendChild(style);
+    this.log('Styles CSS injectés', 'success');
   }
 
   // Détecter les éléments nécessaires
@@ -116,79 +196,61 @@ class UniversalMobileAuth {
     }
   }
 
-  // Initialiser le menu mobile
+  // Initialiser le menu mobile avec gestion forcée
   initMobileMenu() {
-    const detection = this.detectElements();
+    const menuToggle = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('.nav');
     
-    if (!detection.hasMenuSystem) {
-      this.log('Système de menu non détecté', 'warn');
+    if (!menuToggle || !nav) {
+      this.log('Éléments menu toggle ou nav introuvables', 'warning');
       return false;
     }
 
-    const { elements } = detection;
-
-    try {
-      // Toggle du menu mobile
-      elements.menuToggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        this.log('Toggle menu clicked');
-        
-        elements.menuToggle.classList.toggle('active');
-        elements.nav.classList.toggle('active');
-        
-        if (elements.nav.classList.contains('active')) {
-          document.body.style.overflow = 'hidden';
-          this.log('Menu ouvert');
-        } else {
-          document.body.style.overflow = 'auto';
-          this.log('Menu fermé');
-        }
+    // Forcer l'état initial du menu (fermé)
+    nav.classList.remove('active');
+    
+    // Nettoyer les anciens event listeners
+    const newMenuToggle = menuToggle.cloneNode(true);
+    menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+    
+    // Ajouter le nouveau event listener
+    newMenuToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      this.log('Burger menu cliqué !', 'success');
+      
+      // Toggle avec force brute
+      if (nav.classList.contains('active')) {
+        nav.classList.remove('active');
+        nav.style.display = 'none';
+        this.log('Menu fermé', 'success');
+      } else {
+        nav.classList.add('active');
+        nav.style.display = 'block';
+        this.log('Menu ouvert', 'success');
+      }
+    });
+    
+    // Fermer le menu si on clique ailleurs
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target) && !newMenuToggle.contains(e.target)) {
+        nav.classList.remove('active');
+        nav.style.display = 'none';
+      }
+    });
+    
+    // Fermer le menu sur les liens internes
+    const navLinks = nav.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        nav.classList.remove('active');
+        nav.style.display = 'none';
       });
-
-      // Fermer le menu sur clic de lien
-      const navLinks = elements.nav.querySelectorAll('.nav-link');
-      navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          this.log('Lien cliqué, fermeture menu');
-          this.closeMenu();
-        });
-      });
-
-      // Fermer le menu sur clic en dehors
-      document.addEventListener('click', (event) => {
-        if (!elements.menuToggle.contains(event.target) && 
-            !elements.nav.contains(event.target) && 
-            elements.nav.classList.contains('active')) {
-          this.log('Clic extérieur, fermeture menu');
-          this.closeMenu();
-        }
-      });
-
-      // Fermer le menu au redimensionnement
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-          this.closeMenu();
-        }
-      });
-
-      this.log('Menu mobile initialisé', 'success');
-      return true;
-    } catch (error) {
-      this.log(`Erreur initialisation menu: ${error.message}`, 'error');
-      return false;
-    }
-  }
-
-  // Fermer le menu
-  closeMenu() {
-    const elements = this.detectElements().elements;
-    if (elements.menuToggle && elements.nav) {
-      elements.menuToggle.classList.remove('active');
-      elements.nav.classList.remove('active');
-      document.body.style.overflow = 'auto';
-    }
+    });
+    
+    this.log('Menu mobile initialisé avec succès', 'success');
+    return true;
   }
 
   // Configurer la déconnexion
