@@ -148,95 +148,125 @@ class UniversalMobileAuth {
     const detection = this.detectElements();
     
     if (!detection.hasDesktopButtons || !detection.hasMobileButtons) {
-      this.log('Éléments manquants pour la synchronisation', 'warn');
+      this.log('❌ Éléments manquants pour la synchronisation', 'warn');
+      this.log(`Desktop: ${detection.hasDesktopButtons}, Mobile: ${detection.hasMobileButtons}`, 'warn');
       return false;
     }
 
     const { elements } = detection;
 
     try {
-      // Détecter l'état d'authentification de manière plus robuste
+      // Détecter l'état d'authentification avec plusieurs méthodes
       let isUserConnected = false;
       let detectionMethod = 'none';
       
-      // Méthode 1: Vérifier via les classes/styles des boutons desktop
-      if (elements.profileButton && elements.loginButton) {
-        const profileVisible = elements.profileButton.style.display !== 'none' && 
-                              !elements.profileButton.hasAttribute('hidden') &&
-                              elements.profileButton.offsetParent !== null;
-        const loginVisible = elements.loginButton.style.display !== 'none' && 
-                             !elements.loginButton.hasAttribute('hidden') &&
-                             elements.loginButton.offsetParent !== null;
+      // Méthode 1: localStorage (plus fiable)
+      const currentUserNew = localStorage.getItem('english_quest_current_user');
+      const currentUserOld = localStorage.getItem('currentUser');
+      
+      if (currentUserNew && currentUserNew !== 'null' && currentUserNew !== 'undefined') {
+        try {
+          const user = JSON.parse(currentUserNew);
+          isUserConnected = user && (user.uid || user.id || user.username);
+          detectionMethod = 'localStorage-new';
+          this.log(`🔍 Détection via localStorage NEW: ${isUserConnected} - Données: ${JSON.stringify(user)}`, 'info');
+        } catch (e) {
+          this.log(`❌ Erreur parsing localStorage NEW: ${e.message}`, 'warn');
+        }
+      }
+      
+      if (!isUserConnected && currentUserOld && currentUserOld !== 'null' && currentUserOld !== 'undefined') {
+        try {
+          const user = JSON.parse(currentUserOld);
+          isUserConnected = user && (user.uid || user.id || user.username);
+          detectionMethod = 'localStorage-old';
+          this.log(`🔍 Détection via localStorage OLD: ${isUserConnected} - Données: ${JSON.stringify(user)}`, 'info');
+        } catch (e) {
+          this.log(`❌ Erreur parsing localStorage OLD: ${e.message}`, 'warn');
+        }
+      }
+      
+      // Méthode 2: Vérifier via les styles des boutons desktop (backup)
+      if (!isUserConnected && elements.profileButton && elements.loginButton) {
+        const profileStyle = window.getComputedStyle(elements.profileButton);
+        const loginStyle = window.getComputedStyle(elements.loginButton);
+        
+        const profileVisible = profileStyle.display !== 'none' && elements.profileButton.offsetParent !== null;
+        const loginVisible = loginStyle.display !== 'none' && elements.loginButton.offsetParent !== null;
         
         isUserConnected = profileVisible && !loginVisible;
         detectionMethod = 'desktop-buttons';
         
-        this.log(`🔍 État détecté via boutons desktop - Profil: ${profileVisible}, Login: ${loginVisible}, Connecté: ${isUserConnected}`, 'info');
-      }
-      
-      // Méthode 2: Vérifier via localStorage (backup)
-      if (!isUserConnected) {
-        const currentUser = localStorage.getItem('english_quest_current_user') || 
-                           localStorage.getItem('currentUser');
-        if (currentUser && currentUser !== 'null' && currentUser !== 'undefined') {
-          try {
-            const user = JSON.parse(currentUser);
-            isUserConnected = user && (user.uid || user.id || user.username);
-            detectionMethod = 'localStorage';
-            this.log(`🔍 État détecté via localStorage: ${isUserConnected} (${detectionMethod})`, 'info');
-          } catch (e) {
-            this.log(`❌ Erreur parsing localStorage: ${e.message}`, 'warn');
-          }
-        }
+        this.log(`🔍 Détection via boutons desktop - Profil visible: ${profileVisible}, Login visible: ${loginVisible}, Connecté: ${isUserConnected}`, 'info');
       }
 
       // Afficher le résultat de détection
       this.log(`🎯 RÉSULTAT FINAL: Utilisateur ${isUserConnected ? 'CONNECTÉ' : 'NON CONNECTÉ'} (méthode: ${detectionMethod})`, isUserConnected ? 'success' : 'info');
 
-      // Appliquer la logique selon l'état
+      // Appliquer la logique avec force brute
       if (isUserConnected) {
-        // Utilisateur connecté : montrer profil et déconnexion, cacher connexion
-        this.log('👤 Configuration boutons mobile pour utilisateur connecté', 'success');
+        // Utilisateur connecté : cacher connexion, montrer profil et déconnexion
+        this.log('👤 Configuration boutons pour utilisateur CONNECTÉ', 'success');
         
-        // Cacher connexion mobile
+        // DESKTOP: Forcer l'affichage correct
+        if (elements.loginButton) {
+          elements.loginButton.style.display = 'none';
+          elements.loginButton.setAttribute('hidden', 'true');
+        }
+        if (elements.profileButton) {
+          elements.profileButton.style.display = 'inline-flex';
+          elements.profileButton.removeAttribute('hidden');
+        }
+        
+        // MOBILE: Configuration boutons
         if (elements.mobileLoginButton) {
           const mobileLoginLi = elements.mobileLoginButton.parentElement;
           if (mobileLoginLi) mobileLoginLi.style.display = 'none';
           elements.mobileLoginButton.style.display = 'none';
         }
         
-        // Montrer profil mobile
         if (elements.mobileProfileButton) {
           const mobileProfileLi = elements.mobileProfileButton.parentElement;
           if (mobileProfileLi) mobileProfileLi.style.display = 'block';
           elements.mobileProfileButton.style.display = 'block';
+          elements.mobileProfileButton.removeAttribute('hidden');
         }
         
-        // Montrer déconnexion mobile
         if (elements.mobileLogoutButton) {
           const mobileLogoutLi = elements.mobileLogoutButton.parentElement;
           if (mobileLogoutLi) mobileLogoutLi.style.display = 'block';
           elements.mobileLogoutButton.style.display = 'block';
+          elements.mobileLogoutButton.removeAttribute('hidden');
         }
+        
       } else {
         // Utilisateur non connecté : montrer connexion, cacher profil et déconnexion
-        this.log('🚪 Configuration boutons mobile pour utilisateur non connecté', 'info');
+        this.log('🚪 Configuration boutons pour utilisateur NON CONNECTÉ', 'info');
         
-        // Montrer connexion mobile
+        // DESKTOP: Forcer l'affichage correct
+        if (elements.loginButton) {
+          elements.loginButton.style.display = 'inline-flex';
+          elements.loginButton.removeAttribute('hidden');
+        }
+        if (elements.profileButton) {
+          elements.profileButton.style.display = 'none';
+          elements.profileButton.setAttribute('hidden', 'true');
+        }
+        
+        // MOBILE: Configuration boutons
         if (elements.mobileLoginButton) {
           const mobileLoginLi = elements.mobileLoginButton.parentElement;
           if (mobileLoginLi) mobileLoginLi.style.display = 'block';
           elements.mobileLoginButton.style.display = 'block';
+          elements.mobileLoginButton.removeAttribute('hidden');
         }
         
-        // Cacher profil mobile
         if (elements.mobileProfileButton) {
           const mobileProfileLi = elements.mobileProfileButton.parentElement;
           if (mobileProfileLi) mobileProfileLi.style.display = 'none';
           elements.mobileProfileButton.style.display = 'none';
         }
         
-        // Cacher déconnexion mobile
         if (elements.mobileLogoutButton) {
           const mobileLogoutLi = elements.mobileLogoutButton.parentElement;
           if (mobileLogoutLi) mobileLogoutLi.style.display = 'none';
@@ -244,10 +274,10 @@ class UniversalMobileAuth {
         }
       }
 
-      this.log(`✅ Synchronisation terminée: boutons ${isUserConnected ? 'connecté' : 'non connecté'} affichés`, 'success');
+      this.log(`✅ Synchronisation terminée: mode ${isUserConnected ? 'CONNECTÉ' : 'NON CONNECTÉ'} appliqué`, 'success');
       return true;
     } catch (error) {
-      this.log(`Erreur lors de la synchronisation: ${error.message}`, 'error');
+      this.log(`❌ Erreur lors de la synchronisation: ${error.message}`, 'error');
       return false;
     }
   }
@@ -437,17 +467,33 @@ class UniversalMobileAuth {
     }
     
     let lastAuthState = null;
+    let syncCount = 0;
+    
+    // Synchroniser immédiatement puis périodiquement
+    this.syncAuthButtons();
     
     this.syncInterval = setInterval(() => {
+      syncCount++;
+      
       try {
-        // Détecter l'état actuel
+        // Détecter l'état actuel via localStorage (plus fiable)
         const currentUser = localStorage.getItem('english_quest_current_user') || 
                            localStorage.getItem('currentUser');
         const currentAuthState = currentUser && currentUser !== 'null' && currentUser !== 'undefined' ? 'connected' : 'disconnected';
         
-        // Synchroniser seulement si l'état a changé
-        if (lastAuthState !== currentAuthState) {
-          this.log(`🔄 Changement d'état détecté: ${lastAuthState} → ${currentAuthState}`, 'info');
+        // Log périodique détaillé
+        if (syncCount % 10 === 0) { // Log tous les 20 secondes
+          this.log(`🔄 [Sync #${syncCount}] État auth: ${currentAuthState}`, 'info');
+        }
+        
+        // Synchroniser seulement si l'état a changé OU tous les 30 secondes (force refresh)
+        if (lastAuthState !== currentAuthState || syncCount % 15 === 0) {
+          if (lastAuthState !== currentAuthState) {
+            this.log(`🔄 Changement d'état détecté: ${lastAuthState} → ${currentAuthState}`, 'info');
+          } else {
+            this.log(`🔄 Synchronisation forcée périodique (#${syncCount})`, 'info');
+          }
+          
           this.syncAuthButtons();
           lastAuthState = currentAuthState;
         }
@@ -456,7 +502,7 @@ class UniversalMobileAuth {
       }
     }, 2000); // Vérifier toutes les 2 secondes
     
-    this.log('Synchronisation périodique démarrée (toutes les 2s)', 'success');
+    this.log('Synchronisation périodique démarrée avec force refresh (toutes les 2s)', 'success');
   }
 
   // Arrêter la synchronisation périodique
@@ -532,6 +578,21 @@ class UniversalMobileAuth {
     this.stopPeriodicSync();
     this.isInitialized = false;
     this.log('Service détruit');
+  }
+
+  // Fonction de test manuel (accessible depuis la console)
+  testSync() {
+    this.log('🧪 TEST MANUEL DE SYNCHRONISATION', 'info');
+    this.log('📍 Éléments détectés:', 'info');
+    
+    const detection = this.detectElements();
+    console.log('Detection result:', detection);
+    
+    this.log('🔄 Lancement synchronisation...', 'info');
+    const result = this.syncAuthButtons();
+    
+    this.log(`📊 Résultat test: ${result ? 'SUCCÈS' : 'ÉCHEC'}`, result ? 'success' : 'error');
+    return result;
   }
 }
 
