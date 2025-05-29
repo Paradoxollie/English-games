@@ -1425,16 +1425,15 @@
       }
 
       .nav-link {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 1rem;
         border-radius: var(--border-radius-md);
         background: var(--color-surface);
         transition: all var(--transition-normal);
         font-size: 1.1rem;
         min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
 
       .nav-link:hover {
@@ -1464,6 +1463,106 @@
       .logo {
         font-size: 1.5rem;
       }
+
+      /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
+      .course-container {
+        padding: var(--spacing-md);
+      }
+
+      .course-title {
+        font-size: 2.5rem;
+      }
+
+      .course-subtitle {
+        font-size: 1rem;
+      }
+
+      .course-meta {
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        text-align: left;
+      }
+
+      .section-number {
+        align-self: flex-start;
+      }
+
+      .course-section {
+        padding: var(--spacing-lg);
+      }
+
+      .conditional-type {
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .structure-box,
+      .example-box,
+      .note-box {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+
+      .validation-options {
+        gap: var(--spacing-sm);
+      }
+
+      .validation-option {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+
+      .section-complete-btn,
+      .validation-btn {
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: 1rem;
+      }
+
+      .quiz-container {
+        padding: var(--spacing-md);
+      }
+
+      .quiz-question {
+        font-size: 1rem;
+      }
+
+      .quiz-options {
+        gap: var(--spacing-sm);
+      }
+
+      .quiz-option {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (min-width: 769px) {
+      /* Cacher les éléments mobile sur desktop */
+      .mobile-only {
+        display: none !important;
+      }
+
+      .nav {
+        display: flex !important;
+        position: static;
+        background: none;
+        border: none;
+        padding: 0;
+        transform: none;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .menu-toggle {
+        display: none;
+      }
     }
 
     @media (max-width: 576px) {
@@ -1478,11 +1577,6 @@
       .menu-toggle {
         width: 25px;
         height: 25px;
-      }
-
-      .btn-login {
-        font-size: 0.8rem;
-        padding: var(--spacing-xs) var(--spacing-sm);
       }
 
       /* MOBILE TRÈS PETIT */
@@ -1629,168 +1723,6 @@
 
     .logo {
       font-size: 1.5rem;
-    }
-
-    /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
-    .course-container {
-      padding: var(--spacing-md);
-    }
-
-    .course-title {
-      font-size: 2.5rem;
-    }
-
-    .course-subtitle {
-      font-size: 1rem;
-    }
-
-    .course-meta {
-      flex-direction: column;
-      gap: var(--spacing-md);
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--spacing-sm);
-      text-align: left;
-    }
-
-    .section-number {
-      align-self: flex-start;
-    }
-
-    .course-section {
-      padding: var(--spacing-lg);
-    }
-
-    .conditional-type {
-      margin-bottom: var(--spacing-lg);
-    }
-
-    .structure-box,
-    .example-box,
-    .note-box {
-      padding: var(--spacing-md);
-      font-size: 0.9rem;
-    }
-
-    .validation-options {
-      gap: var(--spacing-sm);
-    }
-
-    .validation-option {
-      padding: var(--spacing-md);
-      font-size: 0.9rem;
-    }
-
-    .section-complete-btn,
-    .validation-btn {
-      width: 100%;
-      padding: var(--spacing-md);
-      font-size: 1rem;
-    }
-
-    .quiz-container {
-      padding: var(--spacing-md);
-    }
-
-    .quiz-question {
-      font-size: 1rem;
-    }
-
-    .quiz-options {
-      gap: var(--spacing-sm);
-    }
-
-    .quiz-option {
-      padding: var(--spacing-md);
-      font-size: 0.9rem;
-    }
-
-    @media (min-width: 769px) {
-      /* Cacher les éléments mobile sur desktop */
-      .mobile-only {
-        display: none !important;
-      }
-
-      .nav {
-        display: flex !important;
-        position: static;
-        background: none;
-        border: none;
-        padding: 0;
-        transform: none;
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .menu-toggle {
-        display: none;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .header-container {
-        padding: 0 var(--spacing-md);
-      }
-
-      .logo {
-        font-size: 1.3rem;
-      }
-
-      .menu-toggle {
-        width: 25px;
-        height: 25px;
-      }
-
-      /* MOBILE TRÈS PETIT */
-      .course-container {
-        padding: var(--spacing-sm);
-      }
-
-      .course-title {
-        font-size: 2rem;
-      }
-
-      .course-header {
-        padding: var(--spacing-lg);
-      }
-
-      .section-title {
-        font-size: 1.3rem;
-      }
-
-      .section-number {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-      }
-
-      .course-section {
-        padding: var(--spacing-md);
-      }
-
-      .conditional-title {
-        font-size: 1.1rem;
-      }
-
-      .structure-box,
-      .example-box,
-      .note-box {
-        padding: var(--spacing-sm);
-        font-size: 0.85rem;
-      }
-
-      .validation-question-text {
-        font-size: 0.9rem;
-      }
-
-      .validation-option {
-        padding: var(--spacing-sm);
-        font-size: 0.85rem;
-      }
     }
   </style>
 </head>
@@ -4378,34 +4310,44 @@
   <!-- JavaScript pour le menu mobile -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Menu mobile avec gestion complète
-      const menuToggle = document.querySelector('.menu-toggle');
-      const nav = document.querySelector('.nav');
-      const navLinks = document.querySelectorAll('.nav-link');
+      console.log('🍔 [Conditional Course] Initialisation du menu mobile...');
+      
+      // Attendre que tous les scripts soient chargés
+      setTimeout(() => {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const nav = document.querySelector('.nav');
+        const navLinks = document.querySelectorAll('.nav-link');
 
-      if (menuToggle && nav) {
-        console.log('🍔 Menu mobile initialisé');
+        if (!menuToggle || !nav) {
+          console.error('❌ [Conditional Course] Éléments menu non trouvés');
+          return;
+        }
+
+        console.log('✅ [Conditional Course] Éléments menu trouvés');
 
         // Toggle du menu mobile
         menuToggle.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
           
+          console.log('🔄 [Conditional Course] Toggle menu clicked');
+          
           menuToggle.classList.toggle('active');
           nav.classList.toggle('active');
           
           if (nav.classList.contains('active')) {
             document.body.style.overflow = 'hidden';
-            console.log('📱 Menu ouvert');
+            console.log('📱 [Conditional Course] Menu ouvert');
           } else {
             document.body.style.overflow = 'auto';
-            console.log('📱 Menu fermé');
+            console.log('📱 [Conditional Course] Menu fermé');
           }
         });
 
         // Fermer le menu sur clic de lien
         navLinks.forEach(link => {
           link.addEventListener('click', function() {
+            console.log('🔗 [Conditional Course] Lien cliqué, fermeture menu');
             menuToggle.classList.remove('active');
             nav.classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -4417,6 +4359,7 @@
           if (!menuToggle.contains(event.target) && 
               !nav.contains(event.target) && 
               nav.classList.contains('active')) {
+            console.log('🖱️ [Conditional Course] Clic extérieur, fermeture menu');
             menuToggle.classList.remove('active');
             nav.classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -4431,104 +4374,100 @@
             document.body.style.overflow = 'auto';
           }
         });
-      }
+
+        console.log('✅ [Conditional Course] Menu mobile initialisé avec succès');
+      }, 300);
 
       // Synchronisation des boutons de connexion/déconnexion mobile et desktop
       function syncAuthButtons() {
+        console.log('🔄 [Conditional Course] Synchronisation boutons auth...');
+        
         const loginButton = document.getElementById('loginButton');
         const profileButton = document.getElementById('profileButton');
         const mobileLoginButton = document.getElementById('mobileLoginButton');
         const mobileProfileButton = document.getElementById('mobileProfileButton');
         const mobileLogoutButton = document.getElementById('mobileLogoutButton');
 
+        if (!loginButton || !mobileLoginButton) {
+          console.warn('⚠️ [Conditional Course] Boutons auth non trouvés');
+          return;
+        }
+
         // Observer les changements sur les boutons desktop
         const observer = new MutationObserver(function(mutations) {
           mutations.forEach(function(mutation) {
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-              // Synchroniser l'état de connexion
-              if (loginButton && mobileLoginButton) {
-                const isLoginVisible = loginButton.style.display !== 'none';
-                mobileLoginButton.style.display = isLoginVisible ? 'block' : 'none';
-                mobileLoginButton.parentElement.style.display = isLoginVisible ? 'block' : 'none';
-              }
-
-              if (profileButton && mobileProfileButton) {
-                const isProfileVisible = profileButton.style.display !== 'none';
-                mobileProfileButton.style.display = isProfileVisible ? 'block' : 'none';
-                mobileProfileButton.parentElement.style.display = isProfileVisible ? 'block' : 'none';
-              }
-
-              // Afficher/cacher le bouton de déconnexion mobile
-              if (mobileLogoutButton) {
-                const isUserConnected = profileButton && profileButton.style.display !== 'none';
-                mobileLogoutButton.style.display = isUserConnected ? 'block' : 'none';
-                mobileLogoutButton.parentElement.style.display = isUserConnected ? 'block' : 'none';
-              }
+              updateMobileButtons();
             }
           });
         });
 
-        // Observer les changements sur les boutons desktop
-        if (loginButton) observer.observe(loginButton, { attributes: true });
-        if (profileButton) observer.observe(profileButton, { attributes: true });
-
-        // Synchronisation initiale
-        setTimeout(() => {
+        function updateMobileButtons() {
+          // Synchroniser connexion
           if (loginButton && mobileLoginButton) {
             const isLoginVisible = loginButton.style.display !== 'none';
             mobileLoginButton.style.display = isLoginVisible ? 'block' : 'none';
             mobileLoginButton.parentElement.style.display = isLoginVisible ? 'block' : 'none';
           }
 
+          // Synchroniser profil
           if (profileButton && mobileProfileButton) {
             const isProfileVisible = profileButton.style.display !== 'none';
             mobileProfileButton.style.display = isProfileVisible ? 'block' : 'none';
             mobileProfileButton.parentElement.style.display = isProfileVisible ? 'block' : 'none';
           }
 
+          // Gérer déconnexion
           if (mobileLogoutButton) {
             const isUserConnected = profileButton && profileButton.style.display !== 'none';
             mobileLogoutButton.style.display = isUserConnected ? 'block' : 'none';
             mobileLogoutButton.parentElement.style.display = isUserConnected ? 'block' : 'none';
           }
-        }, 1000);
+        }
+
+        // Observer les changements
+        if (loginButton) observer.observe(loginButton, { attributes: true });
+        if (profileButton) observer.observe(profileButton, { attributes: true });
+
+        // Synchronisation initiale
+        setTimeout(updateMobileButtons, 1000);
+        setTimeout(updateMobileButtons, 2000); // Double vérification
 
         // Gestion du clic sur le bouton de déconnexion mobile
         if (mobileLogoutButton) {
           mobileLogoutButton.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('🚪 [Conditional Course] Déconnexion via menu mobile');
             
             if (window.authService && typeof window.authService.logout === 'function') {
               window.authService.logout();
-              console.log('🚪 Déconnexion via menu mobile');
-              
-              // Fermer le menu mobile
-              if (menuToggle && nav) {
-                menuToggle.classList.remove('active');
-                nav.classList.remove('active');
-                document.body.style.overflow = 'auto';
-              }
-              
-              // Rediriger vers l'accueil après déconnexion
-              setTimeout(() => {
-                window.location.href = '../index.html';
-              }, 500);
             } else {
-              console.warn('⚠️ Service d\'authentification non disponible');
-              // Fallback : supprimer manuellement les données de connexion
+              // Fallback manuel
               localStorage.removeItem('english_quest_current_user');
               localStorage.removeItem('currentUser');
               localStorage.removeItem('englishQuestUserId');
-              window.location.href = '../index.html';
             }
+            
+            // Fermer le menu et rediriger
+            const menuToggle = document.querySelector('.menu-toggle');
+            const nav = document.querySelector('.nav');
+            if (menuToggle && nav) {
+              menuToggle.classList.remove('active');
+              nav.classList.remove('active');
+              document.body.style.overflow = 'auto';
+            }
+            
+            setTimeout(() => {
+              window.location.href = '../index.html';
+            }, 300);
           });
         }
+
+        console.log('✅ [Conditional Course] Synchronisation auth configurée');
       }
 
-      // Initialiser la synchronisation après un délai pour s'assurer que auth-header.js est chargé
-      setTimeout(syncAuthButtons, 1500);
-
-      console.log('🍔 Menu burger du cours complètement initialisé avec synchronisation auth');
+      // Initialiser la synchronisation après que auth-header.js soit chargé
+      setTimeout(syncAuthButtons, 2000);
     });
   </script>
 
