@@ -29,6 +29,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   
+  <!-- Script pour le menu mobile -->
+  <script src="../scripts/new-design.js"></script>
+  
   <style>
     /* Styles spécifiques au cours */
     .course-container {
@@ -1450,9 +1453,87 @@
         font-size: 0.9rem;
         padding: var(--spacing-sm) var(--spacing-md);
       }
+
+      /* AMÉLIORATIONS RESPONSIVE POUR LE COURS */
+      .course-container {
+        padding: var(--spacing-md);
+      }
+
+      .course-title {
+        font-size: 2.5rem;
+      }
+
+      .course-subtitle {
+        font-size: 1rem;
+      }
+
+      .course-meta {
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        text-align: left;
+      }
+
+      .section-number {
+        align-self: flex-start;
+      }
+
+      .course-section {
+        padding: var(--spacing-lg);
+      }
+
+      .conditional-type {
+        margin-bottom: var(--spacing-lg);
+      }
+
+      .structure-box,
+      .example-box,
+      .note-box {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+
+      .validation-options {
+        gap: var(--spacing-sm);
+      }
+
+      .validation-option {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
+
+      .section-complete-btn,
+      .validation-btn {
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: 1rem;
+      }
+
+      .quiz-container {
+        padding: var(--spacing-md);
+      }
+
+      .quiz-question {
+        font-size: 1rem;
+      }
+
+      .quiz-options {
+        gap: var(--spacing-sm);
+      }
+
+      .quiz-option {
+        padding: var(--spacing-md);
+        font-size: 0.9rem;
+      }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
       .header-container {
         padding: 0 var(--spacing-md);
       }
@@ -1466,14 +1547,150 @@
         height: 25px;
       }
 
-      .menu-toggle span {
-        width: 20px;
-        height: 2px;
-      }
-
       .btn-login {
         font-size: 0.8rem;
         padding: var(--spacing-xs) var(--spacing-sm);
+      }
+
+      /* MOBILE TRÈS PETIT */
+      .course-container {
+        padding: var(--spacing-sm);
+      }
+
+      .course-title {
+        font-size: 2rem;
+      }
+
+      .course-header {
+        padding: var(--spacing-lg);
+      }
+
+      .section-title {
+        font-size: 1.3rem;
+      }
+
+      .section-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+
+      .course-section {
+        padding: var(--spacing-md);
+      }
+
+      .conditional-title {
+        font-size: 1.1rem;
+      }
+
+      .structure-box,
+      .example-box,
+      .note-box {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+      }
+
+      .validation-question-text {
+        font-size: 0.9rem;
+      }
+
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .course-title {
+        font-size: 1.8rem;
+      }
+
+      .course-meta {
+        gap: var(--spacing-sm);
+      }
+
+      .meta-item {
+        font-size: 0.85rem;
+      }
+
+      .section-title {
+        font-size: 1.2rem;
+      }
+
+      .section-number {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+      }
+
+      .conditional-title {
+        font-size: 1rem;
+      }
+
+      .validation-controls {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+
+      .quiz-timer {
+        font-size: 0.9rem;
+      }
+
+      .quiz-score {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Optimisations tactiles pour mobile */
+    @media (hover: none) and (pointer: coarse) {
+      .section-complete-btn,
+      .validation-btn,
+      .validation-option,
+      .quiz-option {
+        min-height: 44px;
+      }
+
+      .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      .btn-login {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Désactiver les effets de hover sur mobile */
+      .section-complete-btn:hover,
+      .validation-option:hover,
+      .quiz-option:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    /* Orientation paysage sur mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+      main {
+        padding-top: 80px;
+      }
+
+      .course-header {
+        padding: var(--spacing-md);
+      }
+
+      .course-title {
+        font-size: 2rem;
+      }
+
+      .course-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .section-title {
+        font-size: 1.3rem;
       }
     }
   </style>
@@ -1497,11 +1714,7 @@
       <div class="user-menu" id="userMenu">
         <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
         <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
-        <button class="menu-toggle" id="menuToggle">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>

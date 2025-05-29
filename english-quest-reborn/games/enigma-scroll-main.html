@@ -27,6 +27,9 @@
   <!-- Nouveau système de notation simplifié -->
   <script src="../scripts/simple-rating-system.js"></script>
   <script src="../scripts/update-rating-system.js"></script>
+  
+  <!-- Script pour le menu mobile -->
+  <script src="../scripts/new-design.js"></script>
 
   <style>
     /* Variables exactes du site reborn */
@@ -798,7 +801,14 @@
 
     @media (max-width: 768px) {
       .difficulty-options {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .difficulty-btn {
+        width: 100%;
+        max-width: 300px;
       }
       
       .game-hud {
@@ -806,8 +816,19 @@
         gap: 1rem;
       }
       
+      .hud-item {
+        flex: 1;
+        min-width: calc(50% - 0.5rem);
+      }
+      
       .power-ups-container {
         flex-wrap: wrap;
+        gap: 1rem;
+      }
+      
+      .power-up {
+        flex: 1;
+        min-width: calc(33.333% - 0.7rem);
       }
       
       .grid-cell {
@@ -817,13 +838,323 @@
       }
       
       .key-btn {
-        min-width: 2rem;
-        height: 3rem;
-        font-size: 1rem;
+        min-width: 1.8rem;
+        height: 2.8rem;
+        font-size: 0.9rem;
       }
 
       .section-title.text-gradient {
         font-size: 2.5rem;
+      }
+
+      .game-subtitle {
+        font-size: 1rem;
+      }
+
+      .game-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .game-button {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .word-grid {
+        max-width: 400px;
+      }
+
+      .leaderboard-table {
+        font-size: 0.85rem;
+      }
+
+      .leaderboard-table th,
+      .leaderboard-table td {
+        padding: 0.3rem 0.2rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding-top: 70px;
+      }
+
+      .header {
+        padding: 0.75rem 0;
+      }
+
+      .section-title.text-gradient {
+        font-size: 2rem;
+      }
+
+      .container {
+        width: 95%;
+        padding: 1rem 0.25rem;
+      }
+
+      .game-hud {
+        gap: 0.8rem;
+      }
+
+      .hud-item {
+        min-width: calc(50% - 0.4rem);
+      }
+
+      .hud-value {
+        font-size: 1.2rem;
+      }
+
+      .difficulty-btn {
+        padding: 1rem 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .power-ups-container {
+        gap: 0.8rem;
+      }
+
+      .power-up {
+        width: 70px;
+        min-width: unset;
+        flex: unset;
+      }
+
+      .grid-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+      }
+
+      .word-grid {
+        max-width: 350px;
+      }
+
+      .key-btn {
+        min-width: 1.5rem;
+        height: 2.5rem;
+        font-size: 0.8rem;
+      }
+
+      .key-enter, .key-delete {
+        min-width: 2.5rem;
+        font-size: 0.7rem;
+      }
+
+      .game-panel {
+        padding: 1rem;
+      }
+
+      .leaderboard-table {
+        font-size: 0.8rem;
+      }
+
+      .leaderboard-table th,
+      .leaderboard-table td {
+        padding: 0.25rem 0.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .difficulty-options {
+        gap: 0.8rem;
+      }
+
+      .difficulty-btn {
+        padding: 0.8rem 0.4rem;
+        font-size: 0.85rem;
+      }
+
+      .game-buttons {
+        gap: 0.8rem;
+      }
+
+      .power-up {
+        width: 60px;
+      }
+
+      .power-up-icon {
+        font-size: 1.2rem;
+      }
+
+      .power-up-name {
+        font-size: 0.8rem;
+      }
+
+      .grid-cell {
+        width: 2.2rem;
+        height: 2.2rem;
+        font-size: 0.9rem;
+      }
+
+      .key-btn {
+        min-width: 1.3rem;
+        height: 2.2rem;
+        font-size: 0.75rem;
+      }
+
+      .toggle-btn {
+        padding: 0.4rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Optimisations tactiles pour mobile */
+    @media (hover: none) and (pointer: coarse) {
+      .game-button,
+      .difficulty-btn,
+      .power-up,
+      .key-btn,
+      .toggle-btn {
+        min-height: 44px;
+      }
+
+      .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-login {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Désactiver les effets de hover sur mobile */
+      .game-button:hover,
+      .difficulty-btn:hover,
+      .power-up:hover,
+      .key-btn:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+
+    /* Orientation paysage sur mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
+      body {
+        padding-top: 60px;
+      }
+
+      .header {
+        padding: 0.5rem 0;
+      }
+
+      .section-title.text-gradient {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .game-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .game-hud {
+        margin-bottom: 1rem;
+      }
+
+      .word-grid {
+        margin: 1rem 0;
+      }
+
+      .keyboard {
+        margin: 1rem 0;
+      }
+    }
+
+    /* Menu burger */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--color-text-primary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color var(--transition-normal);
+    }
+
+    .menu-toggle:hover {
+      color: var(--color-primary);
+    }
+
+    /* Styles responsive pour la navigation */
+    @media (max-width: 767px) {
+      .nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(18, 18, 18, 0.98);
+        border-top: 1px solid rgba(46, 204, 113, 0.2);
+        padding: 1rem;
+        transform: translateY(-10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-normal);
+      }
+
+      .nav.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .nav-list {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .nav-link {
+        display: block;
+        padding: 1rem;
+        border-radius: var(--border-radius-md);
+        background: var(--color-surface);
+        transition: all var(--transition-normal);
+      }
+
+      .nav-link:hover {
+        background: var(--color-surface-hover);
+        transform: translateY(-2px);
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .header-container {
+        padding: 0 0.5rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .btn-login {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .nav {
+        display: flex !important;
+        position: static;
+        background: none;
+        border: none;
+        padding: 0;
+        transform: none;
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .menu-toggle {
+        display: none;
       }
     }
   </style>
@@ -847,6 +1178,7 @@
       <div class="user-menu" id="userMenu">
         <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
         <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>

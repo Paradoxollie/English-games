@@ -44,6 +44,9 @@
     <!-- Nouveau système de notation simplifié -->
     <script src="../scripts/simple-rating-system.js"></script>
     <script src="../scripts/update-rating-system.js"></script>
+    
+    <!-- Script pour le menu mobile -->
+    <script src="../scripts/new-design.js"></script>
 
     <style>
         :root {
@@ -113,6 +116,10 @@
             color: var(--color-text-primary);
         }
 
+        .nav {
+            display: flex;
+        }
+
         .nav-list {
             display: flex;
             gap: 2rem;
@@ -125,10 +132,27 @@
             font-weight: 500;
             transition: all var(--transition-normal);
             padding: 0.5rem 0;
+            position: relative;
         }
 
         .nav-link:hover, .nav-link.active {
             color: var(--color-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width var(--transition-normal);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
         }
 
         .user-menu {
@@ -152,6 +176,98 @@
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Menu burger */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--color-text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color var(--transition-normal);
+        }
+
+        .menu-toggle:hover {
+            color: var(--color-primary);
+        }
+
+        /* Styles responsive */
+        @media (max-width: 767px) {
+            .nav {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(18, 18, 18, 0.98);
+                border-top: 1px solid rgba(243, 156, 18, 0.2);
+                padding: 1rem;
+                transform: translateY(-10px);
+                opacity: 0;
+                visibility: hidden;
+                transition: all var(--transition-normal);
+            }
+
+            .nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-link {
+                display: block;
+                padding: 1rem;
+                border-radius: var(--border-radius-md);
+                background: var(--color-surface);
+                transition: all var(--transition-normal);
+            }
+
+            .nav-link:hover {
+                background: var(--color-surface-hover);
+                transform: translateY(-2px);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .header-container {
+                padding: 0 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .btn-login {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .nav {
+                display: flex !important;
+                position: static;
+                background: none;
+                border: none;
+                padding: 0;
+                transform: none;
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
         }
 
         .container {
@@ -195,6 +311,55 @@
             font-size: 1.2rem;
             margin-bottom: 2rem;
             font-family: 'Spectral', serif;
+        }
+
+        /* RESPONSIVE FIXES POUR MOBILE */
+        @media (max-width: 1024px) {
+            .game-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+
+            .game-subtitle {
+                font-size: 1rem;
+            }
+
+            .game-content {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .header {
+                padding: 0.75rem 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .container {
+                width: 95%;
+                padding: 1rem 0.25rem;
+            }
         }
 
         .difficulty-selection {
@@ -627,22 +792,8 @@
             color: var(--color-text-primary);
         }
 
-        @media (max-width: 1024px) {
-            .game-content {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .sidebar {
-                order: -1;
-            }
-        }
-
+        /* STYLES RESPONSIVE AMÉLIORÉS POUR TOUS LES ÉLÉMENTS */
         @media (max-width: 768px) {
-            .section-title {
-                font-size: 2rem;
-            }
-
             .verb-display {
                 font-size: 2rem;
             }
@@ -650,6 +801,7 @@
             .difficulty-options {
                 flex-direction: column;
                 align-items: center;
+                gap: 1rem;
             }
 
             .difficulty-btn {
@@ -657,15 +809,217 @@
                 max-width: 300px;
             }
 
+            .game-hud {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .hud-item {
+                flex: 1;
+                min-width: calc(50% - 0.5rem);
+            }
+
             .verb-actions {
                 flex-direction: column;
                 align-items: center;
+                gap: 1rem;
             }
 
             .game-button {
                 width: 100%;
                 max-width: 300px;
                 justify-content: center;
+            }
+
+            .verb-inputs {
+                gap: 1rem;
+            }
+
+            .verb-input {
+                font-size: 1.1rem;
+                padding: 0.8rem;
+            }
+
+            .score-value {
+                font-size: 2.5rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .leaderboard-table {
+                font-size: 0.9rem;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 0.4rem 0.2rem;
+            }
+
+            .panel-title {
+                font-size: 1.8rem;
+            }
+
+            .welcome-text {
+                font-size: 1rem;
+            }
+
+            .difficulty-selection h3 {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .game-hud {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hud-item {
+                text-align: center;
+            }
+
+            .hud-value {
+                font-size: 1.2rem;
+            }
+
+            .verb-display {
+                font-size: 1.8rem;
+            }
+
+            .verb-translation {
+                font-size: 0.9rem;
+            }
+
+            .difficulty-btn {
+                padding: 1rem 0.5rem;
+            }
+
+            .difficulty-icon {
+                font-size: 2rem;
+            }
+
+            .game-button {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .leaderboard-panel {
+                padding: 1rem;
+            }
+
+            .welcome-content,
+            .results-container {
+                padding: 1rem;
+            }
+
+            .panel-title {
+                font-size: 1.5rem;
+            }
+
+            .score-value {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .verb-card {
+                padding: 1rem;
+            }
+
+            .verb-inputs {
+                gap: 0.8rem;
+            }
+
+            .verb-input {
+                font-size: 1rem;
+                padding: 0.7rem;
+            }
+
+            .difficulty-options {
+                gap: 0.8rem;
+            }
+
+            .difficulty-btn {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .game-buttons {
+                gap: 0.8rem;
+            }
+
+            .leaderboard-buttons {
+                gap: 0.3rem;
+            }
+
+            .leaderboard-btn {
+                padding: 0.4rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Optimisations tactiles pour mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .game-button,
+            .difficulty-btn,
+            .leaderboard-btn {
+                min-height: 44px;
+            }
+
+            .nav-link {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-login {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+
+            .verb-input {
+                min-height: 44px;
+            }
+
+            /* Désactiver les effets de hover sur mobile */
+            .game-button:hover,
+            .difficulty-btn:hover,
+            .verb-input:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+
+        /* Landscape orientation sur mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding-top: 60px;
+            }
+
+            .header {
+                padding: 0.5rem 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .game-subtitle {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .game-hud {
+                margin-bottom: 1rem;
+            }
+
+            .verb-challenge {
+                margin-bottom: 1rem;
             }
         }
     </style>
@@ -689,6 +1043,7 @@
             <div class="user-menu" id="userMenu">
                 <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
                 <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+                <button class="menu-toggle">☰</button>
             </div>
         </div>
     </header>
