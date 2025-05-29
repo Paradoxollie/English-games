@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -29,7 +29,10 @@
           <li><a href="courses.html" class="nav-link">Cours</a></li>
           <li><a href="gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
-        </ul>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
       </nav>
     </div>
   </header>
@@ -47,7 +50,7 @@
         <!-- Login Form -->
         <div class="auth-form-container active" id="login-form">
           <h2>Connexion</h2>
-          <p class="auth-subtitle">Reprenez votre quête linguistique</p>
+          <p class="auth-subtitle">Reprenez votre qu锚te linguistique</p>
 
           <form id="loginForm">
             <div class="form-group">
@@ -71,7 +74,7 @@
                 <input type="checkbox" id="rememberMe" name="rememberMe">
                 <label for="rememberMe">Se souvenir de moi</label>
               </div>
-              <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+              <a href="#" class="forgot-password">Mot de passe oubli茅 ?</a>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
@@ -117,7 +120,7 @@
             <div class="form-options">
               <div class="remember-me">
                 <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
-                <label for="agreeTerms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
+                <label for="agreeTerms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialit茅</a></label>
               </div>
             </div>
 
@@ -134,7 +137,7 @@
       <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
         <div class="footer-brand">
           <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
-          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et comp茅titive.</p>
           <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
@@ -150,16 +153,19 @@
             <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
             <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
             <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
-            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
-          </ul>
+          <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
         </div>
 
         <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">L茅gal</h4>
           <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialit茅</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions l茅gales</a></li>
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
           </ul>
         </div>
@@ -175,7 +181,7 @@
       </div>
 
       <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
-        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+        <p>&copy; 2025 English Quest - Tous droits r茅serv茅s</p>
       </div>
     </div>
   </footer>
@@ -185,7 +191,7 @@
   <script type="module">
     import { authService } from './scripts/auth-service.js';
 
-    // Éléments DOM
+    // 脡l茅ments DOM
     const authTabs = document.querySelectorAll('.auth-tab');
     const authForms = document.querySelectorAll('.auth-form-container');
     const loginForm = document.getElementById('loginForm');
@@ -194,11 +200,11 @@
     const passwordStrength = document.getElementById('passwordStrength');
     const strengthText = document.getElementById('strengthText');
 
-    // Initialiser les écouteurs d'événements
+    // Initialiser les 茅couteurs d'茅v茅nements
     document.addEventListener('DOMContentLoaded', async function() {
       console.log('Initialisation des formulaires d\'authentification');
       
-      // Vérifier que bcrypt est disponible
+      // V茅rifier que bcrypt est disponible
       if (typeof dcodeIO === 'undefined' || !dcodeIO.bcrypt) {
         console.error("Erreur: bcrypt n'est pas disponible. Veuillez recharger la page.");
         document.body.innerHTML = '<div style="text-align: center; padding: 2rem; color: red; background: white;">Erreur de chargement. Veuillez recharger la page.</div>';
@@ -209,10 +215,10 @@
       initTabs();
       initForms();
 
-      // Vérifier si l'utilisateur est déjà connecté
+      // V茅rifier si l'utilisateur est d茅j脿 connect茅
       const currentUser = authService.getCurrentUser();
       if (currentUser) {
-        console.log('Utilisateur déjà connecté, redirection vers la page d\'accueil');
+        console.log('Utilisateur d茅j脿 connect茅, redirection vers la page d\'accueil');
         window.location.href = 'index.html';
       }
     });
@@ -225,7 +231,7 @@
         authTabs.forEach(t => t.classList.remove('active'));
         authForms.forEach(f => f.classList.remove('active'));
 
-        // Ajouter la classe active à l'onglet spécifié
+        // Ajouter la classe active 脿 l'onglet sp茅cifi茅
         const tab = document.querySelector(`.auth-tab[data-tab="${tabName}"]`);
         if (tab) {
           tab.classList.add('active');
@@ -239,7 +245,7 @@
         }
       }
 
-      // Vérifier les paramètres d'URL pour l'onglet initial
+      // V茅rifier les param猫tres d'URL pour l'onglet initial
       const urlParams = new URLSearchParams(window.location.search);
       const tabParam = urlParams.get('tab');
 
@@ -268,18 +274,18 @@
       if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
 
-        // Ajouter l'écouteur pour la vérification de la force du mot de passe
+        // Ajouter l'茅couteur pour la v茅rification de la force du mot de passe
         if (passwordInput) {
           passwordInput.addEventListener('input', checkPasswordStrength);
         }
       }
     }
 
-    // Gérer la soumission du formulaire de connexion
+    // G茅rer la soumission du formulaire de connexion
     async function handleLogin(e) {
       e.preventDefault();
 
-      // Récupérer les valeurs du formulaire
+      // R茅cup茅rer les valeurs du formulaire
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
       const rememberMe = document.getElementById('rememberMe').checked;
@@ -311,11 +317,11 @@
       }
     }
 
-    // Gérer la soumission du formulaire d'inscription
+    // G茅rer la soumission du formulaire d'inscription
     async function handleRegister(e) {
       e.preventDefault();
 
-      // Récupérer les valeurs du formulaire
+      // R茅cup茅rer les valeurs du formulaire
       const username = document.getElementById('registerUsername').value;
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
@@ -326,25 +332,25 @@
         return;
       }
 
-      // Vérifier que le nom d'utilisateur ne contient que des caractères alphanumériques
+      // V茅rifier que le nom d'utilisateur ne contient que des caract猫res alphanum茅riques
       if (!/^[a-zA-Z0-9]+$/.test(username)) {
         showError(registerForm, 'Le nom d\'utilisateur ne doit contenir que des lettres et des chiffres');
         return;
       }
 
-      // Vérifier que le nom d'utilisateur a une longueur minimale
+      // V茅rifier que le nom d'utilisateur a une longueur minimale
       if (username.length < 3) {
-        showError(registerForm, 'Le nom d\'utilisateur doit contenir au moins 3 caractères');
+        showError(registerForm, 'Le nom d\'utilisateur doit contenir au moins 3 caract猫res');
         return;
       }
 
-      // Vérifier que les mots de passe correspondent
+      // V茅rifier que les mots de passe correspondent
       if (password !== confirmPassword) {
         showError(registerForm, 'Les mots de passe ne correspondent pas');
         return;
       }
 
-      // Vérifier que les conditions sont acceptées
+      // V茅rifier que les conditions sont accept茅es
       if (!agreeTerms) {
         showError(registerForm, 'Vous devez accepter les conditions d\'utilisation');
         return;
@@ -354,14 +360,14 @@
         // Afficher un indicateur de chargement
         showLoading(registerForm);
 
-        // Créer un nouvel utilisateur
+        // Cr茅er un nouvel utilisateur
         const result = await authService.register(username, password);
 
         if (result.success) {
-          // Afficher un message de succès
-          showSuccess(registerForm, 'Compte créé avec succès ! Redirection...');
+          // Afficher un message de succ猫s
+          showSuccess(registerForm, 'Compte cr茅茅 avec succ猫s ! Redirection...');
 
-          // Rediriger vers la page d'accueil après 2 secondes
+          // Rediriger vers la page d'accueil apr猫s 2 secondes
           setTimeout(() => {
             window.location.href = 'index.html';
           }, 2000);
@@ -378,7 +384,7 @@
       }
     }
 
-    // Vérifier la force du mot de passe
+    // V茅rifier la force du mot de passe
     function checkPasswordStrength() {
       if (!passwordInput || !passwordStrength || !strengthText) return;
 
@@ -401,18 +407,18 @@
         strength += 25;
       }
 
-      // Contient des caractères spéciaux
+      // Contient des caract猫res sp茅ciaux
       if (/[^A-Za-z0-9]/.test(password)) {
         strength += 25;
       }
 
-      // Mettre à jour la barre de progression
+      // Mettre 脿 jour la barre de progression
       passwordStrength.style.width = strength + '%';
 
-      // Définir la couleur en fonction de la force
+      // D茅finir la couleur en fonction de la force
       if (strength < 25) {
         passwordStrength.style.backgroundColor = '#e74c3c'; // Rouge
-        feedback = 'Très faible';
+        feedback = 'Tr猫s faible';
       } else if (strength < 50) {
         passwordStrength.style.backgroundColor = '#e67e22'; // Orange
         feedback = 'Faible';
@@ -435,7 +441,7 @@
         existingError.remove();
       }
 
-      // Créer un nouvel élément pour le message d'erreur
+      // Cr茅er un nouvel 茅l茅ment pour le message d'erreur
       const errorElement = document.createElement('div');
       errorElement.className = 'error-message visible';
       errorElement.textContent = message;
@@ -444,7 +450,7 @@
       // Ajouter le message d'erreur au formulaire
       document.body.appendChild(errorElement);
       
-      // Supprimer le message après 5 secondes
+      // Supprimer le message apr猫s 5 secondes
       setTimeout(() => {
         if (errorElement.parentNode) {
           errorElement.parentNode.removeChild(errorElement);
@@ -452,19 +458,19 @@
       }, 5000);
     }
 
-    // Afficher un message de succès
+    // Afficher un message de succ猫s
     function showSuccess(form, message) {
       // Supprimer les messages existants
       const existingMessages = document.querySelectorAll('.error-message, .success-message');
       existingMessages.forEach(msg => msg.remove());
 
-      // Créer un nouvel élément pour le message de succès
+      // Cr茅er un nouvel 茅l茅ment pour le message de succ猫s
       const successElement = document.createElement('div');
       successElement.className = 'success-message visible';
       successElement.textContent = message;
       successElement.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 5px; color: white; background-color: #2ecc71; z-index: 1000; animation: fadeIn 0.3s ease-in-out;';
 
-      // Ajouter le message de succès au formulaire
+      // Ajouter le message de succ猫s au formulaire
       document.body.appendChild(successElement);
     }
 
@@ -476,7 +482,7 @@
         existingLoading.remove();
       }
 
-      // Créer un nouvel élément pour l'indicateur de chargement
+      // Cr茅er un nouvel 茅l茅ment pour l'indicateur de chargement
       const loadingElement = document.createElement('div');
       loadingElement.className = 'loading-indicator';
       loadingElement.innerHTML = '<div class="spinner"></div><span>Chargement...</span>';
@@ -503,7 +509,7 @@
       // Ajouter l'indicateur de chargement au formulaire
       form.appendChild(loadingElement);
 
-      // Désactiver le bouton de soumission
+      // D茅sactiver le bouton de soumission
       const submitButton = form.querySelector('button[type="submit"]');
       if (submitButton) {
         submitButton.disabled = true;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -25,13 +25,16 @@
           <li><a href="courses.html" class="nav-link">Cours</a></li>
           <li><a href="gallery.html" class="nav-link active">Galerie</a></li>
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
-        </ul>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
       </nav>
 
       <div class="user-menu" id="userMenu">
         <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
         <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
-        <button class="menu-toggle">☰</button>
+        <button class="menu-toggle">鈽?/button>
       </div>
     </div>
   </header>
@@ -43,7 +46,7 @@
       <div class="profile-header gallery-header">
         <div class="gallery-title">
           <h1 class="text-gradient">GALERIE DES AVATARS</h1>
-          <p class="gallery-subtitle">Découvrez les avatars de tous les joueurs d'English Quest</p>
+          <p class="gallery-subtitle">D茅couvrez les avatars de tous les joueurs d'English Quest</p>
         </div>
       </div>
     </div>
@@ -54,7 +57,7 @@
     <div class="container">
       <div class="profile-section">
         <h2 class="section-title">Explorateurs d'English Quest</h2>
-        <p class="section-subtitle">Découvrez les avatars personnalisés de notre communauté et suivez leur progression</p>
+        <p class="section-subtitle">D茅couvrez les avatars personnalis茅s de notre communaut茅 et suivez leur progression</p>
 
         <div class="gallery-controls">
           <div class="search-bar">
@@ -63,15 +66,15 @@
           </div>
           <div class="filter-options">
             <select id="sort-select">
-              <option value="recent">Plus récents</option>
-              <option value="level">Niveau (décroissant)</option>
-              <option value="alphabetical">Alphabétique</option>
+              <option value="recent">Plus r茅cents</option>
+              <option value="level">Niveau (d茅croissant)</option>
+              <option value="alphabetical">Alphab茅tique</option>
             </select>
           </div>
         </div>
 
         <div class="gallery-grid" id="avatars-gallery">
-          <!-- Les avatars seront générés dynamiquement ici -->
+          <!-- Les avatars seront g茅n茅r茅s dynamiquement ici -->
           <div class="loading-spinner">
             <i class="fas fa-spinner fa-spin"></i>
             <p>Chargement des avatars...</p>
@@ -79,7 +82,7 @@
         </div>
 
         <div class="gallery-pagination">
-          <button id="prev-page" class="btn btn-secondary" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+          <button id="prev-page" class="btn btn-secondary" disabled><i class="fas fa-chevron-left"></i> Pr茅c茅dent</button>
           <span id="page-indicator">Page 1</span>
           <button id="next-page" class="btn btn-secondary">Suivant <i class="fas fa-chevron-right"></i></button>
         </div>
@@ -116,15 +119,15 @@
             </div>
             <div class="stat">
               <i class="fas fa-gamepad"></i>
-              <span>Jeux complétés: <strong id="modal-games">0</strong></span>
+              <span>Jeux compl茅t茅s: <strong id="modal-games">0</strong></span>
             </div>
             <div class="stat">
               <i class="fas fa-book"></i>
-              <span>Cours complétés: <strong id="modal-courses">0</strong></span>
+              <span>Cours compl茅t茅s: <strong id="modal-courses">0</strong></span>
             </div>
             <div class="stat">
               <i class="fas fa-calendar-alt"></i>
-              <span>Dernière connexion: <strong id="modal-last-login">01/05/2025</strong></span>
+              <span>Derni猫re connexion: <strong id="modal-last-login">01/05/2025</strong></span>
             </div>
           </div>
         </div>
@@ -138,7 +141,7 @@
       <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
         <div class="footer-brand">
           <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
-          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et comp茅titive.</p>
           <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
@@ -154,16 +157,19 @@
             <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
             <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
             <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
-            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
-          </ul>
+          <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
         </div>
 
         <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">L茅gal</h4>
           <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialit茅</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions l茅gales</a></li>
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
           </ul>
         </div>
@@ -179,7 +185,7 @@
       </div>
 
       <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
-        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+        <p>&copy; 2025 English Quest - Tous droits r茅serv茅s</p>
       </div>
     </div>
   </footer>
@@ -192,3 +198,4 @@
   <script src="scripts/debug.js"></script>
 </body>
 </html>
+

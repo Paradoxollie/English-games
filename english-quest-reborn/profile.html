@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -342,7 +342,7 @@
       box-shadow: none;
     }
 
-    /* Styles pour les éléments verrouillés */
+    /* Styles pour les 茅l茅ments verrouill茅s */
     .inventory-item.locked {
       opacity: 0.6;
       cursor: not-allowed;
@@ -388,7 +388,7 @@
       margin-top: 0.5rem;
     }
 
-    /* Styles pour les paliers de déblocage */
+    /* Styles pour les paliers de d茅blocage */
     .milestone-card {
       background: var(--color-background);
       border-radius: 0.75rem;
@@ -709,13 +709,16 @@
           <li><a href="courses.html" class="nav-link">Cours</a></li>
           <li><a href="gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
-        </ul>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
       </nav>
 
       <div class="user-menu" id="userMenu">
         <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
         <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
-        <button class="menu-toggle">☰</button>
+        <button class="menu-toggle">鈽?/button>
       </div>
     </div>
   </header>
@@ -772,7 +775,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userCoins">0</div>
-            <div class="stat-label">Pièces</div>
+            <div class="stat-label">Pi猫ces</div>
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userPendingXP">0</div>
@@ -780,7 +783,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userPendingCoins">0</div>
-            <div class="stat-label">Pièces en attente</div>
+            <div class="stat-label">Pi猫ces en attente</div>
           </div>
         </div>
           </div>
@@ -790,45 +793,45 @@
     <div class="tabs-section">
         <div class="profile-tabs">
         <button class="profile-tab active" data-tab="inventory">Inventaire</button>
-        <button class="profile-tab" data-tab="achievements">Succès</button>
+        <button class="profile-tab" data-tab="achievements">Succ猫s</button>
         <button class="profile-tab" data-tab="progression">Progression</button>
-        <button class="profile-tab" data-tab="settings">Paramètres</button>
+        <button class="profile-tab" data-tab="settings">Param猫tres</button>
         </div>
 
       <!-- Tab Content -->
         <div class="tab-content active" id="inventory">
           <h2>Mon Inventaire</h2>
-          <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
+          <p>Personnalisez votre avatar en achetant et en 茅quipant diff茅rents 茅l茅ments.</p>
           <div class="inventory-grid" id="inventoryGrid">
             <p>Chargement de votre inventaire...</p>
           </div>
         </div>
 
         <div class="tab-content" id="achievements">
-          <h2>Mes Succès</h2>
+          <h2>Mes Succ猫s</h2>
           <div class="achievement-list" id="achievementList">
-            <!-- Les succès seront ajoutés dynamiquement -->
+            <!-- Les succ猫s seront ajout茅s dynamiquement -->
           </div>
         </div>
 
         <div class="tab-content" id="progression">
-          <h2>Progression et Déblocages</h2>
+          <h2>Progression et D茅blocages</h2>
           
           <!-- Simulateur XP -->
           <div class="xp-simulator" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
             <h3 style="margin-bottom: 1rem;">Simulateur XP</h3>
             <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-              <input type="number" id="xpSimulatorInput" placeholder="XP à ajouter" min="1" max="10000" style="padding: 0.5rem; border: 1px solid var(--color-primary); border-radius: 0.5rem; background: white;">
+              <input type="number" id="xpSimulatorInput" placeholder="XP 脿 ajouter" min="1" max="10000" style="padding: 0.5rem; border: 1px solid var(--color-primary); border-radius: 0.5rem; background: white;">
               <button id="simulateXPButton" style="padding: 0.5rem 1rem; background: var(--color-primary); color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Simuler</button>
               <div id="simulationResult" style="font-size: 0.9rem; color: var(--color-text-secondary);"></div>
             </div>
           </div>
           
-          <!-- Paliers de déblocage -->
+          <!-- Paliers de d茅blocage -->
           <div class="unlock-milestones" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
-            <h3 style="margin-bottom: 1rem;">Paliers de Déblocage</h3>
+            <h3 style="margin-bottom: 1rem;">Paliers de D茅blocage</h3>
             <div id="milestonesList" class="milestones-grid" style="display: grid; gap: 1rem;">
-              <!-- Les paliers seront ajoutés dynamiquement -->
+              <!-- Les paliers seront ajout茅s dynamiquement -->
             </div>
           </div>
           
@@ -836,16 +839,16 @@
           <div class="level-chart" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem;">
             <h3 style="margin-bottom: 1rem;">Tableau des Niveaux</h3>
             <div id="levelChart" style="max-height: 300px; overflow-y: auto;">
-              <!-- Le tableau sera ajouté dynamiquement -->
+              <!-- Le tableau sera ajout茅 dynamiquement -->
             </div>
           </div>
         </div>
 
         <div class="tab-content" id="settings">
-          <h2>Paramètres</h2>
+          <h2>Param猫tres</h2>
           <form class="settings-form" id="settingsForm">
             <div class="form-group">
-            <label for="themeToggle">Thème sombre</label>
+            <label for="themeToggle">Th猫me sombre</label>
               <label class="toggle-switch">
                 <input type="checkbox" id="themeToggle" checked>
                 <span class="toggle-slider"></span>
@@ -882,11 +885,11 @@
       <div class="footer-content">
         <div class="footer-brand">
           <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
-          <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et comp茅titive.</p>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+        <p>&copy; 2025 English Quest - Tous droits r茅serv茅s</p>
       </div>
     </div>
   </footer>
@@ -900,3 +903,4 @@
   <script type="module" src="scripts/profile.js"></script>
 </body>
 </html>
+

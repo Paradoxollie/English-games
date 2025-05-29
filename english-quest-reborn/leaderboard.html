@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -24,13 +24,16 @@
           <li><a href="courses.html" class="nav-link">Cours</a></li>
           <li><a href="gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="leaderboard.html" class="nav-link active">Classement</a></li>
-        </ul>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
       </nav>
 
       <div class="user-menu" id="userMenu">
         <a href="login.html" class="btn-login" id="loginButton">Connexion</a>
         <a href="profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
-        <button class="menu-toggle">☰</button>
+        <button class="menu-toggle">鈽?/button>
       </div>
     </div>
   </header>
@@ -42,7 +45,7 @@
       <h1 class="hero-title">
         <span class="text-gradient">CLASSEMENT MONDIAL</span>
       </h1>
-      <p class="hero-subtitle">Découvrez les meilleurs joueurs d'English Quest et leur progression</p>
+      <p class="hero-subtitle">D茅couvrez les meilleurs joueurs d'English Quest et leur progression</p>
     </div>
   </section>
 
@@ -116,12 +119,12 @@
                 <th>Joueur</th>
                 <th>Niveau</th>
                 <th>XP</th>
-                <th>Jeux joués</th>
+                <th>Jeux jou茅s</th>
                 <th>Victoires</th>
               </tr>
             </thead>
             <tbody id="leaderboard-data">
-              <!-- Les données seront chargées dynamiquement -->
+              <!-- Les donn茅es seront charg茅es dynamiquement -->
               <tr>
                 <td>4</td>
                 <td>
@@ -226,7 +229,7 @@
       <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
         <div class="footer-brand">
           <a href="index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
-          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et comp茅titive.</p>
           <div class="social-links" style="display: flex; gap: var(--spacing-sm);">
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-twitter"></i></a>
             <a href="#" style="color: var(--color-text-secondary); font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
@@ -242,16 +245,19 @@
             <li><a href="games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
             <li><a href="courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
             <li><a href="gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
-            <li><a href="leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
-          </ul>
+          <li><a href="leaderboard.html" class="nav-link active">Classement</a></li>
+                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
         </div>
 
         <div class="footer-links">
-          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Légal</h4>
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">L茅gal</h4>
           <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Conditions d'utilisation</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialité</a></li>
-            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions légales</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Politique de confidentialit茅</a></li>
+            <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Mentions l茅gales</a></li>
             <li><a href="#" style="color: var(--color-text-secondary); transition: color 0.3s ease;">RGPD</a></li>
           </ul>
         </div>
@@ -267,7 +273,7 @@
       </div>
 
       <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
-        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+        <p>&copy; 2025 English Quest - Tous droits r茅serv茅s</p>
       </div>
     </div>
   </footer>
@@ -278,7 +284,7 @@
   <script type="module" src="scripts/auth-header.js"></script>
   <script src="scripts/debug.js"></script>
   <script>
-    // Script pour gérer les onglets du classement
+    // Script pour g茅rer les onglets du classement
     document.addEventListener('DOMContentLoaded', function() {
       const tabs = document.querySelectorAll('.leaderboard-tab');
       
@@ -287,21 +293,21 @@
           // Supprimer la classe active de tous les onglets
           tabs.forEach(t => t.classList.remove('active'));
           
-          // Ajouter la classe active à l'onglet cliqué
+          // Ajouter la classe active 脿 l'onglet cliqu茅
           this.classList.add('active');
           
-          // Récupérer le type de classement
+          // R茅cup茅rer le type de classement
           const tabType = this.dataset.tab;
           
-          // Charger les données correspondantes (à implémenter)
+          // Charger les donn茅es correspondantes (脿 impl茅menter)
           loadLeaderboardData(tabType);
         });
       });
       
-      // Fonction pour charger les données du classement
+      // Fonction pour charger les donn茅es du classement
       // This function replaces the existing placeholder in leaderboard.html's script tag
 async function loadLeaderboardData(type = 'global') {
-    console.log(`Chargement des données du classement: ${type}`);
+    console.log(`Chargement des donn茅es du classement: ${type}`);
     const leaderboardDataBody = document.getElementById('leaderboard-data');
     const podiumItems = {
         first: document.querySelector('.podium-item.podium-first'),
@@ -337,7 +343,7 @@ async function loadLeaderboardData(type = 'global') {
             // Or fetch all and sort client-side if a small number of users, less ideal.
             // For now, let's do a client-side sort after fetching by level/xp as a placeholder for 'games' tab
             // In a real scenario, this would need its own query or a different data structure.
-            console.warn("Le tri 'Par jeux' utilise actuellement le tri par XP/Niveau. Un index Firestore dédié est recommandé pour un tri par jeux gagnés.");
+            console.warn("Le tri 'Par jeux' utilise actuellement le tri par XP/Niveau. Un index Firestore d茅di茅 est recommand茅 pour un tri par jeux gagn茅s.");
             query = window.firebaseServiceInstance.db.collection('PROFILES')
                 .orderBy('stats.gamesWon', 'desc') // This will likely require a composite index
                 .orderBy('level', 'desc') // Secondary sort
@@ -414,13 +420,13 @@ async function loadLeaderboardData(type = 'global') {
                 </tr>
             `;
         }
-        leaderboardDataBody.innerHTML = tableHtml || '<tr><td colspan="6">Plus de joueurs à afficher.</td></tr>';
+        leaderboardDataBody.innerHTML = tableHtml || '<tr><td colspan="6">Plus de joueurs 脿 afficher.</td></tr>';
 
     } catch (error) {
-        console.error("Erreur lors du chargement des données du classement:", error);
+        console.error("Erreur lors du chargement des donn茅es du classement:", error);
         leaderboardDataBody.innerHTML = '<tr><td colspan="6">Impossible de charger le classement.</td></tr>';
          if (error.message.includes("indexes?")) {
-            leaderboardDataBody.innerHTML = '<tr><td colspan="6">Erreur de configuration de la base de données. Index manquant. Contactez l\'administrateur.</td></tr>';
+            leaderboardDataBody.innerHTML = '<tr><td colspan="6">Erreur de configuration de la base de donn茅es. Index manquant. Contactez l\'administrateur.</td></tr>';
         }
     }
 }
@@ -605,3 +611,4 @@ loadLeaderboardData('global');
   </style>
 </body>
 </html>
+
