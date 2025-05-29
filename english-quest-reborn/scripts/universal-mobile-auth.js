@@ -157,6 +157,7 @@ class UniversalMobileAuth {
     try {
       // Détecter l'état d'authentification de manière plus robuste
       let isUserConnected = false;
+      let detectionMethod = 'none';
       
       // Méthode 1: Vérifier via les classes/styles des boutons desktop
       if (elements.profileButton && elements.loginButton) {
@@ -168,8 +169,9 @@ class UniversalMobileAuth {
                              elements.loginButton.offsetParent !== null;
         
         isUserConnected = profileVisible && !loginVisible;
+        detectionMethod = 'desktop-buttons';
         
-        this.log(`État détecté - Profil: ${profileVisible}, Login: ${loginVisible}, Connecté: ${isUserConnected}`);
+        this.log(`🔍 État détecté via boutons desktop - Profil: ${profileVisible}, Login: ${loginVisible}, Connecté: ${isUserConnected}`, 'info');
       }
       
       // Méthode 2: Vérifier via localStorage (backup)
@@ -180,17 +182,21 @@ class UniversalMobileAuth {
           try {
             const user = JSON.parse(currentUser);
             isUserConnected = user && (user.uid || user.id || user.username);
-            this.log(`État détecté via localStorage: ${isUserConnected}`, 'info');
+            detectionMethod = 'localStorage';
+            this.log(`🔍 État détecté via localStorage: ${isUserConnected} (${detectionMethod})`, 'info');
           } catch (e) {
-            // Ignore parsing errors
+            this.log(`❌ Erreur parsing localStorage: ${e.message}`, 'warn');
           }
         }
       }
 
+      // Afficher le résultat de détection
+      this.log(`🎯 RÉSULTAT FINAL: Utilisateur ${isUserConnected ? 'CONNECTÉ' : 'NON CONNECTÉ'} (méthode: ${detectionMethod})`, isUserConnected ? 'success' : 'info');
+
       // Appliquer la logique selon l'état
       if (isUserConnected) {
         // Utilisateur connecté : montrer profil et déconnexion, cacher connexion
-        this.log('👤 Utilisateur connecté - Configuration boutons mobile', 'success');
+        this.log('👤 Configuration boutons mobile pour utilisateur connecté', 'success');
         
         // Cacher connexion mobile
         if (elements.mobileLoginButton) {
@@ -214,7 +220,7 @@ class UniversalMobileAuth {
         }
       } else {
         // Utilisateur non connecté : montrer connexion, cacher profil et déconnexion
-        this.log('🚪 Utilisateur non connecté - Configuration boutons mobile', 'info');
+        this.log('🚪 Configuration boutons mobile pour utilisateur non connecté', 'info');
         
         // Montrer connexion mobile
         if (elements.mobileLoginButton) {
@@ -238,6 +244,7 @@ class UniversalMobileAuth {
         }
       }
 
+      this.log(`✅ Synchronisation terminée: boutons ${isUserConnected ? 'connecté' : 'non connecté'} affichés`, 'success');
       return true;
     } catch (error) {
       this.log(`Erreur lors de la synchronisation: ${error.message}`, 'error');
