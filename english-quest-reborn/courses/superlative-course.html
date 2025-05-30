@@ -33,7 +33,7 @@
   <script src="../scripts/new-design.js"></script>
   
   <style>
-    /* Styles spécifiques au cours */
+    /* Styles spécifiques au cours superlatif */
     .course-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -111,11 +111,6 @@
       bottom: 0;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
       animation: progressShine 2s infinite;
-    }
-    
-    @keyframes progressShine {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
     }
     
     .game-progress-text {
@@ -201,41 +196,92 @@
     }
     
     .section-number.completed::after {
-      content: '✓';
+      content: "✓";
       position: absolute;
-      top: -5px;
-      right: -5px;
-      background: var(--color-primary);
+      font-size: 1.5rem;
       color: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      border: 2px solid var(--color-background);
+      font-weight: bold;
     }
     
     .lock-overlay {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: var(--spacing-lg);
-      border-radius: var(--border-radius-lg);
-      text-align: center;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       z-index: 10;
+      border-radius: var(--border-radius-lg);
     }
     
     .lock-overlay i {
-      font-size: 2rem;
-      margin-bottom: var(--spacing-md);
+      font-size: 3rem;
       color: #95a5a6;
+      margin-bottom: var(--spacing-md);
     }
     
+    .lock-overlay p {
+      color: #95a5a6;
+      text-align: center;
+      margin: 0;
+    }
+    
+    /* Boîtes d'information */
+    .note-box {
+      background: rgba(52, 152, 219, 0.1);
+      border-left: 4px solid var(--color-info);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+    }
+    
+    .structure-box {
+      background: rgba(142, 68, 173, 0.1);
+      border: 2px solid var(--color-secondary);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      border-radius: var(--border-radius-md);
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+    
+    .example-box {
+      background: rgba(46, 204, 113, 0.1);
+      border: 2px solid var(--color-primary);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      border-radius: var(--border-radius-md);
+    }
+    
+    .warning-box {
+      background: rgba(231, 76, 60, 0.1);
+      border: 2px solid var(--color-danger);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      border-radius: var(--border-radius-md);
+    }
+    
+    /* Types de superlatifs */
+    .superlative-type {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+    
+    .superlative-title {
+      color: var(--color-primary);
+      font-size: 1.3rem;
+      margin-bottom: var(--spacing-md);
+      font-family: var(--font-family-secondary);
+    }
+    
+    /* Boutons de section */
     .section-complete-btn {
       background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
       color: white;
@@ -243,201 +289,97 @@
       padding: var(--spacing-md) var(--spacing-xl);
       border-radius: var(--border-radius-md);
       font-size: 1.1rem;
-      font-weight: 600;
+      font-weight: bold;
       cursor: pointer;
       transition: all var(--transition-fast);
-      margin-top: var(--spacing-lg);
       display: flex;
       align-items: center;
       gap: var(--spacing-sm);
-      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+      margin: var(--spacing-xl) auto 0;
     }
     
     .section-complete-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
     }
     
     .section-complete-btn:disabled {
-      opacity: 0.5;
+      background: #95a5a6;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
     
-    .section-complete-btn.completed {
-      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-      cursor: default;
-    }
-    
-    .section-complete-btn.completed:hover {
-      transform: none;
-      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-    }
-    
-    .superlative-type {
-      background: var(--color-surface-hover);
-      border-radius: var(--border-radius-md);
-      padding: var(--spacing-lg);
-      margin-bottom: var(--spacing-lg);
-      border-left: 4px solid var(--color-primary);
-      transition: all var(--transition-normal);
-    }
-    
-    .superlative-type:hover {
-      background: var(--color-surface-active);
-      transform: translateX(5px);
-    }
-    
-    .superlative-title {
-      font-size: 1.4rem;
-      color: var(--color-primary);
-      margin-bottom: var(--spacing-md);
-      font-family: var(--font-family-secondary);
-    }
-    
-    .structure-box {
-      background: rgba(46, 204, 113, 0.1);
-      border: 1px solid rgba(46, 204, 113, 0.3);
-      border-radius: var(--border-radius-md);
-      padding: var(--spacing-md);
-      margin: var(--spacing-md) 0;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      color: var(--color-primary);
-    }
-    
-    .example-box {
-      background: rgba(52, 152, 219, 0.1);
-      border: 1px solid rgba(52, 152, 219, 0.3);
-      border-radius: var(--border-radius-md);
-      padding: var(--spacing-md);
-      margin: var(--spacing-md) 0;
-      font-style: italic;
-      color: var(--color-info);
-    }
-    
-    .note-box {
-      background: rgba(241, 196, 15, 0.1);
-      border: 1px solid rgba(241, 196, 15, 0.3);
-      border-radius: var(--border-radius-md);
-      padding: var(--spacing-md);
-      margin: var(--spacing-md) 0;
-      color: var(--color-accent);
-    }
-    
-    .note-box::before {
-      content: "💡 ";
-      font-size: 1.2rem;
-    }
-    
-    /* Styles pour les mini-quiz de validation */
+    /* Quiz de validation */
     .section-validation-quiz {
-      background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
-      border: 2px solid rgba(52, 152, 219, 0.3);
+      display: none;
+      background: var(--color-surface-hover);
       border-radius: var(--border-radius-lg);
       padding: var(--spacing-xl);
-      margin: var(--spacing-lg) 0;
-      display: none;
+      margin-top: var(--spacing-xl);
+      border: 2px solid rgba(46, 204, 113, 0.3);
     }
     
     .validation-quiz-title {
-      font-size: 1.3rem;
-      color: var(--color-info);
+      color: var(--color-primary);
+      font-size: 1.4rem;
       margin-bottom: var(--spacing-lg);
       text-align: center;
       font-family: var(--font-family-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--spacing-sm);
     }
     
     .validation-question {
-      background: var(--color-surface-hover);
-      border-radius: var(--border-radius-md);
+      margin-bottom: var(--spacing-xl);
       padding: var(--spacing-lg);
-      margin-bottom: var(--spacing-lg);
-      border-left: 4px solid var(--color-info);
+      background: var(--color-surface);
+      border-radius: var(--border-radius-md);
     }
     
     .validation-question-text {
       font-size: 1.1rem;
-      color: var(--color-text-primary);
+      font-weight: bold;
       margin-bottom: var(--spacing-md);
-      font-weight: 600;
+      color: var(--color-primary);
     }
     
     .validation-options {
       display: grid;
       gap: var(--spacing-sm);
-      margin-top: var(--spacing-md);
     }
     
     .validation-option {
-      background: var(--color-surface);
+      background: var(--color-surface-hover);
       border: 2px solid transparent;
       border-radius: var(--border-radius-md);
       padding: var(--spacing-md);
       cursor: pointer;
       transition: all var(--transition-fast);
-      font-size: 0.95rem;
-      position: relative;
     }
     
     .validation-option:hover {
-      border-color: var(--color-info);
-      background: var(--color-surface-hover);
-      transform: translateX(3px);
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.1);
     }
     
     .validation-option.selected {
-      border-color: var(--color-info);
-      background: rgba(52, 152, 219, 0.2);
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.2);
     }
     
     .validation-option.correct {
       border-color: var(--color-primary);
-      background: rgba(46, 204, 113, 0.2);
-      animation: correctValidation 0.5s ease;
+      background: rgba(46, 204, 113, 0.3);
     }
     
     .validation-option.incorrect {
       border-color: var(--color-danger);
       background: rgba(231, 76, 60, 0.2);
-      animation: incorrectValidation 0.5s ease;
-    }
-    
-    @keyframes correctValidation {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-    
-    @keyframes incorrectValidation {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-3px); }
-      75% { transform: translateX(3px); }
-      100% { transform: translateX(0); }
     }
     
     .validation-feedback {
-      margin-top: var(--spacing-md);
-      padding: var(--spacing-md);
-      border-radius: var(--border-radius-md);
-      font-size: 0.9rem;
-      display: none;
-    }
-    
-    .validation-feedback.correct {
-      background: rgba(46, 204, 113, 0.1);
-      border: 1px solid rgba(46, 204, 113, 0.3);
-      color: var(--color-primary);
-    }
-    
-    .validation-feedback.incorrect {
-      background: rgba(231, 76, 60, 0.1);
-      border: 1px solid rgba(231, 76, 60, 0.3);
-      color: var(--color-danger);
+      margin-top: var(--spacing-sm);
+      font-style: italic;
+      min-height: 20px;
     }
     
     .validation-controls {
@@ -446,155 +388,222 @@
     }
     
     .validation-btn {
-      background: linear-gradient(135deg, var(--color-info), #2980b9);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
       color: white;
       border: none;
-      padding: var(--spacing-md) var(--spacing-lg);
+      padding: var(--spacing-md) var(--spacing-xl);
       border-radius: var(--border-radius-md);
-      font-size: 1rem;
-      font-weight: 600;
+      font-weight: bold;
       cursor: pointer;
       transition: all var(--transition-fast);
       margin: 0 var(--spacing-sm);
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
     }
     
-    .validation-btn:hover {
+    .validation-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
     }
     
     .validation-btn:disabled {
-      opacity: 0.5;
+      background: #95a5a6;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
     
     .validation-btn.success {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-    }
-    
-    .validation-btn.success:hover {
-      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+      background: linear-gradient(135deg, var(--color-primary), #27ae60);
     }
     
     .validation-score {
       text-align: center;
       margin-top: var(--spacing-lg);
-      padding: var(--spacing-md);
-      background: var(--color-surface-hover);
-      border-radius: var(--border-radius-md);
-      display: none;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
     
-    .validation-score.success {
-      background: rgba(46, 204, 113, 0.1);
-      border: 1px solid rgba(46, 204, 113, 0.3);
-      color: var(--color-primary);
+    /* Quiz styles */
+    .quiz-options {
+      display: grid;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
     }
     
-    .validation-score.retry {
-      background: rgba(230, 126, 34, 0.1);
-      border: 1px solid rgba(230, 126, 34, 0.3);
-      color: #e67e22;
-    }
-    
-    /* Quiz styles simplifiés */
-    .interactive-exercise {
-      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
-      border: 1px solid rgba(155, 89, 182, 0.3);
-      border-radius: var(--border-radius-lg);
-      padding: var(--spacing-xl);
-      margin: var(--spacing-lg) 0;
-    }
-
-    .quiz-info {
-      background: rgba(155, 89, 182, 0.1);
+    .quiz-option {
+      background: var(--color-surface);
+      border: 2px solid transparent;
       border-radius: var(--border-radius-md);
       padding: var(--spacing-lg);
-      margin-bottom: var(--spacing-lg);
-      text-align: center;
-    }
-
-    .quiz-controls {
-      text-align: center;
-      margin: var(--spacing-lg) 0;
-    }
-
-    .quiz-btn {
-      background: linear-gradient(135deg, #9b59b6, #8e44ad);
-      color: white;
-      border: none;
-      padding: var(--spacing-md) var(--spacing-xl);
-      border-radius: var(--border-radius-md);
-      font-size: 1.1rem;
-      font-weight: 600;
       cursor: pointer;
       transition: all var(--transition-fast);
-      margin: 0 var(--spacing-sm);
-      box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
-    }
-
-    .quiz-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
-    }
-
-    .quiz-btn.secondary {
-      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-      box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
-    }
-
-    .quiz-btn.secondary:hover {
-      box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
-    }
-
-    .quiz-container {
-      display: none;
-    }
-
-    .quiz-results {
-      display: none;
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
     }
     
-    /* Quiz final */
-    .final-quiz-section {
-      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
-      border: 2px solid rgba(155, 89, 182, 0.5);
+    .quiz-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .quiz-option:hover {
+      border-color: var(--color-primary);
+      background: var(--color-surface-hover);
+      transform: translateX(5px);
+    }
+    
+    .quiz-option:hover::before {
+      left: 100%;
+    }
+    
+    .quiz-option.selected {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.2);
+    }
+    
+    .quiz-option.correct {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.3);
+      animation: correctAnswer 0.5s ease;
+    }
+    
+    .quiz-option.incorrect {
+      border-color: var(--color-danger);
+      background: rgba(231, 76, 60, 0.2);
+      animation: incorrectAnswer 0.5s ease;
+    }
+    
+    @keyframes correctAnswer {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes incorrectAnswer {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
+    }
+
+    .quiz-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--spacing-lg);
+      gap: var(--spacing-md);
+    }
+    
+    .quiz-nav-btn {
+      background: var(--color-surface);
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-weight: 600;
+    }
+    
+    .quiz-nav-btn:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+    }
+    
+    .quiz-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .quiz-nav-btn.primary {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border-color: var(--color-primary);
+    }
+    
+    .quiz-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .quiz-header h3 {
+      color: var(--color-primary);
+      font-family: var(--font-family-secondary);
+      margin-bottom: var(--spacing-lg);
+    }
+    
+    .quiz-progress {
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .quiz-progress-bar {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      height: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(46, 204, 113, 0.3);
+    }
+    
+    .quiz-progress-fill {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
       position: relative;
     }
     
-    .final-quiz-title {
-      font-size: 2rem;
-      text-align: center;
-      background: linear-gradient(135deg, #9b59b6, #e74c3c);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: var(--spacing-lg);
-      font-family: var(--font-family-secondary);
+    .quiz-progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: progressShine 2s infinite;
     }
     
-    /* Responsive design */
+    .quiz-question {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+    
+    .quiz-question-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
       .course-container {
-        padding: var(--spacing-sm);
-        max-width: 100%;
-      }
-      
-      .course-header {
-        padding: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
+        padding: var(--spacing-md);
       }
       
       .course-title {
-        font-size: 2rem;
-        line-height: 1.2;
+        font-size: 2.2rem;
       }
       
-      .course-subtitle {
-        font-size: 1rem;
+      .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
       }
       
       .course-meta {
@@ -602,7 +611,596 @@
         align-items: center;
         gap: var(--spacing-sm);
       }
+      
+      .validation-options {
+        gap: var(--spacing-xs);
+      }
+      
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+      }
     }
+    
+    /* Styles spéciaux pour le Quiz Final */
+    .quiz-final-container {
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+      border: 2px solid rgba(46, 204, 113, 0.4);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin-top: var(--spacing-xl);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .quiz-final-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+      animation: finalQuizShine 3s infinite;
+      z-index: 1;
+    }
+    
+    @keyframes finalQuizShine {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .quiz-final-container > * {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .final-quiz-header {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+      padding: var(--spacing-lg);
+      background: rgba(46, 204, 113, 0.1);
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+    
+    .final-quiz-title {
+      font-size: 1.8rem;
+      color: var(--color-primary);
+      font-family: var(--font-family-secondary);
+      margin-bottom: var(--spacing-md);
+      text-shadow: 0 2px 4px rgba(46, 204, 113, 0.3);
+    }
+    
+    .final-quiz-subtitle {
+      color: var(--color-text-secondary);
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    .final-progress-container {
+      margin: var(--spacing-lg) 0;
+      position: relative;
+    }
+    
+    .final-progress-bar {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      height: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(46, 204, 113, 0.3);
+      position: relative;
+    }
+    
+    .final-progress-fill {
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
+      background-size: 200% 100%;
+      height: 100%;
+      width: 0%;
+      transition: width 0.8s ease;
+      position: relative;
+      animation: finalProgressGradient 2s infinite;
+    }
+    
+    @keyframes finalProgressGradient {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 0%; }
+      100% { background-position: 0% 0%; }
+    }
+    
+    .final-progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: finalProgressShine 1.5s infinite;
+    }
+    
+    @keyframes finalProgressShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .final-progress-text {
+      text-align: center;
+      margin-top: var(--spacing-sm);
+      font-weight: bold;
+      color: var(--color-primary);
+      font-size: 1.1rem;
+    }
+    
+    .final-question-container {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+      border: 2px solid rgba(46, 204, 113, 0.2);
+      position: relative;
+      transition: all var(--transition-normal);
+    }
+    
+    .final-question-container:hover {
+      border-color: rgba(46, 204, 113, 0.4);
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.2);
+    }
+    
+    .final-question-text {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      line-height: 1.4;
+    }
+    
+    .final-quiz-options {
+      display: grid;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-lg);
+    }
+    
+    .final-quiz-option {
+      background: var(--color-surface);
+      border: 2px solid transparent;
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .final-quiz-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.15), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .final-quiz-option:hover {
+      border-color: var(--color-primary);
+      background: var(--color-surface-hover);
+      transform: translateX(8px);
+      box-shadow: 0 4px 16px rgba(46, 204, 113, 0.2);
+    }
+    
+    .final-quiz-option:hover::before {
+      left: 100%;
+    }
+    
+    .final-quiz-option.selected {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.2);
+      transform: translateX(5px);
+      box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3);
+    }
+    
+    .final-quiz-option.correct {
+      border-color: var(--color-primary);
+      background: rgba(46, 204, 113, 0.3);
+      animation: finalCorrectAnswer 0.8s ease;
+    }
+    
+    .final-quiz-option.incorrect {
+      border-color: var(--color-danger);
+      background: rgba(231, 76, 60, 0.2);
+      animation: finalIncorrectAnswer 0.6s ease;
+    }
+    
+    @keyframes finalCorrectAnswer {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.08); }
+      60% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes finalIncorrectAnswer {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+      100% { transform: translateX(0); }
+    }
+    
+    .final-navigation {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--spacing-xl);
+      gap: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+    
+    .final-nav-btn {
+      background: var(--color-surface);
+      border: 2px solid var(--color-primary);
+      color: var(--color-primary);
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-weight: 600;
+      font-size: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .final-nav-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .final-nav-btn:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+    }
+    
+    .final-nav-btn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+    
+    .final-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .final-nav-btn.primary {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border-color: var(--color-primary);
+      font-weight: bold;
+      animation: finalButtonPulse 2s infinite;
+    }
+    
+    @keyframes finalButtonPulse {
+      0% { box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3); }
+      50% { box-shadow: 0 8px 32px rgba(46, 204, 113, 0.5); }
+      100% { box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3); }
+    }
+    
+    .final-nav-btn.primary:hover {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(46, 204, 113, 0.6);
+    }
+    
+    /* Résultats finaux avec célébration */
+    .final-celebration {
+      position: relative;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      border-radius: var(--border-radius-lg);
+      padding: 3rem;
+      margin: 2rem 0;
+      text-align: center;
+      overflow: hidden;
+      animation: finalCelebration 3s ease-in-out;
+    }
+    
+    @keyframes finalCelebration {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .final-celebration::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: finalCelebrationShine 4s infinite;
+    }
+    
+    @keyframes finalCelebrationShine {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .final-celebration-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .final-celebration h2 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      animation: finalTitleBounce 1s ease-out 0.5s both;
+    }
+    
+    @keyframes finalTitleBounce {
+      0% { transform: translateY(-100px); opacity: 0; }
+      60% { transform: translateY(10px); }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    .final-score-display {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 1.5rem 0;
+      animation: finalScoreCountUp 2s ease-out 1s both;
+    }
+    
+    @keyframes finalScoreCountUp {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    .final-certification-badge {
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--border-radius-md);
+      padding: 1.5rem;
+      margin-top: 2rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      animation: finalBadgeSlideIn 1s ease-out 2s both;
+    }
+    
+    @keyframes finalBadgeSlideIn {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    
+    /* Responsive pour quiz final */
+    @media (max-width: 768px) {
+      .final-navigation {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+      }
+      
+      .final-nav-btn {
+        width: 100%;
+        padding: var(--spacing-md);
+      }
+      
+      .final-quiz-option {
+        padding: var(--spacing-md);
+        font-size: 1rem;
+        min-height: 50px;
+      }
+      
+      .final-question-text {
+        font-size: 1.1rem;
+      }
+      
+      .final-celebration {
+        padding: 2rem;
+      }
+      
+      .final-celebration h2 {
+        font-size: 2rem;
+      }
+      
+      .final-score-display {
+        font-size: 1.5rem;
+      }
+    }
+    
+    /* Animation d'entrée pour le quiz final */
+    .final-quiz-enter {
+      animation: finalQuizEnter 0.8s ease-out;
+    }
+    
+    @keyframes finalQuizEnter {
+      0% { 
+        transform: translateY(50px); 
+        opacity: 0; 
+        filter: blur(10px);
+      }
+      100% { 
+        transform: translateY(0); 
+        opacity: 1; 
+        filter: blur(0);
+      }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .course-container {
+        padding: var(--spacing-md);
+      }
+      
+      .course-title {
+        font-size: 2.2rem;
+      }
+      
+      .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .course-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .validation-options {
+        gap: var(--spacing-xs);
+      }
+      
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Styles simplifiés et fonctionnels */
+    .quiz-question-container {
+      background: var(--color-surface-hover);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      margin: var(--spacing-lg) 0;
+      border: 1px solid rgba(46, 204, 113, 0.2);
+    }
+    
+    .quiz-question h4 {
+      color: var(--color-primary);
+      font-family: var(--font-family-secondary);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .quiz-question p {
+      color: var(--color-text);
+      margin-bottom: var(--spacing-lg);
+      font-size: 1.1rem;
+    }
+    
+    .quiz-nav-btn.finish {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border: none;
+    }
+    
+    .quiz-nav-btn.finish:hover:not(:disabled) {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+    }
+
+    /* Styles pour les résultats du quiz final */
+    .quiz-final-results {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--spacing-xl);
+    }
+
+    .result-badge {
+      text-align: center;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .badge-master {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white;
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.5rem;
+      font-weight: bold;
+      animation: badgeGlow 2s infinite alternate;
+      box-shadow: 0 8px 32px rgba(243, 156, 18, 0.3);
+    }
+
+    .badge-good {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.5rem;
+      font-weight: bold;
+      animation: badgeGlow 2s infinite alternate;
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.3);
+    }
+
+    .badge-retry {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      font-size: 1.5rem;
+      font-weight: bold;
+      box-shadow: 0 8px 32px rgba(231, 76, 60, 0.3);
+    }
+
+    @keyframes badgeGlow {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    .result-details {
+      margin: var(--spacing-xl) 0;
+    }
+
+    .result-details h4 {
+      color: var(--color-primary);
+      font-family: var(--font-family-secondary);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-xl);
+      flex-wrap: wrap;
+    }
+
+    .quiz-btn {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      color: white;
+      border: none;
+      padding: var(--spacing-md) var(--spacing-xl);
+      border-radius: var(--border-radius-md);
+      font-weight: bold;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-size: 1rem;
+    }
+
+    .quiz-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      background: var(--color-surface);
+      border-radius: var(--border-radius-md);
+      border-left: 4px solid var(--color-primary);
+    }
+    
+    /* Responsive */
   </style>
 </head>
 <body>
@@ -638,13 +1236,13 @@
     <div class="course-container">
       <!-- Course Header -->
       <div class="course-header">
-        <h1 class="course-title">LE SUPERLATIF</h1>
-        <p class="course-subtitle">Maîtrisez l'art d'exprimer les extrêmes en anglais</p>
+        <h1 class="course-title">Le Superlatif en Anglais</h1>
+        <p class="course-subtitle">Maîtrisez l'art d'exprimer les extrêmes avec précision et élégance</p>
         
         <div class="course-meta">
           <div class="meta-item">
             <i class="fas fa-clock"></i>
-            <span>30 minutes</span>
+            <span>35 minutes</span>
           </div>
           <div class="meta-item">
             <i class="fas fa-signal"></i>
@@ -689,7 +1287,7 @@
           <li><strong style="color: var(--color-primary);">Usage avec prépositions</strong> - "in", "of", "at" et leurs contextes</li>
           <li><strong style="color: var(--color-primary);">Erreurs communes</strong> - Les pièges typiques des francophones</li>
           <li><strong style="color: var(--color-primary);">Nuances stylistiques</strong> - Registres formels et informels</li>
-          <li><strong style="color: var(--color-primary);">Contextes spéciaux</strong> - Expressions idiomatiques et cas particuliers</li>
+          <li><strong style="color: var(--color-primary);">Applications pratiques</strong> - Contextes réels d'utilisation</li>
         </ul>
         
         <button class="section-complete-btn" id="complete-1" onclick="showValidationQuiz(1)">
@@ -753,92 +1351,72 @@
       <section class="course-section locked" id="section-2" data-section="2">
         <div class="lock-overlay" id="lock-2">
           <i class="fas fa-lock"></i>
-          <p>Terminez l'introduction pour débloquer cette section</p>
+          <p>Terminez la section précédente pour débloquer cette section</p>
         </div>
         
         <h2 class="section-title">
           <span class="section-number locked" id="number-2">2</span>
           Formation des Superlatifs
         </h2>
+        
+        <p>La formation du superlatif en anglais suit des règles précises selon la longueur et la terminaison de l'adjectif. Maîtriser ces règles vous évitera les erreurs les plus communes.</p>
 
         <!-- Adjectifs courts avec -est -->
         <div class="superlative-type">
-          <h3 class="superlative-title">📏 Adjectifs Courts avec -EST</h3>
+          <h3 class="superlative-title">📏 Adjectifs Courts (1-2 syllabes) avec -EST</h3>
           
           <div class="structure-box">
-            <strong>Règle :</strong> the + adjectif + est
+            <strong>Règle de base :</strong> the + adjectif + est
           </div>
           
           <div class="example-box">
-            <strong>Exemples :</strong><br>
+            <strong>Exemples simples :</strong><br>
             • tall → the tallest (le plus grand)<br>
             • fast → the fastest (le plus rapide)<br>
             • old → the oldest (le plus âgé)<br>
-            • cheap → the cheapest (le moins cher)
+            • small → the smallest (le plus petit)
           </div>
           
-          <p><strong>Règles d'orthographe importantes :</strong></p>
-          <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
-            <li><strong>Doublement de consonne :</strong> big → biggest, hot → hottest</li>
-            <li><strong>Y devient IE :</strong> happy → happiest, easy → easiest</li>
-            <li><strong>E final :</strong> large → largest, nice → nicest</li>
-          </ul>
-          
-          <div class="note-box">
-            <strong>Astuce :</strong> Les adjectifs d'une syllabe et ceux de deux syllabes terminés par -y, -le, -er, -ow prennent généralement -est.
+          <div class="warning-box">
+            <strong>Règles d'orthographe importantes :</strong><br>
+            ✓ Consonne finale doublée : big → the biggest<br>
+            ✓ Y devient IE : happy → the happiest<br>
+            ✓ E muet supprimé : large → the largest
           </div>
         </div>
 
         <!-- Adjectifs longs avec most -->
         <div class="superlative-type">
-          <h3 class="superlative-title">📖 Adjectifs Longs avec MOST</h3>
+          <h3 class="superlative-title">📖 Adjectifs Longs (3+ syllabes) avec MOST</h3>
           
           <div class="structure-box">
-            <strong>Règle :</strong> the most + adjectif
+            <strong>Règle de base :</strong> the most + adjectif
           </div>
           
           <div class="example-box">
             <strong>Exemples :</strong><br>
-            • beautiful → the most beautiful (le plus beau)<br>
-            • expensive → the most expensive (le plus cher)<br>
-            • intelligent → the most intelligent (le plus intelligent)<br>
-            • interesting → the most interesting (le plus intéressant)
-          </div>
-          
-          <p><strong>Quand utiliser "most" :</strong></p>
-          <ul style="margin-left: var(--spacing-lg); color: var(--color-text-secondary);">
-            <li>Adjectifs de 3 syllabes ou plus</li>
-            <li>Adjectifs de 2 syllabes NON terminés par -y, -le, -er, -ow</li>
-            <li>Participes passés utilisés comme adjectifs</li>
-          </ul>
-          
-          <div class="note-box">
-            <strong>⚠️ Erreur commune :</strong> Ne jamais dire "the most tallest" ou "the beautifulest". C'est soit -est, soit most, jamais les deux !
+            • beautiful → the most beautiful<br>
+            • expensive → the most expensive<br>
+            • intelligent → the most intelligent<br>
+            • comfortable → the most comfortable
           </div>
         </div>
 
-        <!-- Adjectifs de 2 syllabes -->
+        <!-- Cas particuliers -->
         <div class="superlative-type">
-          <h3 class="superlative-title">🤔 Cas Particulier : Adjectifs de 2 Syllabes</h3>
-          
-          <p><strong>Certains acceptent les deux formes :</strong></p>
-          
-          <div class="example-box">
-            <strong>Exemples :</strong><br>
-            • quiet → the quietest OU the most quiet<br>
-            • simple → the simplest OU the most simple<br>
-            • clever → the cleverest OU the most clever<br>
-            • narrow → the narrowest OU the most narrow
-          </div>
+          <h3 class="superlative-title">⚡ Cas Particuliers (2 syllabes)</h3>
           
           <div class="note-box">
-            <strong>Conseil :</strong> En cas de doute avec un adjectif de 2 syllabes, "most" est toujours sûr et accepté !
+            Pour les adjectifs de 2 syllabes, les deux formes sont souvent possibles :<br>
+            • clever → the cleverest / the most clever<br>
+            • gentle → the gentlest / the most gentle<br>
+            • narrow → the narrowest / the most narrow
           </div>
         </div>
         
-        <button class="section-complete-btn" id="complete-2" onclick="showValidationQuiz(2)" disabled>
-          <i class="fas fa-check"></i>
-          Maîtriser la Formation
+        <button class="section-complete-btn" id="complete-2" onclick="showValidationQuiz(2)">
+          <i class="fas fa-question-circle"></i>
+          Passer le Quiz de Validation
         </button>
         
         <!-- Quiz de Validation Section 2 -->
@@ -850,13 +1428,13 @@
           
           <div class="validation-question" data-question="1">
             <div class="validation-question-text">
-              Question 1: Quelle est la forme superlative de "big" ?
+              Question 1: Quelle est la forme superlative de "tall" ?
             </div>
             <div class="validation-options">
-              <div class="validation-option" data-answer="0">the bigest</div>
-              <div class="validation-option" data-answer="1">the biggest</div>
-              <div class="validation-option" data-answer="2">the most big</div>
-              <div class="validation-option" data-answer="3">the bigger</div>
+              <div class="validation-option" data-answer="0">the most tall</div>
+              <div class="validation-option" data-answer="1">the tallest</div>
+              <div class="validation-option" data-answer="2">tallest</div>
+              <div class="validation-option" data-answer="3">the taller</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -870,23 +1448,8 @@
             <div class="validation-options">
               <div class="validation-option" data-answer="0">the beautifulest</div>
               <div class="validation-option" data-answer="1">the most beautiful</div>
-              <div class="validation-option" data-answer="2">the most beautifulest</div>
-              <div class="validation-option" data-answer="3">the beautifullest</div>
-            </div>
-            <div class="validation-feedback">
-              <span class="feedback-text"></span>
-            </div>
-          </div>
-          
-          <div class="validation-question" data-question="3">
-            <div class="validation-question-text">
-              Question 3: Quelle est la forme superlative de "happy" ?
-            </div>
-            <div class="validation-options">
-              <div class="validation-option" data-answer="0">the happyest</div>
-              <div class="validation-option" data-answer="1">the most happy</div>
-              <div class="validation-option" data-answer="2">the happiest</div>
-              <div class="validation-option" data-answer="3">the happyer</div>
+              <div class="validation-option" data-answer="2">beautifulest</div>
+              <div class="validation-option" data-answer="3">beautiful</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -908,109 +1471,71 @@
         </div>
       </section>
 
-      <!-- Section 3: Superlatifs Irréguliers et Prépositions -->
+      <!-- Section 3: Superlatifs Irréguliers -->
       <section class="course-section locked" id="section-3" data-section="3">
         <div class="lock-overlay" id="lock-3">
           <i class="fas fa-lock"></i>
-          <p>Maîtrisez la formation pour débloquer cette section</p>
+          <p>Terminez la section précédente pour débloquer cette section</p>
         </div>
         
         <h2 class="section-title">
           <span class="section-number locked" id="number-3">3</span>
-          Superlatifs Irréguliers et Prépositions
+          Superlatifs Irréguliers
         </h2>
+        
+        <p>Certains adjectifs très courants ont des formes superlatives complètement irrégulières. Ces formes sont essentielles à connaître car elles sont utilisées quotidiennement.</p>
 
-        <!-- Superlatifs irréguliers -->
         <div class="superlative-type">
-          <h3 class="superlative-title">⭐ Superlatifs Irréguliers Essentiels</h3>
-          
-          <p><strong>Ces adjectifs ont des formes spéciales à mémoriser absolument :</strong></p>
+          <h3 class="superlative-title">⭐ Les Superlatifs Irréguliers Essentiels</h3>
           
           <div class="structure-box">
-            <strong>Formes irrégulières courantes :</strong><br>
+            <strong>Formes à mémoriser absolument :</strong><br>
             • good → the best (le meilleur)<br>
             • bad → the worst (le pire)<br>
             • far → the farthest/furthest (le plus loin)<br>
-            • little → the least (le moins)<br>
-            • much/many → the most (le plus)
+            • much/many → the most (le plus)<br>
+            • little → the least (le moins)
           </div>
           
           <div class="example-box">
-            <strong>En contexte :</strong><br>
-            • This is the best restaurant in town.<br>
-            • That was the worst movie I've ever seen.<br>
-            • She lives the farthest from school.<br>
-            • He has the least experience of all candidates.
-          </div>
-          
-          <div class="note-box">
-            <strong>Attention :</strong> Ces formes sont complètement irrégulières. Ne jamais dire "the goodest" ou "the baddest" !
+            <strong>Exemples en contexte :</strong><br>
+            • This is the <strong>best</strong> pizza in town.<br>
+            • It was the <strong>worst</strong> day of my life.<br>
+            • She lives the <strong>farthest</strong> from school.<br>
+            • He has the <strong>most</strong> experience.<br>
+            • This requires the <strong>least</strong> effort.
           </div>
         </div>
 
-        <!-- Usage avec prépositions -->
         <div class="superlative-type">
-          <h3 class="superlative-title">🔗 Usage avec les Prépositions</h3>
-          
-          <p><strong>Trois prépositions principales avec le superlatif :</strong></p>
-          
-          <div class="structure-box">
-            <strong>• IN :</strong> pour les lieux (villes, pays, groupes fermés)<br>
-            <strong>• OF :</strong> pour les groupes définis de personnes/choses<br>
-            <strong>• AT :</strong> pour les activités, compétences
-          </div>
-          
-          <div class="example-box">
-            <strong>Exemples avec IN :</strong><br>
-            • the tallest building in Paris<br>
-            • the best restaurant in France<br>
-            • the smartest student in the class<br><br>
-            
-            <strong>Exemples avec OF :</strong><br>
-            • the oldest of my three brothers<br>
-            • the most expensive of all the cars<br>
-            • the fastest of the runners<br><br>
-            
-            <strong>Exemples avec AT :</strong><br>
-            • the best at mathematics<br>
-            • the worst at cooking<br>
-            • the fastest at typing
-          </div>
+          <h3 class="superlative-title">🎯 Distinction Far/Further</h3>
           
           <div class="note-box">
-            <strong>Astuce :</strong> "IN" = lieu physique, "OF" = partie d'un groupe, "AT" = compétence/activité.
+            <strong>Farthest vs Furthest :</strong><br>
+            • <strong>Farthest</strong> = distance physique mesurable<br>
+            • <strong>Furthest</strong> = distance abstraite, métaphorique<br><br>
+            "The farthest planet" (distance physique)<br>
+            "The furthest idea from my mind" (distance abstraite)
           </div>
         </div>
 
-        <!-- Cas spéciaux -->
-        <div class="superlative-type">
-          <h3 class="superlative-title">🎯 Cas Spéciaux et Nuances</h3>
-          
-          <p><strong>Superlatifs sans "the" :</strong></p>
-          <div class="example-box">
-            • Most people agree (= La plupart des gens)<br>
-            • Most importantly... (= Le plus important...)<br>
-            • He works hardest when... (sans "the" possible)
-          </div>
-          
-          <p><strong>Superlatifs avec possessifs :</strong></p>
-          <div class="example-box">
-            • my best friend (mon meilleur ami)<br>
-            • her worst nightmare (son pire cauchemar)<br>
-            • our most difficult challenge (notre défi le plus difficile)
-          </div>
+        <div class="warning-box">
+          <strong>Erreur commune à éviter :</strong><br>
+          ❌ "the goodest", "the baddest", "the bestest"<br>
+          ✅ "the best", "the worst"<br><br>
+          Ces formes irrégulières ne prennent jamais -est !
         </div>
         
-        <button class="section-complete-btn" id="complete-3" onclick="showValidationQuiz(3)" disabled>
-          <i class="fas fa-lightbulb"></i>
-          Maîtriser les Irréguliers
+        <button class="section-complete-btn" id="complete-3" onclick="showValidationQuiz(3)">
+          <i class="fas fa-question-circle"></i>
+          Passer le Quiz de Validation
         </button>
         
         <!-- Quiz de Validation Section 3 -->
         <div class="section-validation-quiz" id="validation-quiz-3">
           <h3 class="validation-quiz-title">
             <i class="fas fa-question-circle"></i>
-            Quiz de Validation - Superlatifs Irréguliers et Prépositions
+            Quiz de Validation - Superlatifs Irréguliers
           </h3>
           
           <div class="validation-question" data-question="1">
@@ -1019,9 +1544,9 @@
             </div>
             <div class="validation-options">
               <div class="validation-option" data-answer="0">the goodest</div>
-              <div class="validation-option" data-answer="1">the most good</div>
-              <div class="validation-option" data-answer="2">the best</div>
-              <div class="validation-option" data-answer="3">the better</div>
+              <div class="validation-option" data-answer="1">the best</div>
+              <div class="validation-option" data-answer="2">the most good</div>
+              <div class="validation-option" data-answer="3">goodest</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -1030,28 +1555,13 @@
           
           <div class="validation-question" data-question="2">
             <div class="validation-question-text">
-              Question 2: Quelle préposition utiliser : "the tallest building ___ Paris" ?
+              Question 2: Quelle est la différence entre "farthest" et "furthest" ?
             </div>
             <div class="validation-options">
-              <div class="validation-option" data-answer="0">in</div>
-              <div class="validation-option" data-answer="1">of</div>
-              <div class="validation-option" data-answer="2">at</div>
-              <div class="validation-option" data-answer="3">on</div>
-            </div>
-            <div class="validation-feedback">
-              <span class="feedback-text"></span>
-            </div>
-          </div>
-          
-          <div class="validation-question" data-question="3">
-            <div class="validation-question-text">
-              Question 3: Comment dit-on "le pire" en anglais ?
-            </div>
-            <div class="validation-options">
-              <div class="validation-option" data-answer="0">the baddest</div>
-              <div class="validation-option" data-answer="1">the most bad</div>
-              <div class="validation-option" data-answer="2">the worst</div>
-              <div class="validation-option" data-answer="3">the badder</div>
+              <div class="validation-option" data-answer="0">Aucune différence</div>
+              <div class="validation-option" data-answer="1">Farthest = distance physique, Furthest = distance abstraite</div>
+              <div class="validation-option" data-answer="2">Furthest = distance physique, Farthest = distance abstraite</div>
+              <div class="validation-option" data-answer="3">Farthest est britannique, Furthest américain</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -1063,7 +1573,7 @@
               <i class="fas fa-check"></i> Vérifier mes Réponses
             </button>
             <button class="validation-btn success" id="continue-validation-3" onclick="continueAfterValidation(3)" style="display: none;">
-              <i class="fas fa-arrow-right"></i> Continuer vers l'Entraînement
+              <i class="fas fa-arrow-right"></i> Continuer vers la Section 4
             </button>
           </div>
           
@@ -1073,185 +1583,96 @@
         </div>
       </section>
 
-      <!-- Section 4: Quiz d'Entraînement -->
+      <!-- Section 4: Usage avec Prépositions -->
       <section class="course-section locked" id="section-4" data-section="4">
         <div class="lock-overlay" id="lock-4">
           <i class="fas fa-lock"></i>
-          <p>Terminez les irréguliers pour débloquer l'entraînement</p>
+          <p>Terminez la section précédente pour débloquer cette section</p>
         </div>
         
         <h2 class="section-title">
           <span class="section-number locked" id="number-4">4</span>
-          Quiz d'Entraînement
+          Usage avec Prépositions
         </h2>
+        
+        <p>L'usage correct des prépositions avec le superlatif est crucial pour une expression naturelle. Chaque préposition a ses contextes d'usage spécifiques.</p>
 
-        <div class="interactive-exercise">
-          <h3 style="font-size: 1.5rem; text-align: center; color: #9b59b6; margin-bottom: var(--spacing-lg);">🎮 Entraînement Interactif</h3>
+        <div class="superlative-type">
+          <h3 class="superlative-title">🏢 Préposition "IN" - Lieux et Groupes</h3>
           
-          <div class="quiz-info">
-            <p><strong>🎯 Format :</strong> 10 questions sélectionnées aléatoirement parmi une banque de 30 questions</p>
-            <p><strong>🔀 Variété garantie :</strong> Chaque quiz est unique grâce à la sélection aléatoire !</p>
-            <p><strong>🏆 Objectif :</strong> Obtenez au moins 7/10 pour vous préparer au quiz final</p>
-            <p><strong>🎮 Rejouabilité :</strong> Refaites le quiz pour découvrir de nouvelles questions</p>
+          <div class="structure-box">
+            <strong>Usage :</strong> the + superlatif + in + lieu/groupe
           </div>
-
-          <div class="quiz-controls">
-            <button id="startTrainingQuiz" class="quiz-btn" disabled>🚀 Commencer l'Entraînement</button>
-            <button id="resetTrainingQuiz" class="quiz-btn secondary" style="display: none;">🔄 Recommencer</button>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • The tallest building <strong>in</strong> the city<br>
+            • The best restaurant <strong>in</strong> Paris<br>
+            • The smartest student <strong>in</strong> the class<br>
+            • The most beautiful beach <strong>in</strong> France
           </div>
+        </div>
 
-          <div id="trainingQuizContainer" class="quiz-container">
-            <div style="background: var(--color-surface-hover); padding: var(--spacing-lg); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-lg);">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="trainingQuestionCounter">Question 1/10</span>
-                <span id="trainingCurrentScore">Score: 0/0</span>
-              </div>
-              <div style="background: var(--color-surface); height: 8px; border-radius: 4px; margin-top: var(--spacing-sm); overflow: hidden;">
-                <div id="trainingQuizProgressFill" style="background: linear-gradient(90deg, #9b59b6, #e74c3c); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
-              </div>
-            </div>
-
-            <div id="trainingCurrentQuestion" style="background: var(--color-surface-hover); border-radius: var(--border-radius-md); padding: var(--spacing-xl); margin-bottom: var(--spacing-lg); min-height: 300px;">
-              <!-- Questions will be inserted here dynamically -->
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-lg);">
-              <button id="trainingPrevQuestion" class="quiz-btn secondary" disabled>⬅️ Précédent</button>
-              <button id="trainingNextQuestion" class="quiz-btn secondary" disabled>Suivant ➡️</button>
-              <button id="trainingFinishQuiz" class="quiz-btn" style="display: none;">🏁 Terminer</button>
-            </div>
+        <div class="superlative-type">
+          <h3 class="superlative-title">👥 Préposition "OF" - Ensembles et Collections</h3>
+          
+          <div class="structure-box">
+            <strong>Usage :</strong> the + superlatif + of + ensemble défini
           </div>
-
-          <div id="trainingQuizResults" class="quiz-results">
-            <div style="text-align: center; padding: var(--spacing-xl);">
-              <div id="trainingResultBadge" style="margin-bottom: var(--spacing-lg);">
-                <!-- Badge will be inserted here -->
-              </div>
-              <div style="background: var(--color-surface-hover); border-radius: var(--border-radius-md); padding: var(--spacing-lg); margin: var(--spacing-lg) 0;">
-                <h4>📊 Résultats d'Entraînement</h4>
-                <div id="trainingResultBreakdown"></div>
-              </div>
-              <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
-                <button id="trainingReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
-                <button id="trainingRetakeQuiz" class="quiz-btn">🔄 Refaire l'Entraînement</button>
-              </div>
-            </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • The oldest <strong>of</strong> my friends<br>
+            • The most expensive <strong>of</strong> all cars<br>
+            • The best <strong>of</strong> the three options<br>
+            • The worst <strong>of</strong> his movies
           </div>
+        </div>
+
+        <div class="superlative-type">
+          <h3 class="superlative-title">🎯 Préposition "AT" - Compétences et Activités</h3>
+          
+          <div class="structure-box">
+            <strong>Usage :</strong> the + superlatif + at + activité/compétence
+          </div>
+          
+          <div class="example-box">
+            <strong>Exemples :</strong><br>
+            • The best <strong>at</strong> playing tennis<br>
+            • The worst <strong>at</strong> cooking<br>
+            • The fastest <strong>at</strong> running<br>
+            • The most skilled <strong>at</strong> programming
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <strong>Erreurs communes des francophones :</strong><br>
+          ❌ "The best of the city" → ✅ "The best in the city"<br>
+          ❌ "The tallest in my friends" → ✅ "The tallest of my friends"<br>
+          ❌ "The best in tennis" → ✅ "The best at tennis"
         </div>
         
-        <button class="section-complete-btn" id="complete-4" onclick="completeSection(4)" disabled>
-          <i class="fas fa-check"></i>
-          Terminer l'Entraînement
-        </button>
-      </section>
-
-      <!-- Section 5: Erreurs Communes et Nuances Avancées -->
-      <section class="course-section locked" id="section-5" data-section="5">
-        <div class="lock-overlay" id="lock-5">
-          <i class="fas fa-lock"></i>
-          <p>Terminez l'entraînement pour débloquer le contenu avancé</p>
-        </div>
-        
-        <h2 class="section-title">
-          <span class="section-number locked" id="number-5">5</span>
-          Erreurs Communes et Nuances Avancées
-        </h2>
-
-        <!-- Erreurs communes -->
-        <div class="superlative-type">
-          <h3 class="superlative-title">❌ Erreurs Très Communes des Francophones</h3>
-          
-          <p><strong>Évitez ces erreurs typiques :</strong></p>
-          
-          <div class="structure-box" style="background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.3);">
-            <strong>❌ ERREURS :</strong><br>
-            • "the most biggest" → ✅ "the biggest"<br>
-            • "the beautifulest" → ✅ "the most beautiful"<br>
-            • "more better" → ✅ "better" (comparatif, pas superlatif)<br>
-            • "the goodest" → ✅ "the best"<br>
-            • "most tall" → ✅ "tallest"
-          </div>
-          
-          <div class="note-box">
-            <strong>Règle d'or :</strong> Jamais de double superlatif ! C'est soit -est, soit most, jamais les deux ensemble.
-          </div>
-          
-          <p><strong>Confusion comparatif/superlatif :</strong></p>
-          <div class="example-box">
-            • ❌ "She is the taller of the three sisters"<br>
-            • ✅ "She is the tallest of the three sisters" (3+ personnes = superlatif)<br><br>
-            • ✅ "She is taller than her sister" (2 personnes = comparatif)<br>
-            • ✅ "She is the tallest of the two sisters" (2 personnes spécifiques)
-          </div>
-        </div>
-
-        <!-- Nuances stylistiques -->
-        <div class="superlative-type">
-          <h3 class="superlative-title">🎨 Nuances Stylistiques et Registres</h3>
-          
-          <p><strong>Registre formel vs informel :</strong></p>
-          
-          <div class="example-box">
-            <strong>Formel/Académique :</strong><br>
-            • "the most sophisticated approach"<br>
-            • "the most comprehensive analysis"<br>
-            • "the least advantageous solution"<br><br>
-            
-            <strong>Informel/Courant :</strong><br>
-            • "the coolest guy"<br>
-            • "the worst thing ever"<br>
-            • "the best time I've had"
-          </div>
-          
-          <p><strong>Superlatifs emphatiques :</strong></p>
-          <div class="example-box">
-            • "the very best" (le tout meilleur)<br>
-            • "by far the most important" (de loin le plus important)<br>
-            • "absolutely the worst" (absolument le pire)<br>
-            • "easily the fastest" (facilement le plus rapide)
-          </div>
-        </div>
-
-        <!-- Expressions idiomatiques -->
-        <div class="superlative-type">
-          <h3 class="superlative-title">🗣️ Expressions Idiomatiques avec Superlatifs</h3>
-          
-          <div class="example-box">
-            <strong>Expressions courantes :</strong><br>
-            • "at best" = au mieux<br>
-            • "at worst" = au pire<br>
-            • "first and foremost" = avant tout<br>
-            • "last but not least" = enfin et surtout<br>
-            • "to say the least" = c'est le moins qu'on puisse dire<br>
-            • "make the most of" = profiter au maximum de
-          </div>
-          
-          <div class="note-box">
-            <strong>Culture :</strong> Ces expressions sont très fréquentes en anglais parlé et ajoutent de la fluidité à votre expression.
-          </div>
-        </div>
-        
-        <button class="section-complete-btn" id="complete-5" onclick="showValidationQuiz(5)" disabled>
-          <i class="fas fa-check"></i>
-          Maîtriser les Nuances
+        <button class="section-complete-btn" id="complete-4" onclick="showValidationQuiz(4)">
+          <i class="fas fa-question-circle"></i>
+          Passer le Quiz de Validation
         </button>
         
-        <!-- Quiz de Validation Section 5 -->
-        <div class="section-validation-quiz" id="validation-quiz-5">
+        <!-- Quiz de Validation Section 4 -->
+        <div class="section-validation-quiz" id="validation-quiz-4">
           <h3 class="validation-quiz-title">
             <i class="fas fa-question-circle"></i>
-            Quiz de Validation - Erreurs et Nuances Avancées
+            Quiz de Validation - Usage avec Prépositions
           </h3>
           
           <div class="validation-question" data-question="1">
             <div class="validation-question-text">
-              Question 1: Quelle phrase contient une erreur ?
+              Question 1: Quelle préposition utilise-t-on avec un lieu ?
             </div>
             <div class="validation-options">
-              <div class="validation-option" data-answer="0">She is the tallest in the class</div>
-              <div class="validation-option" data-answer="1">This is the most biggest problem</div>
-              <div class="validation-option" data-answer="2">He is the best student</div>
-              <div class="validation-option" data-answer="3">It's the most beautiful painting</div>
+              <div class="validation-option" data-answer="0">"The best restaurant OF Paris"</div>
+              <div class="validation-option" data-answer="1">"The best restaurant IN Paris"</div>
+              <div class="validation-option" data-answer="2">"The best restaurant AT Paris"</div>
+              <div class="validation-option" data-answer="3">"The best restaurant ON Paris"</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -1260,13 +1681,144 @@
           
           <div class="validation-question" data-question="2">
             <div class="validation-question-text">
-              Question 2: Que signifie "at best" ?
+              Question 2: Complétez : "The best ___ playing tennis"
             </div>
             <div class="validation-options">
-              <div class="validation-option" data-answer="0">au mieux</div>
-              <div class="validation-option" data-answer="1">au pire</div>
-              <div class="validation-option" data-answer="2">le meilleur</div>
-              <div class="validation-option" data-answer="3">très bien</div>
+              <div class="validation-option" data-answer="0">in</div>
+              <div class="validation-option" data-answer="1">at</div>
+              <div class="validation-option" data-answer="2">of</div>
+              <div class="validation-option" data-answer="3">on</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-controls">
+            <button class="validation-btn" id="check-validation-4" onclick="checkValidationQuiz(4)" disabled>
+              <i class="fas fa-check"></i> Vérifier mes Réponses
+            </button>
+            <button class="validation-btn success" id="continue-validation-4" onclick="continueAfterValidation(4)" style="display: none;">
+              <i class="fas fa-arrow-right"></i> Continuer vers la Section 5
+            </button>
+          </div>
+          
+          <div class="validation-score" id="validation-score-4">
+            <span class="score-text"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Erreurs Communes et Nuances -->
+      <section class="course-section locked" id="section-5" data-section="5">
+        <div class="lock-overlay" id="lock-5">
+          <i class="fas fa-lock"></i>
+          <p>Terminez la section précédente pour débloquer cette section</p>
+        </div>
+        
+        <h2 class="section-title">
+          <span class="section-number locked" id="number-5">5</span>
+          Erreurs Communes et Nuances
+        </h2>
+        
+        <p>Cette section vous aidera à éviter les erreurs typiques des francophones et à maîtriser les nuances stylistiques du superlatif anglais.</p>
+
+        <div class="superlative-type">
+          <h3 class="superlative-title">❌ Erreurs Communes des Francophones</h3>
+          
+          <div class="warning-box">
+            <strong>1. Oubli de l'article "THE" :</strong><br>
+            ❌ "Mount Everest is tallest mountain"<br>
+            ✅ "Mount Everest is <strong>the</strong> tallest mountain"
+          </div>
+          
+          <div class="warning-box">
+            <strong>2. Mauvaise formation avec adjectifs courts :</strong><br>
+            ❌ "the most big", "the most fast"<br>
+            ✅ "the biggest", "the fastest"
+          </div>
+          
+          <div class="warning-box">
+            <strong>3. Double superlatif :</strong><br>
+            ❌ "the most biggest", "the most best"<br>
+            ✅ "the biggest", "the best"
+          </div>
+          
+          <div class="warning-box">
+            <strong>4. Confusion avec le comparatif :</strong><br>
+            ❌ "She is the taller" (comparatif)<br>
+            ✅ "She is the tallest" (superlatif)
+          </div>
+        </div>
+
+        <div class="superlative-type">
+          <h3 class="superlative-title">🎭 Nuances Stylistiques</h3>
+          
+          <div class="note-box">
+            <strong>Registre formel :</strong><br>
+            • "The most sophisticated approach"<br>
+            • "The most comprehensive analysis"<br>
+            • "The most distinguished guest"
+          </div>
+          
+          <div class="note-box">
+            <strong>Registre informel :</strong><br>
+            • "The coolest guy"<br>
+            • "The weirdest thing"<br>
+            • "The craziest idea"
+          </div>
+        </div>
+
+        <div class="superlative-type">
+          <h3 class="superlative-title">🔄 Alternatives et Variantes</h3>
+          
+          <div class="example-box">
+            <strong>Renforcement avec "by far" :</strong><br>
+            • "This is <strong>by far</strong> the best solution"<br>
+            • "She is <strong>by far</strong> the smartest student"<br><br>
+            
+            <strong>Atténuation avec "one of the" :</strong><br>
+            • "One of the most beautiful cities"<br>
+            • "One of the best restaurants"
+          </div>
+        </div>
+        
+        <button class="section-complete-btn" id="complete-5" onclick="showValidationQuiz(5)">
+          <i class="fas fa-question-circle"></i>
+          Passer le Quiz de Validation
+        </button>
+        
+        <!-- Quiz de Validation Section 5 -->
+        <div class="section-validation-quiz" id="validation-quiz-5">
+          <h3 class="validation-quiz-title">
+            <i class="fas fa-question-circle"></i>
+            Quiz de Validation - Erreurs et Nuances
+          </h3>
+          
+          <div class="validation-question" data-question="1">
+            <div class="validation-question-text">
+              Question 1: Quelle phrase est correcte ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">"This is most beautiful place"</div>
+              <div class="validation-option" data-answer="1">"This is the most beautiful place"</div>
+              <div class="validation-option" data-answer="2">"This is most beautifulest place"</div>
+              <div class="validation-option" data-answer="3">"This is the most beautifulest place"</div>
+            </div>
+            <div class="validation-feedback">
+              <span class="feedback-text"></span>
+            </div>
+          </div>
+          
+          <div class="validation-question" data-question="2">
+            <div class="validation-question-text">
+              Question 2: Comment dit-on "de loin le meilleur" ?
+            </div>
+            <div class="validation-options">
+              <div class="validation-option" data-answer="0">"far the best"</div>
+              <div class="validation-option" data-answer="1">"by far the best"</div>
+              <div class="validation-option" data-answer="2">"from far the best"</div>
+              <div class="validation-option" data-answer="3">"the far best"</div>
             </div>
             <div class="validation-feedback">
               <span class="feedback-text"></span>
@@ -1278,7 +1830,7 @@
               <i class="fas fa-check"></i> Vérifier mes Réponses
             </button>
             <button class="validation-btn success" id="continue-validation-5" onclick="continueAfterValidation(5)" style="display: none;">
-              <i class="fas fa-arrow-right"></i> Accéder au Quiz Final
+              <i class="fas fa-arrow-right"></i> Continuer vers la Section 6
             </button>
           </div>
           
@@ -1288,714 +1840,385 @@
         </div>
       </section>
 
-      <!-- Section 6: Quiz Final de Certification -->
-      <section class="course-section locked final-quiz-section" id="section-6" data-section="6">
+      <!-- Section 6: Applications Pratiques et Quiz Final -->
+      <section class="course-section locked" id="section-6" data-section="6">
         <div class="lock-overlay" id="lock-6">
           <i class="fas fa-lock"></i>
-          <p>Terminez toutes les sections pour accéder à la certification</p>
+          <p>Terminez la section précédente pour débloquer cette section</p>
         </div>
         
         <h2 class="section-title">
           <span class="section-number locked" id="number-6">6</span>
-          Quiz Final de Certification
+          Applications Pratiques et Certification
         </h2>
+        
+        <p>Cette section finale vous propose des exercices pratiques et le quiz de certification pour valider votre maîtrise du superlatif anglais.</p>
 
-        <div class="interactive-exercise">
-          <h3 class="final-quiz-title">🏆 CERTIFICATION SUPERLATIFS 🏆</h3>
+        <div class="superlative-type">
+          <h3 class="superlative-title">🎯 Contextes d'Usage Réels</h3>
           
-          <div class="quiz-info">
-            <p><strong>🎯 Format :</strong> 20 questions sélectionnées aléatoirement parmi une banque de 40 questions</p>
-            <p><strong>📊 Seuil de réussite :</strong> 16/20 (80%) pour obtenir votre certification</p>
-            <p><strong>🔀 Questions variées :</strong> Formation, irréguliers, prépositions, erreurs communes, nuances</p>
-            <p><strong>🏅 Badge de certification :</strong> Débloquez votre badge officiel de maîtrise des superlatifs !</p>
-            <p><strong>📈 Enregistrement du score :</strong> Votre meilleur score sera sauvegardé dans votre profil</p>
+          <div class="example-box">
+            <strong>En voyage :</strong><br>
+            • "What's the best way to get to the airport?"<br>
+            • "This is the most beautiful view I've ever seen."<br>
+            • "Where's the nearest restaurant?"<br><br>
+            
+            <strong>Au travail :</strong><br>
+            • "This is the most efficient solution."<br>
+            • "She's the most experienced member of our team."<br>
+            • "What's the fastest way to complete this project?"<br><br>
+            
+            <strong>Dans la vie quotidienne :</strong><br>
+            • "This is the best coffee in town."<br>
+            • "He's the tallest player on the team."<br>
+            • "What's the cheapest option available?"
           </div>
+        </div>
 
-          <div class="quiz-controls">
-            <button id="startFinalQuiz" class="quiz-btn" disabled>🚀 Commencer la Certification</button>
-            <button id="resetFinalQuiz" class="quiz-btn secondary" style="display: none;">🔄 Recommencer</button>
-          </div>
-
-          <div id="finalQuizContainer" class="quiz-container">
-            <div style="background: var(--color-surface-hover); padding: var(--spacing-lg); border-radius: var(--border-radius-md); margin-bottom: var(--spacing-lg);">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="finalQuestionCounter">Question 1/20</span>
-                <span id="finalCurrentScore">Score: 0/0</span>
-                <span id="finalCertificationStatus" style="color: #e67e22; font-weight: bold;">Certification: 16/20 requis</span>
-              </div>
-              <div style="background: var(--color-surface); height: 10px; border-radius: 5px; margin-top: var(--spacing-sm); overflow: hidden;">
-                <div id="finalQuizProgressFill" style="background: linear-gradient(90deg, #9b59b6, #e74c3c); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+        <div class="superlative-type">
+          <h3 class="superlative-title">🏆 Quiz d'Entraînement</h3>
+          
+          <p>Avant le quiz final, testez vos connaissances avec notre quiz d'entraînement interactif !</p>
+          
+          <button class="section-complete-btn" id="start-practice-quiz" onclick="startPracticeQuiz()">
+            <i class="fas fa-dumbbell"></i>
+            Démarrer le Quiz d'Entraînement
+          </button>
+          
+          <!-- Container du quiz d'entraînement -->
+          <div id="practiceQuizContainer" style="display: none; margin-top: var(--spacing-xl);">
+            <div class="quiz-header">
+              <h3>Quiz d'Entraînement - Question <span id="practiceCurrentQ">1</span>/10</h3>
+              <div class="quiz-progress">
+                <div class="quiz-progress-bar">
+                  <div class="quiz-progress-fill" id="practiceProgressFill"></div>
+                </div>
               </div>
             </div>
 
-            <div id="finalCurrentQuestion" style="background: var(--color-surface-hover); border-radius: var(--border-radius-md); padding: var(--spacing-xl); margin-bottom: var(--spacing-lg); min-height: 350px;">
+            <div class="quiz-question">
+              <div class="quiz-question-text" id="practiceQuestionText"></div>
+              <div class="quiz-options" id="practiceQuestionOptions"></div>
+            </div>
+
+            <div class="quiz-navigation">
+              <button class="quiz-nav-btn" id="practicePrevQuestion" onclick="practicePrevQuestion()">
+                <i class="fas fa-arrow-left"></i> Précédent
+              </button>
+              <button class="quiz-nav-btn" id="practiceNextQuestion" onclick="practiceNextQuestion()">
+                Suivant <i class="fas fa-arrow-right"></i>
+              </button>
+              <button class="quiz-nav-btn primary" id="practiceFinishQuiz" onclick="finishPracticeQuiz()" style="display: none;">
+                <i class="fas fa-check"></i> Voir les Résultats
+              </button>
+            </div>
+          </div>
+
+          <!-- Résultats du quiz d'entraînement -->
+          <div id="practiceQuizResults" style="display: none;">
+            <div id="practiceResultsContent"></div>
+          </div>
+        </div>
+
+        <div class="superlative-type">
+          <h3 class="superlative-title">🎓 Quiz Final de Certification</h3>
+          
+          <p>Passez maintenant le quiz final pour obtenir votre certification ! Vous devez obtenir au moins 16/20 pour valider le cours.</p>
+          
+          <div class="note-box">
+            <strong>Conditions du Quiz Final :</strong><br>
+            ✓ 20 questions sur tous les aspects étudiés<br>
+            ✓ Score minimum requis : 16/20 (80%)<br>
+            ✓ Une seule tentative autorisée<br>
+            ✓ Certification officielle à la clé
+          </div>
+          
+          <button class="section-complete-btn" id="start-final-quiz" onclick="startFinalQuiz()">
+            <i class="fas fa-trophy"></i>
+            Commencer le Quiz Final de Certification
+          </button>
+
+          <!-- Container du quiz final -->
+          <div id="finalQuizContainer" style="display: none;">
+            <div class="quiz-header">
+              <div class="quiz-progress">
+                <span id="finalQuestionCounter">Question 1/20</span>
+                <div class="quiz-progress-bar">
+                  <div class="quiz-progress-fill" id="finalQuizProgressFill"></div>
+                </div>
+              </div>
+              <div class="quiz-score">
+                <span id="finalCurrentScore">Score: 0/0</span>
+              </div>
+            </div>
+
+            <div id="finalCurrentQuestion" class="quiz-question-container">
               <!-- Questions will be inserted here dynamically -->
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: var(--spacing-lg);">
-              <button id="finalPrevQuestion" class="quiz-btn secondary" disabled>⬅️ Précédent</button>
-              <button id="finalNextQuestion" class="quiz-btn secondary" disabled>Suivant ➡️</button>
-              <button id="finalFinishQuiz" class="quiz-btn" style="display: none;">🏁 Terminer la Certification</button>
+            <div class="quiz-navigation">
+              <button id="finalPrevQuestion" class="quiz-nav-btn" disabled>⬅️ Précédent</button>
+              <button id="finalNextQuestion" class="quiz-nav-btn" disabled>Suivant ➡️</button>
+              <button id="finalFinishQuiz" class="quiz-nav-btn finish" style="display: none;">🏁 TERMINER</button>
             </div>
           </div>
 
-          <div id="finalQuizResults" class="quiz-results">
-            <div style="text-align: center; padding: var(--spacing-xl);">
-              <div id="finalResultBadge" style="margin-bottom: var(--spacing-lg);">
+          <!-- Résultats du quiz final -->
+          <div id="finalQuizResults" style="display: none;">
+            <div class="quiz-final-results">
+              <div id="finalResultBadge" class="result-badge">
                 <!-- Badge will be inserted here -->
               </div>
-              <div style="background: var(--color-surface-hover); border-radius: var(--border-radius-md); padding: var(--spacing-lg); margin: var(--spacing-lg) 0;">
+              <div class="result-details">
                 <h4>📊 Résultats de Certification</h4>
                 <div id="finalResultBreakdown"></div>
-                <div id="finalCertificationMessage" style="margin-top: var(--spacing-md);"></div>
               </div>
-              <div style="display: flex; justify-content: center; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+              <div class="result-actions">
                 <button id="finalReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
-                <button id="finalRetakeQuiz" class="quiz-btn">🔄 Retenter la Certification</button>
-                <button id="finalDownloadCertificate" class="quiz-btn" style="display: none;">📄 Télécharger le Certificat</button>
+                <button id="downloadCertificate" class="quiz-btn" style="display: none;">📜 Télécharger le Certificat</button>
               </div>
             </div>
           </div>
         </div>
-        
-        <button class="section-complete-btn" id="complete-6" onclick="completeCourse()" disabled>
-          <i class="fas fa-trophy"></i>
-          Terminer le Cours
-        </button>
       </section>
+
     </div>
   </main>
 
+  <!-- Footer -->
+  <footer class="footer" style="background-color: var(--color-surface); padding: var(--spacing-xl) 0; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: var(--spacing-xl);">
+    <div class="container">
+      <div class="footer-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg);">
+        <div class="footer-brand">
+          <a href="../index.html" class="logo" style="margin-bottom: var(--spacing-md); display: inline-block;">ENGLISH<span>QUEST</span></a>
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-md);">Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
+        </div>
+
+        <div class="footer-links">
+          <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-md);">Navigation</h4>
+          <ul style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+            <li><a href="../index.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Accueil</a></li>
+            <li><a href="../games.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Jeux</a></li>
+            <li><a href="../courses.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Cours</a></li>
+            <li><a href="../gallery.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Galerie</a></li>
+            <li><a href="../leaderboard.html" style="color: var(--color-text-secondary); transition: color 0.3s ease;">Classement</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: var(--color-text-secondary);">
+        <p>&copy; 2025 English Quest - Tous droits réservés</p>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // Configuration et données du cours
+    // Configuration du cours
     const COURSE_CONFIG = {
+      courseName: "Le Superlatif",
+      courseId: "superlative-course",
       totalSections: 6,
-      validationPassingScore: 2, // Pour les quiz de validation (2/2 ou 3/3)
-      trainingPassingScore: 7,   // Pour le quiz d'entraînement (7/10)
-      finalPassingScore: 16,     // Pour la certification (16/20)
-      courseId: 'superlative-course',
-      courseName: 'Le Superlatif'
+      practiceQuestions: 10,
+      finalQuestions: 20,
+      finalPassingScore: 16
     };
 
-    // État du cours
-    let courseState = {
-      currentSection: 1,
+    // État du jeu
+    let gameState = {
       completedSections: [],
-      validationScores: {},
-      trainingScore: null,
-      finalScore: null,
-      certified: false
+      currentSection: 1,
+      practiceQuizCompleted: false,
+      practiceScore: 0,
+      finalQuizCompleted: false,
+      finalScore: 0
     };
 
-    // Banque de questions pour l'entraînement (30 questions)
-    const TRAINING_QUESTIONS = [
-      // Formation avec -est (5 questions)
+    // Réponses correctes pour chaque quiz de validation
+    const VALIDATION_ANSWERS = {
+      1: [1, 2], // Section 1: questions 1 et 2
+      2: [1, 1], // Section 2: questions 1 et 2
+      3: [1, 1], // Section 3: questions 1 et 2
+      4: [1, 1], // Section 4: questions 1 et 2
+      5: [1, 1], // Section 5: questions 1 et 2
+    };
+
+    // Questions du quiz d'entraînement
+    const PRACTICE_QUESTIONS = [
       {
-        id: 1,
         question: "Quelle est la forme superlative de 'tall' ?",
-        options: ["the taller", "the tallest", "the most tall", "tallest"],
+        options: ["the most tall", "the tallest", "the taller", "tallest"],
         correct: 1,
-        explanation: "'Tall' est un adjectif court d'une syllabe, donc on ajoute -est : 'the tallest'."
+        explanation: "Les adjectifs courts (1-2 syllabes) prennent -est au superlatif."
       },
       {
-        id: 2,
-        question: "Comment former le superlatif de 'big' ?",
-        options: ["the bigest", "the most big", "the biggest", "bigger"],
+        question: "Comment forme-t-on le superlatif de 'beautiful' ?",
+        options: ["the beautifulest", "the most beautiful", "beautifulest", "beautiful"],
+        correct: 1,
+        explanation: "Les adjectifs longs (3+ syllabes) utilisent 'the most'."
+      },
+      {
+        question: "Quelle est la forme correcte pour 'good' ?",
+        options: ["the goodest", "the most good", "the best", "goodest"],
         correct: 2,
-        explanation: "Avec 'big', on double la consonne finale et on ajoute -est : 'the biggest'."
+        explanation: "'Good' a une forme superlative irrégulière : 'the best'."
       },
       {
-        id: 3,
-        question: "Quelle est la forme superlative de 'easy' ?",
-        options: ["the most easy", "the easiest", "the easyest", "easier"],
+        question: "Complétez : 'The tallest building ___ the city'",
+        options: ["of", "in", "at", "on"],
         correct: 1,
-        explanation: "Avec 'easy', le 'y' devient 'i' et on ajoute -est : 'the easiest'."
+        explanation: "On utilise 'in' avec les lieux géographiques."
       },
       {
-        id: 4,
-        question: "Comment dit-on 'le plus rapide' ?",
-        options: ["the most fast", "the fastest", "the faster", "most fastest"],
+        question: "Quelle est l'erreur dans : 'This is most beautiful place' ?",
+        options: ["Rien", "Manque 'the'", "Manque 'a'", "Mauvais adjectif"],
         correct: 1,
-        explanation: "'Fast' est un adjectif court, donc 'the fastest'."
+        explanation: "Le superlatif requiert toujours l'article 'the'."
       },
       {
-        id: 5,
-        question: "Forme superlative de 'nice' ?",
-        options: ["the nicest", "the most nice", "the nicer", "nicest"],
-        correct: 0,
-        explanation: "Avec 'nice', on garde le 'e' final et on ajoute -st : 'the nicest'."
-      },
-
-      // Formation avec "most" (5 questions)
-      {
-        id: 6,
-        question: "Comment former le superlatif de 'beautiful' ?",
-        options: ["the beautifulest", "the most beautiful", "the most beautifulest", "beautifullest"],
-        correct: 1,
-        explanation: "'Beautiful' a 3 syllabes, donc on utilise 'the most beautiful'."
-      },
-      {
-        id: 7,
-        question: "Quelle est la forme superlative de 'expensive' ?",
-        options: ["the expensivest", "the most expensive", "expensiver", "the most expensivest"],
-        correct: 1,
-        explanation: "'Expensive' a 3 syllabes, donc 'the most expensive'."
-      },
-      {
-        id: 8,
-        question: "Comment dit-on 'le plus intelligent' ?",
-        options: ["the intelligentest", "the most intelligent", "the intelligenter", "most intelligent"],
-        correct: 1,
-        explanation: "'Intelligent' a 4 syllabes, donc 'the most intelligent'."
-      },
-      {
-        id: 9,
-        question: "Forme superlative de 'interesting' ?",
-        options: ["the interestingest", "the most interesting", "the more interesting", "interestinger"],
-        correct: 1,
-        explanation: "'Interesting' a 4 syllabes, donc 'the most interesting'."
-      },
-      {
-        id: 10,
-        question: "Comment former le superlatif de 'difficult' ?",
-        options: ["the difficultest", "the most difficult", "the more difficult", "difficulter"],
-        correct: 1,
-        explanation: "'Difficult' a 3 syllabes, donc 'the most difficult'."
-      },
-
-      // Adjectifs de 2 syllabes (5 questions)
-      {
-        id: 11,
-        question: "Quelle forme est correcte pour 'quiet' ?",
-        options: ["the quietest OU the most quiet", "seulement the quietest", "seulement the most quiet", "the most quietest"],
-        correct: 0,
-        explanation: "Avec les adjectifs de 2 syllabes comme 'quiet', les deux formes sont acceptées."
-      },
-      {
-        id: 12,
-        question: "Forme superlative de 'clever' ?",
-        options: ["the cleverest OU the most clever", "seulement the most clever", "the cleverster", "cleverest"],
-        correct: 0,
-        explanation: "'Clever' (2 syllabes) accepte les deux formes : 'the cleverest' ou 'the most clever'."
-      },
-      {
-        id: 13,
-        question: "Comment dit-on 'le plus simple' ?",
-        options: ["the simplest OU the most simple", "seulement the simplest", "the simpler", "most simple"],
-        correct: 0,
-        explanation: "'Simple' (2 syllabes) peut utiliser les deux formes."
-      },
-      {
-        id: 14,
-        question: "Quelle est la forme superlative de 'narrow' ?",
-        options: ["the narrowest OU the most narrow", "seulement the most narrow", "the narrower", "narrowest"],
-        correct: 0,
-        explanation: "'Narrow' (2 syllabes) accepte les deux formes de superlatif."
-      },
-      {
-        id: 15,
-        question: "Forme correcte pour 'gentle' ?",
-        options: ["the gentlest OU the most gentle", "the gentler", "gentlest", "most gentlest"],
-        correct: 0,
-        explanation: "'Gentle' (2 syllabes) peut prendre les deux formes de superlatif."
-      },
-
-      // Superlatifs irréguliers (5 questions)
-      {
-        id: 16,
-        question: "Quelle est la forme superlative de 'good' ?",
-        options: ["the goodest", "the most good", "the best", "the better"],
-        correct: 2,
-        explanation: "'Good' a une forme irrégulière : 'the best'."
-      },
-      {
-        id: 17,
         question: "Comment dit-on 'le pire' ?",
-        options: ["the baddest", "the most bad", "the worst", "the worse"],
+        options: ["the baddest", "the most bad", "the worst", "worst"],
         correct: 2,
-        explanation: "'Bad' a une forme irrégulière : 'the worst'."
+        explanation: "'Bad' a une forme superlative irrégulière : 'the worst'."
       },
       {
-        id: 18,
-        question: "Forme superlative de 'far' ?",
-        options: ["the farest", "the most far", "the farthest OU the furthest", "the farrer"],
+        question: "Quelle préposition : 'The best ___ playing tennis' ?",
+        options: ["in", "at", "of", "on"],
+        correct: 1,
+        explanation: "On utilise 'at' avec les compétences et activités."
+      },
+      {
+        question: "Comment renforcer : 'This is the best solution' ?",
+        options: ["very the best", "the most best", "by far the best", "really best"],
         correct: 2,
-        explanation: "'Far' a deux formes irrégulières : 'the farthest' (distance) ou 'the furthest' (abstrait)."
+        explanation: "'By far' renforce le superlatif."
       },
       {
-        id: 19,
-        question: "Comment dit-on 'le moins' ?",
-        options: ["the littlest", "the least", "the most little", "the smaller"],
+        question: "Quelle est la forme superlative de 'big' ?",
+        options: ["the bigest", "the biggest", "the most big", "biggest"],
         correct: 1,
-        explanation: "'Little' (quantité) devient 'the least' au superlatif."
+        explanation: "La consonne finale se double avant -est."
       },
       {
-        id: 20,
-        question: "Quelle est la forme superlative de 'much/many' ?",
-        options: ["the muchest", "the manyest", "the most", "the more"],
+        question: "Complétez : 'The oldest ___ my friends'",
+        options: ["in", "at", "of", "on"],
         correct: 2,
-        explanation: "'Much/many' deviennent 'the most' au superlatif."
-      },
-
-      // Prépositions (5 questions)
-      {
-        id: 21,
-        question: "Complétez : 'the tallest building ___ Paris'",
-        options: ["in", "of", "at", "on"],
-        correct: 0,
-        explanation: "Avec les lieux (villes, pays), on utilise 'in' : 'the tallest building in Paris'."
-      },
-      {
-        id: 22,
-        question: "Complétez : 'the oldest ___ my three brothers'",
-        options: ["in", "of", "at", "from"],
-        correct: 1,
-        explanation: "Avec un groupe défini de personnes, on utilise 'of' : 'the oldest of my three brothers'."
-      },
-      {
-        id: 23,
-        question: "Complétez : 'the best ___ mathematics'",
-        options: ["in", "of", "at", "for"],
-        correct: 2,
-        explanation: "Avec les compétences et activités, on utilise 'at' : 'the best at mathematics'."
-      },
-      {
-        id: 24,
-        question: "Quelle préposition : 'the fastest runner ___ the team' ?",
-        options: ["in", "of", "at", "on"],
-        correct: 1,
-        explanation: "Pour parler d'un membre spécifique d'un groupe, on utilise 'of' : 'of the team'."
-      },
-      {
-        id: 25,
-        question: "Complétez : 'the most expensive restaurant ___ France'",
-        options: ["in", "of", "at", "from"],
-        correct: 0,
-        explanation: "Avec les pays et lieux géographiques, on utilise 'in' : 'in France'."
-      },
-
-      // Erreurs communes (5 questions)
-      {
-        id: 26,
-        question: "Quelle phrase contient une erreur ?",
-        options: ["the most beautiful", "the most biggest", "the best", "the worst"],
-        correct: 1,
-        explanation: "'The most biggest' mélange deux formes de superlatif. On dit 'the biggest'."
-      },
-      {
-        id: 27,
-        question: "Phrase incorrecte ?",
-        options: ["She is the smartest", "He is the baddest", "It's the most difficult", "They are the fastest"],
-        correct: 1,
-        explanation: "'The baddest' est incorrect. La forme correcte est 'the worst'."
-      },
-      {
-        id: 28,
-        question: "Erreur à éviter ?",
-        options: ["the most expensive", "the expensivest", "the best", "the worst"],
-        correct: 1,
-        explanation: "'The expensivest' est incorrect. On dit 'the most expensive'."
-      },
-      {
-        id: 29,
-        question: "Phrase incorrecte ?",
-        options: ["the tallest person", "the most nicest", "the best friend", "the worst day"],
-        correct: 1,
-        explanation: "'The most nicest' est incorrect. On dit 'the nicest'."
-      },
-      {
-        id: 30,
-        question: "Quelle est l'erreur ?",
-        options: ["the oldest brother", "the most fastest car", "the best solution", "the most interesting"],
-        correct: 1,
-        explanation: "'The most fastest' mélange deux superlatifs. On dit 'the fastest'."
-      },
-
-      // Style et nuances (5 questions)
-      {
-        id: 31,
-        question: "Que signifie 'at best' ?",
-        options: ["au meilleur", "au mieux", "le meilleur", "très bien"],
-        correct: 1,
-        explanation: "'At best' signifie 'au mieux', dans le meilleur des cas."
-      },
-      {
-        id: 32,
-        question: "Expression idiomatique avec superlatif ?",
-        options: ["first and foremost", "more or less", "sooner or later", "here and there"],
-        correct: 0,
-        explanation: "'First and foremost' = 'avant tout' utilise des superlatifs."
-      },
-      {
-        id: 33,
-        question: "Comment intensifier 'the best' ?",
-        options: ["the most best", "the very best", "the better best", "more best"],
-        correct: 1,
-        explanation: "Pour intensifier, on peut dire 'the very best' (le tout meilleur)."
-      },
-      {
-        id: 34,
-        question: "Que signifie 'to say the least' ?",
-        options: ["dire le moins", "c'est le moins qu'on puisse dire", "au minimum", "pas beaucoup"],
-        correct: 1,
-        explanation: "'To say the least' = 'c'est le moins qu'on puisse dire' (euphémisme)."
-      },
-      {
-        id: 35,
-        question: "Expression avec 'most' (sans 'the') ?",
-        options: ["Most people agree", "Most the people", "The most people", "More most people"],
-        correct: 0,
-        explanation: "'Most people' (sans 'the') = 'la plupart des gens'."
-      },
-
-      // Questions mixtes révision (5 questions)
-      {
-        id: 36,
-        question: "Dans 'This is my best friend', pourquoi pas de 'the' ?",
-        options: ["C'est une erreur", "Avec les possessifs, pas de 'the'", "C'est informel", "C'est optionnel"],
-        correct: 1,
-        explanation: "Avec les possessifs (my, his, her...), on n'utilise pas 'the' devant le superlatif."
-      },
-      {
-        id: 37,
-        question: "Phrase correcte avec superlatif ?",
-        options: ["He works hardest", "He works the hardest", "les deux sont possibles", "aucune n'est correcte"],
-        correct: 2,
-        explanation: "Avec les adverbes, 'the' est souvent optionnel : 'hardest' ou 'the hardest'."
-      },
-      {
-        id: 38,
-        question: "Complétez : 'the ___ expensive of all cars'",
-        options: ["most", "more", "much", "many"],
-        correct: 0,
-        explanation: "'Expensive' a 3 syllabes, donc 'the most expensive'."
-      },
-      {
-        id: 39,
-        question: "Quelle phrase est la plus naturelle ?",
-        options: ["the most easy", "the easiest", "les deux", "aucune"],
-        correct: 1,
-        explanation: "Bien que 'the most easy' existe, 'the easiest' est beaucoup plus naturel et courant."
-      },
-      {
-        id: 40,
-        question: "Contexte formel : comment dire 'le plus important' ?",
-        options: ["the importantest", "the most important", "most important", "more important"],
-        correct: 1,
-        explanation: "Dans un contexte formel, 'the most important' est la forme correcte et appropriée."
+        explanation: "On utilise 'of' avec un ensemble défini de personnes."
       }
     ];
 
-    // Banque de questions pour le quiz final (40 questions)
+    // Questions du quiz final (20 questions)
     const FINAL_QUESTIONS = [
-      // Formation avec -est (5 questions)
       {
-        id: 1,
-        question: "Quelle est la forme superlative correcte de 'small' ?",
-        options: ["the smaller", "the smallest", "the most small", "smallest"],
-        correct: 1,
-        explanation: "'Small' est un adjectif court, donc 'the smallest'."
+        question: "Quelle est la règle de formation du superlatif pour les adjectifs courts ?",
+        options: ["the + most + adjectif", "the + adjectif + est", "adjectif + est", "most + adjectif"],
+        correct: 1
       },
       {
-        id: 2,
-        question: "Comment former le superlatif de 'hot' ?",
-        options: ["the hotest", "the most hot", "the hottest", "hottest"],
-        correct: 2,
-        explanation: "Avec 'hot', on double la consonne finale : 'the hottest'."
+        question: "Comment forme-t-on le superlatif de 'expensive' ?",
+        options: ["the expensivest", "the most expensive", "expensivest", "most expensive"],
+        correct: 1
       },
       {
-        id: 3,
-        question: "Forme superlative de 'funny' ?",
-        options: ["the funniest", "the most funny", "the funnyest", "funnier"],
-        correct: 0,
-        explanation: "Le 'y' devient 'i' et on ajoute -est : 'the funniest'."
+        question: "Quelle est la forme superlative irrégulière de 'good' ?",
+        options: ["the goodest", "the most good", "the best", "goodest"],
+        correct: 2
       },
       {
-        id: 4,
-        question: "Comment dit-on 'le plus jeune' ?",
-        options: ["the younger", "the youngest", "the most young", "youngest"],
-        correct: 1,
-        explanation: "'Young' est court, donc 'the youngest'."
+        question: "Quelle est la forme superlative irrégulière de 'bad' ?",
+        options: ["the baddest", "the most bad", "the worst", "worst"],
+        correct: 2
       },
       {
-        id: 5,
-        question: "Forme superlative de 'safe' ?",
-        options: ["the safest", "the most safe", "the safer", "safest"],
-        correct: 0,
-        explanation: "Avec 'safe', on garde le 'e' final et on ajoute -st : 'the safest'."
-      },
-
-      // Formation avec "most" (5 questions)
-      {
-        id: 6,
-        question: "Comment former le superlatif de 'comfortable' ?",
-        options: ["the comfortablest", "the most comfortable", "the more comfortable", "comfortabler"],
-        correct: 1,
-        explanation: "'Comfortable' a 4 syllabes, donc 'the most comfortable'."
+        question: "Comment dit-on 'le plus loin' (distance physique) ?",
+        options: ["the furthest", "the farthest", "the most far", "farthest"],
+        correct: 1
       },
       {
-        id: 7,
-        question: "Quelle est la forme superlative de 'important' ?",
-        options: ["the importantest", "the most important", "the more important", "importanter"],
-        correct: 1,
-        explanation: "'Important' a 3 syllabes, donc 'the most important'."
+        question: "Comment dit-on 'le plus loin' (distance abstraite) ?",
+        options: ["the furthest", "the farthest", "the most far", "furthest"],
+        correct: 0
       },
       {
-        id: 8,
-        question: "Comment dit-on 'le plus populaire' ?",
-        options: ["the populariest", "the most popular", "the popularer", "populariest"],
-        correct: 1,
-        explanation: "'Popular' a 3 syllabes, donc 'the most popular'."
+        question: "Quelle préposition : 'The best restaurant ___ Paris' ?",
+        options: ["of", "in", "at", "on"],
+        correct: 1
       },
       {
-        id: 9,
-        question: "Forme superlative de 'dangerous' ?",
-        options: ["the dangerousest", "the most dangerous", "the more dangerous", "dangerouser"],
-        correct: 1,
-        explanation: "'Dangerous' a 3 syllabes, donc 'the most dangerous'."
+        question: "Quelle préposition : 'The oldest ___ my friends' ?",
+        options: ["in", "at", "of", "on"],
+        correct: 2
       },
       {
-        id: 10,
-        question: "Comment former le superlatif de 'reliable' ?",
-        options: ["the reliablest", "the most reliable", "the more reliable", "reliablier"],
-        correct: 1,
-        explanation: "'Reliable' a 3 syllabes, donc 'the most reliable'."
-      },
-
-      // Adjectifs de 2 syllabes (5 questions)
-      {
-        id: 11,
-        question: "Forme(s) correcte(s) pour 'pretty' ?",
-        options: ["seulement the prettiest", "seulement the most pretty", "the prettiest OU the most pretty", "the prettyest"],
-        correct: 2,
-        explanation: "'Pretty' (2 syllabes) accepte les deux formes, mais 'the prettiest' est plus courant."
+        question: "Quelle préposition : 'The best ___ playing piano' ?",
+        options: ["in", "at", "of", "on"],
+        correct: 1
       },
       {
-        id: 12,
-        question: "Comment dit-on 'le plus commun' avec 'common' ?",
-        options: ["the commonest OU the most common", "seulement the most common", "the commoner", "commonest"],
-        correct: 0,
-        explanation: "'Common' (2 syllabes) accepte les deux formes."
+        question: "Quelle est l'erreur : 'Mount Everest is tallest mountain' ?",
+        options: ["Rien", "Manque 'the'", "Mauvais superlatif", "Manque 'a'"],
+        correct: 1
       },
       {
-        id: 13,
-        question: "Forme superlative préférée pour 'polite' ?",
-        options: ["the politest OU the most polite", "seulement the politest", "the politer", "most polite"],
-        correct: 0,
-        explanation: "'Polite' (2 syllabes) peut prendre les deux formes."
+        question: "Quelle est l'erreur : 'This is the most biggest house' ?",
+        options: ["Double superlatif", "Manque 'the'", "Rien", "Mauvais adjectif"],
+        correct: 0
       },
       {
-        id: 14,
-        question: "Quelle est la forme correcte pour 'modern' ?",
-        options: ["the modernest", "the most modern", "the moderner", "modernest"],
-        correct: 1,
-        explanation: "'Modern' termine par une consonne + 'n', donc généralement 'the most modern'."
+        question: "Comment renforce-t-on un superlatif ?",
+        options: ["very the best", "the most best", "by far the best", "really best"],
+        correct: 2
       },
       {
-        id: 15,
-        question: "Forme correcte pour 'stable' ?",
-        options: ["the stablest OU the most stable", "the stabler", "stablest", "most stablest"],
-        correct: 0,
-        explanation: "'Stable' (2 syllabes) accepte les deux formes de superlatif."
-      },
-
-      // Superlatifs irréguliers (5 questions)
-      {
-        id: 16,
-        question: "Quelle est la forme superlative de 'little' (taille) ?",
-        options: ["the littlest", "the smallest", "les deux sont possibles", "the least"],
-        correct: 2,
-        explanation: "Pour la taille, on peut dire 'the littlest' ou 'the smallest'. 'The least' = quantité."
+        question: "Comment atténue-t-on un superlatif ?",
+        options: ["a little the best", "one of the best", "quite the best", "rather best"],
+        correct: 1
       },
       {
-        id: 17,
-        question: "Comment dit-on 'le meilleur' en anglais ?",
-        options: ["the goodest", "the most good", "the best", "the better"],
-        correct: 2,
-        explanation: "'Good' devient 'the best' au superlatif (forme irrégulière)."
+        question: "Quelle est la forme superlative de 'happy' ?",
+        options: ["the happyest", "the happiest", "the most happy", "happiest"],
+        correct: 1
       },
       {
-        id: 18,
-        question: "Forme superlative de 'bad' ?",
-        options: ["the baddest", "the most bad", "the worst", "the worse"],
-        correct: 2,
-        explanation: "'Bad' devient 'the worst' au superlatif (forme irrégulière)."
+        question: "Quelle est la forme superlative de 'large' ?",
+        options: ["the larggest", "the largest", "the most large", "largest"],
+        correct: 1
       },
       {
-        id: 19,
-        question: "Comment exprimer 'le plus loin' ?",
-        options: ["the farest", "the most far", "the farthest OU the furthest", "the farrer"],
-        correct: 2,
-        explanation: "'Far' a deux formes irrégulières : 'the farthest' (distance) ou 'the furthest' (abstrait)."
+        question: "Quel registre : 'The most sophisticated approach' ?",
+        options: ["Informel", "Formel", "Neutre", "Familier"],
+        correct: 1
       },
       {
-        id: 20,
-        question: "Superlatif de 'many' (beaucoup) ?",
-        options: ["the manyest", "the most", "the mosts", "the much"],
-        correct: 1,
-        explanation: "'Many' devient 'the most' au superlatif."
-      },
-
-      // Prépositions (5 questions)
-      {
-        id: 21,
-        question: "Complétez : 'the highest mountain ___ Europe'",
-        options: ["in", "of", "at", "on"],
-        correct: 0,
-        explanation: "Avec les continents et lieux géographiques, on utilise 'in'."
+        question: "Quel registre : 'The coolest guy' ?",
+        options: ["Informel", "Formel", "Neutre", "Académique"],
+        correct: 0
       },
       {
-        id: 22,
-        question: "Complétez : 'the smartest ___ all students'",
-        options: ["in", "of", "at", "from"],
-        correct: 1,
-        explanation: "Avec un groupe défini précédé de 'all', on utilise 'of'."
+        question: "Comment dit-on 'le moins' ?",
+        options: ["the leastest", "the least", "the most less", "least"],
+        correct: 1
       },
       {
-        id: 23,
-        question: "Complétez : 'the worst ___ cooking'",
-        options: ["in", "of", "at", "for"],
-        correct: 2,
-        explanation: "Avec les compétences et activités, on utilise 'at'."
+        question: "Quelle phrase est correcte ?",
+        options: ["She is the taller", "She is the tallest", "She is taller", "She is most tall"],
+        correct: 1
       },
       {
-        id: 24,
-        question: "Quelle préposition : 'the richest person ___ the world' ?",
-        options: ["in", "of", "at", "on"],
-        correct: 0,
-        explanation: "Avec 'the world', on utilise 'in' : 'in the world'."
-      },
-      {
-        id: 25,
-        question: "Complétez : 'the fastest ___ the three runners'",
-        options: ["in", "of", "at", "between"],
-        correct: 1,
-        explanation: "Pour un groupe spécifique et défini, on utilise 'of'."
-      },
-
-      // Erreurs communes (5 questions)
-      {
-        id: 26,
-        question: "Quelle phrase est incorrecte ?",
-        options: ["the most beautiful", "the most biggest", "the best", "the worst"],
-        correct: 1,
-        explanation: "'The most biggest' mélange deux formes de superlatif. On dit 'the biggest'."
-      },
-      {
-        id: 27,
-        question: "Phrase avec erreur ?",
-        options: ["She is the smartest", "He is the baddest", "It's the most difficult", "They are the fastest"],
-        correct: 1,
-        explanation: "'The baddest' est incorrect. La forme correcte est 'the worst'."
-      },
-      {
-        id: 28,
-        question: "Erreur à éviter ?",
-        options: ["the most expensive", "the expensivest", "the best", "the worst"],
-        correct: 1,
-        explanation: "'The expensivest' est incorrect. On dit 'the most expensive'."
-      },
-      {
-        id: 29,
-        question: "Phrase incorrecte ?",
-        options: ["the tallest person", "the most nicest", "the best friend", "the worst day"],
-        correct: 1,
-        explanation: "'The most nicest' est incorrect. On dit 'the nicest'."
-      },
-      {
-        id: 30,
-        question: "Quelle est l'erreur ?",
-        options: ["the oldest brother", "the most fastest car", "the best solution", "the most interesting"],
-        correct: 1,
-        explanation: "'The most fastest' mélange deux superlatifs. On dit 'the fastest'."
-      },
-
-      // Style et nuances (5 questions)
-      {
-        id: 31,
-        question: "Que signifie 'at best' ?",
-        options: ["au meilleur", "au mieux", "le meilleur", "très bien"],
-        correct: 1,
-        explanation: "'At best' signifie 'au mieux', dans le meilleur des cas."
-      },
-      {
-        id: 32,
-        question: "Expression idiomatique avec superlatif ?",
-        options: ["first and foremost", "more or less", "sooner or later", "here and there"],
-        correct: 0,
-        explanation: "'First and foremost' = 'avant tout' utilise des superlatifs."
-      },
-      {
-        id: 33,
-        question: "Comment intensifier 'the best' ?",
-        options: ["the most best", "the very best", "the better best", "more best"],
-        correct: 1,
-        explanation: "Pour intensifier, on peut dire 'the very best' (le tout meilleur)."
-      },
-      {
-        id: 34,
-        question: "Que signifie 'to say the least' ?",
-        options: ["dire le moins", "c'est le moins qu'on puisse dire", "au minimum", "pas beaucoup"],
-        correct: 1,
-        explanation: "'To say the least' = 'c'est le moins qu'on puisse dire' (euphémisme)."
-      },
-      {
-        id: 35,
-        question: "Expression avec 'most' (sans 'the') ?",
-        options: ["Most people agree", "Most the people", "The most people", "More most people"],
-        correct: 0,
-        explanation: "'Most people' (sans 'the') = 'la plupart des gens'."
-      },
-
-      // Questions mixtes révision (5 questions)
-      {
-        id: 36,
-        question: "Dans 'This is my best friend', pourquoi pas de 'the' ?",
-        options: ["C'est une erreur", "Avec les possessifs, pas de 'the'", "C'est informel", "C'est optionnel"],
-        correct: 1,
-        explanation: "Avec les possessifs (my, his, her...), on n'utilise pas 'the' devant le superlatif."
-      },
-      {
-        id: 37,
-        question: "Phrase correcte avec superlatif ?",
-        options: ["He works hardest", "He works the hardest", "les deux sont possibles", "aucune n'est correcte"],
-        correct: 2,
-        explanation: "Avec les adverbes, 'the' est souvent optionnel : 'hardest' ou 'the hardest'."
-      },
-      {
-        id: 38,
-        question: "Complétez : 'the ___ expensive of all cars'",
-        options: ["most", "more", "much", "many"],
-        correct: 0,
-        explanation: "'Expensive' a 3 syllabes, donc 'the most expensive'."
-      },
-      {
-        id: 39,
-        question: "Quelle phrase est la plus naturelle ?",
-        options: ["the most easy", "the easiest", "les deux", "aucune"],
-        correct: 1,
-        explanation: "Bien que 'the most easy' existe, 'the easiest' est beaucoup plus naturel et courant."
-      },
-      {
-        id: 40,
-        question: "Contexte formel : comment dire 'le plus important' ?",
-        options: ["the importantest", "the most important", "most important", "more important"],
-        correct: 1,
-        explanation: "Dans un contexte formel, 'the most important' est la forme correcte et appropriée."
+        question: "Dans quel contexte : 'What's the nearest restaurant?' ?",
+        options: ["Travail", "Voyage", "École", "Sport"],
+        correct: 1
       }
     ];
-  </script>
 
     // Variables pour les quiz
-    let currentValidationQuiz = null;
-    let validationAnswers = {};
-    let trainingQuizData = {
+    let practiceQuizData = {
       questions: [],
       currentIndex: 0,
       userAnswers: {},
       score: 0,
       isActive: false
     };
+
     let finalQuizData = {
       questions: [],
       currentIndex: 0,
@@ -2004,965 +2227,628 @@
       isActive: false
     };
 
-    // Réponses correctes pour les quiz de validation
-    const VALIDATION_ANSWERS = {
-      1: [1, 2], // Section 1: 2 questions
-      2: [1, 1, 2], // Section 2: 3 questions  
-      3: [2, 0, 2], // Section 3: 3 questions
-      5: [1, 0] // Section 5: 2 questions
-    };
+    // État des quiz de validation
+    let validationStates = {};
 
-    // Initialisation du cours
+    // Initialisation
     document.addEventListener('DOMContentLoaded', function() {
-      loadCourseState();
+      loadGameState();
       updateCourseInterface();
-      attachEventListeners();
+      initializeValidationQuizzes();
     });
 
-    // Chargement de l'état du cours depuis le localStorage
-    function loadCourseState() {
-      const saved = localStorage.getItem(`courseState_${COURSE_CONFIG.courseId}`);
-      if (saved) {
-        try {
-          const savedState = JSON.parse(saved);
-          courseState = { ...courseState, ...savedState };
-        } catch (e) {
-          console.warn('Erreur lors du chargement de l\'état du cours:', e);
-        }
-      }
-    }
+    // === GESTION DES SECTIONS ===
 
-    // Sauvegarde de l'état du cours
-    function saveCourseState() {
-      try {
-        localStorage.setItem(`courseState_${COURSE_CONFIG.courseId}`, JSON.stringify(courseState));
-      } catch (e) {
-        console.warn('Erreur lors de la sauvegarde de l\'état du cours:', e);
-      }
-    }
-
-    // Mise à jour de l'interface utilisateur
     function updateCourseInterface() {
-      updateProgressBar();
-      updateSectionStates();
-      updateProgressText();
-    }
-
-    // Mise à jour de la barre de progression
-    function updateProgressBar() {
-      const progressPercentage = (courseState.completedSections.length / COURSE_CONFIG.totalSections) * 100;
+      const totalSections = COURSE_CONFIG.totalSections;
+      const completedCount = gameState.completedSections.length;
+      
+      // Mettre à jour la barre de progression globale
       const progressFill = document.getElementById('gameProgressFill');
-      if (progressFill) {
-        progressFill.style.width = `${progressPercentage}%`;
-      }
-    }
-
-    // Mise à jour du texte de progression
-    function updateProgressText() {
       const progressText = document.getElementById('gameProgressText');
-      if (progressText) {
-        progressText.textContent = `Progression : ${courseState.completedSections.length}/${COURSE_CONFIG.totalSections} étapes complétées`;
+      
+      if (progressFill && progressText) {
+        const progressPercentage = (completedCount / totalSections) * 100;
+        progressFill.style.width = `${progressPercentage}%`;
+        progressText.textContent = `Progression : ${completedCount}/${totalSections} étapes complétées`;
       }
-    }
-
-    // Mise à jour des états des sections
-    function updateSectionStates() {
-      for (let i = 1; i <= COURSE_CONFIG.totalSections; i++) {
+      
+      // Mettre à jour l'état des sections
+      for (let i = 1; i <= totalSections; i++) {
         const section = document.getElementById(`section-${i}`);
-        const numberElement = document.getElementById(`number-${i}`);
+        const number = document.getElementById(`number-${i}`);
         const lockOverlay = document.getElementById(`lock-${i}`);
-        const completeButton = document.getElementById(`complete-${i}`);
-
-        if (!section) continue;
-
-        // Section complétée
-        if (courseState.completedSections.includes(i)) {
-          section.classList.remove('locked', 'current');
-          section.classList.add('completed');
-          if (numberElement) {
-            numberElement.classList.remove('locked');
-            numberElement.classList.add('completed');
-          }
-          if (lockOverlay) lockOverlay.style.display = 'none';
-          if (completeButton) {
-            completeButton.disabled = true;
-            completeButton.classList.add('completed');
-            completeButton.innerHTML = '<i class="fas fa-check"></i> Section Terminée';
-          }
-        }
-        // Section courante (débloquée)
-        else if (i === courseState.currentSection) {
-          section.classList.remove('locked', 'completed');
-          section.classList.add('current');
-          if (numberElement) {
-            numberElement.classList.remove('locked');
-          }
-          if (lockOverlay) lockOverlay.style.display = 'none';
-          if (completeButton) {
-            completeButton.disabled = false;
-          }
-        }
-        // Section verrouillée
-        else {
-          section.classList.remove('current', 'completed');
-          section.classList.add('locked');
-          if (numberElement) {
-            numberElement.classList.add('locked');
-          }
-          if (lockOverlay) lockOverlay.style.display = 'flex';
-          if (completeButton) {
-            completeButton.disabled = true;
-          }
-        }
-      }
-    }
-
-    // Gestionnaires d'événements
-    function attachEventListeners() {
-      // Quiz d'entraînement
-      const startTrainingBtn = document.getElementById('startTrainingQuiz');
-      if (startTrainingBtn) {
-        startTrainingBtn.addEventListener('click', startTrainingQuiz);
-      }
-
-      const resetTrainingBtn = document.getElementById('resetTrainingQuiz');
-      if (resetTrainingBtn) {
-        resetTrainingBtn.addEventListener('click', resetTrainingQuiz);
-      }
-
-      // Quiz final
-      const startFinalBtn = document.getElementById('startFinalQuiz');
-      if (startFinalBtn) {
-        startFinalBtn.addEventListener('click', startFinalQuiz);
-      }
-
-      const resetFinalBtn = document.getElementById('resetFinalQuiz');
-      if (resetFinalBtn) {
-        resetFinalBtn.addEventListener('click', resetFinalQuiz);
-      }
-
-      // Gestion des options de validation
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('validation-option')) {
-          handleValidationOption(e.target);
-        }
-      });
-    }
-
-    // === FONCTIONS POUR LES QUIZ DE VALIDATION ===
-
-    // Affichage du quiz de validation
-    function showValidationQuiz(sectionNumber) {
-      const quizContainer = document.getElementById(`validation-quiz-${sectionNumber}`);
-      if (quizContainer) {
-        quizContainer.style.display = 'block';
-        currentValidationQuiz = sectionNumber;
-        validationAnswers = {};
         
-        // Réinitialiser le quiz
-        resetValidationQuiz(sectionNumber);
-        
-        // Défiler vers le quiz
-        quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (section && number) {
+          // Section complétée
+          if (gameState.completedSections.includes(i)) {
+            section.classList.remove('locked', 'current');
+            section.classList.add('completed');
+            number.classList.remove('locked');
+            number.classList.add('completed');
+            if (lockOverlay) lockOverlay.style.display = 'none';
+          }
+          // Section actuelle (disponible)
+          else if (i === 1 || gameState.completedSections.includes(i - 1)) {
+            section.classList.remove('locked', 'completed');
+            section.classList.add('current');
+            number.classList.remove('locked', 'completed');
+            if (lockOverlay) lockOverlay.style.display = 'none';
+          }
+          // Section verrouillée
+          else {
+            section.classList.remove('current', 'completed');
+            section.classList.add('locked');
+            number.classList.remove('completed');
+            number.classList.add('locked');
+            if (lockOverlay) lockOverlay.style.display = 'flex';
+          }
+        }
       }
     }
 
-    // Gestion des options de validation
-    function handleValidationOption(option) {
-      if (!currentValidationQuiz) return;
+    // === QUIZ DE VALIDATION ===
 
-      const question = option.closest('.validation-question');
-      const questionNumber = parseInt(question.dataset.question);
-      const answerValue = parseInt(option.dataset.answer);
-
-      // Désélectionner toutes les autres options de cette question
-      const allOptions = question.querySelectorAll('.validation-option');
-      allOptions.forEach(opt => opt.classList.remove('selected'));
-
-      // Sélectionner cette option
-      option.classList.add('selected');
-
-      // Sauvegarder la réponse
-      validationAnswers[questionNumber] = answerValue;
-
-      // Vérifier si toutes les questions ont une réponse
-      const totalQuestions = VALIDATION_ANSWERS[currentValidationQuiz].length;
-      const checkButton = document.getElementById(`check-validation-${currentValidationQuiz}`);
-      
-      if (Object.keys(validationAnswers).length === totalQuestions && checkButton) {
-        checkButton.disabled = false;
-      }
-    }
-
-    // Vérification du quiz de validation
-    function checkValidationQuiz(sectionNumber) {
-      const correctAnswers = VALIDATION_ANSWERS[sectionNumber];
-      let score = 0;
-
-      correctAnswers.forEach((correctAnswer, index) => {
-        const questionNumber = index + 1;
-        const userAnswer = validationAnswers[questionNumber];
-        const question = document.querySelector(`#validation-quiz-${sectionNumber} .validation-question[data-question="${questionNumber}"]`);
+    function initializeValidationQuizzes() {
+      for (let section = 1; section <= 5; section++) {
+        validationStates[section] = {
+          answers: {},
+          completed: false,
+          score: 0
+        };
         
-        if (question) {
-          const options = question.querySelectorAll('.validation-option');
-          const feedback = question.querySelector('.validation-feedback');
-          const feedbackText = feedback.querySelector('.feedback-text');
-
-          options.forEach((option, optIndex) => {
-            if (optIndex === correctAnswer) {
-              option.classList.add('correct');
-            } else if (optIndex === userAnswer && userAnswer !== correctAnswer) {
-              option.classList.add('incorrect');
-            }
+        // Activer les listeners pour cette section
+        const options = document.querySelectorAll(`#validation-quiz-${section} .validation-option`);
+        options.forEach(option => {
+          option.addEventListener('click', function() {
+            selectValidationAnswer(section, option);
           });
-
-          if (userAnswer === correctAnswer) {
-            score++;
-            feedback.classList.add('correct');
-            feedbackText.textContent = '✅ Correct !';
-          } else {
-            feedback.classList.add('incorrect');
-            feedbackText.textContent = `❌ Incorrect. La bonne réponse était : "${options[correctAnswer].textContent}"`;
-          }
-          
-          feedback.style.display = 'block';
-        }
-      });
-
-      // Afficher le score
-      const scoreElement = document.getElementById(`validation-score-${sectionNumber}`);
-      const checkButton = document.getElementById(`check-validation-${sectionNumber}`);
-      const continueButton = document.getElementById(`continue-validation-${sectionNumber}`);
-
-      if (scoreElement) {
-        const percentage = Math.round((score / correctAnswers.length) * 100);
-        
-        if (score === correctAnswers.length) {
-          scoreElement.classList.add('success');
-          scoreElement.innerHTML = `<strong>🎉 Parfait ! ${score}/${correctAnswers.length} (${percentage}%)</strong><br>Vous maîtrisez cette section !`;
-          
-          if (continueButton) {
-            continueButton.style.display = 'inline-block';
-          }
-        } else {
-          scoreElement.classList.add('retry');
-          scoreElement.innerHTML = `<strong>📚 ${score}/${correctAnswers.length} (${percentage}%)</strong><br>Révisez le contenu et réessayez !`;
-        }
-        
-        scoreElement.style.display = 'block';
+        });
       }
-
-      if (checkButton) {
-        checkButton.style.display = 'none';
-      }
-
-      // Sauvegarder le score
-      courseState.validationScores[sectionNumber] = score;
-      saveCourseState();
     }
 
-    // Continuer après validation
-    function continueAfterValidation(sectionNumber) {
-      // Marquer la section comme terminée
-      if (!courseState.completedSections.includes(sectionNumber)) {
-        courseState.completedSections.push(sectionNumber);
+    function showValidationQuiz(section) {
+      document.getElementById(`complete-${section}`).style.display = 'none';
+      document.getElementById(`validation-quiz-${section}`).style.display = 'block';
+      
+      // Scroll vers le quiz
+      document.getElementById(`validation-quiz-${section}`).scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    function selectValidationAnswer(section, clickedOption) {
+      const questionDiv = clickedOption.parentElement.parentElement;
+      const questionNumber = parseInt(questionDiv.dataset.question);
+      const answerValue = parseInt(clickedOption.dataset.answer);
+      
+      // Désélectionner toutes les options de cette question
+      const allOptions = questionDiv.querySelectorAll('.validation-option');
+      allOptions.forEach(opt => opt.classList.remove('selected'));
+      
+      // Sélectionner l'option cliquée
+      clickedOption.classList.add('selected');
+      
+      // Sauvegarder la réponse
+      validationStates[section].answers[questionNumber] = answerValue;
+      
+      // Vérifier si toutes les questions ont une réponse
+      const totalQuestions = document.querySelectorAll(`#validation-quiz-${section} .validation-question`).length;
+      const answeredQuestions = Object.keys(validationStates[section].answers).length;
+      
+      if (answeredQuestions === totalQuestions) {
+        document.getElementById(`check-validation-${section}`).disabled = false;
+      }
+    }
+
+    function checkValidationQuiz(section) {
+      const correctAnswers = VALIDATION_ANSWERS[section];
+      let score = 0;
+      
+      // Vérifier chaque réponse
+      for (let questionNum = 1; questionNum <= correctAnswers.length; questionNum++) {
+        const userAnswer = validationStates[section].answers[questionNum];
+        const correctAnswer = correctAnswers[questionNum - 1];
+        const questionDiv = document.querySelector(`#validation-quiz-${section} .validation-question[data-question="${questionNum}"]`);
+        const options = questionDiv.querySelectorAll('.validation-option');
+        const feedbackSpan = questionDiv.querySelector('.feedback-text');
+        
+        if (userAnswer === correctAnswer) {
+          score++;
+          options[userAnswer].classList.add('correct');
+          feedbackSpan.innerHTML = '<span style="color: #2ecc71;"><i class="fas fa-check"></i> Correct !</span>';
+        } else {
+          options[userAnswer].classList.add('incorrect');
+          options[correctAnswer].classList.add('correct');
+          feedbackSpan.innerHTML = '<span style="color: #e74c3c;"><i class="fas fa-times"></i> Incorrect. La bonne réponse est surlignée.</span>';
+        }
       }
       
-      // Passer à la section suivante
-      if (sectionNumber < COURSE_CONFIG.totalSections) {
-        courseState.currentSection = sectionNumber + 1;
+      validationStates[section].score = score;
+      validationStates[section].completed = true;
+      
+      // Afficher le score
+      const scoreDiv = document.getElementById(`validation-score-${section}`);
+      const percentage = Math.round((score / correctAnswers.length) * 100);
+      
+      if (score === correctAnswers.length) {
+        scoreDiv.innerHTML = `<span style="color: #2ecc71; font-size: 1.1rem;"><i class="fas fa-trophy"></i> Score parfait : ${score}/${correctAnswers.length} (${percentage}%)</span>`;
+        document.getElementById(`continue-validation-${section}`).style.display = 'inline-block';
+      } else {
+        scoreDiv.innerHTML = `<span style="color: #f39c12;"><i class="fas fa-info-circle"></i> Score : ${score}/${correctAnswers.length} (${percentage}%)</span>`;
+        document.getElementById(`continue-validation-${section}`).style.display = 'inline-block';
       }
       
-      saveCourseState();
+      document.getElementById(`check-validation-${section}`).style.display = 'none';
+    }
+
+    function continueAfterValidation(section) {
+      if (!gameState.completedSections.includes(section)) {
+        gameState.completedSections.push(section);
+        gameState.currentSection = section + 1;
+      }
+      
       updateCourseInterface();
+      saveGameState();
       
-      // Défiler vers la section suivante
-      const nextSection = document.getElementById(`section-${sectionNumber + 1}`);
-      if (nextSection) {
+      // Scroll vers la prochaine section
+      if (section < COURSE_CONFIG.totalSections) {
         setTimeout(() => {
-          nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.getElementById(`section-${section + 1}`).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
         }, 500);
       }
     }
 
-    // Réinitialisation du quiz de validation
-    function resetValidationQuiz(sectionNumber) {
-      const quiz = document.getElementById(`validation-quiz-${sectionNumber}`);
-      if (!quiz) return;
+    // === QUIZ D'ENTRAINEMENT ===
 
-      // Réinitialiser les options
-      quiz.querySelectorAll('.validation-option').forEach(option => {
-        option.classList.remove('selected', 'correct', 'incorrect');
+    function startPracticeQuiz() {
+      practiceQuizData.questions = [...PRACTICE_QUESTIONS];
+      practiceQuizData.currentIndex = 0;
+      practiceQuizData.userAnswers = {};
+      practiceQuizData.isActive = true;
+      
+      document.getElementById('start-practice-quiz').style.display = 'none';
+      document.getElementById('practiceQuizContainer').style.display = 'block';
+      
+      showPracticeQuestion();
+    }
+
+    function showPracticeQuestion() {
+      const currentQuestion = practiceQuizData.questions[practiceQuizData.currentIndex];
+      const questionText = document.getElementById('practiceQuestionText');
+      const questionOptions = document.getElementById('practiceQuestionOptions');
+      const currentQ = document.getElementById('practiceCurrentQ');
+      const progressFill = document.getElementById('practiceProgressFill');
+      
+      currentQ.textContent = practiceQuizData.currentIndex + 1;
+      questionText.textContent = currentQuestion.question;
+      progressFill.style.width = `${((practiceQuizData.currentIndex + 1) / PRACTICE_QUESTIONS.length) * 100}%`;
+      
+      questionOptions.innerHTML = '';
+      currentQuestion.options.forEach((option, index) => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'quiz-option';
+        optionElement.textContent = option;
+        optionElement.addEventListener('click', () => selectPracticeAnswer(index));
+        
+        if (practiceQuizData.userAnswers[practiceQuizData.currentIndex] === index) {
+          optionElement.classList.add('selected');
+        }
+        
+        questionOptions.appendChild(optionElement);
       });
+      
+      updatePracticeNavigation();
+    }
 
-      // Cacher les feedbacks
-      quiz.querySelectorAll('.validation-feedback').forEach(feedback => {
-        feedback.style.display = 'none';
-        feedback.classList.remove('correct', 'incorrect');
+    function selectPracticeAnswer(answerIndex) {
+      practiceQuizData.userAnswers[practiceQuizData.currentIndex] = answerIndex;
+      
+      const options = document.querySelectorAll('#practiceQuestionOptions .quiz-option');
+      options.forEach((option, index) => {
+        option.classList.toggle('selected', index === answerIndex);
       });
-
-      // Réinitialiser les boutons
-      const checkButton = quiz.querySelector('.validation-btn');
-      const continueButton = quiz.querySelector('.validation-btn.success');
-      const scoreElement = quiz.querySelector('.validation-score');
-
-      if (checkButton) {
-        checkButton.style.display = 'inline-block';
-        checkButton.disabled = true;
-      }
-      if (continueButton) {
-        continueButton.style.display = 'none';
-      }
-      if (scoreElement) {
-        scoreElement.style.display = 'none';
-        scoreElement.classList.remove('success', 'retry');
-      }
+      
+      updatePracticeNavigation();
     }
 
-    // === FONCTIONS POUR LE QUIZ D'ENTRAÎNEMENT ===
-
-    // Démarrage du quiz d'entraînement
-    function startTrainingQuiz() {
-      // Sélectionner 10 questions aléatoires parmi les 30
-      const shuffledQuestions = [...TRAINING_QUESTIONS].sort(() => Math.random() - 0.5);
-      trainingQuizData.questions = shuffledQuestions.slice(0, 10);
-      trainingQuizData.currentIndex = 0;
-      trainingQuizData.userAnswers = {};
-      trainingQuizData.score = 0;
-      trainingQuizData.isActive = true;
-
-      // Afficher le container du quiz
-      document.getElementById('trainingQuizContainer').style.display = 'block';
-      document.getElementById('startTrainingQuiz').style.display = 'none';
-      document.getElementById('resetTrainingQuiz').style.display = 'inline-block';
-      document.getElementById('trainingQuizResults').style.display = 'none';
-
-      // Afficher la première question
-      displayTrainingQuestion();
-    }
-
-    // Affichage d'une question d'entraînement
-    function displayTrainingQuestion() {
-      const question = trainingQuizData.questions[trainingQuizData.currentIndex];
-      const container = document.getElementById('trainingCurrentQuestion');
+    function updatePracticeNavigation() {
+      const prevBtn = document.getElementById('practicePrevQuestion');
+      const nextBtn = document.getElementById('practiceNextQuestion');
+      const finishBtn = document.getElementById('practiceFinishQuiz');
       
-      // Mettre à jour le compteur et le score
-      document.getElementById('trainingQuestionCounter').textContent = 
-        `Question ${trainingQuizData.currentIndex + 1}/10`;
-      document.getElementById('trainingCurrentScore').textContent = 
-        `Score: ${trainingQuizData.score}/${trainingQuizData.currentIndex}`;
+      prevBtn.style.display = practiceQuizData.currentIndex > 0 ? 'inline-block' : 'none';
       
-      // Mettre à jour la barre de progression
-      const progress = ((trainingQuizData.currentIndex) / 10) * 100;
-      document.getElementById('trainingQuizProgressFill').style.width = `${progress}%`;
-
-      // Générer le HTML de la question
-      container.innerHTML = `
-        <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-lg);">
-          ${question.question}
-        </h4>
-        <div class="quiz-options">
-          ${question.options.map((option, index) => `
-            <div class="quiz-option" data-answer="${index}" onclick="selectTrainingAnswer(${index})">
-              ${option}
-            </div>
-          `).join('')}
-        </div>
-        <div id="trainingQuestionFeedback" class="quiz-feedback" style="display: none; margin-top: var(--spacing-lg);"></div>
-      `;
-
-      // Mettre à jour les boutons de navigation
-      updateTrainingNavigationButtons();
-    }
-
-    // Sélection d'une réponse d'entraînement
-    function selectTrainingAnswer(answerIndex) {
-      const question = trainingQuizData.questions[trainingQuizData.currentIndex];
-      const options = document.querySelectorAll('.quiz-option');
-      const feedback = document.getElementById('trainingQuestionFeedback');
-
-      // Désélectionner toutes les options
-      options.forEach(opt => opt.classList.remove('selected', 'correct', 'incorrect'));
-
-      // Sélectionner la réponse choisie
-      options[answerIndex].classList.add('selected');
-
-      // Sauvegarder la réponse
-      trainingQuizData.userAnswers[trainingQuizData.currentIndex] = answerIndex;
-
-      // Vérifier si la réponse est correcte
-      const isCorrect = answerIndex === question.correct;
+      const isLastQuestion = practiceQuizData.currentIndex === PRACTICE_QUESTIONS.length - 1;
+      const allAnswered = Object.keys(practiceQuizData.userAnswers).length === PRACTICE_QUESTIONS.length;
       
-      if (isCorrect) {
-        options[answerIndex].classList.add('correct');
-        trainingQuizData.score++;
-        feedback.innerHTML = `<div style="color: var(--color-primary); padding: var(--spacing-md); background: rgba(46, 204, 113, 0.1); border-radius: var(--border-radius-md);">
-          ✅ <strong>Correct !</strong><br>
-          💡 ${question.explanation}
-        </div>`;
-      } else {
-        options[answerIndex].classList.add('incorrect');
-        options[question.correct].classList.add('correct');
-        feedback.innerHTML = `<div style="color: var(--color-danger); padding: var(--spacing-md); background: rgba(231, 76, 60, 0.1); border-radius: var(--border-radius-md);">
-          ❌ <strong>Incorrect</strong><br>
-          💡 ${question.explanation}
-        </div>`;
-      }
-
-      feedback.style.display = 'block';
-      updateTrainingNavigationButtons();
-    }
-
-    // Mise à jour des boutons de navigation d'entraînement
-    function updateTrainingNavigationButtons() {
-      const prevBtn = document.getElementById('trainingPrevQuestion');
-      const nextBtn = document.getElementById('trainingNextQuestion');
-      const finishBtn = document.getElementById('trainingFinishQuiz');
-
-      // Bouton précédent
-      prevBtn.disabled = trainingQuizData.currentIndex === 0;
-
-      // Bouton suivant / terminer
-      const hasAnswered = trainingQuizData.userAnswers.hasOwnProperty(trainingQuizData.currentIndex);
-      
-      if (trainingQuizData.currentIndex === trainingQuizData.questions.length - 1) {
+      if (isLastQuestion) {
         nextBtn.style.display = 'none';
-        finishBtn.style.display = hasAnswered ? 'inline-block' : 'none';
+        finishBtn.style.display = allAnswered ? 'inline-block' : 'none';
       } else {
         nextBtn.style.display = 'inline-block';
-        nextBtn.disabled = !hasAnswered;
         finishBtn.style.display = 'none';
       }
     }
 
-    // Navigation dans le quiz d'entraînement
-    function trainingPrevQuestion() {
-      if (trainingQuizData.currentIndex > 0) {
-        trainingQuizData.currentIndex--;
-        displayTrainingQuestion();
+    function practicePrevQuestion() {
+      if (practiceQuizData.currentIndex > 0) {
+        practiceQuizData.currentIndex--;
+        showPracticeQuestion();
       }
     }
 
-    function trainingNextQuestion() {
-      if (trainingQuizData.currentIndex < trainingQuizData.questions.length - 1) {
-        trainingQuizData.currentIndex++;
-        displayTrainingQuestion();
+    function practiceNextQuestion() {
+      if (practiceQuizData.currentIndex < PRACTICE_QUESTIONS.length - 1) {
+        practiceQuizData.currentIndex++;
+        showPracticeQuestion();
       }
     }
 
-    // Complétion d'une section simple (sans quiz de validation)
-    function completeSection(sectionNumber) {
-      // Marquer la section comme terminée
-      if (!courseState.completedSections.includes(sectionNumber)) {
-        courseState.completedSections.push(sectionNumber);
-      }
+    function finishPracticeQuiz() {
+      let correctAnswers = 0;
       
-      // Débloquer la section suivante
-      if (sectionNumber < COURSE_CONFIG.totalSections) {
-        courseState.currentSection = sectionNumber + 1;
-      }
+      practiceQuizData.questions.forEach((question, index) => {
+        if (practiceQuizData.userAnswers[index] === question.correct) {
+          correctAnswers++;
+        }
+      });
       
-      saveCourseState();
-      updateCourseInterface();
+      practiceQuizData.score = correctAnswers;
+      practiceQuizData.isActive = false;
+      gameState.practiceScore = correctAnswers;
+      gameState.practiceQuizCompleted = true;
       
-      // Défiler vers la section suivante
-      const nextSection = document.getElementById(`section-${sectionNumber + 1}`);
-      if (nextSection) {
-        setTimeout(() => {
-          nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 500);
-      }
+      showPracticeResults();
+      saveGameState();
     }
 
-    // Terminer le quiz d'entraînement
-    function finishTrainingQuiz() {
-      trainingQuizData.isActive = false;
+    function showPracticeResults() {
+      document.getElementById('practiceQuizContainer').style.display = 'none';
+      document.getElementById('practiceQuizResults').style.display = 'block';
       
-      // Cacher le container du quiz
-      document.getElementById('trainingQuizContainer').style.display = 'none';
-      
-      // Afficher les résultats
-      displayTrainingResults();
-      
-      // Sauvegarder le score
-      courseState.trainingScore = trainingQuizData.score;
-      saveCourseState();
-      
-      // Débloquer le bouton de complétion de section si score suffisant
-      if (trainingQuizData.score >= COURSE_CONFIG.trainingPassingScore) {
-        document.getElementById('complete-4').disabled = false;
-      }
-    }
-
-    // Affichage des résultats d'entraînement
-    function displayTrainingResults() {
-      const resultsContainer = document.getElementById('trainingQuizResults');
-      const badgeContainer = document.getElementById('trainingResultBadge');
-      const breakdownContainer = document.getElementById('trainingResultBreakdown');
-      
-      resultsContainer.style.display = 'block';
-      
-      const score = trainingQuizData.score;
-      const total = trainingQuizData.questions.length;
+      const score = practiceQuizData.score;
+      const total = PRACTICE_QUESTIONS.length;
       const percentage = Math.round((score / total) * 100);
       
-      // Badge de résultat
-      let badgeHTML = '';
-      let badgeClass = '';
+      const resultsContent = document.getElementById('practiceResultsContent');
       
-      if (score >= 9) {
-        badgeHTML = '🏆 EXCELLENT';
-        badgeClass = 'gold';
-      } else if (score >= 7) {
-        badgeHTML = '🥈 TRÈS BIEN';
-        badgeClass = 'silver';
-      } else if (score >= 5) {
-        badgeHTML = '🥉 BIEN';
-        badgeClass = 'bronze';
+      let resultsHTML = `
+        <div style="text-align: center; padding: 2rem; background: var(--color-surface-hover); border-radius: 1rem; margin: 1rem 0;">
+          <h3>Résultats du Quiz d'Entraînement</h3>
+          <p style="font-size: 1.5rem; margin: 1rem 0;">Score : ${score}/${total} (${percentage}%)</p>
+      `;
+      
+      if (percentage >= 80) {
+        resultsHTML += `
+          <p style="color: #2ecc71; font-weight: bold;">🎉 Excellent ! Vous êtes prêt pour le quiz final !</p>
+        `;
+      } else if (percentage >= 60) {
+        resultsHTML += `
+          <p style="color: #f39c12; font-weight: bold;">📚 Bon travail ! Révisez les points faibles avant le quiz final.</p>
+        `;
       } else {
-        badgeHTML = '📚 À AMÉLIORER';
-        badgeClass = 'retry';
+        resultsHTML += `
+          <p style="color: #e74c3c; font-weight: bold;">💪 Continuez à étudier ! Reprenez les sections difficiles.</p>
+        `;
       }
       
-      badgeContainer.innerHTML = `
-        <div class="result-badge ${badgeClass}" style="font-size: 2rem; padding: var(--spacing-lg); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md);">
-          ${badgeHTML}
-        </div>
-      `;
+      resultsHTML += `</div>`;
       
-      // Analyse détaillée
-      breakdownContainer.innerHTML = `
-        <p><strong>Score :</strong> ${score}/${total} (${percentage}%)</p>
-        <p><strong>Seuil requis :</strong> ${COURSE_CONFIG.trainingPassingScore}/${total} pour continuer</p>
-        ${score >= COURSE_CONFIG.trainingPassingScore ? 
-          '<p style="color: var(--color-primary);">✅ <strong>Félicitations !</strong> Vous pouvez maintenant passer à la section suivante.</p>' :
-          '<p style="color: var(--color-danger);">❌ <strong>Score insuffisant.</strong> Révisez le contenu et réessayez.</p>'
-        }
-      `;
+      // Ajouter les explications détaillées
+      resultsHTML += `<div style="margin-top: 2rem;"><h4>Explications détaillées :</h4>`;
+      
+      practiceQuizData.questions.forEach((question, index) => {
+        const userAnswer = practiceQuizData.userAnswers[index];
+        const isCorrect = userAnswer === question.correct;
+        
+        resultsHTML += `
+          <div style="margin: 1rem 0; padding: 1rem; background: var(--color-surface); border-radius: 0.5rem; border-left: 4px solid ${isCorrect ? '#2ecc71' : '#e74c3c'};">
+            <p><strong>Question ${index + 1}:</strong> ${question.question}</p>
+            <p><strong>Votre réponse:</strong> ${question.options[userAnswer]} ${isCorrect ? '✅' : '❌'}</p>
+            ${!isCorrect ? `<p><strong>Bonne réponse:</strong> ${question.options[question.correct]}</p>` : ''}
+            <p><strong>Explication:</strong> ${question.explanation}</p>
+          </div>
+        `;
+      });
+      
+      resultsHTML += `</div>`;
+      resultsContent.innerHTML = resultsHTML;
     }
 
-    // Réinitialiser le quiz d'entraînement
-    function resetTrainingQuiz() {
-      trainingQuizData = {
-        questions: [],
-        currentIndex: 0,
-        userAnswers: {},
-        score: 0,
-        isActive: false
-      };
-      
-      document.getElementById('trainingQuizContainer').style.display = 'none';
-      document.getElementById('trainingQuizResults').style.display = 'none';
-      document.getElementById('startTrainingQuiz').style.display = 'inline-block';
-      document.getElementById('resetTrainingQuiz').style.display = 'none';
-    }
+    // === QUIZ FINAL ===
 
-    // === FONCTIONS POUR LE QUIZ FINAL ===
+    // Variables globales pour le quiz final
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let score = 0;
 
-    // Démarrage du quiz final
     function startFinalQuiz() {
-      // Sélectionner 20 questions aléatoires parmi les 40
-      const shuffledQuestions = [...FINAL_QUESTIONS].sort(() => Math.random() - 0.5);
-      finalQuizData.questions = shuffledQuestions.slice(0, 20);
-      finalQuizData.currentIndex = 0;
-      finalQuizData.userAnswers = {};
-      finalQuizData.score = 0;
-      finalQuizData.isActive = true;
-
-      // Afficher le container du quiz
+      // Réinitialiser les variables
+      currentQuestionIndex = 0;
+      userAnswers = Array(FINAL_QUESTIONS.length).fill(null);
+      score = 0;
+      
+      document.getElementById('start-final-quiz').style.display = 'none';
       document.getElementById('finalQuizContainer').style.display = 'block';
-      document.getElementById('startFinalQuiz').style.display = 'none';
-      document.getElementById('resetFinalQuiz').style.display = 'inline-block';
-      document.getElementById('finalQuizResults').style.display = 'none';
-
-      // Afficher la première question
-      displayFinalQuestion();
+      
+      displayQuestion(false); // false = final quiz (pas training)
+      updateQuizProgress(false);
     }
 
-    // Affichage d'une question finale
-    function displayFinalQuestion() {
-      const question = finalQuizData.questions[finalQuizData.currentIndex];
+    function displayQuestion(isTraining) {
+      const questions = FINAL_QUESTIONS;
+      const question = questions[currentQuestionIndex];
       const container = document.getElementById('finalCurrentQuestion');
       
-      // Mettre à jour le compteur et le score
-      document.getElementById('finalQuestionCounter').textContent = 
-        `Question ${finalQuizData.currentIndex + 1}/20`;
-      document.getElementById('finalCurrentScore').textContent = 
-        `Score: ${finalQuizData.score}/${finalQuizData.currentIndex}`;
-      
-      // Mettre à jour le statut de certification
-      const currentScore = finalQuizData.score;
-      const questionsRemaining = 20 - finalQuizData.currentIndex;
-      const maxPossibleScore = currentScore + questionsRemaining;
-      const statusElement = document.getElementById('finalCertificationStatus');
-      
-      if (currentScore >= COURSE_CONFIG.finalPassingScore) {
-        statusElement.textContent = 'Certification: ✅ ACQUISE !';
-        statusElement.style.color = 'var(--color-primary)';
-      } else if (maxPossibleScore >= COURSE_CONFIG.finalPassingScore) {
-        statusElement.textContent = `Certification: ${COURSE_CONFIG.finalPassingScore}/20 requis`;
-        statusElement.style.color = '#e67e22';
-      } else {
-        statusElement.textContent = 'Certification: ❌ Impossible';
-        statusElement.style.color = 'var(--color-danger)';
-      }
-      
-      // Mettre à jour la barre de progression
-      const progress = ((finalQuizData.currentIndex) / 20) * 100;
-      document.getElementById('finalQuizProgressFill').style.width = `${progress}%`;
-
-      // Générer le HTML de la question
       container.innerHTML = `
-        <h4 style="color: var(--color-primary); margin-bottom: var(--spacing-lg);">
-          ${question.question}
-        </h4>
+        <div class="question-text">
+          <strong>Question ${currentQuestionIndex + 1}:</strong> ${question.question}
+        </div>
         <div class="quiz-options">
           ${question.options.map((option, index) => `
-            <div class="quiz-option" data-answer="${index}" onclick="selectFinalAnswer(${index})">
-              ${option}
+            <div class="quiz-option" data-option="${index}" onclick="selectOption(${index}, ${isTraining})">
+              ${String.fromCharCode(65 + index)}. ${option}
             </div>
           `).join('')}
         </div>
-        <div id="finalQuestionFeedback" class="quiz-feedback" style="display: none; margin-top: var(--spacing-lg);"></div>
       `;
 
-      // Mettre à jour les boutons de navigation
-      updateFinalNavigationButtons();
-    }
-
-    // Sélection d'une réponse finale
-    function selectFinalAnswer(answerIndex) {
-      const question = finalQuizData.questions[finalQuizData.currentIndex];
-      const options = document.querySelectorAll('#finalCurrentQuestion .quiz-option');
-      const feedback = document.getElementById('finalQuestionFeedback');
-
-      // Désélectionner toutes les options
-      options.forEach(opt => opt.classList.remove('selected', 'correct', 'incorrect'));
-
-      // Sélectionner la réponse choisie
-      options[answerIndex].classList.add('selected');
-
-      // Sauvegarder la réponse
-      finalQuizData.userAnswers[finalQuizData.currentIndex] = answerIndex;
-
-      // Vérifier si la réponse est correcte
-      const isCorrect = answerIndex === question.correct;
-      
-      if (isCorrect) {
-        options[answerIndex].classList.add('correct');
-        finalQuizData.score++;
-        feedback.innerHTML = `<div style="color: var(--color-primary); padding: var(--spacing-md); background: rgba(46, 204, 113, 0.1); border-radius: var(--border-radius-md);">
-          ✅ <strong>Correct !</strong><br>
-          💡 ${question.explanation}
-        </div>`;
-      } else {
-        options[answerIndex].classList.add('incorrect');
-        options[question.correct].classList.add('correct');
-        feedback.innerHTML = `<div style="color: var(--color-danger); padding: var(--spacing-md); background: rgba(231, 76, 60, 0.1); border-radius: var(--border-radius-md);">
-          ❌ <strong>Incorrect</strong><br>
-          💡 ${question.explanation}
-        </div>`;
+      // Restaurer la sélection précédente si elle existe
+      if (userAnswers[currentQuestionIndex] !== null) {
+        const selectedOption = container.querySelector(`[data-option="${userAnswers[currentQuestionIndex]}"]`);
+        if (selectedOption) {
+          selectedOption.classList.add('selected');
+        }
       }
 
-      feedback.style.display = 'block';
-      updateFinalNavigationButtons();
+      updateNavigationButtons(false);
     }
 
-    // Mise à jour des boutons de navigation finaux
-    function updateFinalNavigationButtons() {
+    function selectOption(optionIndex, isTraining) {
+      // Retirer la sélection précédente
+      document.querySelectorAll('#finalCurrentQuestion .quiz-option').forEach(option => {
+        option.classList.remove('selected');
+      });
+
+      // Ajouter la nouvelle sélection
+      const selectedOption = document.querySelector(`#finalCurrentQuestion [data-option="${optionIndex}"]`);
+      selectedOption.classList.add('selected');
+
+      // Sauvegarder la réponse
+      userAnswers[currentQuestionIndex] = optionIndex;
+
+      updateNavigationButtons(false);
+      updateQuizProgress(false);
+    }
+
+    function updateNavigationButtons(isTraining) {
+      const questions = FINAL_QUESTIONS;
+      
       const prevBtn = document.getElementById('finalPrevQuestion');
       const nextBtn = document.getElementById('finalNextQuestion');
       const finishBtn = document.getElementById('finalFinishQuiz');
 
-      // Bouton précédent
-      prevBtn.disabled = finalQuizData.currentIndex === 0;
-
-      // Bouton suivant / terminer
-      const hasAnswered = finalQuizData.userAnswers.hasOwnProperty(finalQuizData.currentIndex);
+      prevBtn.disabled = currentQuestionIndex === 0;
+      prevBtn.onclick = () => previousQuestion(false);
       
-      if (finalQuizData.currentIndex === finalQuizData.questions.length - 1) {
+      if (currentQuestionIndex === questions.length - 1) {
         nextBtn.style.display = 'none';
-        finishBtn.style.display = hasAnswered ? 'inline-block' : 'none';
+        finishBtn.style.display = 'inline-block';
+        finishBtn.disabled = userAnswers[currentQuestionIndex] === null;
+        finishBtn.onclick = () => finishQuiz(false);
       } else {
         nextBtn.style.display = 'inline-block';
-        nextBtn.disabled = !hasAnswered;
         finishBtn.style.display = 'none';
+        nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+        nextBtn.onclick = () => nextQuestion(false);
       }
     }
 
-    // Navigation dans le quiz final
-    function finalPrevQuestion() {
-      if (finalQuizData.currentIndex > 0) {
-        finalQuizData.currentIndex--;
-        displayFinalQuestion();
+    function previousQuestion(isTraining) {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayQuestion(false);
+        updateQuizProgress(false);
       }
     }
 
-    function finalNextQuestion() {
-      if (finalQuizData.currentIndex < finalQuizData.questions.length - 1) {
-        finalQuizData.currentIndex++;
-        displayFinalQuestion();
+    function nextQuestion(isTraining) {
+      const questions = FINAL_QUESTIONS;
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        displayQuestion(false);
+        updateQuizProgress(false);
       }
     }
 
-    // Terminer le quiz final
-    function finishFinalQuiz() {
-      finalQuizData.isActive = false;
+    function updateQuizProgress(isTraining) {
+      const questions = FINAL_QUESTIONS;
       
-      // Cacher le container du quiz
-      document.getElementById('finalQuizContainer').style.display = 'none';
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+      document.getElementById('finalQuizProgressFill').style.width = progress + '%';
+      document.getElementById('finalQuestionCounter').textContent = `Question ${currentQuestionIndex + 1}/${questions.length}`;
       
-      // Afficher les résultats
-      displayFinalResults();
-      
-      // Sauvegarder le score et la certification
-      courseState.finalScore = finalQuizData.score;
-      courseState.certified = finalQuizData.score >= COURSE_CONFIG.finalPassingScore;
-      saveCourseState();
-      
-      // Débloquer le bouton de complétion de cours si certifié
-      if (courseState.certified) {
-        document.getElementById('complete-6').disabled = false;
-      }
+      const answeredQuestions = userAnswers.filter(answer => answer !== null).length;
+      document.getElementById('finalCurrentScore').textContent = `Répondu: ${answeredQuestions}/${questions.length}`;
     }
 
-    // Affichage des résultats finaux
-    function displayFinalResults() {
-      const resultsContainer = document.getElementById('finalQuizResults');
-      const badgeContainer = document.getElementById('finalResultBadge');
-      const breakdownContainer = document.getElementById('finalResultBreakdown');
-      const messageContainer = document.getElementById('finalCertificationMessage');
-      const downloadBtn = document.getElementById('finalDownloadCertificate');
+    function finishQuiz(isTraining) {
+      const questions = FINAL_QUESTIONS;
       
-      resultsContainer.style.display = 'block';
-      
-      const score = finalQuizData.score;
-      const total = finalQuizData.questions.length;
-      const percentage = Math.round((score / total) * 100);
-      const isCertified = score >= COURSE_CONFIG.finalPassingScore;
-      
-      // Badge de résultat
-      let badgeHTML = '';
-      
-      if (isCertified) {
-        if (score === 20) {
-          badgeHTML = '🏆 MAÎTRISE PARFAITE';
-        } else if (score >= 18) {
-          badgeHTML = '🥇 EXCELLENTE MAÎTRISE';
-        } else {
-          badgeHTML = '✅ CERTIFICATION OBTENUE';
+      // Calculer le score
+      score = 0;
+      for (let i = 0; i < questions.length; i++) {
+        if (userAnswers[i] === questions[i].correct) {
+          score++;
         }
-      } else {
-        badgeHTML = '❌ NON CERTIFIÉ';
       }
+
+      // Marquer le quiz comme terminé
+      finalQuizData.score = score;
+      finalQuizData.isActive = false;
+      gameState.finalScore = score;
+      gameState.finalQuizCompleted = true;
       
-      badgeContainer.innerHTML = `
-        <div class="result-badge ${isCertified ? 'certified' : 'not-certified'}" style="font-size: 2rem; padding: var(--spacing-xl); border-radius: var(--border-radius-lg); margin-bottom: var(--spacing-md); border: 3px solid ${isCertified ? 'var(--color-primary)' : 'var(--color-danger)'};">
-          ${badgeHTML}
-        </div>
-      `;
+      displayResults(false);
+      saveGameState();
       
-      // Analyse détaillée
-      breakdownContainer.innerHTML = `
-        <p><strong>Score Final :</strong> ${score}/${total} (${percentage}%)</p>
-        <p><strong>Seuil de Certification :</strong> ${COURSE_CONFIG.finalPassingScore}/${total} (80%)</p>
-        <div style="background: var(--color-surface-hover); padding: var(--spacing-md); border-radius: var(--border-radius-md); margin-top: var(--spacing-md);">
-          <strong>Répartition par thème :</strong><br>
-          • Formation des superlatifs<br>
-          • Superlatifs irréguliers<br>
-          • Usage des prépositions<br>
-          • Erreurs communes<br>
-          • Nuances avancées
-        </div>
-      `;
-      
-      // Message de certification
-      if (isCertified) {
-        messageContainer.innerHTML = `
-          <div style="background: rgba(46, 204, 113, 0.1); border: 2px solid var(--color-primary); padding: var(--spacing-lg); border-radius: var(--border-radius-md); color: var(--color-primary);">
-            <h4>🎉 FÉLICITATIONS !</h4>
-            <p>Vous avez obtenu votre <strong>Certification Superlatifs</strong> !</p>
-            <p>Votre maîtrise des superlatifs anglais est maintenant officielle.</p>
-          </div>
-        `;
-        downloadBtn.style.display = 'inline-block';
-      } else {
-        messageContainer.innerHTML = `
-          <div style="background: rgba(231, 76, 60, 0.1); border: 2px solid var(--color-danger); padding: var(--spacing-lg); border-radius: var(--border-radius-md); color: var(--color-danger);">
-            <h4>📚 Certification non obtenue</h4>
-            <p>Score insuffisant pour la certification (${score}/${COURSE_CONFIG.finalPassingScore}).</p>
-            <p>Révisez le contenu du cours et retentez votre chance !</p>
-          </div>
-        `;
+      // Sauvegarder la réussite dans Firebase si connecté
+      if (typeof saveUserProgress === 'function') {
+        saveUserProgress(COURSE_CONFIG.courseId, {
+          completed: score >= COURSE_CONFIG.finalPassingScore,
+          score: score,
+          maxScore: FINAL_QUESTIONS.length,
+          completedAt: new Date().toISOString()
+        });
       }
     }
 
-    // Réinitialiser le quiz final
-    function resetFinalQuiz() {
-      finalQuizData = {
-        questions: [],
-        currentIndex: 0,
-        userAnswers: {},
-        score: 0,
-        isActive: false
-      };
+    function displayResults(isTraining) {
+      const questions = FINAL_QUESTIONS;
       
       document.getElementById('finalQuizContainer').style.display = 'none';
+      document.getElementById('finalQuizResults').style.display = 'block';
+
+      const percentage = (score / questions.length) * 100;
+      let badgeClass, badgeText, badgeIcon;
+
+      if (score >= 18) {
+        badgeClass = 'badge-master';
+        badgeText = `🏆 MAÎTRE DU SUPERLATIF ! ${score}/${questions.length}`;
+        badgeIcon = '👑';
+      } else if (score >= 16) {
+        badgeClass = 'badge-good';
+        badgeText = `🎉 COURS VALIDÉ ! ${score}/${questions.length}`;
+        badgeIcon = '🎉';
+      } else {
+        badgeClass = 'badge-retry';
+        badgeText = `📚 Score Insuffisant ${score}/${questions.length}`;
+        badgeIcon = '💪';
+      }
+
+      document.getElementById('finalResultBadge').innerHTML = `
+        <div class="${badgeClass}">
+          ${badgeIcon} ${badgeText}
+        </div>
+      `;
+
+      // Détails des résultats
+      const breakdown = questions.map((question, index) => {
+        const userAnswer = userAnswers[index];
+        const isCorrect = userAnswer === question.correct;
+        const userAnswerText = userAnswer !== null ? question.options[userAnswer] : 'Non répondu';
+        const correctAnswerText = question.options[question.correct];
+
+        return `
+          <div style="margin: 1rem 0; padding: 1rem; border-radius: 8px; background: ${isCorrect ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)'};">
+            <strong>Q${index + 1}:</strong> ${question.question}<br>
+            <span style="color: ${isCorrect ? '#2ecc71' : '#e74c3c'};">
+              Votre réponse: ${userAnswerText} ${isCorrect ? '✅' : '❌'}
+            </span><br>
+            ${!isCorrect ? `<span style="color: #2ecc71;">Bonne réponse: ${correctAnswerText}</span><br>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('finalResultBreakdown').innerHTML = breakdown;
+      
+      // Afficher le bouton de certificat si quiz final réussi
+      if (score >= 16) {
+        document.getElementById('downloadCertificate').style.display = 'inline-block';
+      }
+      
+      // Setup review button
+      document.getElementById('finalReviewAnswers').onclick = () => reviewAnswers(false);
+    }
+
+    function reviewAnswers(isTraining) {
       document.getElementById('finalQuizResults').style.display = 'none';
-      document.getElementById('startFinalQuiz').style.display = 'inline-block';
-      document.getElementById('resetFinalQuiz').style.display = 'none';
+      document.getElementById('finalQuizContainer').style.display = 'block';
+      
+      currentQuestionIndex = 0;
+      displayQuestionWithAnswers(false);
     }
 
-    // Terminer le cours complet
-    function completeCourse() {
-      // Marquer la dernière section comme terminée
-      if (!courseState.completedSections.includes(6)) {
-        courseState.completedSections.push(6);
+    function displayQuestionWithAnswers(isTraining) {
+      const questions = FINAL_QUESTIONS;
+      const question = questions[currentQuestionIndex];
+      const container = document.getElementById('finalCurrentQuestion');
+      
+      container.innerHTML = `
+        <div class="question-text">
+          <strong>Question ${currentQuestionIndex + 1}:</strong> ${question.question}
+        </div>
+        <div class="quiz-options">
+          ${question.options.map((option, index) => {
+            let className = 'quiz-option';
+            if (index === question.correct) className += ' correct';
+            else if (index === userAnswers[currentQuestionIndex] && index !== question.correct) className += ' incorrect';
+            else if (index === userAnswers[currentQuestionIndex]) className += ' selected';
+            
+            return `<div class="${className}">${String.fromCharCode(65 + index)}. ${option}</div>`;
+          }).join('')}
+        </div>
+      `;
+
+      // Mettre à jour les boutons de navigation pour la révision
+      const prevBtn = document.getElementById('finalPrevQuestion');
+      const nextBtn = document.getElementById('finalNextQuestion');
+      const finishBtn = document.getElementById('finalFinishQuiz');
+
+      prevBtn.disabled = currentQuestionIndex === 0;
+      prevBtn.onclick = () => {
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          displayQuestionWithAnswers(false);
+        }
+      };
+
+      if (currentQuestionIndex === questions.length - 1) {
+        nextBtn.style.display = 'none';
+        finishBtn.style.display = 'inline-block';
+        finishBtn.textContent = '🔙 Retour aux Résultats';
+        finishBtn.disabled = false;
+        finishBtn.onclick = () => displayResults(false);
+      } else {
+        nextBtn.style.display = 'inline-block';
+        finishBtn.style.display = 'none';
+        nextBtn.disabled = false;
+        nextBtn.onclick = () => {
+          currentQuestionIndex++;
+          displayQuestionWithAnswers(false);
+        };
       }
-      
-      saveCourseState();
-      updateCourseInterface();
-      
-      // Message de fin de cours
-      alert(`🎊 Félicitations ! Vous avez terminé le cours "${COURSE_CONFIG.courseName}" !\n\n${courseState.certified ? '✅ Certification obtenue' : '❌ Certification non obtenue'}\n\nVotre progression a été sauvegardée.`);
     }
 
-    // Débloquer la section d'entraînement si les sections 1-3 sont complétées
-    function updateTrainingAvailability() {
-      const requiredSections = [1, 2, 3];
-      const hasAllRequired = requiredSections.every(section => courseState.completedSections.includes(section));
-      
-      const startBtn = document.getElementById('startTrainingQuiz');
-      if (startBtn && hasAllRequired) {
-        startBtn.disabled = false;
+    // === SAUVEGARDE ET CHARGEMENT ===
+
+    function saveGameState() {
+      localStorage.setItem('superlative-course-game-state', JSON.stringify(gameState));
+    }
+
+    function loadGameState() {
+      const savedState = localStorage.getItem('superlative-course-game-state');
+      if (savedState) {
+        try {
+          gameState = { ...gameState, ...JSON.parse(savedState) };
+        } catch (e) {
+          console.error('Erreur lors du chargement de l\'état du jeu:', e);
+        }
       }
     }
 
-    // Débloquer le quiz final si toutes les sections théoriques sont complétées
-    function updateFinalQuizAvailability() {
-      const requiredSections = [1, 2, 3, 4, 5];
-      const hasAllRequired = requiredSections.every(section => courseState.completedSections.includes(section));
-      
-      const startBtn = document.getElementById('startFinalQuiz');
-      if (startBtn && hasAllRequired) {
-        startBtn.disabled = false;
-      }
-    }
-
-    // Mise à jour périodique des disponibilités
-    setInterval(() => {
-      updateTrainingAvailability();
-      updateFinalQuizAvailability();
-    }, 1000);
-
-    // Ajout des styles pour les options de quiz
-    const quizStyles = document.createElement('style');
-    quizStyles.textContent = `
-      .quiz-options {
-        display: grid;
-        gap: var(--spacing-sm);
-        margin-top: var(--spacing-md);
-      }
-      
-      .quiz-option {
-        background: var(--color-surface);
-        border: 2px solid transparent;
-        border-radius: var(--border-radius-md);
-        padding: var(--spacing-md);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        font-size: 0.95rem;
-      }
-      
-      .quiz-option:hover {
-        border-color: var(--color-primary);
-        background: var(--color-surface-hover);
-        transform: translateX(3px);
-      }
-      
-      .quiz-option.selected {
-        border-color: var(--color-primary);
-        background: rgba(46, 204, 113, 0.2);
-      }
-      
-      .quiz-option.correct {
-        border-color: var(--color-primary);
-        background: rgba(46, 204, 113, 0.2);
-        animation: correctAnswer 0.5s ease;
-      }
-      
-      .quiz-option.incorrect {
-        border-color: var(--color-danger);
-        background: rgba(231, 76, 60, 0.2);
-        animation: incorrectAnswer 0.5s ease;
-      }
-      
-      @keyframes correctAnswer {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.03); }
-        100% { transform: scale(1); }
-      }
-      
-      @keyframes incorrectAnswer {
-        0% { transform: translateX(0); }
-        25% { transform: translateX(-3px); }
-        75% { transform: translateX(3px); }
-        100% { transform: translateX(0); }
-      }
-      
-      .result-badge.certified {
-        background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-        color: white;
-      }
-      
-      .result-badge.not-certified {
-        background: linear-gradient(135deg, var(--color-danger), #c0392b);
-        color: white;
-      }
-      
-      .result-badge.gold {
-        background: linear-gradient(135deg, #f1c40f, #f39c12);
-        color: white;
-      }
-      
-      .result-badge.silver {
-        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-        color: white;
-      }
-      
-      .result-badge.bronze {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-        color: white;
-      }
-      
-      .result-badge.retry {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-        color: white;
-      }
-    `;
-    document.head.appendChild(quizStyles);
-
-    // Ajouter les event listeners pour la navigation des quiz
-    document.addEventListener('DOMContentLoaded', function() {
-      // Navigation quiz d'entraînement
-      const trainingPrevBtn = document.getElementById('trainingPrevQuestion');
-      const trainingNextBtn = document.getElementById('trainingNextQuestion');
-      const trainingFinishBtn = document.getElementById('trainingFinishQuiz');
-      
-      if (trainingPrevBtn) trainingPrevBtn.addEventListener('click', trainingPrevQuestion);
-      if (trainingNextBtn) trainingNextBtn.addEventListener('click', trainingNextQuestion);
-      if (trainingFinishBtn) trainingFinishBtn.addEventListener('click', finishTrainingQuiz);
-      
-      // Navigation quiz final
-      const finalPrevBtn = document.getElementById('finalPrevQuestion');
-      const finalNextBtn = document.getElementById('finalNextQuestion');
-      const finalFinishBtn = document.getElementById('finalFinishQuiz');
-      
-      if (finalPrevBtn) finalPrevBtn.addEventListener('click', finalPrevQuestion);
-      if (finalNextBtn) finalNextBtn.addEventListener('click', finalNextQuestion);
-      if (finalFinishBtn) finalFinishBtn.addEventListener('click', finishFinalQuiz);
-    });
+    // Charger l'état au démarrage
+    loadGameState();
   </script>
+
+  <!-- Scripts d'authentification -->
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script type="module" src="../scripts/auth-header.js"></script>
+  <script src="../scripts/universal-mobile-auth.js" defer></script>
 </body>
 </html> 
