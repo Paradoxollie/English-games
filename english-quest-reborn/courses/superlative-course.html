@@ -2030,7 +2030,11 @@
       practiceQuizCompleted: false,
       practiceScore: 0,
       finalQuizCompleted: false,
-      finalScore: 0
+      finalScore: 0,
+      rewardsGiven: {
+        sections: [], // Sections pour lesquelles les récompenses ont été données
+        finalQuiz: false // Si les récompenses du quiz final ont été données
+      }
     };
 
     // Réponses correctes pour chaque quiz de validation
@@ -2235,6 +2239,7 @@
       loadGameState();
       updateCourseInterface();
       initializeValidationQuizzes();
+      initializeRewardService();
     });
 
     // === GESTION DES SECTIONS ===
@@ -2387,6 +2392,9 @@
       if (!gameState.completedSections.includes(section)) {
         gameState.completedSections.push(section);
         gameState.currentSection = section + 1;
+        
+        // 🎁 DONNER LES RÉCOMPENSES DE SECTION
+        giveSectionReward(section);
       }
       
       updateCourseInterface();
@@ -2469,7 +2477,7 @@
       if (isLastQuestion) {
         nextBtn.style.display = 'none';
         finishBtn.style.display = allAnswered ? 'inline-block' : 'none';
-      } else {
+        } else {
         nextBtn.style.display = 'inline-block';
         finishBtn.style.display = 'none';
       }
@@ -2504,7 +2512,7 @@
       gameState.practiceQuizCompleted = true;
       
       showPracticeResults();
-      saveGameState();
+          saveGameState();
     }
 
     function showPracticeResults() {
@@ -2588,7 +2596,7 @@
       container.innerHTML = `
         <div class="question-text">
           <strong>Question ${currentQuestionIndex + 1}:</strong> ${question.question}
-        </div>
+          </div>
         <div class="quiz-options">
           ${question.options.map((option, index) => `
             <div class="quiz-option" data-option="${index}" onclick="selectOption(${index}, ${isTraining})">
@@ -2693,6 +2701,9 @@
       finalQuizData.isActive = false;
       gameState.finalScore = score;
       gameState.finalQuizCompleted = true;
+      
+      // 🏆 DONNER LES RÉCOMPENSES DU QUIZ FINAL
+      giveFinalQuizReward(score, questions.length);
       
       displayResults(false);
       saveGameState();
@@ -2835,7 +2846,22 @@
       const savedState = localStorage.getItem('superlative-course-game-state');
       if (savedState) {
         try {
-          gameState = { ...gameState, ...JSON.parse(savedState) };
+          const loadedState = JSON.parse(savedState);
+          gameState = { ...gameState, ...loadedState };
+          
+          // S'assurer que la structure rewardsGiven existe (rétrocompatibilité)
+          if (!gameState.rewardsGiven) {
+            gameState.rewardsGiven = {
+              sections: [],
+              finalQuiz: false
+            };
+          }
+          if (!gameState.rewardsGiven.sections) {
+            gameState.rewardsGiven.sections = [];
+          }
+          if (gameState.rewardsGiven.finalQuiz === undefined) {
+            gameState.rewardsGiven.finalQuiz = false;
+          }
         } catch (e) {
           console.error('Erreur lors du chargement de l\'état du jeu:', e);
         }
@@ -2844,6 +2870,169 @@
 
     // Charger l'état au démarrage
     loadGameState();
+
+    // Import du service de récompenses
+    let rewardService = null;
+    
+    // Initialiser le service de récompenses quand il est disponible
+    async function initializeRewardService() {
+      try {
+        const module = await import('../scripts/reward-service.js');
+        rewardService = module.rewardService;
+        console.log('✅ [Superlative Course] Service de récompenses initialisé');
+      } catch (error) {
+        console.warn('⚠️ [Superlative Course] Impossible de charger le service de récompenses:', error);
+      }
+    }
+
+    // Fonction pour donner des récompenses de section
+    async function giveSectionReward(sectionNumber) {
+      if (!rewardService || !rewardService.canGiveRewards()) {
+        console.log('🔒 [Superlative Course] Pas d\'utilisateur connecté pour les récompenses de section');
+        return;
+      }
+
+      // Vérifier si les récompenses ont déjà été données pour cette section
+      if (gameState.rewardsGiven.sections.includes(sectionNumber)) {
+        console.log(`🚫 [Superlative Course] Récompenses déjà données pour la section ${sectionNumber}`);
+        showCourseRewardMessage(`🎓 Section ${sectionNumber} terminée ! (Récompenses déjà reçues)`, false, 'info');
+        return;
+      }
+
+      try {
+        console.log(`🎁 [Superlative Course] Attribution des récompenses pour la section ${sectionNumber}`);
+        
+        const rewards = { xp: 1, coins: 1 }; // 1 XP et 1 or par section
+        const result = await rewardService.giveRewards(rewards, false, 'superlative-course');
+        
+        if (result.success) {
+          // Marquer les récompenses comme données
+          gameState.rewardsGiven.sections.push(sectionNumber);
+          saveGameState();
+          
+          console.log(`✅ [Superlative Course] Récompenses de section ${sectionNumber} attribuées: +1 XP, +1 or`);
+          showCourseRewardMessage(`🎓 Section ${sectionNumber} terminée ! +1 ⭐ XP et +1 🪙 or`);
+        }
+      } catch (error) {
+        console.error('❌ [Superlative Course] Erreur lors de l\'attribution des récompenses de section:', error);
+      }
+    }
+
+    // Fonction pour donner des récompenses de quiz final
+    async function giveFinalQuizReward(score, totalQuestions) {
+      if (!rewardService || !rewardService.canGiveRewards()) {
+        console.log('🔒 [Superlative Course] Pas d\'utilisateur connecté pour les récompenses du quiz final');
+        return;
+      }
+
+      // Vérifier si les récompenses du quiz final ont déjà été données
+      if (gameState.rewardsGiven.finalQuiz) {
+        console.log('🚫 [Superlative Course] Récompenses du quiz final déjà données');
+        if (score >= 16) {
+          const message = score >= 18 ? 
+            '🏆 MAÎTRE DU SUPERLATIF ! (Récompenses déjà reçues)' : 
+            '🎉 COURS VALIDÉ ! (Récompenses déjà reçues)';
+          showCourseRewardMessage(message, score >= 18, 'info');
+        }
+        return;
+      }
+
+      try {
+        console.log(`🏆 [Superlative Course] Attribution des récompenses pour le quiz final: ${score}/${totalQuestions}`);
+        
+        let rewards = { xp: 0, coins: 0 };
+        let message = '';
+        
+        if (score >= 18) {
+          // 18-20: Maître du Superlatif
+          rewards = { xp: 20, coins: 20 };
+          message = `🏆 MAÎTRE DU SUPERLATIF ! +20 ⭐ XP et +20 🪙 or !`;
+        } else if (score >= 16) {
+          // 16-17: Cours validé
+          rewards = { xp: 10, coins: 10 };
+          message = `🎉 COURS VALIDÉ ! +10 ⭐ XP et +10 🪙 or !`;
+        } else {
+          // Score insuffisant, pas de récompenses
+          console.log('📚 [Superlative Course] Score insuffisant pour les récompenses du quiz final');
+          return;
+        }
+        
+        const result = await rewardService.giveRewards(rewards, score >= 18, 'superlative-course-final');
+        
+        if (result.success) {
+          // Marquer les récompenses du quiz final comme données
+          gameState.rewardsGiven.finalQuiz = true;
+          saveGameState();
+          
+          console.log(`✅ [Superlative Course] Récompenses du quiz final attribuées: +${rewards.xp} XP, +${rewards.coins} or`);
+          showCourseRewardMessage(message, score >= 18);
+        }
+      } catch (error) {
+        console.error('❌ [Superlative Course] Erreur lors de l\'attribution des récompenses du quiz final:', error);
+      }
+    }
+
+    // Fonction pour afficher les messages de récompense du cours
+    function showCourseRewardMessage(message, isTopReward = false, type = 'success') {
+      // Créer un élément de notification
+      const notification = document.createElement('div');
+      notification.className = `course-reward-notification ${isTopReward ? 'top-reward' : ''} ${type}`;
+      notification.innerHTML = `
+        <div class="reward-content">
+          <div class="reward-icon">
+            ${type === 'info' ? 'ℹ️' : isTopReward ? '🏆' : '🎓'}
+          </div>
+          <div class="reward-text">${message}</div>
+        </div>
+      `;
+
+      // Couleurs selon le type
+      let backgroundColor;
+      if (type === 'info') {
+        backgroundColor = 'linear-gradient(135deg, #3498db, #2980b9)';
+      } else if (isTopReward) {
+        backgroundColor = 'linear-gradient(135deg, #f39c12, #e67e22)';
+      } else {
+        backgroundColor = 'linear-gradient(135deg, #9b59b6, #8e44ad)';
+      }
+
+      // Styles pour la notification
+      notification.style.cssText = `
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        background: ${backgroundColor};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-family: 'Exo 2', sans-serif;
+        font-weight: 600;
+        max-width: 350px;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        border: 2px solid rgba(255,255,255,0.2);
+      `;
+
+      // Ajouter au DOM
+      document.body.appendChild(notification);
+
+      // Animation d'entrée
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+
+      // Animation de sortie et suppression
+      setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, type === 'info' ? 3000 : isTopReward ? 6000 : 4000);
+    }
   </script>
 
   <!-- Scripts d'authentification -->
