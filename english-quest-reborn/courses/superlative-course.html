@@ -1383,22 +1383,27 @@
       body div.main-content section#section-6 div.superlative-type.final-quiz-section::before {
         background: #9b59b6 !important;
         background-size: 100% 100% !important;
-        animation: finalQuizBorderChrome 3s linear infinite !important;
+        animation: none !important;
       }
       
       body div.main-content section#section-6 div.superlative-type.final-quiz-section::after {
-        content: '' !important;
-        position: absolute !important;
-        top: -2px !important;
-        left: -2px !important;
-        right: -2px !important;
-        bottom: -2px !important;
-        background: linear-gradient(0deg, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-        border-radius: var(--border-radius-lg) !important;
-        z-index: -1 !important;
-        opacity: 0.8 !important;
-        animation: finalQuizBorderChrome2 3s linear infinite reverse !important;
+        display: none !important;
       }
+    }
+    
+    /* Animation JavaScript pour compatibilité Chrome */
+    .final-quiz-border-animated {
+      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background-size: 400% 400% !important;
+      animation: finalQuizBorderJS 3s linear infinite !important;
+    }
+    
+    @keyframes finalQuizBorderJS {
+      0% { background-position: 0% 50%; }
+      25% { background-position: 100% 0%; }
+      50% { background-position: 100% 100%; }
+      75% { background-position: 0% 100%; }
+      100% { background-position: 0% 50%; }
     }
     
     @keyframes finalQuizBorderChrome {
@@ -3308,5 +3313,91 @@
   
   <!-- Gestion universelle du menu mobile et synchronisation auth -->
   <script src="../scripts/universal-mobile-auth.js" defer></script>
+
+  <!-- Script pour forcer l'animation multicolore du quiz final -->
+  <script>
+    // Forcer l'animation multicolore du quiz final - Compatible tous navigateurs
+    function initFinalQuizAnimation() {
+      console.log('🎨 Recherche du quiz final...');
+      const finalQuizSection = document.querySelector('.final-quiz-section');
+      
+      if (finalQuizSection) {
+        console.log('✅ Section quiz final trouvée, ajout animation...');
+        
+        // Supprimer l'ancien élément s'il existe
+        const existingBorder = finalQuizSection.querySelector('.js-animated-border');
+        if (existingBorder) {
+          existingBorder.remove();
+        }
+        
+        // Créer l'élément de bordure animée
+        const borderElement = document.createElement('div');
+        borderElement.className = 'js-animated-border';
+        borderElement.style.cssText = `
+          position: absolute !important;
+          top: -2px !important;
+          left: -2px !important;
+          right: -2px !important;
+          bottom: -2px !important;
+          background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+          background-size: 400% 400% !important;
+          border-radius: var(--border-radius-lg) !important;
+          z-index: -1 !important;
+          pointer-events: none !important;
+        `;
+        
+        // S'assurer que le parent est positionné
+        finalQuizSection.style.position = 'relative';
+        
+        // Ajouter l'élément au début du container
+        finalQuizSection.insertBefore(borderElement, finalQuizSection.firstChild);
+        
+        // Animation JavaScript manuelle pour compatibilité Chrome
+        let position = 0;
+        const animate = () => {
+          position = (position + 0.5) % 360;
+          const x = 50 + 50 * Math.cos(position * Math.PI / 180);
+          const y = 50 + 50 * Math.sin(position * Math.PI / 180);
+          borderElement.style.backgroundPosition = `${x}% ${y}%`;
+          requestAnimationFrame(animate);
+        };
+        
+        // Démarrer l'animation
+        animate();
+        
+        console.log('✅ Animation multicolore du quiz final activée !');
+        return true;
+      } else {
+        console.warn('⚠️ Section quiz final non trouvée');
+        return false;
+      }
+    }
+    
+    // Fonction d'initialisation avec plusieurs tentatives
+    function tryInitAnimation() {
+      if (initFinalQuizAnimation()) {
+        return; // Succès, arrêter les tentatives
+      }
+      
+      // Réessayer après 1 seconde
+      setTimeout(() => {
+        if (initFinalQuizAnimation()) {
+          return;
+        }
+        
+        // Dernière tentative après 3 secondes
+        setTimeout(() => {
+          initFinalQuizAnimation();
+        }, 3000);
+      }, 1000);
+    }
+    
+    // Initialiser après le chargement complet
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', tryInitAnimation);
+    } else {
+      tryInitAnimation();
+    }
+  </script>
 </body>
 </html> 

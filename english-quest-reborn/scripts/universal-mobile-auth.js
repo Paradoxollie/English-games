@@ -423,20 +423,35 @@ class UniversalMobileAuth {
     }
 
     this.observer = new MutationObserver((mutations) => {
+      // Ignorer les mutations si nous sommes en train de synchroniser
+      if (this.isSyncing) {
+        return;
+      }
+      
       let shouldSync = false;
       
       mutations.forEach((mutation) => {
+        // Ignorer les changements de style que nous avons nous-mêmes faits
         if (mutation.type === 'attributes' && 
             (mutation.attributeName === 'style' || 
              mutation.attributeName === 'hidden' ||
              mutation.attributeName === 'class')) {
-          shouldSync = true;
+          
+          // Vérifier si c'est un changement externe (pas le nôtre)
+          const target = mutation.target;
+          if (target && (target.id === 'loginButton' || target.id === 'profileButton')) {
+            // Vérifier si le changement semble venir d'un autre script
+            const now = Date.now();
+            if ((now - this.lastSyncTime) > 2000) { // Seulement si ça fait plus de 2 secondes
+              shouldSync = true;
+            }
+          }
         }
       });
       
       if (shouldSync) {
-        this.log('🔄 Changement détecté sur les boutons desktop, re-synchronisation...', 'info');
-        setTimeout(() => this.syncAuthButtons(), 100);
+        this.log('🔄 Changement externe détecté sur les boutons desktop, re-synchronisation...', 'info');
+        setTimeout(() => this.syncAuthButtons(), 500); // Délai plus long
       }
     });
 
@@ -450,28 +465,7 @@ class UniversalMobileAuth {
       }
     });
 
-    // Observer aussi les changements dans localStorage
-    const originalSetItem = localStorage.setItem;
-    localStorage.setItem = (key, value) => {
-      originalSetItem.call(localStorage, key, value);
-      
-      if (key === 'english_quest_current_user' || key === 'currentUser') {
-        this.log('🔄 Changement localStorage détecté, re-synchronisation...', 'info');
-        setTimeout(() => this.syncAuthButtons(), 200);
-      }
-    };
-
-    const originalRemoveItem = localStorage.removeItem;
-    localStorage.removeItem = (key) => {
-      originalRemoveItem.call(localStorage, key);
-      
-      if (key === 'english_quest_current_user' || key === 'currentUser') {
-        this.log('🔄 Suppression localStorage détectée, re-synchronisation...', 'info');
-        setTimeout(() => this.syncAuthButtons(), 200);
-      }
-    };
-
-    this.log('Observer configuré pour les boutons desktop et localStorage', 'success');
+    this.log('Observer configuré pour les boutons desktop (avec protection)', 'success');
     return true;
   }
 
@@ -496,13 +490,13 @@ class UniversalMobileAuth {
                            localStorage.getItem('currentUser');
         const currentAuthState = currentUser && currentUser !== 'null' && currentUser !== 'undefined' ? 'connected' : 'disconnected';
         
-        // Log périodique détaillé
-        if (syncCount % 10 === 0) { // Log tous les 20 secondes
+        // Log périodique réduit
+        if (syncCount % 30 === 0) { // Log toutes les 60 secondes au lieu de 20
           this.log(`🔄 [Sync #${syncCount}] État auth: ${currentAuthState}`, 'info');
         }
         
-        // Synchroniser seulement si l'état a changé OU tous les 30 secondes (force refresh)
-        if (lastAuthState !== currentAuthState || syncCount % 15 === 0) {
+        // Synchroniser seulement si l'état a changé OU tous les 2 minutes (force refresh)
+        if (lastAuthState !== currentAuthState || syncCount % 60 === 0) { // 60 = 2 minutes
           if (lastAuthState !== currentAuthState) {
             this.log(`🔄 Changement d'état détecté: ${lastAuthState} → ${currentAuthState}`, 'info');
           } else {
@@ -515,9 +509,9 @@ class UniversalMobileAuth {
       } catch (error) {
         this.log(`Erreur lors de la vérification périodique: ${error.message}`, 'warn');
       }
-    }, 2000); // Vérifier toutes les 2 secondes
+    }, 2000); // Toujours vérifier toutes les 2 secondes
     
-    this.log('Synchronisation périodique démarrée avec force refresh (toutes les 2s)', 'success');
+    this.log('Synchronisation périodique démarrée (réduite pour moins de spam)', 'success');
   }
 
   // Arrêter la synchronisation périodique
