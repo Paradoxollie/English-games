@@ -622,8 +622,37 @@
       }
     }
     
-    /* Styles spéciaux pour le Quiz Final */
+    /* Styles spéciaux pour le Quiz Final - VERSION SIMPLE QUI FONCTIONNE */
     .final-quiz-section {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1)) !important;
+      border: 2px solid rgba(155, 89, 182, 0.5) !important;
+      position: relative !important;
+      border-radius: var(--border-radius-lg) !important;
+      padding: var(--spacing-xl) !important;
+      margin-top: var(--spacing-xl) !important;
+    }
+    
+    .final-quiz-section::before {
+      content: '' !important;
+      position: absolute !important;
+      top: -2px !important;
+      left: -2px !important;
+      right: -2px !important;
+      bottom: -2px !important;
+      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background-size: 400% 400% !important;
+      border-radius: var(--border-radius-lg) !important;
+      z-index: -1 !important;
+      animation: finalQuizBorder 3s linear infinite !important;
+    }
+    
+    @keyframes finalQuizBorder {
+      0% { background-position: 0% 50% !important; }
+      100% { background-position: 100% 50% !important; }
+    }
+    
+    /* Règle spécifique pour le div avec les deux classes */
+    .superlative-type.final-quiz-section {
       background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1)) !important;
       border: 2px solid rgba(155, 89, 182, 0.5) !important;
       position: relative !important;
@@ -640,40 +669,12 @@
       right: -2px !important;
       bottom: -2px !important;
       background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-      background: -webkit-linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-      background-size: 300% 300% !important;
-      -webkit-background-size: 300% 300% !important;
+      background-size: 400% 400% !important;
       border-radius: var(--border-radius-lg) !important;
-      -webkit-border-radius: var(--border-radius-lg) !important;
       z-index: -1 !important;
       animation: finalQuizBorder 3s linear infinite !important;
-      -webkit-animation: finalQuizBorder 3s linear infinite !important;
-      display: block !important;
-      opacity: 1 !important;
     }
     
-    @keyframes finalQuizBorder {
-      0% { 
-        background-position: 0% 50% !important; 
-        -webkit-background-position: 0% 50% !important;
-      }
-      100% { 
-        background-position: 100% 50% !important; 
-        -webkit-background-position: 100% 50% !important;
-      }
-    }
-    
-    @-webkit-keyframes finalQuizBorder {
-      0% { 
-        background-position: 0% 50% !important; 
-        -webkit-background-position: 0% 50% !important;
-      }
-      100% { 
-        background-position: 100% 50% !important; 
-        -webkit-background-position: 100% 50% !important;
-      }
-    }
-
     .final-quiz-title {
       font-size: 2rem;
       text-align: center;
@@ -1336,107 +1337,25 @@
 
     /* Badge de completion du cours */
     .course-completion-badge {
-      background: linear-gradient(135deg, #9b59b6, #8e44ad);
-      color: white;
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      color: #2c3e50;
       padding: var(--spacing-xl);
       border-radius: var(--border-radius-lg);
       text-align: center;
       margin: var(--spacing-xl) 0;
-      box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
+      box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4);
       animation: completionBadgeGlow 2s infinite alternate;
     }
     
     @keyframes completionBadgeGlow {
-      0% { box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4); }
-      100% { box-shadow: 0 12px 35px rgba(155, 89, 182, 0.6); }
+      0% { box-shadow: 0 8px 25px rgba(241, 196, 15, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(241, 196, 15, 0.6); }
     }
     
     .course-completion-badge h3 {
       font-size: 2rem;
       margin-bottom: var(--spacing-md);
       font-family: var(--font-family-secondary);
-    }
-
-    /* FORCER LE FOND MULTICOLORE - RÈGLE FINALE */
-    body div.main-content section#section-6 div.superlative-type.final-quiz-section::before {
-      content: '' !important;
-      position: absolute !important;
-      top: -2px !important;
-      left: -2px !important;
-      right: -2px !important;
-      bottom: -2px !important;
-      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-      background: -webkit-linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-      background-size: 300% 300% !important;
-      -webkit-background-size: 300% 300% !important;
-      border-radius: var(--border-radius-lg) !important;
-      -webkit-border-radius: var(--border-radius-lg) !important;
-      z-index: -1 !important;
-      animation: finalQuizBorder 3s linear infinite !important;
-      -webkit-animation: finalQuizBorder 3s linear infinite !important;
-      display: block !important;
-      opacity: 1 !important;
-    }
-
-    /* Animation alternative pour Chrome avec transform */
-    @supports (-webkit-appearance: none) {
-      body div.main-content section#section-6 div.superlative-type.final-quiz-section::before {
-        background: #9b59b6 !important;
-        background-size: 100% 100% !important;
-        animation: none !important;
-      }
-      
-      body div.main-content section#section-6 div.superlative-type.final-quiz-section::after {
-        display: none !important;
-      }
-    }
-    
-    /* Animation JavaScript pour compatibilité Chrome */
-    .final-quiz-border-animated {
-      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
-      background-size: 400% 400% !important;
-      animation: finalQuizBorderJS 3s linear infinite !important;
-    }
-    
-    @keyframes finalQuizBorderJS {
-      0% { background-position: 0% 50%; }
-      25% { background-position: 100% 0%; }
-      50% { background-position: 100% 100%; }
-      75% { background-position: 0% 100%; }
-      100% { background-position: 0% 50%; }
-    }
-    
-    @keyframes finalQuizBorderChrome {
-      0% { 
-        background: #9b59b6;
-        transform: hue-rotate(0deg);
-      }
-      20% { 
-        background: #e74c3c;
-        transform: hue-rotate(72deg);
-      }
-      40% { 
-        background: #f39c12;
-        transform: hue-rotate(144deg);
-      }
-      60% { 
-        background: #2ecc71;
-        transform: hue-rotate(216deg);
-      }
-      80% { 
-        background: #3498db;
-        transform: hue-rotate(288deg);
-      }
-      100% { 
-        background: #9b59b6;
-        transform: hue-rotate(360deg);
-      }
-    }
-    
-    @keyframes finalQuizBorderChrome2 {
-      0% { opacity: 0.8; }
-      50% { opacity: 0.4; }
-      100% { opacity: 0.8; }
     }
   </style>
 </head>
@@ -3309,7 +3228,7 @@
   <script>
     window.disableNewDesignMobileMenu = true;
   </script>
-  <script src="../scripts/new-design.js"></script>
+  <!-- Script new-design.js supprimé car déjà inclus en haut du fichier -->
   
   <!-- Gestion universelle du menu mobile et synchronisation auth -->
   <script src="../scripts/universal-mobile-auth.js" defer></script>
@@ -3319,7 +3238,7 @@
     // Forcer l'animation multicolore du quiz final - Compatible tous navigateurs
     function initFinalQuizAnimation() {
       console.log('🎨 Recherche du quiz final...');
-      const finalQuizSection = document.querySelector('.final-quiz-section');
+      const finalQuizSection = document.querySelector('.superlative-type.final-quiz-section');
       
       if (finalQuizSection) {
         console.log('✅ Section quiz final trouvée, ajout animation...');
@@ -3330,32 +3249,41 @@
           existingBorder.remove();
         }
         
-        // Créer l'élément de bordure animée
+        // S'assurer que l'élément parent a position relative
+        finalQuizSection.style.position = 'relative';
+        
+        // Méthode 1: Forcer le CSS à être appliqué directement sur l'élément
+        finalQuizSection.style.cssText += `
+          background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1)) !important;
+          border: 2px solid rgba(155, 89, 182, 0.5) !important;
+          border-radius: var(--border-radius-lg) !important;
+          padding: var(--spacing-xl) !important;
+          margin-top: var(--spacing-xl) !important;
+        `;
+        
+        // Méthode 2: Créer l'élément de bordure animée avec CSS inline pour forcer l'application
         const borderElement = document.createElement('div');
         borderElement.className = 'js-animated-border';
         borderElement.style.cssText = `
           position: absolute !important;
-          top: -2px !important;
-          left: -2px !important;
-          right: -2px !important;
-          bottom: -2px !important;
+          top: -4px !important;
+          left: -4px !important;
+          right: -4px !important;
+          bottom: -4px !important;
           background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
           background-size: 400% 400% !important;
-          border-radius: var(--border-radius-lg) !important;
+          border-radius: 1rem !important;
           z-index: -1 !important;
           pointer-events: none !important;
         `;
         
-        // S'assurer que le parent est positionné
-        finalQuizSection.style.position = 'relative';
-        
         // Ajouter l'élément au début du container
         finalQuizSection.insertBefore(borderElement, finalQuizSection.firstChild);
         
-        // Animation JavaScript manuelle pour compatibilité Chrome
+        // Animation JavaScript fluide pour tous les navigateurs
         let position = 0;
         const animate = () => {
-          position = (position + 0.5) % 360;
+          position = (position + 1) % 360;
           const x = 50 + 50 * Math.cos(position * Math.PI / 180);
           const y = 50 + 50 * Math.sin(position * Math.PI / 180);
           borderElement.style.backgroundPosition = `${x}% ${y}%`;
@@ -3365,10 +3293,30 @@
         // Démarrer l'animation
         animate();
         
+        // Méthode 3: Ajouter une classe CSS spéciale pour forcer l'animation
+        finalQuizSection.classList.add('final-quiz-animated');
+        
         console.log('✅ Animation multicolore du quiz final activée !');
         return true;
       } else {
-        console.warn('⚠️ Section quiz final non trouvée');
+        console.warn('⚠️ Section quiz final non trouvée avec le sélecteur .superlative-type.final-quiz-section');
+        
+        // Tentative de fallback avec le sélecteur générique
+        const fallbackSection = document.querySelector('.final-quiz-section');
+        if (fallbackSection) {
+          console.log('🔄 Tentative avec sélecteur fallback...');
+          fallbackSection.style.cssText += `
+            background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+            background-size: 400% 400% !important;
+            animation: finalQuizBorderJS 3s linear infinite !important;
+            border: 2px solid rgba(155, 89, 182, 0.5) !important;
+            border-radius: 1rem !important;
+            padding: 2rem !important;
+          `;
+          console.log('✅ Animation appliquée avec sélecteur fallback');
+          return true;
+        }
+        
         return false;
       }
     }
@@ -3398,6 +3346,16 @@
     } else {
       tryInitAnimation();
     }
+    
+    // Aussi écouter les changements dynamiques de contenu
+    const observer = new MutationObserver(() => {
+      const finalQuizSection = document.querySelector('.superlative-type.final-quiz-section');
+      if (finalQuizSection && !finalQuizSection.querySelector('.js-animated-border')) {
+        setTimeout(initFinalQuizAnimation, 500);
+      }
+    });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
   </script>
 </body>
 </html> 
