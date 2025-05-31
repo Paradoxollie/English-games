@@ -640,17 +640,38 @@
       right: -2px !important;
       bottom: -2px !important;
       background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background: -webkit-linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
       background-size: 300% 300% !important;
+      -webkit-background-size: 300% 300% !important;
       border-radius: var(--border-radius-lg) !important;
+      -webkit-border-radius: var(--border-radius-lg) !important;
       z-index: -1 !important;
       animation: finalQuizBorder 3s linear infinite !important;
+      -webkit-animation: finalQuizBorder 3s linear infinite !important;
       display: block !important;
       opacity: 1 !important;
     }
     
     @keyframes finalQuizBorder {
-      0% { background-position: 0% 50% !important; }
-      100% { background-position: 100% 50% !important; }
+      0% { 
+        background-position: 0% 50% !important; 
+        -webkit-background-position: 0% 50% !important;
+      }
+      100% { 
+        background-position: 100% 50% !important; 
+        -webkit-background-position: 100% 50% !important;
+      }
+    }
+    
+    @-webkit-keyframes finalQuizBorder {
+      0% { 
+        background-position: 0% 50% !important; 
+        -webkit-background-position: 0% 50% !important;
+      }
+      100% { 
+        background-position: 100% 50% !important; 
+        -webkit-background-position: 100% 50% !important;
+      }
     }
 
     .final-quiz-title {
@@ -1345,12 +1366,72 @@
       right: -2px !important;
       bottom: -2px !important;
       background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background: -webkit-linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
       background-size: 300% 300% !important;
+      -webkit-background-size: 300% 300% !important;
       border-radius: var(--border-radius-lg) !important;
+      -webkit-border-radius: var(--border-radius-lg) !important;
       z-index: -1 !important;
       animation: finalQuizBorder 3s linear infinite !important;
+      -webkit-animation: finalQuizBorder 3s linear infinite !important;
       display: block !important;
       opacity: 1 !important;
+    }
+
+    /* Animation alternative pour Chrome avec transform */
+    @supports (-webkit-appearance: none) {
+      body div.main-content section#section-6 div.superlative-type.final-quiz-section::before {
+        background: #9b59b6 !important;
+        background-size: 100% 100% !important;
+        animation: finalQuizBorderChrome 3s linear infinite !important;
+      }
+      
+      body div.main-content section#section-6 div.superlative-type.final-quiz-section::after {
+        content: '' !important;
+        position: absolute !important;
+        top: -2px !important;
+        left: -2px !important;
+        right: -2px !important;
+        bottom: -2px !important;
+        background: linear-gradient(0deg, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+        border-radius: var(--border-radius-lg) !important;
+        z-index: -1 !important;
+        opacity: 0.8 !important;
+        animation: finalQuizBorderChrome2 3s linear infinite reverse !important;
+      }
+    }
+    
+    @keyframes finalQuizBorderChrome {
+      0% { 
+        background: #9b59b6;
+        transform: hue-rotate(0deg);
+      }
+      20% { 
+        background: #e74c3c;
+        transform: hue-rotate(72deg);
+      }
+      40% { 
+        background: #f39c12;
+        transform: hue-rotate(144deg);
+      }
+      60% { 
+        background: #2ecc71;
+        transform: hue-rotate(216deg);
+      }
+      80% { 
+        background: #3498db;
+        transform: hue-rotate(288deg);
+      }
+      100% { 
+        background: #9b59b6;
+        transform: hue-rotate(360deg);
+      }
+    }
+    
+    @keyframes finalQuizBorderChrome2 {
+      0% { opacity: 0.8; }
+      50% { opacity: 0.4; }
+      100% { opacity: 0.8; }
     }
   </style>
 </head>

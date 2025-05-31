@@ -12,6 +12,9 @@ class UniversalMobileAuth {
     this.syncInterval = null;
     this.elements = {};
     this.observer = null;
+    this.isSyncing = false; // Protection contre les boucles
+    this.lastSyncTime = 0; // Timestamp de la dernière sync
+    this.syncCooldown = 1000; // Cooldown de 1 seconde entre les syncs
     
     // Injecter les styles CSS manquants
     this.injectRequiredStyles();
@@ -145,6 +148,16 @@ class UniversalMobileAuth {
 
   // Synchroniser l'état des boutons d'authentification
   syncAuthButtons() {
+    // Protection contre les boucles infinies
+    const now = Date.now();
+    if (this.isSyncing || (now - this.lastSyncTime) < this.syncCooldown) {
+      this.log(`🚫 Sync ignorée (cooldown: ${this.syncCooldown}ms, dernière: ${now - this.lastSyncTime}ms ago)`, 'warning');
+      return false;
+    }
+    
+    this.isSyncing = true;
+    this.lastSyncTime = now;
+    
     const detection = this.detectElements();
     
     if (!detection.hasDesktopButtons || !detection.hasMobileButtons) {
@@ -275,9 +288,11 @@ class UniversalMobileAuth {
       }
 
       this.log(`✅ Synchronisation terminée: mode ${isUserConnected ? 'CONNECTÉ' : 'NON CONNECTÉ'} appliqué`, 'success');
+      this.isSyncing = false; // Libérer le flag
       return true;
     } catch (error) {
       this.log(`❌ Erreur lors de la synchronisation: ${error.message}`, 'error');
+      this.isSyncing = false; // Libérer le flag même en cas d'erreur
       return false;
     }
   }
