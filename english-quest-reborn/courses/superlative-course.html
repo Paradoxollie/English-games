@@ -623,9 +623,86 @@
     }
     
     /* Styles spéciaux pour le Quiz Final */
+    .final-quiz-section {
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1)) !important;
+      border: 2px solid rgba(155, 89, 182, 0.5) !important;
+      position: relative !important;
+      border-radius: var(--border-radius-lg) !important;
+      padding: var(--spacing-xl) !important;
+      margin-top: var(--spacing-xl) !important;
+    }
+    
+    .superlative-type.final-quiz-section::before {
+      content: '' !important;
+      position: absolute !important;
+      top: -2px !important;
+      left: -2px !important;
+      right: -2px !important;
+      bottom: -2px !important;
+      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background-size: 300% 300% !important;
+      border-radius: var(--border-radius-lg) !important;
+      z-index: -1 !important;
+      animation: finalQuizBorder 3s linear infinite !important;
+      display: block !important;
+      opacity: 1 !important;
+    }
+    
+    @keyframes finalQuizBorder {
+      0% { background-position: 0% 50% !important; }
+      100% { background-position: 100% 50% !important; }
+    }
+
+    .final-quiz-title {
+      font-size: 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, #9b59b6, #e74c3c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--spacing-lg);
+      font-family: var(--font-family-secondary);
+    }
+    
+    .quiz-info-final {
+      background: rgba(155, 89, 182, 0.2);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+      text-align: center;
+      border: 1px solid rgba(155, 89, 182, 0.4);
+    }
+    
+    .quiz-info-final h4 {
+      color: #9b59b6;
+      margin-bottom: var(--spacing-md);
+      font-size: 1.3rem;
+    }
+    
+    .quiz-info-final p {
+      margin: var(--spacing-sm) 0;
+      color: var(--color-text-secondary);
+    }
+    
+    .final-quiz-requirements {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      margin: var(--spacing-lg) 0;
+    }
+    
+    .final-quiz-requirements h5 {
+      color: #e74c3c;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
     .quiz-final-container {
-      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
-      border: 2px solid rgba(46, 204, 113, 0.4);
+      background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.1));
+      border: 2px solid rgba(155, 89, 182, 0.4);
       border-radius: var(--border-radius-lg);
       padding: var(--spacing-xl);
       margin-top: var(--spacing-xl);
@@ -640,7 +717,7 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+      background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.1), transparent);
       animation: finalQuizShine 3s infinite;
       z-index: 1;
     }
@@ -659,17 +736,9 @@
       text-align: center;
       margin-bottom: var(--spacing-xl);
       padding: var(--spacing-lg);
-      background: rgba(46, 204, 113, 0.1);
+      background: rgba(155, 89, 182, 0.1);
       border-radius: var(--border-radius-md);
-      border: 1px solid rgba(46, 204, 113, 0.3);
-    }
-    
-    .final-quiz-title {
-      font-size: 1.8rem;
-      color: var(--color-primary);
-      font-family: var(--font-family-secondary);
-      margin-bottom: var(--spacing-md);
-      text-shadow: 0 2px 4px rgba(46, 204, 113, 0.3);
+      border: 1px solid rgba(155, 89, 182, 0.3);
     }
     
     .final-quiz-subtitle {
@@ -688,12 +757,12 @@
       border-radius: var(--border-radius-lg);
       height: 16px;
       overflow: hidden;
-      border: 2px solid rgba(46, 204, 113, 0.3);
+      border: 2px solid rgba(155, 89, 182, 0.3);
       position: relative;
     }
     
     .final-progress-fill {
-      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
+      background: linear-gradient(90deg, #9b59b6, #e74c3c, #9b59b6);
       background-size: 200% 100%;
       height: 100%;
       width: 0%;
@@ -728,7 +797,7 @@
       text-align: center;
       margin-top: var(--spacing-sm);
       font-weight: bold;
-      color: var(--color-primary);
+      color: #9b59b6;
       font-size: 1.1rem;
     }
     
@@ -737,20 +806,20 @@
       border-radius: var(--border-radius-lg);
       padding: var(--spacing-xl);
       margin: var(--spacing-lg) 0;
-      border: 2px solid rgba(46, 204, 113, 0.2);
+      border: 2px solid rgba(155, 89, 182, 0.2);
       position: relative;
       transition: all var(--transition-normal);
     }
     
     .final-question-container:hover {
-      border-color: rgba(46, 204, 113, 0.4);
-      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.2);
+      border-color: rgba(155, 89, 182, 0.4);
+      box-shadow: 0 8px 32px rgba(155, 89, 182, 0.2);
     }
     
     .final-question-text {
       font-size: 1.3rem;
       font-weight: bold;
-      color: var(--color-primary);
+      color: #9b59b6;
       margin-bottom: var(--spacing-lg);
       text-align: center;
       line-height: 1.4;
@@ -784,15 +853,15 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.15), transparent);
+      background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.15), transparent);
       transition: left 0.6s ease;
     }
     
     .final-quiz-option:hover {
-      border-color: var(--color-primary);
+      border-color: #9b59b6;
       background: var(--color-surface-hover);
       transform: translateX(8px);
-      box-shadow: 0 4px 16px rgba(46, 204, 113, 0.2);
+      box-shadow: 0 4px 16px rgba(155, 89, 182, 0.2);
     }
     
     .final-quiz-option:hover::before {
@@ -800,10 +869,10 @@
     }
     
     .final-quiz-option.selected {
-      border-color: var(--color-primary);
-      background: rgba(46, 204, 113, 0.2);
+      border-color: #9b59b6;
+      background: rgba(155, 89, 182, 0.2);
       transform: translateX(5px);
-      box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3);
+      box-shadow: 0 4px 16px rgba(155, 89, 182, 0.3);
     }
     
     .final-quiz-option.correct {
@@ -845,8 +914,8 @@
     
     .final-nav-btn {
       background: var(--color-surface);
-      border: 2px solid var(--color-primary);
-      color: var(--color-primary);
+      border: 2px solid #9b59b6;
+      color: #9b59b6;
       padding: var(--spacing-md) var(--spacing-xl);
       border-radius: var(--border-radius-md);
       cursor: pointer;
@@ -864,15 +933,15 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.2), transparent);
+      background: linear-gradient(90deg, transparent, rgba(155, 89, 182, 0.2), transparent);
       transition: left 0.5s ease;
     }
     
     .final-nav-btn:hover:not(:disabled) {
-      background: var(--color-primary);
+      background: #9b59b6;
       color: white;
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+      box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
     }
     
     .final-nav-btn:hover:not(:disabled)::before {
@@ -887,29 +956,29 @@
     }
     
     .final-nav-btn.primary {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      background: linear-gradient(135deg, #9b59b6, #e74c3c);
       color: white;
-      border-color: var(--color-primary);
+      border-color: #9b59b6;
       font-weight: bold;
       animation: finalButtonPulse 2s infinite;
     }
     
     @keyframes finalButtonPulse {
-      0% { box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3); }
-      50% { box-shadow: 0 8px 32px rgba(46, 204, 113, 0.5); }
-      100% { box-shadow: 0 4px 16px rgba(46, 204, 113, 0.3); }
+      0% { box-shadow: 0 4px 16px rgba(155, 89, 182, 0.3); }
+      50% { box-shadow: 0 8px 32px rgba(155, 89, 182, 0.5); }
+      100% { box-shadow: 0 4px 16px rgba(155, 89, 182, 0.3); }
     }
     
     .final-nav-btn.primary:hover {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      background: linear-gradient(135deg, #8e44ad, #c0392b);
       transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(46, 204, 113, 0.6);
+      box-shadow: 0 12px 40px rgba(155, 89, 182, 0.6);
     }
     
     /* Résultats finaux avec célébration */
     .final-celebration {
       position: relative;
-      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
       color: white;
       border-radius: var(--border-radius-lg);
       padding: 3rem;
@@ -1077,11 +1146,11 @@
       border-radius: var(--border-radius-lg);
       padding: var(--spacing-xl);
       margin: var(--spacing-lg) 0;
-      border: 1px solid rgba(46, 204, 113, 0.2);
+      border: 1px solid rgba(155, 89, 182, 0.2);
     }
     
     .quiz-question h4 {
-      color: var(--color-primary);
+      color: #9b59b6;
       font-family: var(--font-family-secondary);
       margin-bottom: var(--spacing-md);
     }
@@ -1093,15 +1162,15 @@
     }
     
     .quiz-nav-btn.finish {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      background: linear-gradient(135deg, #9b59b6, #e74c3c);
       color: white;
       border: none;
     }
     
     .quiz-nav-btn.finish:hover:not(:disabled) {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      background: linear-gradient(135deg, #8e44ad, #c0392b);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
+      box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
     }
 
     /* Styles pour les résultats du quiz final */
@@ -1117,14 +1186,14 @@
     }
 
     .badge-master {
-      background: linear-gradient(135deg, #f39c12, #e67e22);
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
       color: white;
       padding: var(--spacing-xl);
       border-radius: var(--border-radius-lg);
       font-size: 1.5rem;
       font-weight: bold;
       animation: badgeGlow 2s infinite alternate;
-      box-shadow: 0 8px 32px rgba(243, 156, 18, 0.3);
+      box-shadow: 0 8px 32px rgba(155, 89, 182, 0.4);
     }
 
     .badge-good {
@@ -1158,7 +1227,7 @@
     }
 
     .result-details h4 {
-      color: var(--color-primary);
+      color: #9b59b6;
       font-family: var(--font-family-secondary);
       margin-bottom: var(--spacing-lg);
       text-align: center;
@@ -1173,7 +1242,7 @@
     }
 
     .quiz-btn {
-      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
       color: white;
       border: none;
       padding: var(--spacing-md) var(--spacing-xl);
@@ -1186,21 +1255,103 @@
 
     .quiz-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+      box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
+    }
+
+    .quiz-btn.secondary {
+      background: var(--color-surface);
+      border: 2px solid #9b59b6;
+      color: #9b59b6;
+    }
+
+    .quiz-btn.secondary:hover {
+      background: #9b59b6;
+      color: white;
     }
 
     .question-text {
       font-size: 1.2rem;
       font-weight: bold;
-      color: var(--color-primary);
+      color: #9b59b6;
       margin-bottom: var(--spacing-lg);
       padding: var(--spacing-lg);
       background: var(--color-surface);
       border-radius: var(--border-radius-md);
-      border-left: 4px solid var(--color-primary);
+      border-left: 4px solid #9b59b6;
     }
     
     /* Responsive */
+    @media (max-width: 768px) {
+      .course-container {
+        padding: var(--spacing-md);
+      }
+      
+      .course-title {
+        font-size: 2.2rem;
+      }
+      
+      .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .course-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-sm);
+      }
+      
+      .validation-options {
+        gap: var(--spacing-xs);
+      }
+      
+      .validation-option {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Badge de completion du cours */
+    .course-completion-badge {
+      background: linear-gradient(135deg, #9b59b6, #8e44ad);
+      color: white;
+      padding: var(--spacing-xl);
+      border-radius: var(--border-radius-lg);
+      text-align: center;
+      margin: var(--spacing-xl) 0;
+      box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4);
+      animation: completionBadgeGlow 2s infinite alternate;
+    }
+    
+    @keyframes completionBadgeGlow {
+      0% { box-shadow: 0 8px 25px rgba(155, 89, 182, 0.4); }
+      100% { box-shadow: 0 12px 35px rgba(155, 89, 182, 0.6); }
+    }
+    
+    .course-completion-badge h3 {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-md);
+      font-family: var(--font-family-secondary);
+    }
+
+    /* FORCER LE FOND MULTICOLORE - RÈGLE FINALE */
+    body div.main-content section#section-6 div.superlative-type.final-quiz-section::before {
+      content: '' !important;
+      position: absolute !important;
+      top: -2px !important;
+      left: -2px !important;
+      right: -2px !important;
+      bottom: -2px !important;
+      background: linear-gradient(45deg, #9b59b6, #e74c3c, #f39c12, #2ecc71, #3498db, #9b59b6) !important;
+      background-size: 300% 300% !important;
+      border-radius: var(--border-radius-lg) !important;
+      z-index: -1 !important;
+      animation: finalQuizBorder 3s linear infinite !important;
+      display: block !important;
+      opacity: 1 !important;
+    }
   </style>
 </head>
 <body>
@@ -1920,68 +2071,97 @@
           </div>
         </div>
 
-        <div class="superlative-type">
-          <h3 class="superlative-title">🎓 Quiz Final de Certification</h3>
-          
-          <p>Passez maintenant le quiz final pour obtenir votre certification ! Vous devez obtenir au moins 16/20 pour valider le cours.</p>
-          
-          <div class="note-box">
-            <strong>Conditions du Quiz Final :</strong><br>
-            ✓ 20 questions sur tous les aspects étudiés<br>
-            ✓ Score minimum requis : 16/20 (80%)<br>
-            ✓ Une seule tentative autorisée<br>
-            ✓ Certification officielle à la clé
+        <div class="superlative-type final-quiz-section">
+          <div class="final-quiz-title">
+            🎯 DÉFI FINAL : MAÎTRE DU SUPERLATIF
+          </div>
+
+          <div class="quiz-info-final">
+            <h4>🏆 Quiz de Certification</h4>
+            <p><strong>🎯 Format :</strong> 20 questions sélectionnées sur tous les aspects étudiés</p>
+            <p><strong>⏱️ Temps :</strong> Pas de limite, prenez votre temps</p>
+            <p><strong>🎖️ Certification :</strong> 16/20 minimum pour valider le cours</p>
+            <p><strong>🏅 Excellence :</strong> 18/20 pour le titre de "Maître du Superlatif"</p>
           </div>
           
-          <button class="section-complete-btn" id="start-final-quiz" onclick="startFinalQuiz()">
-            <i class="fas fa-trophy"></i>
-            Commencer le Quiz Final de Certification
-          </button>
+          <div class="final-quiz-requirements">
+            <h5><i class="fas fa-exclamation-triangle"></i> Conditions de Validation</h5>
+            <ul>
+              <li>✓ Toutes les sections précédentes doivent être complétées</li>
+              <li>🎯 Score minimum : 16/20 (80%)</li>
+              <li>🏆 Une seule tentative pour la certification officielle</li>
+              <li>📜 Certificat de réussite délivré automatiquement</li>
+            </ul>
+          </div>
+          
+          <div class="interactive-exercise">
+            <div class="quiz-controls">
+              <button id="start-final-quiz" class="quiz-btn" style="font-size: 1.2rem; padding: var(--spacing-lg) var(--spacing-xl);" onclick="startFinalQuiz()">
+                🚀 COMMENCER LE DÉFI FINAL
+              </button>
+              <button id="resetFinalQuiz" class="quiz-btn secondary" style="display: none;">🔄 Recommencer (Entraînement)</button>
+            </div>
 
-          <!-- Container du quiz final -->
-          <div id="finalQuizContainer" style="display: none;">
-            <div class="quiz-header">
-              <div class="quiz-progress">
-                <span id="finalQuestionCounter">Question 1/20</span>
-                <div class="quiz-progress-bar">
-                  <div class="quiz-progress-fill" id="finalQuizProgressFill"></div>
+            <!-- Container du quiz final -->
+            <div id="finalQuizContainer" style="display: none;">
+              <div class="quiz-header">
+                <div class="quiz-progress">
+                  <span id="finalQuestionCounter">Question 1/20</span>
+                  <div class="quiz-progress-bar">
+                    <div class="quiz-progress-fill" id="finalQuizProgressFill"></div>
+                  </div>
+                </div>
+                <div class="quiz-score">
+                  <span id="finalCurrentScore">Score: 0/0</span>
                 </div>
               </div>
-              <div class="quiz-score">
-                <span id="finalCurrentScore">Score: 0/0</span>
+
+              <div id="finalCurrentQuestion" class="quiz-question-container">
+                <!-- Questions will be inserted here dynamically -->
+              </div>
+
+              <div class="quiz-navigation">
+                <button id="finalPrevQuestion" class="quiz-nav-btn" disabled>⬅️ Précédent</button>
+                <button id="finalNextQuestion" class="quiz-nav-btn" disabled>Suivant ➡️</button>
+                <button id="finalFinishQuiz" class="quiz-nav-btn finish" style="display: none;">🏁 VALIDER LE COURS</button>
               </div>
             </div>
 
-            <div id="finalCurrentQuestion" class="quiz-question-container">
-              <!-- Questions will be inserted here dynamically -->
-            </div>
-
-            <div class="quiz-navigation">
-              <button id="finalPrevQuestion" class="quiz-nav-btn" disabled>⬅️ Précédent</button>
-              <button id="finalNextQuestion" class="quiz-nav-btn" disabled>Suivant ➡️</button>
-              <button id="finalFinishQuiz" class="quiz-nav-btn finish" style="display: none;">🏁 TERMINER</button>
-            </div>
-          </div>
-
-          <!-- Résultats du quiz final -->
-          <div id="finalQuizResults" style="display: none;">
-            <div class="quiz-final-results">
-              <div id="finalResultBadge" class="result-badge">
-                <!-- Badge will be inserted here -->
-              </div>
-              <div class="result-details">
-                <h4>📊 Résultats de Certification</h4>
-                <div id="finalResultBreakdown"></div>
-              </div>
-              <div class="result-actions">
-                <button id="finalReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
-                <button id="downloadCertificate" class="quiz-btn" style="display: none;">📜 Télécharger le Certificat</button>
+            <!-- Résultats du quiz final -->
+            <div id="finalQuizResults" style="display: none;">
+              <div class="quiz-final-results">
+                <div id="finalResultBadge" class="result-badge">
+                  <!-- Badge will be inserted here -->
+                </div>
+                <div class="result-details">
+                  <h4>📊 Résultats de Certification</h4>
+                  <div id="finalResultBreakdown"></div>
+                </div>
+                <div class="result-actions">
+                  <button id="finalReviewAnswers" class="quiz-btn">📝 Revoir les Réponses</button>
+                  <button id="downloadCertificate" class="quiz-btn" style="display: none;">📜 Télécharger le Certificat</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- Section de Completion du Cours -->
+      <div id="courseCompletionSection" style="display: none;">
+        <div class="course-completion-badge">
+          <h3>🎉 FÉLICITATIONS ! 🎉</h3>
+          <p>Vous avez officiellement terminé le cours sur le Superlatif en Anglais !</p>
+          <div style="margin-top: var(--spacing-lg);">
+            <div style="display: inline-block; background: white; color: #2c3e50; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius-md); margin: 0 var(--spacing-sm);">
+              <strong>Score Final :</strong> <span id="finalCourseScore">--/20</span>
+            </div>
+            <div style="display: inline-block; background: white; color: #2c3e50; padding: var(--spacing-md) var(--spacing-lg); border-radius: var(--border-radius-md); margin: 0 var(--spacing-sm);">
+              <strong>Titre :</strong> <span id="finalCourseTitle">Maître du Superlatif</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
