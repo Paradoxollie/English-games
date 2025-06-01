@@ -1731,16 +1731,18 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   transition: all 0.3s ease;
 }
 
-.avatar-display-large .large-head {
+/* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
+.avatar-head-ultra {
   position: absolute;
-  bottom: 75px; /* Collé au corps */
+  bottom: 78%; /* POSITION ULTRA-HAUTE pour collage parfait */
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 55%;
   height: auto;
   object-fit: contain;
   z-index: 10;
-  transition: all 0.3s ease;
+  display: block !important;
+  margin-bottom: -10px; /* Collage ultra-maximal */
 }
 
 .avatar-display-large .large-accessory {

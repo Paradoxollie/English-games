@@ -37,37 +37,32 @@ class GameAvatarIntegration {
   }
 
   async init() {
-    console.log('🎭 [Avatar Integration] Initialisation système ultra-mobile...');
+    console.log('🚀 [Avatar] Initialisation système avatar gaming...');
     
-    // Détecter le type de device et optimiser en conséquence
+    // 1. Détection des capacités
     this.detectDeviceCapabilities();
     
-    // Charger les données utilisateur
-    await this.loadUserData();
-    
-    if (!this.currentUser) {
-      console.warn('⚠️ [Avatar Integration] Utilisateur non connecté - mode démo activé');
-      this.createDemoUser();
+    // 2. FORCE RELOAD du profil en priorité pour Enigma Scroll
+    if (window.location.href.includes('enigma-scroll')) {
+      console.log('🎮 [Avatar] Jeu Enigma Scroll détecté - FORCE RELOAD du profil...');
+      await this.forceReloadProfileForEnigmaScroll();
+      
+      // Attendre un peu pour que tout soit bien chargé
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
     
-    // Créer l'interface selon le contexte
+    // 3. Charger les données utilisateur
+    await this.loadUserData();
+    
+    // 4. Créer l'interface avatar
     this.createAvatarInterface();
     
-    // NOUVEAU: Créer les composants intégrés
-    setTimeout(() => {
-      this.createIntegratedAvatarComponents();
-    }, 500);
-    
-    // Configurer les interactions tactiles pour mobile
-    this.setupMobileInteractions();
-    
-    // Démarrer les systèmes d'engagement
+    // 5. Démarrer les systèmes
     this.startEngagementTracking();
-    
-    // Auto-détection des jeux pour réactions contextuelles
     this.setupGameDetection();
     
-    console.log('✅ [Avatar Integration] Système ultra-mobile prêt !');
+    console.log('✅ [Avatar] Système avatar gaming initialisé!');
+    return this;
   }
 
   detectDeviceCapabilities() {
@@ -167,84 +162,143 @@ class GameAvatarIntegration {
   }
 
   async forceReloadProfileForEnigmaScroll() {
+    if (!window.location.href.includes('enigma-scroll')) {
+      return;
+    }
+
+    console.log('🔄 [Avatar] FORCE RELOAD profile pour Enigma Scroll...');
+    
     try {
-      console.log('🎮 [Avatar] RECHARGEMENT FORCÉ pour Enigma Scroll...');
+      // 1. Nettoyer le cache existant
+      this.avatarData = null;
       
-      // MÉTHODE 1: authService avec détails
-      if (window.authService && window.authService.currentUser) {
-        console.log('🔄 [Avatar] Rechargement via authService détaillé...');
-        const authUser = window.authService.currentUser;
-        console.log('📋 [Avatar] Données authService complètes:', authUser);
-        
-        if (authUser.avatar) {
-          console.log('🎭 [Avatar] Avatar trouvé dans authService:', authUser.avatar);
-          this.currentUser.avatar = { ...authUser.avatar };
-          
-          // Sauvegarder immédiatement dans localStorage
-          localStorage.setItem('english_quest_current_user', JSON.stringify(this.currentUser));
-          return;
-        }
-      }
+      // 2. Essayer toutes les sources possibles
+      let profileData = null;
       
-      // MÉTHODE 2: Recharger depuis Firebase FORCE
-      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-        console.log('🔥 [Avatar] RECHARGEMENT FIREBASE FORCÉ...');
-        const uid = firebase.auth().currentUser.uid;
-        const db = firebase.firestore();
-        
+      // SOURCE 1: authService (priorité)
+      if (window.authService && typeof window.authService.getCurrentUser === 'function') {
+        console.log('📡 [Avatar] Tentative authService...');
         try {
-          const doc = await db.collection('users').doc(uid).get();
-          if (doc.exists) {
-            const userData = doc.data();
-            console.log('📄 [Avatar] Données Firebase COMPLÈTES:', userData);
+          const authUser = window.authService.getCurrentUser();
+          if (authUser) {
+            console.log('✅ [Avatar] Utilisateur authService trouvé:', authUser.username || authUser.displayName);
             
-            if (userData.avatar) {
-              console.log('✅ [Avatar] Avatar Firebase récupéré:', userData.avatar);
-              this.currentUser.avatar = { ...userData.avatar };
-              
-              // Sauvegarder IMMÉDIATEMENT
-              this.currentUser = { ...this.currentUser, ...userData };
-              localStorage.setItem('english_quest_current_user', JSON.stringify(this.currentUser));
-              console.log('💾 [Avatar] Avatar sauvegardé en localStorage pour future utilisation');
-              return;
+            // Charger le profil complet depuis authService
+            if (window.authService.loadUserProfile) {
+              profileData = await window.authService.loadUserProfile(authUser.uid);
+              if (profileData) {
+                console.log('✅ [Avatar] Profil authService complet:', profileData);
+              }
             } else {
-              console.warn('⚠️ [Avatar] Pas d\'avatar dans Firebase pour ce joueur');
+              profileData = authUser;
             }
-          } else {
-            console.warn('⚠️ [Avatar] Document utilisateur non trouvé dans Firebase');
           }
-        } catch (firebaseError) {
-          console.error('❌ [Avatar] Erreur Firebase:', firebaseError);
+        } catch (error) {
+          console.warn('⚠️ [Avatar] Erreur authService:', error);
         }
       }
       
-      // MÉTHODE 3: Essayer de récupérer depuis l'inventaire FORCE
-      if (window.inventoryService && typeof window.inventoryService.getEquippedItems === 'function') {
-        console.log('🎒 [Avatar] RECHARGEMENT INVENTAIRE FORCÉ...');
+      // SOURCE 2: Firebase direct
+      if (!profileData && typeof firebase !== 'undefined' && firebase.firestore) {
+        console.log('🔥 [Avatar] Tentative Firebase direct...');
         try {
-          const equippedItems = await window.inventoryService.getEquippedItems();
-          console.log('🎯 [Avatar] Éléments équipés récupérés:', equippedItems);
+          const userId = localStorage.getItem('englishQuestUserId') || 
+                         localStorage.getItem('english_quest_current_user_id');
           
-          if (equippedItems && Object.keys(equippedItems).length > 0) {
-            if (!this.currentUser.avatar) this.currentUser.avatar = {};
+          if (userId && userId !== 'undefined' && userId !== 'null') {
+            const db = firebase.firestore();
+            const userDoc = await db.collection('users').doc(userId).get();
             
-            Object.keys(equippedItems).forEach(key => {
-              this.currentUser.avatar[key] = equippedItems[key];
-              console.log(`🔄 [Avatar] ${key} mis à jour: ${equippedItems[key]}`);
-            });
-            
-            // Sauvegarder
-            localStorage.setItem('english_quest_current_user', JSON.stringify(this.currentUser));
-            return;
+            if (userDoc.exists) {
+              profileData = { uid: userId, ...userDoc.data() };
+              console.log('✅ [Avatar] Profil Firebase direct:', profileData);
+            }
           }
-        } catch (inventoryError) {
-          console.error('❌ [Avatar] Erreur inventaire:', inventoryError);
+        } catch (error) {
+          console.warn('⚠️ [Avatar] Erreur Firebase direct:', error);
         }
       }
       
-      console.warn('⚠️ [Avatar] Impossible de recharger le profil pour Enigma Scroll');
+      // SOURCE 3: inventoryService
+      if (!profileData && window.inventoryService) {
+        console.log('🎒 [Avatar] Tentative inventoryService...');
+        try {
+          const inventory = await window.inventoryService.getUserInventory();
+          if (inventory && inventory.equipped) {
+            profileData = {
+              avatar: inventory.equipped,
+              username: 'Joueur'
+            };
+            console.log('✅ [Avatar] Profil inventoryService:', profileData);
+          }
+        } catch (error) {
+          console.warn('⚠️ [Avatar] Erreur inventoryService:', error);
+        }
+      }
+      
+      // SOURCE 4: localStorage complet
+      if (!profileData) {
+        console.log('💾 [Avatar] Scan localStorage complet...');
+        const keys = [
+          'english_quest_current_user',
+          'currentUser',
+          'englishQuestUserProfile',
+          'userProfile',
+          'enigmaScrollProfile'
+        ];
+        
+        for (const key of keys) {
+          try {
+            const data = localStorage.getItem(key);
+            if (data && data !== 'undefined' && data !== 'null') {
+              const parsed = JSON.parse(data);
+              if (parsed && (parsed.avatar || parsed.username || parsed.displayName)) {
+                profileData = parsed;
+                console.log(`✅ [Avatar] Profil localStorage (${key}):`, profileData);
+                break;
+              }
+            }
+          } catch (e) {
+            // Ignorer les erreurs de parsing
+          }
+        }
+      }
+      
+      // 3. Appliquer les données trouvées
+      if (profileData) {
+        console.log('🎨 [Avatar] Application profil trouvé:', profileData);
+        
+        // Forcer la mise à jour de l'avatar
+        this.avatarData = {
+          username: profileData.username || profileData.displayName || 'Joueur',
+          level: profileData.level || 1,
+          xp: profileData.xp || 0,
+          avatar: profileData.avatar || {}
+        };
+        
+        // Si l'avatar a des données mais pas la structure complète
+        if (profileData.avatar) {
+          Object.assign(this.avatarData.avatar, profileData.avatar);
+        }
+        
+        // Sauvegarder pour la prochaine fois
+        localStorage.setItem('enigmaScrollProfile', JSON.stringify(this.avatarData));
+        
+        // Recréer l'avatar avec les nouvelles données
+        this.recreateAvatar();
+        
+        console.log('✅ [Avatar] Profil appliqué avec succès!');
+        return this.avatarData;
+      } else {
+        console.warn('⚠️ [Avatar] Aucun profil trouvé, utilisation profil par défaut');
+        this.avatarData = this.createDemoUser();
+        return this.avatarData;
+      }
+      
     } catch (error) {
-      console.error('❌ [Avatar] Erreur rechargement profil Enigma Scroll:', error);
+      console.error('❌ [Avatar] Erreur lors du force reload profile:', error);
+      this.avatarData = this.createDemoUser();
+      return this.avatarData;
     }
   }
 
@@ -1632,9 +1686,9 @@ class GameAvatarIntegration {
       this.letterObserver.disconnect();
     }
 
-    console.log('🔤 [Avatar] Configuration observateur lettres...');
+    console.log('🔤 [Avatar] Configuration observateur VALIDATIONS (pas lettres individuelles)...');
     
-    // Observer TOUTE la grille de jeu
+    // Observer SEULEMENT les validations de mots et résultats importants
     const wordGrid = document.getElementById('word-grid') || document.querySelector('.word-grid');
     if (!wordGrid) {
       console.warn('⚠️ [Avatar] Grille de mots non trouvée');
@@ -1643,92 +1697,74 @@ class GameAvatarIntegration {
 
     this.letterObserver = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
-        if (mutation.type === 'childList') {
-          // Nouvelles cellules ajoutées
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeType === 1 && node.classList.contains('grid-cell')) {
-              console.log('➕ [Avatar] Nouvelle cellule détectée');
-            }
-          });
-        }
-        
-        if (mutation.type === 'characterData' || 
-            (mutation.type === 'childList' && mutation.target.classList.contains('grid-cell'))) {
-          const cell = mutation.target.classList.contains('grid-cell') 
-            ? mutation.target 
-            : mutation.target.parentElement;
-            
-          if (cell && cell.classList.contains('grid-cell')) {
-            const letter = cell.textContent.trim();
-            console.log(`📝 [Avatar] Lettre détectée: "${letter}" dans cellule`, cell);
-            
-            // Réagir à la frappe
-            if (letter && letter.length === 1) {
-              this.triggerAdventureReaction('letterTyped', { letter });
-            }
-          }
-        }
-        
+        // Observer seulement les changements de classes (correct, present, absent)
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           const cell = mutation.target;
           if (cell.classList.contains('grid-cell')) {
-            console.log('🎨 [Avatar] Changement classe cellule:', cell.className);
             
-            // Détecter les changements d'état
-            if (cell.classList.contains('correct')) {
-              this.triggerAdventureReaction('letterCorrect', { 
-                letter: cell.textContent.trim() 
-              });
-            } else if (cell.classList.contains('present')) {
-              this.triggerAdventureReaction('letterPresent', { 
-                letter: cell.textContent.trim() 
-              });
-            } else if (cell.classList.contains('absent')) {
-              this.triggerAdventureReaction('letterAbsent', { 
-                letter: cell.textContent.trim() 
-              });
+            // Vérifier si c'est la fin d'une validation (toute la ligne a des classes)
+            const row = cell.getAttribute('data-row');
+            if (row !== null) {
+              const rowCells = document.querySelectorAll(`[data-row="${row}"].grid-cell`);
+              const allCellsHaveState = Array.from(rowCells).every(c => 
+                c.classList.contains('correct') || 
+                c.classList.contains('present') || 
+                c.classList.contains('absent')
+              );
+              
+              if (allCellsHaveState) {
+                console.log('✅ [Avatar] Validation de mot détectée pour ligne:', row);
+                
+                // Analyser le résultat de la ligne
+                const correctCount = Array.from(rowCells).filter(c => c.classList.contains('correct')).length;
+                const presentCount = Array.from(rowCells).filter(c => c.classList.contains('present')).length;
+                const word = Array.from(rowCells).map(c => c.textContent).join('');
+                
+                if (correctCount === rowCells.length) {
+                  // Mot entièrement correct
+                  this.triggerAdventureReaction('wordCorrect', { word, correctCount });
+                } else if (correctCount > 0 || presentCount > 0) {
+                  // Mot partiellement correct
+                  this.triggerAdventureReaction('wordPartial', { word, correctCount, presentCount });
+                } else {
+                  // Mot complètement faux
+                  this.triggerAdventureReaction('wordWrong', { word });
+                }
+              }
             }
           }
         }
       });
     });
 
-    // Observer avec options complètes
+    // Observer avec options pour les changements de classes
     this.letterObserver.observe(wordGrid, {
-      childList: true,
-      subtree: true,
-      characterData: true,
       attributes: true,
       attributeFilter: ['class'],
-      characterDataOldValue: true
+      subtree: true
     });
 
-    // OBSERVATEUR SUPPLÉMENTAIRE: Observer les entrées clavier directement
+    // Observer les entrées clavier pour réactions légères
     this.setupKeyboardObserver();
   }
 
   setupKeyboardObserver() {
-    console.log('⌨️ [Avatar] Configuration observateur clavier...');
+    console.log('⌨️ [Avatar] Configuration observateur clavier (réactions légères)...');
     
-    // Observer les événements clavier du document
+    // Observer seulement les événements importants du clavier
     document.addEventListener('keydown', (event) => {
       if (!this.isGameActive()) return;
       
       const key = event.key.toUpperCase();
-      console.log(`⌨️ [Avatar] Touche pressée: ${key}`);
       
-      // Lettres A-Z
-      if (key.match(/^[A-Z]$/)) {
-        this.triggerAdventureReaction('letterTyped', { letter: key, source: 'keyboard' });
-      }
-      // Enter
-      else if (key === 'ENTER') {
+      // SEULEMENT Enter et effacement (pas chaque lettre)
+      if (key === 'ENTER') {
         this.triggerAdventureReaction('wordSubmitted', { source: 'keyboard' });
-      }
-      // Backspace
-      else if (key === 'BACKSPACE') {
+      } else if (key === 'BACKSPACE') {
+        // Réaction très légère pour l'effacement
         this.triggerAdventureReaction('letterErased', { source: 'keyboard' });
       }
+      // Plus de réaction à chaque lettre tapée
     });
 
     // Observer les clics sur le clavier virtuel
@@ -1740,15 +1776,14 @@ class GameAvatarIntegration {
         const button = event.target.closest('.key-btn');
         if (button) {
           const keyText = button.textContent.trim();
-          console.log(`🖱️ [Avatar] Clic clavier virtuel: ${keyText}`);
           
-          if (keyText.match(/^[A-Z]$/)) {
-            this.triggerAdventureReaction('letterTyped', { letter: keyText, source: 'virtual' });
-          } else if (keyText === 'ENTER') {
+          // SEULEMENT les actions importantes
+          if (keyText === 'ENTER') {
             this.triggerAdventureReaction('wordSubmitted', { source: 'virtual' });
           } else if (keyText === '⌫') {
             this.triggerAdventureReaction('letterErased', { source: 'virtual' });
           }
+          // Plus de réaction à chaque lettre
         }
       });
     }
@@ -1784,20 +1819,53 @@ class GameAvatarIntegration {
     if (!this.isVisible) return;
     
     const reactions = {
-      // ====== ÉVÉNEMENTS POSITIFS ======
-      scoreSmallGain: {
-        animations: ['adventurerJumpJoy', 'adventurerCelebration'],
-        effects: ['sparkles', 'stars'],
+      // ====== NOUVELLES RÉACTIONS POUR VALIDATIONS DE MOTS ======
+      wordCorrect: {
+        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
+        effects: ['celebration', 'lightning'],
         category: 'positive',
-        speechBubbles: ['Nice!', 'Bien joué!', 'Super!', 'Excellent!'],
+        speechBubbles: ['PARFAIT!', 'EXCELLENT!', 'BRAVO!', 'GÉNIE!'],
+        aura: { color: 'victory', duration: 4000 }
+      },
+      
+      wordPartial: {
+        animations: ['adventurerReflection', 'adventurerConcentration'],
+        effects: ['thinking', 'focus'],
+        category: 'neutral',
+        speechBubbles: ['Presque!', 'Bien essayé!', 'Continue!', 'Tu y es presque!'],
+        aura: { color: 'warning', duration: 2500 }
+      },
+      
+      wordWrong: {
+        animations: ['adventurerSadness', 'adventurerDeflation'],
+        effects: ['confusion', 'sweat'],
+        category: 'negative',
+        speechBubbles: ['Oups...', 'Pas ça...', 'Réessaie!', 'Tu peux mieux!'],
+        aura: { color: 'error', duration: 2000 }
+      },
+      
+      wordSubmitted: {
+        animations: ['adventurerConcentration'],
+        effects: ['thinking'],
+        category: 'neutral',
+        speechBubbles: ['Voyons...', 'Analysons...', 'Hmm...'],
+        aura: { color: 'focus', duration: 1500 }
+      },
+      
+      // ====== ÉVÉNEMENTS DE SCORE (AMÉLIORÉS) ======
+      scoreSmallGain: {
+        animations: ['adventurerJumpJoy', 'adventurerSmallHop'],
+        effects: ['sparkles'],
+        category: 'positive',
+        speechBubbles: ['Nice!', 'Bien!', 'Super!'],
         aura: { color: 'success', duration: 2000 }
       },
       
       scoreMediumGain: {
-        animations: ['adventurerSpinCelebration', 'adventurerEnergeticSway'],
-        effects: ['lightning', 'stars'],
+        animations: ['adventurerSpinCelebration', 'adventurerSatisfactionJump'],
+        effects: ['stars', 'lightning'],
         category: 'positive',
-        speechBubbles: ['Fantastique!', 'Incroyable!', 'Bravo!', 'Wow!'],
+        speechBubbles: ['Excellent!', 'Fantastique!', 'Bravo!'],
         aura: { color: 'success', duration: 3000 }
       },
       
@@ -1805,81 +1873,92 @@ class GameAvatarIntegration {
         animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
         effects: ['celebration', 'lightning'],
         category: 'positive',
-        speechBubbles: ['EXCELLENT!', 'PARFAIT!', 'GÉNIE!', 'INCROYABLE!'],
+        speechBubbles: ['INCROYABLE!', 'PARFAIT!', 'CHAMPION!'],
         aura: { color: 'victory', duration: 4000 }
       },
       
-      letterCorrect: {
-        animations: ['adventurerJumpJoy'],
-        effects: ['sparkles'],
-        category: 'positive',
-        speechBubbles: ['Correct!', 'Oui!', 'Parfait!'],
-        aura: { color: 'success', duration: 1500 }
-      },
-      
-      powerUpUsed: {
-        animations: ['adventurerMagicSpin', 'adventurerSpinCelebration'],
+      // ====== ÉVÉNEMENTS DE COMBO ======
+      combo: {
+        animations: ['adventurerSpinFire', 'adventurerStreakSway'],
         effects: ['lightning', 'stars'],
         category: 'positive',
-        speechBubbles: ['Pouvoir activé!', 'Magic!', 'Super pouvoir!'],
-        aura: { color: 'fire', duration: 2500 }
+        speechBubbles: ['EN FEU!', 'COMBO!', 'INCROYABLE!', 'TU DÉCHIRES!'],
+        aura: { color: 'fire', duration: 3000 }
       },
       
-      // ====== ÉVÉNEMENTS NÉGATIFS ======
+      comboBroken: {
+        animations: ['adventurerDeflate', 'adventurerSadness'],
+        effects: ['confusion'],
+        category: 'negative',
+        speechBubbles: ['Zut...', 'Combo brisé...', 'Recommençons!'],
+        aura: { color: 'error', duration: 2000 }
+      },
+      
+      // ====== ÉVÉNEMENTS DE TEMPS ======
       timeRunningOut: {
         animations: ['adventurerFrantic', 'adventurerPanic'],
         effects: ['stress', 'sweat'],
         category: 'negative',
-        speechBubbles: ['Vite!', 'Dépêche!', 'Plus de temps!', 'Panic!'],
+        speechBubbles: ['VITE!', 'DÉPÊCHE!', 'PLUS DE TEMPS!', 'PANIC!'],
         aura: { color: 'panic', duration: 2000 }
       },
       
-      letterAbsent: {
-        animations: ['adventurerSadness', 'adventurerDeflation'],
-        effects: ['confusion', 'sweat'],
-        category: 'negative',
-        speechBubbles: ['Oups...', 'Pas ça...', 'Raté...'],
-        aura: { color: 'error', duration: 1500 }
-      },
-      
-      attemptFailed: {
-        animations: ['adventurerCollapse', 'adventurerStress'],
-        effects: ['tired', 'confusion'],
-        category: 'negative',
-        speechBubbles: ['Ah non...', 'Dommage...', 'Essaie encore!'],
-        aura: { color: 'error', duration: 2000 }
-      },
-      
-      gameOver: {
-        animations: ['adventurerCollapse', 'adventurerSadness'],
-        effects: ['tired', 'stress'],
-        category: 'negative',
-        speechBubbles: ['Game Over...', 'Recommençons!', 'Plus de chance!'],
-        aura: { color: 'error', duration: 3000 }
-      },
-      
-      // ====== ÉVÉNEMENTS NEUTRES ======
-      letterTyped: {
-        animations: ['adventurerConcentration'],
-        effects: ['thinking', 'focus'],
+      timeLow: {
+        animations: ['adventurerNervous', 'adventurerFocus'],
+        effects: ['thinking', 'sweat'],
         category: 'neutral',
-        speechBubbles: ['Réfléchissons...', 'Hmm...', 'Voyons...'],
-        aura: { color: 'focus', duration: 1000 }
-      },
-      
-      letterPresent: {
-        animations: ['adventurerReflection', 'adventurerConcentration'],
-        effects: ['thinking', 'focus'],
-        category: 'neutral',
-        speechBubbles: ['Presque!', 'Bonne lettre!', 'Mauvaise place!'],
+        speechBubbles: ['Attention...', 'Concentre-toi!', 'Plus de temps!'],
         aura: { color: 'warning', duration: 1500 }
       },
       
-      moving: {
-        animations: ['adventurerWalk', 'adventurerEnergeticSway'],
+      // ====== ÉVÉNEMENTS DE POWER-UPS ======
+      powerUpUsed: {
+        animations: ['adventurerLightbulb', 'adventurerTimeWarp'],
+        effects: ['lightning', 'stars'],
+        category: 'positive',
+        speechBubbles: ['POUVOIR!', 'MAGIE!', 'BOOSTER!', 'HELP!'],
+        aura: { color: 'powerup', duration: 2500 }
+      },
+      
+      // ====== ÉVÉNEMENTS DE JEU ======
+      victory: {
+        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
+        effects: ['celebration', 'lightning'],
+        category: 'positive',
+        speechBubbles: ['VICTOIRE!', 'CHAMPION!', 'PARFAIT!', 'BRAVO!'],
+        aura: { color: 'victory', duration: 5000 }
+      },
+      
+      defeat: {
+        animations: ['adventurerCollapse', 'adventurerSadness'],
+        effects: ['tired', 'confusion'],
+        category: 'negative',
+        speechBubbles: ['Dommage...', 'Recommençons!', 'Tu peux mieux!'],
+        aura: { color: 'defeat', duration: 3000 }
+      },
+      
+      gameStart: {
+        animations: ['adventurerBattleReady', 'adventurerConcentration'],
+        effects: ['thinking', 'focus'],
+        category: 'neutral',
+        speechBubbles: ['C\'est parti!', 'Allons-y!', 'Ready!', 'Let\'s go!'],
+        aura: { color: 'start', duration: 2000 }
+      },
+      
+      // ====== ÉVÉNEMENTS MINEURS ======
+      letterErased: {
+        animations: ['adventurerNervous'],
         effects: ['thinking'],
         category: 'neutral',
-        speechBubbles: ['En exploration!', 'Je bouge!', 'Nouvelle position!'],
+        speechBubbles: [], // Pas de bulle pour cet événement mineur
+        aura: { color: 'focus', duration: 800 }
+      },
+      
+      moving: {
+        animations: ['adventurerWalk'],
+        effects: ['thinking'],
+        category: 'neutral',
+        speechBubbles: ['En exploration!', 'Je bouge!'],
         aura: { color: 'focus', duration: 1000 }
       }
     };
@@ -1895,7 +1974,7 @@ class GameAvatarIntegration {
     // 1. Animation corporelle
     if (reaction.animations) {
       const randomAnimation = reaction.animations[Math.floor(Math.random() * reaction.animations.length)];
-      this.triggerAnimation(randomAnimation, 2000);
+      this.triggerAnimation(randomAnimation, 2500);
     }
 
     // 2. Effet visuel
@@ -1904,10 +1983,10 @@ class GameAvatarIntegration {
       this.applyVisualEffect(randomEffect, reaction.category);
     }
 
-    // 3. Bulle de dialogue
-    if (reaction.speechBubbles) {
+    // 3. Bulle de dialogue (seulement si il y en a)
+    if (reaction.speechBubbles && reaction.speechBubbles.length > 0) {
       const randomBubble = reaction.speechBubbles[Math.floor(Math.random() * reaction.speechBubbles.length)];
-      this.showSpeechBubble(randomBubble, 2000);
+      this.showSpeechBubble(randomBubble, 2500);
     }
 
     // 4. Aura colorée
