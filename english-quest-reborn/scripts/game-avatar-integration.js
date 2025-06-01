@@ -50,12 +50,19 @@ class GameAvatarIntegration {
       this.createDemoUser();
     }
     
+    console.log('👤 [Avatar Integration] Utilisateur final:', this.currentUser);
+    
     // Créer l'interface selon le contexte
     this.createAvatarInterface();
     
-    // NOUVEAU: Créer les composants intégrés
+    // FORCE : Créer immédiatement l'avatar ultra-réactif pour Enigma Scroll
     setTimeout(() => {
       this.createIntegratedAvatarComponents();
+      // NOUVEAU: Forcer la création si on est dans Enigma Scroll
+      if (window.location.pathname.includes('enigma-scroll')) {
+        console.log('🎮 [Avatar Integration] FORCE création avatar Enigma Scroll');
+        this.forceCreateUltraAdventurer();
+      }
     }, 500);
     
     // Configurer les interactions tactiles pour mobile
@@ -135,13 +142,14 @@ class GameAvatarIntegration {
             }
             
             console.log('✅ [Avatar] Données utilisateur brutes:', this.currentUser);
+            console.log('🎭 [Avatar] Avatar dans userData:', this.currentUser.avatar);
             
             // Charger l'équipement actuel depuis l'inventaire
             await this.loadEquippedItems();
             
             // Valider et normaliser les données avatar
             this.normalizeAvatarData();
-            console.log('✅ [Avatar] Avatar final:', this.currentUser.avatar);
+            console.log('✅ [Avatar] Avatar final après normalisation:', this.currentUser.avatar);
             console.log('✅ [Avatar] Utilisateur chargé:', this.currentUser.username || 'Utilisateur');
             return;
           }
@@ -1061,18 +1069,43 @@ class GameAvatarIntegration {
   }
 
   createUltraReactiveMiniAdventurer() {
-    if (document.getElementById('ultra-adventurer')) {
-      return;
+    const existingAdventurer = document.getElementById('ultra-adventurer');
+    if (existingAdventurer) {
+      console.log('🔄 [Avatar] Avatar existant trouvé, suppression...');
+      existingAdventurer.remove();
     }
     
-    console.log('🏃‍♂️ Création Mini Adventurer ULTRA-RÉACTIF');
+    console.log('🏃‍♂️ [Avatar] Création Mini Adventurer ULTRA-RÉACTIF');
+    console.log('🎭 [Avatar] Données avatar à utiliser:', this.currentUser.avatar);
     
     // Créer le container principal
     const adventurerContainer = document.createElement('div');
     adventurerContainer.className = 'ultra-reactive-adventurer';
     adventurerContainer.id = 'ultra-adventurer';
+    
+    // FORCE VISIBILITÉ ET POSITION
+    adventurerContainer.style.cssText = `
+      position: fixed !important;
+      top: 20px !important;
+      right: 20px !important;
+      width: 120px !important;
+      height: 140px !important;
+      z-index: 9999 !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      background: rgba(0,255,0,0.1) !important;
+      border: 2px solid lime !important;
+    `;
+    
     adventurerContainer.innerHTML = `
-      <div class="adventurer-avatar-ultra">
+      <div class="adventurer-avatar-ultra" style="
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: block !important;
+      ">
         ${this.generateAvatarDisplayHTML()}
       </div>
       <div class="adventure-effects-ultra" id="adventureEffectsUltra"></div>
@@ -1082,76 +1115,151 @@ class GameAvatarIntegration {
     
     document.body.appendChild(adventurerContainer);
     
+    console.log('✅ [Avatar] Container ajouté au DOM:', adventurerContainer);
+    
+    // Vérifier que l'avatar est bien visible
+    setTimeout(() => {
+      const check = document.getElementById('ultra-adventurer');
+      if (check) {
+        const rect = check.getBoundingClientRect();
+        console.log('📍 [Avatar] Position finale:', {
+          visible: rect.width > 0 && rect.height > 0,
+          rect: rect,
+          styles: window.getComputedStyle(check)
+        });
+      }
+    }, 100);
+    
     // Démarrer les comportements
     this.startUltraReactiveBehavior();
     
-    console.log('✅ Ultra-Reactive Mini Adventurer créé avec succès !');
+    console.log('✅ [Avatar] Ultra-Reactive Mini Adventurer créé avec succès !');
   }
 
   generateAvatarDisplayHTML() {
     const user = this.currentUser || this.createDemoUser();
     const avatar = user.avatar || {};
     
+    console.log('🎨 [Avatar] Génération HTML avec avatar:', avatar);
+    
     // Construire les chemins d'images correctement
     const getAvatarPath = (type, value) => {
-      if (!value || value === 'none') return null;
+      if (!value || value === 'none') {
+        console.log(`❌ [Avatar] ${type} vide ou 'none':`, value);
+        return null;
+      }
       // Si c'est déjà un chemin complet, l'utiliser tel quel
       if (value.includes('/') || value.includes('.')) {
+        console.log(`📁 [Avatar] ${type} chemin complet:`, value);
         return value;
       }
       // Sinon, construire le chemin avec l'extension
-      return `../assets/avatars/${type}s/${value}.png`;
+      const path = `../assets/avatars/${type}s/${value}.png`;
+      console.log(`🔧 [Avatar] ${type} chemin construit:`, path);
+      return path;
     };
     
     const bodyPath = getAvatarPath('body', avatar.body) || '../assets/avatars/bodies/default_boy.png';
     const headPath = getAvatarPath('head', avatar.head) || '../assets/avatars/heads/default_boy.png';
     
+    console.log('🎭 [Avatar] Chemins finaux - Body:', bodyPath, 'Head:', headPath);
+    
     // Logique d'accessoire EXACTE du profil
     let accessoryHTML = '';
-    console.log('[Avatar] Accessoire dans données:', avatar.accessory);
+    console.log('🎩 [Avatar] Accessoire dans données:', avatar.accessory);
     
     if (avatar.accessory === 'default') {
       // Accessoire par défaut = GIF animé
-      console.log('[Avatar] Affichage accessoire par défaut (GIF)');
+      console.log('✨ [Avatar] Affichage accessoire par défaut (GIF)');
       accessoryHTML = `
-        <div class="avatar-accessory-ultra">
+        <div class="avatar-accessory-ultra" style="
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          z-index: 20 !important;
+          display: block !important;
+        ">
           <img src="../assets/avatars/accessories/default.gif" 
                alt="Animated Accessory" 
-               style="width: 100%; height: 100%; display: block; object-fit: contain; opacity: 1;"
+               style="width: 100% !important; height: 100% !important; display: block !important; object-fit: contain !important; opacity: 1 !important;"
                onerror="console.warn('[Avatar] GIF échoué, fallback PNG'); this.src='../assets/avatars/accessories/default.png';"
-               onload="console.log('[Avatar] Accessoire GIF chargé avec succès');">
+               onload="console.log('[Avatar] ✅ Accessoire GIF chargé avec succès');">
         </div>`;
     } else if (avatar.accessory && avatar.accessory !== 'none') {
       // Autre accessoire
-      console.log('[Avatar] Affichage autre accessoire:', avatar.accessory);
+      console.log('🎪 [Avatar] Affichage autre accessoire:', avatar.accessory);
+      const accessoryPath = getAvatarPath('accessory', avatar.accessory);
       accessoryHTML = `
-        <div class="avatar-accessory-ultra">
-          <img src="${getAvatarPath('accessory', avatar.accessory)}" 
+        <div class="avatar-accessory-ultra" style="
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          z-index: 20 !important;
+          display: block !important;
+        ">
+          <img src="${accessoryPath}" 
                alt="Accessory" 
-               style="width: 100%; height: 100%; display: block; object-fit: contain; opacity: 1;"
+               style="width: 100% !important; height: 100% !important; display: block !important; object-fit: contain !important; opacity: 1 !important;"
                onerror="console.warn('[Avatar] Accessoire échoué:', this.src); this.style.display='none';"
-               onload="console.log('[Avatar] Accessoire chargé:', this.src);">
+               onload="console.log('[Avatar] ✅ Accessoire chargé:', this.src);">
         </div>`;
+    } else {
+      console.log('🚫 [Avatar] Aucun accessoire à afficher');
     }
     
-    return `
-      <div class="avatar-display-ultra">
+    const finalHTML = `
+      <div class="avatar-display-ultra" style="
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      ">
         <!-- Corps -->
         <img src="${bodyPath}" 
              alt="Avatar Body" 
              class="avatar-body-ultra"
-             onerror="this.src='../assets/avatars/bodies/default_boy.png'">
+             style="
+               position: absolute !important;
+               bottom: 0 !important;
+               left: 50% !important;
+               transform: translateX(-50%) !important;
+               width: 80% !important;
+               height: auto !important;
+               z-index: 10 !important;
+               display: block !important;
+             "
+             onerror="console.warn('[Avatar] Corps échoué'); this.src='../assets/avatars/bodies/default_boy.png';"
+             onload="console.log('[Avatar] ✅ Corps chargé:', this.src);">
         
         <!-- Tête COLLÉE au corps -->
         <img src="${headPath}" 
              alt="Avatar Head" 
              class="avatar-head-ultra"
-             onerror="this.src='../assets/avatars/heads/default_boy.png'">
+             style="
+               position: absolute !important;
+               bottom: 73% !important;
+               left: 50% !important;
+               transform: translateX(-50%) !important;
+               width: 55% !important;
+               height: auto !important;
+               z-index: 15 !important;
+               display: block !important;
+               margin-bottom: -6px !important;
+             "
+             onerror="console.warn('[Avatar] Tête échouée'); this.src='../assets/avatars/heads/default_boy.png';"
+             onload="console.log('[Avatar] ✅ Tête chargée:', this.src);">
         
         <!-- Accessoire GIF -->
         ${accessoryHTML}
       </div>
     `;
+    
+    console.log('🎨 [Avatar] HTML généré:', finalHTML);
+    return finalHTML;
   }
 
   startUltraReactiveBehavior() {
@@ -1596,7 +1704,19 @@ class GameAvatarIntegration {
   }
 
   triggerAdventureReaction(eventType, data = {}) {
-    if (!this.isVisible) return;
+    console.log(`🎭 [Avatar] TENTATIVE réaction: ${eventType}`, data);
+    console.log(`👁️ [Avatar] isVisible: ${this.isVisible}`);
+    
+    // FORCE: Ignorer temporairement le flag isVisible pour tester
+    // if (!this.isVisible) return;
+    
+    const adventurerElement = document.getElementById('ultra-adventurer');
+    if (!adventurerElement) {
+      console.warn('⚠️ [Avatar] Element ultra-adventurer non trouvé !');
+      return;
+    }
+    
+    console.log(`✅ [Avatar] DÉCLENCHEMENT réaction: ${eventType}`);
     
     const reactions = {
       // ====== ÉVÉNEMENTS POSITIFS ======
@@ -1630,6 +1750,14 @@ class GameAvatarIntegration {
         category: 'positive',
         speechBubbles: ['Correct!', 'Oui!', 'Parfait!'],
         aura: { color: 'success', duration: 1500 }
+      },
+      
+      letterTyped: {
+        animations: ['adventurerConcentration'],
+        effects: ['thinking', 'focus'],
+        category: 'neutral',
+        speechBubbles: ['Hmm...', 'Voyons...', 'Réfléchis...'],
+        aura: { color: 'focus', duration: 1000 }
       },
       
       powerUpUsed: {
@@ -1674,14 +1802,6 @@ class GameAvatarIntegration {
       },
       
       // ====== ÉVÉNEMENTS NEUTRES ======
-      letterTyped: {
-        animations: ['adventurerConcentration'],
-        effects: ['thinking', 'focus'],
-        category: 'neutral',
-        speechBubbles: ['Réfléchissons...', 'Hmm...', 'Voyons...'],
-        aura: { color: 'focus', duration: 1000 }
-      },
-      
       letterPresent: {
         animations: ['adventurerReflection', 'adventurerConcentration'],
         effects: ['thinking', 'focus'],
@@ -1705,28 +1825,32 @@ class GameAvatarIntegration {
       return;
     }
 
-    console.log(`🎭 [Avatar] Réaction: ${eventType}`, data);
+    console.log(`🎭 [Avatar] Réaction configurée:`, reaction);
 
     // 1. Animation corporelle
     if (reaction.animations) {
       const randomAnimation = reaction.animations[Math.floor(Math.random() * reaction.animations.length)];
+      console.log(`🎬 [Avatar] Animation: ${randomAnimation}`);
       this.triggerAnimation(randomAnimation, 2000);
     }
 
     // 2. Effet visuel
     if (reaction.effects) {
       const randomEffect = reaction.effects[Math.floor(Math.random() * reaction.effects.length)];
+      console.log(`✨ [Avatar] Effet: ${randomEffect}`);
       this.applyVisualEffect(randomEffect, reaction.category);
     }
 
     // 3. Bulle de dialogue
     if (reaction.speechBubbles) {
       const randomBubble = reaction.speechBubbles[Math.floor(Math.random() * reaction.speechBubbles.length)];
+      console.log(`💬 [Avatar] Bulle: ${randomBubble}`);
       this.showSpeechBubble(randomBubble, 2000);
     }
 
     // 4. Aura colorée
     if (reaction.aura) {
+      console.log(`🌈 [Avatar] Aura: ${reaction.aura.color}`);
       this.changeAura(reaction.aura.color, reaction.aura.duration);
     }
   }
@@ -1884,6 +2008,40 @@ class GameAvatarIntegration {
     this.isVisible = false;
     
     console.log('✅ [Avatar] Instance détruite proprement');
+  }
+
+  forceCreateUltraAdventurer() {
+    console.log('🔥 [Avatar Integration] FORCE création Ultra Adventurer...');
+    
+    // Supprimer toute trace d'anciens avatars
+    const existingAvatars = document.querySelectorAll('#ultra-adventurer, .ultra-reactive-adventurer, .game-mini-avatar');
+    existingAvatars.forEach(avatar => {
+      console.log('🗑️ [Avatar Integration] Suppression ancien avatar:', avatar.id || avatar.className);
+      avatar.remove();
+    });
+    
+    // Attendre que les éléments du jeu soient prêts
+    const checkGameReady = () => {
+      const gameArea = document.getElementById('game-area');
+      const wordGrid = document.getElementById('word-grid');
+      
+      if (gameArea && wordGrid) {
+        console.log('✅ [Avatar Integration] Jeu prêt, création avatar...');
+        this.createUltraReactiveMiniAdventurer();
+        
+        // Activer les observateurs
+        setTimeout(() => {
+          this.setupUltraGameObservers();
+          this.isVisible = true;
+          console.log('✅ [Avatar Integration] Avatar ultra-réactif créé et activé !');
+        }, 1000);
+      } else {
+        console.log('⏳ [Avatar Integration] En attente du jeu...');
+        setTimeout(checkGameReady, 500);
+      }
+    };
+    
+    checkGameReady();
   }
 }
 
