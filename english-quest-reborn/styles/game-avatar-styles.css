@@ -1734,7 +1734,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
 /* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 78%; /* POSITION ULTRA-HAUTE pour collage parfait */
+  bottom: 82%; /* POSITION ULTRA-HAUTE MAXIMALE pour collage parfait */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -1742,7 +1742,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -10px; /* Collage ultra-maximal */
+  margin-bottom: -15px; /* Collage ultra-maximal renforcé */
 }
 
 .avatar-display-large .large-accessory {
