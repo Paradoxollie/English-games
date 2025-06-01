@@ -3761,3 +3761,27 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   0%, 100% { opacity: 0.7; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.2); }
 }
+
+/* Animation de réapparition en cas de disparition */
+@keyframes fadeInAvatar {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Sécurité: forcer la visibilité */
+.ultra-reactive-adventurer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1200 !important;
+}

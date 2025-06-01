@@ -162,9 +162,39 @@ class GameAvatarIntegration {
 
   async loadEquippedItems() {
     try {
-      // Charger l'inventaire pour récupérer les éléments équipés
+      console.log('🎒 [Avatar] Tentative chargement équipement...');
+      
+      // MÉTHODE 1: Vérifier dans les données utilisateur actuelles
+      if (this.currentUser && this.currentUser.avatar) {
+        console.log('👤 [Avatar] Avatar existant dans currentUser:', this.currentUser.avatar);
+        
+        // Si l'avatar a des données, les garder
+        if (this.currentUser.avatar.head || this.currentUser.avatar.body || this.currentUser.avatar.accessory) {
+          console.log('✅ [Avatar] Données avatar trouvées dans currentUser');
+          return;
+        }
+      }
+      
+      // MÉTHODE 2: Charger depuis localStorage directement
+      try {
+        const profileData = localStorage.getItem('english_quest_current_user');
+        if (profileData) {
+          const userData = JSON.parse(profileData);
+          console.log('📦 [Avatar] Données brutes localStorage:', userData);
+          
+          if (userData.avatar) {
+            console.log('🎭 [Avatar] Avatar trouvé dans localStorage:', userData.avatar);
+            this.currentUser.avatar = { ...userData.avatar };
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('⚠️ [Avatar] Erreur lecture localStorage:', e);
+      }
+      
+      // MÉTHODE 3: Service d'inventaire
       if (window.inventoryService && typeof window.inventoryService.getEquippedItems === 'function') {
-        console.log('🎒 [Avatar] Chargement inventaire équipé...');
+        console.log('🎒 [Avatar] Tentative via inventoryService...');
         const equippedItems = await window.inventoryService.getEquippedItems();
         
         if (equippedItems && Object.keys(equippedItems).length > 0) {
@@ -173,7 +203,6 @@ class GameAvatarIntegration {
           // Mettre à jour l'avatar avec les éléments équipés
           if (!this.currentUser.avatar) this.currentUser.avatar = {};
           
-          // Mapper les types d'équipement
           if (equippedItems.head) {
             this.currentUser.avatar.head = equippedItems.head;
             console.log('👤 [Avatar] Tête équipée:', equippedItems.head);
@@ -190,14 +219,62 @@ class GameAvatarIntegration {
             this.currentUser.avatar.background = equippedItems.background;
             console.log('🏞️ [Avatar] Arrière-plan équipé:', equippedItems.background);
           }
-        } else {
-          console.log('📦 [Avatar] Aucun équipement spécifique trouvé, utilisation des défauts');
+          return;
         }
-      } else {
-        console.warn('⚠️ [Avatar] Service d\'inventaire non disponible');
       }
+      
+      // MÉTHODE 4: Forcer un refresh depuis le profil
+      console.log('🔄 [Avatar] Tentative rechargement profil...');
+      await this.forceProfileReload();
+      
     } catch (error) {
       console.error('❌ [Avatar] Erreur chargement équipement:', error);
+    }
+  }
+
+  async forceProfileReload() {
+    try {
+      // Essayer de récupérer les données depuis l'API ou les services
+      if (window.authService && window.authService.currentUser) {
+        console.log('🔄 [Avatar] Rechargement via authService...');
+        const currentUser = window.authService.currentUser;
+        
+        if (currentUser.avatar) {
+          console.log('✅ [Avatar] Avatar trouvé via authService:', currentUser.avatar);
+          this.currentUser.avatar = { ...currentUser.avatar };
+          return;
+        }
+      }
+      
+      // Essayer avec les données Firebase si disponible
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+        console.log('🔄 [Avatar] Tentative Firebase...');
+        const uid = firebase.auth().currentUser.uid;
+        const db = firebase.firestore();
+        
+        try {
+          const doc = await db.collection('users').doc(uid).get();
+          if (doc.exists) {
+            const userData = doc.data();
+            console.log('📄 [Avatar] Données Firebase récupérées:', userData);
+            
+            if (userData.avatar) {
+              console.log('✅ [Avatar] Avatar trouvé dans Firebase:', userData.avatar);
+              this.currentUser.avatar = { ...userData.avatar };
+              
+              // Sauvegarder en localStorage pour la prochaine fois
+              localStorage.setItem('english_quest_current_user', JSON.stringify(this.currentUser));
+              return;
+            }
+          }
+        } catch (firebaseError) {
+          console.warn('⚠️ [Avatar] Erreur Firebase:', firebaseError);
+        }
+      }
+      
+      console.warn('⚠️ [Avatar] Impossible de recharger le profil, utilisation des défauts');
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur rechargement profil:', error);
     }
   }
 
@@ -1078,86 +1155,138 @@ class GameAvatarIntegration {
   }
 
   startUltraReactiveBehavior() {
-    console.log('🚀 Démarrage comportement ULTRA-RÉACTIF');
+    console.log('🚀 [Avatar] Démarrage comportement ultra-réactif...');
     
-    // Système ultra-réactif
+    // Configurer les réactions de jeu
     this.setupUltraGameReactions();
     
-    // Position initiale aléatoire
-    this.moveAdventurerRandomly();
-    
-    // Animation de démarrage
+    // Mouvement aléatoire intelligent
     setTimeout(() => {
       this.moveAdventurerRandomly();
-    }, 8000);
+    }, 3000);
     
-    // Animation idle continue
+    // Animation idle de base
     this.startIdleAnimation();
+    
+    // NOUVEAU: Surveillance continue de la visibilité
+    this.startVisibilityWatchdog();
+    
+    console.log('✅ [Avatar] Système ultra-réactif opérationnel');
   }
 
-  moveAdventurerRandomly() {
-    const adventurer = document.getElementById('ultra-adventurer');
-    if (!adventurer) return;
+  startVisibilityWatchdog() {
+    console.log('👁️ [Avatar] Démarrage surveillance visibilité...');
     
-    // Définir les zones sûres (où l'avatar ne gêne jamais)
-    const safeZones = this.calculateSafeZones();
-    const randomZone = safeZones[Math.floor(Math.random() * safeZones.length)];
-    
-    console.log(`🚶‍♂️ [Avatar] Mouvement vers zone sûre:`, randomZone);
-    
-    // Animation de transition fluide
-    adventurer.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    adventurer.style.top = randomZone.top;
-    adventurer.style.left = randomZone.left;
-    adventurer.style.right = 'auto';
-    adventurer.style.bottom = 'auto';
-    
-    // Déclencher réaction de mouvement
-    this.triggerAdventureReaction('moving', { zone: randomZone.name });
-    
-    // Programmer le prochain mouvement
-    setTimeout(() => {
-      this.moveAdventurerRandomly();
-    }, Math.random() * 10000 + 8000); // Entre 8-18 secondes
+    // Vérifier toutes les 5 secondes si l'avatar est visible
+    this.visibilityTimer = setInterval(() => {
+      const adventurer = document.getElementById('ultra-adventurer');
+      if (!adventurer) {
+        console.warn('⚠️ [Avatar] Avatar disparu ! Tentative de récréation...');
+        this.recreateAvatar();
+        return;
+      }
+      
+      // Vérifier si l'avatar est réellement visible
+      const rect = adventurer.getBoundingClientRect();
+      const isVisible = rect.width > 0 && rect.height > 0 && 
+                       adventurer.style.display !== 'none' &&
+                       adventurer.style.visibility !== 'hidden' &&
+                       adventurer.style.opacity !== '0';
+      
+      if (!isVisible) {
+        console.warn('⚠️ [Avatar] Avatar invisible ! Tentative de restauration...');
+        this.restoreAvatarVisibility(adventurer);
+      }
+      
+      // Vérifier la position (éviter qu'il soit hors écran)
+      if (rect.left < -100 || rect.top < -100 || 
+          rect.left > window.innerWidth || rect.top > window.innerHeight) {
+        console.warn('⚠️ [Avatar] Avatar hors écran ! Repositionnement...');
+        this.repositionAvatarSafely(adventurer);
+      }
+      
+    }, 5000);
   }
 
-  calculateSafeZones() {
-    const viewWidth = window.innerWidth;
-    const viewHeight = window.innerHeight;
-    const isMobile = viewWidth <= 768;
+  recreateAvatar() {
+    console.log('🔄 [Avatar] Recréation avatar...');
     
-    // Zones sûres qui évitent les éléments UI importants
-    const safeZones = [];
-    
-    if (isMobile) {
-      // Sur mobile, rester sur les bords pour ne pas gêner
-      safeZones.push(
-        { name: 'top-right', top: '15px', left: 'auto', right: '15px' },
-        { name: 'top-left', top: '15px', left: '15px', right: 'auto' },
-        { name: 'middle-right', top: '40%', left: 'auto', right: '10px' },
-        { name: 'bottom-right', top: 'auto', bottom: '15px', left: 'auto', right: '15px' }
-      );
-    } else {
-      // Sur desktop, plus de liberté de mouvement
-      safeZones.push(
-        { name: 'top-right', top: '20px', left: 'auto', right: '20px' },
-        { name: 'top-left', top: '20px', left: '20px', right: 'auto' },
-        { name: 'middle-right', top: '30%', left: 'auto', right: '20px' },
-        { name: 'middle-left', top: '35%', left: '20px', right: 'auto' },
-        { name: 'bottom-right', top: 'auto', bottom: '20px', left: 'auto', right: '20px' },
-        { name: 'bottom-left', top: 'auto', bottom: '20px', left: '20px', right: 'auto' },
-        { name: 'center-right', top: '50%', left: 'auto', right: '20px' }
-      );
+    // Supprimer l'ancien s'il existe
+    const oldAvatar = document.getElementById('ultra-adventurer');
+    if (oldAvatar) {
+      oldAvatar.remove();
     }
     
-    return safeZones;
+    // Recréer l'avatar
+    this.createUltraReactiveMiniAdventurer();
+    
+    // Redémarrer les observateurs
+    setTimeout(() => {
+      this.setupUltraGameObservers();
+      console.log('✅ [Avatar] Avatar recréé avec succès');
+    }, 500);
   }
 
-  startIdleAnimation() {
-    const adventurer = document.querySelector('.adventurer-avatar-ultra');
-    if (!adventurer) return;
+  restoreAvatarVisibility(adventurer) {
+    console.log('👁️ [Avatar] Restauration visibilité...');
     
-    adventurer.style.animation = 'adventurerIdle 4s ease-in-out infinite';
+    // Forcer la visibilité
+    adventurer.style.display = 'block';
+    adventurer.style.visibility = 'visible';
+    adventurer.style.opacity = '1';
+    adventurer.style.zIndex = '1200';
+    
+    // Vérifier que les classes CSS sont présentes
+    if (!adventurer.classList.contains('ultra-reactive-adventurer')) {
+      adventurer.classList.add('ultra-reactive-adventurer');
+    }
+    
+    // Animation de réapparition
+    adventurer.style.animation = 'fadeInAvatar 0.5s ease-in-out';
+    
+    console.log('✅ [Avatar] Visibilité restaurée');
+  }
+
+  repositionAvatarSafely(adventurer) {
+    console.log('📍 [Avatar] Repositionnement sécurisé...');
+    
+    // Position de secours au centre droit
+    adventurer.style.position = 'fixed';
+    adventurer.style.top = '30%';
+    adventurer.style.right = '20px';
+    adventurer.style.left = 'auto';
+    adventurer.style.bottom = 'auto';
+    adventurer.style.transform = 'none';
+    
+    // Animation de glissement vers la nouvelle position
+    adventurer.style.transition = 'all 1s ease-in-out';
+    
+    console.log('✅ [Avatar] Avatar repositionné en sécurité');
+  }
+
+  // Améliorer isGameActive pour plus de robustesse
+  isGameActive() {
+    // Vérifications multiples pour s'assurer que le jeu est actif
+    const gameArea = document.getElementById('game-area');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    
+    // Le jeu est actif si game-area est visible et welcome-screen est caché
+    const gameAreaVisible = gameArea && !gameArea.classList.contains('hidden') && 
+                           gameArea.style.display !== 'none';
+    const welcomeHidden = welcomeScreen && (welcomeScreen.classList.contains('hidden') || 
+                         welcomeScreen.style.display === 'none');
+    
+    // Vérifier aussi s'il y a une grille active
+    const wordGrid = document.getElementById('word-grid') || document.querySelector('.word-grid');
+    const hasActiveGrid = wordGrid && wordGrid.children.length > 0;
+    
+    const isActive = gameAreaVisible && welcomeHidden && hasActiveGrid;
+    
+    if (!isActive) {
+      console.log('ℹ️ [Avatar] Jeu inactif - gameArea:', gameAreaVisible, 'welcomeHidden:', welcomeHidden, 'hasGrid:', hasActiveGrid);
+    }
+    
+    return isActive;
   }
 
   setupUltraGameReactions() {
@@ -1314,78 +1443,130 @@ class GameAvatarIntegration {
   }
 
   observeLetters() {
-    // Observer chaque lettre tapée en temps réel
-    const allCells = document.querySelectorAll('.grid-cell');
-    allCells.forEach(cell => {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach(mutation => {
-          if (mutation.type === 'characterData' || mutation.type === 'childList') {
+    if (this.letterObserver) {
+      this.letterObserver.disconnect();
+    }
+
+    console.log('🔤 [Avatar] Configuration observateur lettres...');
+    
+    // Observer TOUTE la grille de jeu
+    const wordGrid = document.getElementById('word-grid') || document.querySelector('.word-grid');
+    if (!wordGrid) {
+      console.warn('⚠️ [Avatar] Grille de mots non trouvée');
+      return;
+    }
+
+    this.letterObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        if (mutation.type === 'childList') {
+          // Nouvelles cellules ajoutées
+          mutation.addedNodes.forEach(node => {
+            if (node.nodeType === 1 && node.classList.contains('grid-cell')) {
+              console.log('➕ [Avatar] Nouvelle cellule détectée');
+            }
+          });
+        }
+        
+        if (mutation.type === 'characterData' || 
+            (mutation.type === 'childList' && mutation.target.classList.contains('grid-cell'))) {
+          const cell = mutation.target.classList.contains('grid-cell') 
+            ? mutation.target 
+            : mutation.target.parentElement;
+            
+          if (cell && cell.classList.contains('grid-cell')) {
             const letter = cell.textContent.trim();
+            console.log(`📝 [Avatar] Lettre détectée: "${letter}" dans cellule`, cell);
+            
+            // Réagir à la frappe
             if (letter && letter.length === 1) {
-              console.log('🔤 [Avatar] Lettre tapée:', letter);
               this.triggerAdventureReaction('letterTyped', { letter });
             }
           }
-        });
-      });
-      
-      observer.observe(cell, {
-        childList: true,
-        characterData: true,
-        subtree: true
-      });
-    });
-    
-    // Observer aussi les changements d'attributs pour les classes (correct, present, absent)
-    allCells.forEach(cell => {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach(mutation => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            const classList = cell.classList;
-            if (classList.contains('correct')) {
-              console.log('✅ [Avatar] Lettre correcte détectée');
-              this.triggerAdventureReaction('letterCorrect', { letter: cell.textContent });
-            } else if (classList.contains('present')) {
-              console.log('🟨 [Avatar] Lettre présente détectée');
-              this.triggerAdventureReaction('letterPresent', { letter: cell.textContent });
-            } else if (classList.contains('absent')) {
-              console.log('❌ [Avatar] Lettre absente détectée');
-              this.triggerAdventureReaction('letterAbsent', { letter: cell.textContent });
+        }
+        
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const cell = mutation.target;
+          if (cell.classList.contains('grid-cell')) {
+            console.log('🎨 [Avatar] Changement classe cellule:', cell.className);
+            
+            // Détecter les changements d'état
+            if (cell.classList.contains('correct')) {
+              this.triggerAdventureReaction('letterCorrect', { 
+                letter: cell.textContent.trim() 
+              });
+            } else if (cell.classList.contains('present')) {
+              this.triggerAdventureReaction('letterPresent', { 
+                letter: cell.textContent.trim() 
+              });
+            } else if (cell.classList.contains('absent')) {
+              this.triggerAdventureReaction('letterAbsent', { 
+                letter: cell.textContent.trim() 
+              });
             }
           }
-        });
-      });
-      
-      observer.observe(cell, {
-        attributes: true,
-        attributeFilter: ['class']
+        }
       });
     });
 
-    // Observer les soumissions de mots
-    const enterKey = document.querySelector('.key-enter');
-    if (enterKey) {
-      enterKey.addEventListener('click', () => {
-        console.log('📝 [Avatar] Mot soumis via clavier virtuel');
-        this.triggerAdventureReaction('wordSubmitted', {});
-      });
-    }
+    // Observer avec options complètes
+    this.letterObserver.observe(wordGrid, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ['class'],
+      characterDataOldValue: true
+    });
+
+    // OBSERVATEUR SUPPLÉMENTAIRE: Observer les entrées clavier directement
+    this.setupKeyboardObserver();
+  }
+
+  setupKeyboardObserver() {
+    console.log('⌨️ [Avatar] Configuration observateur clavier...');
     
-    // Observer les touches physiques
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        console.log('📝 [Avatar] Mot soumis via clavier physique');
-        this.triggerAdventureReaction('wordSubmitted', {});
-      } else if (e.key.match(/^[a-zA-Z]$/)) {
-        console.log('🔤 [Avatar] Lettre tapée (physique):', e.key.toUpperCase());
-        this.triggerAdventureReaction('letterTyped', { letter: e.key.toUpperCase() });
-      } else if (e.key === 'Backspace') {
-        console.log('⌫ [Avatar] Effacement détecté');
-        this.triggerAdventureReaction('letterErased', {});
+    // Observer les événements clavier du document
+    document.addEventListener('keydown', (event) => {
+      if (!this.isGameActive()) return;
+      
+      const key = event.key.toUpperCase();
+      console.log(`⌨️ [Avatar] Touche pressée: ${key}`);
+      
+      // Lettres A-Z
+      if (key.match(/^[A-Z]$/)) {
+        this.triggerAdventureReaction('letterTyped', { letter: key, source: 'keyboard' });
+      }
+      // Enter
+      else if (key === 'ENTER') {
+        this.triggerAdventureReaction('wordSubmitted', { source: 'keyboard' });
+      }
+      // Backspace
+      else if (key === 'BACKSPACE') {
+        this.triggerAdventureReaction('letterErased', { source: 'keyboard' });
       }
     });
 
-    console.log('✅ [Avatar] Observation lettres ultra-réactive activée');
+    // Observer les clics sur le clavier virtuel
+    const keyboard = document.getElementById('keyboard') || document.querySelector('.keyboard');
+    if (keyboard) {
+      keyboard.addEventListener('click', (event) => {
+        if (!this.isGameActive()) return;
+        
+        const button = event.target.closest('.key-btn');
+        if (button) {
+          const keyText = button.textContent.trim();
+          console.log(`🖱️ [Avatar] Clic clavier virtuel: ${keyText}`);
+          
+          if (keyText.match(/^[A-Z]$/)) {
+            this.triggerAdventureReaction('letterTyped', { letter: keyText, source: 'virtual' });
+          } else if (keyText === 'ENTER') {
+            this.triggerAdventureReaction('wordSubmitted', { source: 'virtual' });
+          } else if (keyText === '⌫') {
+            this.triggerAdventureReaction('letterErased', { source: 'virtual' });
+          }
+        }
+      });
+    }
   }
 
   observePowerUps() {
@@ -1590,6 +1771,119 @@ class GameAvatarIntegration {
         effects.className = 'adventure-effects-ultra';
       }, 2500);
     }
+  }
+
+  moveAdventurerRandomly() {
+    const adventurer = document.getElementById('ultra-adventurer');
+    if (!adventurer) return;
+    
+    // Définir les zones sûres (où l'avatar ne gêne jamais)
+    const safeZones = this.calculateSafeZones();
+    const randomZone = safeZones[Math.floor(Math.random() * safeZones.length)];
+    
+    console.log(`🚶‍♂️ [Avatar] Mouvement vers zone sûre:`, randomZone);
+    
+    // Animation de transition fluide
+    adventurer.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    adventurer.style.top = randomZone.top;
+    adventurer.style.left = randomZone.left;
+    adventurer.style.right = 'auto';
+    adventurer.style.bottom = 'auto';
+    
+    // Déclencher réaction de mouvement
+    this.triggerAdventureReaction('moving', { zone: randomZone.name });
+    
+    // Programmer le prochain mouvement
+    setTimeout(() => {
+      this.moveAdventurerRandomly();
+    }, Math.random() * 10000 + 8000); // Entre 8-18 secondes
+  }
+
+  calculateSafeZones() {
+    const viewWidth = window.innerWidth;
+    const viewHeight = window.innerHeight;
+    const isMobile = viewWidth <= 768;
+    
+    // Zones sûres qui évitent les éléments UI importants
+    const safeZones = [];
+    
+    if (isMobile) {
+      // Sur mobile, rester sur les bords pour ne pas gêner
+      safeZones.push(
+        { name: 'top-right', top: '15px', left: 'auto', right: '15px' },
+        { name: 'top-left', top: '15px', left: '15px', right: 'auto' },
+        { name: 'middle-right', top: '40%', left: 'auto', right: '10px' },
+        { name: 'bottom-right', top: 'auto', bottom: '15px', left: 'auto', right: '15px' }
+      );
+    } else {
+      // Sur desktop, plus de liberté de mouvement
+      safeZones.push(
+        { name: 'top-right', top: '20px', left: 'auto', right: '20px' },
+        { name: 'top-left', top: '20px', left: '20px', right: 'auto' },
+        { name: 'middle-right', top: '30%', left: 'auto', right: '20px' },
+        { name: 'middle-left', top: '35%', left: '20px', right: 'auto' },
+        { name: 'bottom-right', top: 'auto', bottom: '20px', left: 'auto', right: '20px' },
+        { name: 'bottom-left', top: 'auto', bottom: '20px', left: '20px', right: 'auto' },
+        { name: 'center-right', top: '50%', left: 'auto', right: '20px' }
+      );
+    }
+    
+    return safeZones;
+  }
+
+  startIdleAnimation() {
+    const adventurer = document.querySelector('.adventurer-avatar-ultra');
+    if (!adventurer) return;
+    
+    adventurer.style.animation = 'adventurerIdle 4s ease-in-out infinite';
+  }
+
+  destroy() {
+    console.log('🧹 [Avatar] Destruction instance...');
+    
+    // Arrêter tous les timers
+    if (this.visibilityTimer) {
+      clearInterval(this.visibilityTimer);
+      this.visibilityTimer = null;
+    }
+    
+    if (this.movementTimer) {
+      clearInterval(this.movementTimer);
+      this.movementTimer = null;
+    }
+    
+    if (this.idleTimer) {
+      clearInterval(this.idleTimer);
+      this.idleTimer = null;
+    }
+    
+    // Arrêter tous les observateurs
+    if (this.gameObserver) {
+      this.gameObserver.disconnect();
+      this.gameObserver = null;
+    }
+    
+    if (this.letterObserver) {
+      this.letterObserver.disconnect();
+      this.letterObserver = null;
+    }
+    
+    if (this.scoreObserver) {
+      this.scoreObserver.disconnect();
+      this.scoreObserver = null;
+    }
+    
+    // Supprimer l'avatar du DOM
+    const adventurer = document.getElementById('ultra-adventurer');
+    if (adventurer) {
+      adventurer.remove();
+    }
+    
+    // Nettoyer les références
+    this.currentUser = null;
+    this.isVisible = false;
+    
+    console.log('✅ [Avatar] Instance détruite proprement');
   }
 }
 
