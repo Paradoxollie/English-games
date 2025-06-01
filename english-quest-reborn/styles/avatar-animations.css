@@ -1,0 +1,669 @@
+/**
+ * English Quest - Avatar Animations CSS
+ * Système d'animations 2.5D pour avatars
+ * Compatible avec tous les navigateurs modernes
+ */
+
+:root {
+  --animation-speed: 1;
+  --avatar-scale: 1;
+  --emotion-duration: 3s;
+  --idle-duration: 4s;
+  --particle-duration: 2s;
+}
+
+/* ===========================================
+   STRUCTURE DE BASE ET RESPONSIVE
+   =========================================== */
+
+.avatar-animated {
+  position: relative;
+  overflow: visible;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: all 0.3s ease;
+}
+
+/* Nouveau système responsive avec CSS Custom Properties */
+.avatar-container {
+  --avatar-size: clamp(180px, 15vw, 300px);
+  --head-size: calc(var(--avatar-size) * 0.6);
+  --body-size: calc(var(--avatar-size) * 0.8);
+  --accessory-size: calc(var(--avatar-size) * 0.4);
+  
+  width: var(--avatar-size);
+  height: calc(var(--avatar-size) * 1.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  border: 3px solid var(--color-primary, #2ecc71);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: visible;
+}
+
+/* Éléments de l'avatar avec positioning moderne */
+.avatar-head,
+#userAvatarHead {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--head-size);
+  height: auto;
+  object-fit: contain;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.avatar-body,
+#userAvatarBody {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--body-size);
+  height: auto;
+  object-fit: contain;
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+
+.avatar-accessory,
+#userAvatarAccessory {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: var(--accessory-size);
+  height: var(--accessory-size);
+  object-fit: contain;
+  z-index: 15;
+  transition: all 0.3s ease;
+}
+
+/* Mode mini pour les jeux */
+.avatar-mini {
+  --avatar-size: clamp(80px, 8vw, 120px);
+  
+  transform: scale(0.6);
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  padding: 10px;
+}
+
+/* ===========================================
+   ANIMATIONS IDLE (INACTIF)
+   =========================================== */
+
+/* Animation de respiration pour le corps */
+.breathing {
+  animation: breathe calc(var(--idle-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { 
+    transform: translateX(-50%) scale(1); 
+  }
+  50% { 
+    transform: translateX(-50%) scale(1.02); 
+  }
+}
+
+/* Animation de clignement */
+.blinking {
+  animation: blink 0.15s ease-in-out;
+}
+
+@keyframes blink {
+  0%, 100% { 
+    transform: translateX(-50%) scaleY(1); 
+  }
+  50% { 
+    transform: translateX(-50%) scaleY(0.1); 
+  }
+}
+
+/* Mouvements idle subtils */
+.idle-sway-left {
+  animation: swayLeft 1s ease-in-out;
+}
+
+.idle-sway-right {
+  animation: swayRight 1s ease-in-out;
+}
+
+.idle-nod {
+  animation: nod 1s ease-in-out;
+}
+
+.idle-slight-turn {
+  animation: slightTurn 1s ease-in-out;
+}
+
+@keyframes swayLeft {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(-3px) rotate(-1deg); }
+}
+
+@keyframes swayRight {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(3px) rotate(1deg); }
+}
+
+@keyframes nod {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+@keyframes slightTurn {
+  0%, 100% { transform: rotateY(0deg); }
+  50% { transform: rotateY(5deg); }
+}
+
+/* ===========================================
+   ANIMATIONS D'ÉMOTIONS
+   =========================================== */
+
+/* Joie / Bonheur */
+.emotion-happy {
+  animation: happyBounce calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out;
+}
+
+@keyframes happyBounce {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+  }
+  25%, 75% { 
+    transform: translateY(-5px) scale(1.05); 
+  }
+  50% { 
+    transform: translateY(-8px) scale(1.08); 
+  }
+}
+
+.emotion-happy .avatar-head,
+.emotion-happy #userAvatarHead {
+  animation: happyHeadBob calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out;
+}
+
+@keyframes happyHeadBob {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  25%, 75% { transform: translateX(-50%) rotate(2deg); }
+  50% { transform: translateX(-50%) rotate(-2deg); }
+}
+
+/* Excitation */
+.emotion-excited {
+  animation: excitedShake calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes excitedShake {
+  0%, 100% { transform: translateX(0) scale(1); }
+  10% { transform: translateX(-2px) scale(1.02); }
+  20% { transform: translateX(2px) scale(1.04); }
+  30% { transform: translateX(-1px) scale(1.02); }
+  40% { transform: translateX(1px) scale(1); }
+  50% { transform: translateX(-2px) scale(1.03); }
+  60% { transform: translateX(2px) scale(1.01); }
+  70% { transform: translateX(-1px) scale(1.02); }
+  80% { transform: translateX(1px) scale(1); }
+  90% { transform: translateX(-1px) scale(1.01); }
+}
+
+/* Célébration */
+.emotion-celebrating {
+  animation: celebrate calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out;
+}
+
+@keyframes celebrate {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg) scale(1); 
+  }
+  10% { 
+    transform: translateY(-10px) rotate(5deg) scale(1.1); 
+  }
+  20% { 
+    transform: translateY(-5px) rotate(-3deg) scale(1.05); 
+  }
+  30% { 
+    transform: translateY(-12px) rotate(4deg) scale(1.12); 
+  }
+  40% { 
+    transform: translateY(-3px) rotate(-2deg) scale(1.03); 
+  }
+  50% { 
+    transform: translateY(-15px) rotate(6deg) scale(1.15); 
+  }
+  60% { 
+    transform: translateY(-8px) rotate(-4deg) scale(1.08); 
+  }
+  70% { 
+    transform: translateY(-10px) rotate(3deg) scale(1.1); 
+  }
+  80% { 
+    transform: translateY(-5px) rotate(-1deg) scale(1.05); 
+  }
+  90% { 
+    transform: translateY(-3px) rotate(1deg) scale(1.03); 
+  }
+}
+
+/* Réflexion */
+.emotion-thinking {
+  animation: thinking calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes thinking {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) rotate(-1deg); }
+  75% { transform: translateX(2px) rotate(1deg); }
+}
+
+.emotion-thinking .avatar-head,
+.emotion-thinking #userAvatarHead {
+  animation: thinkingHead calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes thinkingHead {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(-50%) rotate(5deg); }
+}
+
+/* Surprise */
+.emotion-surprised {
+  animation: surprised calc(var(--emotion-duration) * var(--animation-speed)) ease-out;
+}
+
+@keyframes surprised {
+  0% { transform: scale(1); }
+  10% { transform: scale(1.2) translateY(-10px); }
+  30% { transform: scale(0.95) translateY(2px); }
+  50% { transform: scale(1.05) translateY(-5px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+/* Tristesse */
+.emotion-sad {
+  animation: sad calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out;
+}
+
+@keyframes sad {
+  0%, 100% { 
+    transform: translateY(0) scale(1); 
+    filter: brightness(1);
+  }
+  50% { 
+    transform: translateY(5px) scale(0.98); 
+    filter: brightness(0.8);
+  }
+}
+
+.emotion-sad .avatar-head,
+.emotion-sad #userAvatarHead {
+  animation: sadHead calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out;
+}
+
+@keyframes sadHead {
+  0%, 100% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(-50%) rotate(-3deg); }
+}
+
+/* Confusion */
+.emotion-confused {
+  animation: confused calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes confused {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(3deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+/* Amour */
+.emotion-love {
+  animation: love calc(var(--emotion-duration) * var(--animation-speed)) ease-in-out infinite;
+}
+
+@keyframes love {
+  0%, 100% { 
+    transform: scale(1); 
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  50% { 
+    transform: scale(1.05); 
+    filter: hue-rotate(10deg) brightness(1.1);
+  }
+}
+
+/* ===========================================
+   SYSTÈME D'ÉMOTIONS - OVERLAY
+   =========================================== */
+
+.avatar-emotion-overlay {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.emotion-bubble {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--color-primary, #2ecc71);
+  opacity: 0;
+  transform: translateY(10px) scale(0.8);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.emotion-bubble.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: bubblePop 0.5s ease-out;
+}
+
+.emotion-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--color-primary, #2ecc71);
+}
+
+@keyframes bubblePop {
+  0% { transform: translateY(10px) scale(0.5); }
+  50% { transform: translateY(-5px) scale(1.1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.emotion-icon {
+  font-size: 1.2rem;
+  display: inline-block;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Étincelles d'émotion */
+.emotion-sparkles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--color-primary, #2ecc71);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.emotion-happy .sparkle,
+.emotion-celebrating .sparkle,
+.emotion-excited .sparkle {
+  animation: sparkleAnimation 1.5s ease-out infinite;
+}
+
+.sparkle:nth-child(1) { 
+  top: 0; 
+  left: 50%; 
+  animation-delay: 0s; 
+}
+.sparkle:nth-child(2) { 
+  top: 50%; 
+  right: 0; 
+  animation-delay: 0.5s; 
+}
+.sparkle:nth-child(3) { 
+  bottom: 0; 
+  left: 25%; 
+  animation-delay: 1s; 
+}
+
+@keyframes sparkleAnimation {
+  0% { 
+    opacity: 0; 
+    transform: scale(0) translateY(0); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1) translateY(-10px); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(0) translateY(-20px); 
+  }
+}
+
+/* ===========================================
+   SYSTÈME DE PARTICULES
+   =========================================== */
+
+.avatar-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  overflow: visible;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--particle-color, #FFD700);
+  opacity: 0;
+  animation: particleFloat calc(var(--particle-duration) * var(--animation-speed)) ease-out forwards;
+  transform: translate(var(--start-x, 0), var(--start-y, 0));
+}
+
+/* Types de particules */
+.particle-hearts::before {
+  content: '💖';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  font-size: 8px;
+  background: none;
+}
+
+.particle-stars::before {
+  content: '⭐';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  font-size: 8px;
+  background: none;
+}
+
+.particle-confetti {
+  width: 8px;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(45deg, 
+    var(--particle-color, #FFD700), 
+    rgba(255, 215, 0, 0.5)
+  );
+}
+
+.particle-bubbles {
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 0.3), 
+    var(--particle-color, #95E1D3)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 0;
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(var(--start-x, 0) + var(--end-x, 0px)), 
+      calc(var(--start-y, 0) + var(--end-y, -50px))
+    ) scale(0.5);
+  }
+}
+
+/* ===========================================
+   ÉTATS SPÉCIAUX
+   =========================================== */
+
+.avatar-paused {
+  animation-play-state: paused;
+}
+
+.avatar-paused * {
+  animation-play-state: paused;
+}
+
+/* Effet hover sur l'avatar complet */
+.avatar-animated:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* ===========================================
+   RESPONSIVE DESIGN
+   =========================================== */
+
+/* Tablettes */
+@media (max-width: 1024px) {
+  .avatar-container {
+    --avatar-size: clamp(150px, 12vw, 250px);
+  }
+  
+  .avatar-mini {
+    --avatar-size: clamp(70px, 7vw, 100px);
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 768px) {
+  .avatar-container {
+    --avatar-size: clamp(120px, 20vw, 200px);
+    margin-bottom: 1rem;
+  }
+  
+  .emotion-bubble {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+  
+  .avatar-mini {
+    --avatar-size: clamp(60px, 10vw, 80px);
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* Mobile Landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+  .avatar-container {
+    --avatar-size: clamp(100px, 15vh, 150px);
+  }
+  
+  .avatar-mini {
+    --avatar-size: clamp(50px, 8vh, 70px);
+  }
+}
+
+/* Très petits écrans */
+@media (max-width: 480px) {
+  .avatar-container {
+    --avatar-size: clamp(100px, 25vw, 160px);
+  }
+  
+  .emotion-bubble {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+  
+  .avatar-mini {
+    --avatar-size: clamp(50px, 12vw, 70px);
+  }
+}
+
+/* ===========================================
+   OPTIMISATIONS PERFORMANCES
+   =========================================== */
+
+/* Hardware acceleration pour tous les éléments animés */
+.avatar-animated,
+.avatar-animated * {
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Reduced motion pour l'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .avatar-animated,
+  .avatar-animated * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===========================================
+   DEBUG MODE (optionnel)
+   =========================================== */
+
+.avatar-debug .avatar-container {
+  border: 2px dashed #ff0000;
+}
+
+.avatar-debug .avatar-head,
+.avatar-debug #userAvatarHead {
+  border: 1px solid #00ff00;
+}
+
+.avatar-debug .avatar-body,
+.avatar-debug #userAvatarBody {
+  border: 1px solid #0000ff;
+}
+
+.avatar-debug .avatar-accessory,
+.avatar-debug #userAvatarAccessory {
+  border: 1px solid #ffff00;
+} 
