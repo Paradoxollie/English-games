@@ -1734,7 +1734,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
 /* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 90%; /* POSITION ULTRA-HAUTE MAXIMALE pour collage parfait - MÊME VALEUR SYNCHRONISÉE */
+  bottom: 90%; /* POSITION ULTRA-HAUTE pour collage parfait */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -1742,7 +1742,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -20px; /* Collage ultra-maximal renforcé - MÊME VALEUR SYNCHRONISÉE */
+  margin-bottom: -20px; /* Collage ultra-maximal renforcé - 3ème définition SYNCHRONISÉE */
 }
 
 .avatar-display-large .large-accessory {
@@ -3077,7 +3077,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
 /* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 73%; /* POSITION ULTRA-HAUTE pour collage parfait */
+  bottom: 90%; /* POSITION ULTRA-HAUTE pour collage parfait */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -3085,7 +3085,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -6px; /* Collage maximal */
+  margin-bottom: -20px; /* Collage ultra-maximal renforcé - 3ème définition SYNCHRONISÉE */
 }
 
 /* Accessoire VISIBLE et bien positionné */
