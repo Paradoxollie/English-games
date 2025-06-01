@@ -3785,3 +3785,35 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   opacity: 1 !important;
   z-index: 1200 !important;
 }
+
+/* Animation d'alerte de visibilité */
+@keyframes visibilityAlert {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+    border-color: #ff0000;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    border-color: #00ff00;
+    box-shadow: 0 0 20px #00ff00;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+    border-color: #00ff00;
+  }
+}
+
+/* Sécurité: forcer la visibilité - VERSION RENFORCÉE */
+.ultra-reactive-adventurer {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1200 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  min-width: 80px !important;
+  min-height: 80px !important;
+}
