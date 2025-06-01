@@ -116,7 +116,7 @@ class GameAvatarIntegration {
     try {
       console.log('🔍 [Avatar] Chargement données utilisateur...');
       
-      // Système de chargement multi-sources (comme auth-header.js)
+      // Système de chargement multi-sources amélioré
       const sources = [
         () => localStorage.getItem('english_quest_current_user'),
         () => localStorage.getItem('currentUser'),
@@ -136,9 +136,12 @@ class GameAvatarIntegration {
             
             console.log('✅ [Avatar] Données utilisateur brutes:', this.currentUser);
             
+            // Charger l'équipement actuel depuis l'inventaire
+            await this.loadEquippedItems();
+            
             // Valider et normaliser les données avatar
             this.normalizeAvatarData();
-            console.log('✅ [Avatar] Avatar normalisé:', this.currentUser.avatar);
+            console.log('✅ [Avatar] Avatar final:', this.currentUser.avatar);
             console.log('✅ [Avatar] Utilisateur chargé:', this.currentUser.username || 'Utilisateur');
             return;
           }
@@ -154,6 +157,47 @@ class GameAvatarIntegration {
     } catch (error) {
       console.error('❌ [Avatar] Erreur chargement utilisateur:', error);
       this.createDemoUser();
+    }
+  }
+
+  async loadEquippedItems() {
+    try {
+      // Charger l'inventaire pour récupérer les éléments équipés
+      if (window.inventoryService && typeof window.inventoryService.getEquippedItems === 'function') {
+        console.log('🎒 [Avatar] Chargement inventaire équipé...');
+        const equippedItems = await window.inventoryService.getEquippedItems();
+        
+        if (equippedItems && Object.keys(equippedItems).length > 0) {
+          console.log('✅ [Avatar] Équipement trouvé:', equippedItems);
+          
+          // Mettre à jour l'avatar avec les éléments équipés
+          if (!this.currentUser.avatar) this.currentUser.avatar = {};
+          
+          // Mapper les types d'équipement
+          if (equippedItems.head) {
+            this.currentUser.avatar.head = equippedItems.head;
+            console.log('👤 [Avatar] Tête équipée:', equippedItems.head);
+          }
+          if (equippedItems.body) {
+            this.currentUser.avatar.body = equippedItems.body;
+            console.log('👕 [Avatar] Corps équipé:', equippedItems.body);
+          }
+          if (equippedItems.accessory) {
+            this.currentUser.avatar.accessory = equippedItems.accessory;
+            console.log('🎩 [Avatar] Accessoire équipé:', equippedItems.accessory);
+          }
+          if (equippedItems.background) {
+            this.currentUser.avatar.background = equippedItems.background;
+            console.log('🏞️ [Avatar] Arrière-plan équipé:', equippedItems.background);
+          }
+        } else {
+          console.log('📦 [Avatar] Aucun équipement spécifique trouvé, utilisation des défauts');
+        }
+      } else {
+        console.warn('⚠️ [Avatar] Service d\'inventaire non disponible');
+      }
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur chargement équipement:', error);
     }
   }
 
@@ -1052,36 +1096,61 @@ class GameAvatarIntegration {
   }
 
   moveAdventurerRandomly() {
-    const adventurer = document.querySelector('.ultra-reactive-adventurer');
+    const adventurer = document.getElementById('ultra-adventurer');
     if (!adventurer) return;
     
-    // Positions variées mais toujours visibles
-    const positions = [
-      { top: '10%', left: '8%' },
-      { top: '15%', right: '8%' },
-      { top: '25%', left: '5%' },
-      { top: '35%', right: '5%' },
-      { bottom: '20%', left: '6%' },
-      { bottom: '15%', right: '6%' },
-      { top: '50%', left: '3%' },
-      { top: '45%', right: '3%' }
-    ];
+    // Définir les zones sûres (où l'avatar ne gêne jamais)
+    const safeZones = this.calculateSafeZones();
+    const randomZone = safeZones[Math.floor(Math.random() * safeZones.length)];
     
-    const randomPos = positions[Math.floor(Math.random() * positions.length)];
+    console.log(`🚶‍♂️ [Avatar] Mouvement vers zone sûre:`, randomZone);
     
-    adventurer.style.transition = 'all 3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    
-    // Reset toutes les positions
-    adventurer.style.top = 'auto';
-    adventurer.style.left = 'auto';
+    // Animation de transition fluide
+    adventurer.style.transition = 'all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    adventurer.style.top = randomZone.top;
+    adventurer.style.left = randomZone.left;
     adventurer.style.right = 'auto';
     adventurer.style.bottom = 'auto';
     
-    // Appliquer la nouvelle position
-    Object.assign(adventurer.style, randomPos);
+    // Déclencher réaction de mouvement
+    this.triggerAdventureReaction('moving', { zone: randomZone.name });
     
-    // Animation de déplacement
-    this.triggerAdventureReaction('moving', { destination: randomPos });
+    // Programmer le prochain mouvement
+    setTimeout(() => {
+      this.moveAdventurerRandomly();
+    }, Math.random() * 10000 + 8000); // Entre 8-18 secondes
+  }
+
+  calculateSafeZones() {
+    const viewWidth = window.innerWidth;
+    const viewHeight = window.innerHeight;
+    const isMobile = viewWidth <= 768;
+    
+    // Zones sûres qui évitent les éléments UI importants
+    const safeZones = [];
+    
+    if (isMobile) {
+      // Sur mobile, rester sur les bords pour ne pas gêner
+      safeZones.push(
+        { name: 'top-right', top: '15px', left: 'auto', right: '15px' },
+        { name: 'top-left', top: '15px', left: '15px', right: 'auto' },
+        { name: 'middle-right', top: '40%', left: 'auto', right: '10px' },
+        { name: 'bottom-right', top: 'auto', bottom: '15px', left: 'auto', right: '15px' }
+      );
+    } else {
+      // Sur desktop, plus de liberté de mouvement
+      safeZones.push(
+        { name: 'top-right', top: '20px', left: 'auto', right: '20px' },
+        { name: 'top-left', top: '20px', left: '20px', right: 'auto' },
+        { name: 'middle-right', top: '30%', left: 'auto', right: '20px' },
+        { name: 'middle-left', top: '35%', left: '20px', right: 'auto' },
+        { name: 'bottom-right', top: 'auto', bottom: '20px', left: 'auto', right: '20px' },
+        { name: 'bottom-left', top: 'auto', bottom: '20px', left: '20px', right: 'auto' },
+        { name: 'center-right', top: '50%', left: 'auto', right: '20px' }
+      );
+    }
+    
+    return safeZones;
   }
 
   startIdleAnimation() {
@@ -1140,7 +1209,7 @@ class GameAvatarIntegration {
       const scoreDiff = newScore - this.previousScore;
       
       if (scoreDiff > 0) {
-        this.triggerAdventureReaction('score_gain', { 
+        this.triggerAdventureReaction('scoreSmallGain', { 
           amount: scoreDiff, 
           total: newScore,
           isSmall: scoreDiff < 20,
@@ -1166,13 +1235,13 @@ class GameAvatarIntegration {
       const newCombo = parseInt(comboText.replace('x', '')) || 1;
       
       if (newCombo > this.previousCombo) {
-        this.triggerAdventureReaction('combo_increase', { 
+        this.triggerAdventureReaction('combo', { 
           combo: newCombo,
           isStreak: newCombo >= 3,
           isFire: newCombo >= 5
         });
       } else if (newCombo < this.previousCombo) {
-        this.triggerAdventureReaction('combo_broken', { previousCombo: this.previousCombo });
+        this.triggerAdventureReaction('comboBroken', { previousCombo: this.previousCombo });
       }
       
       this.previousCombo = newCombo;
@@ -1189,9 +1258,9 @@ class GameAvatarIntegration {
       const timeLeft = parseInt(timeDisplay.textContent) || 0;
       
       if (timeLeft <= 10 && timeLeft > 0) {
-        this.triggerAdventureReaction('time_critical', { timeLeft });
+        this.triggerAdventureReaction('timeRunningOut', { timeLeft });
       } else if (timeLeft <= 30 && timeLeft > 10) {
-        this.triggerAdventureReaction('time_low', { timeLeft });
+        this.triggerAdventureReaction('timeLow', { timeLeft });
       }
     });
     
@@ -1207,9 +1276,9 @@ class GameAvatarIntegration {
       const [current, max] = attemptsText.split('/').map(n => parseInt(n));
       
       if (current >= max - 1) {
-        this.triggerAdventureReaction('last_chance', { current, max });
+        this.triggerAdventureReaction('attemptFailed', { current, max });
       } else if (current >= max - 2) {
-        this.triggerAdventureReaction('pressure_mounting', { current, max });
+        this.triggerAdventureReaction('pressureMounting', { current, max });
       }
     });
     
@@ -1229,11 +1298,11 @@ class GameAvatarIntegration {
               } else if (message.includes('écoulé') || message.includes('perdu')) {
                 this.triggerAdventureReaction('defeat', { message });
               } else if (message.includes('invalide')) {
-                this.triggerAdventureReaction('wrong_word', { message });
+                this.triggerAdventureReaction('wrongWord', { message });
               } else if (message.includes('incomplet')) {
                 this.triggerAdventureReaction('incomplete', { message });
               } else if (message.includes('nouveau mot')) {
-                this.triggerAdventureReaction('new_word', { message });
+                this.triggerAdventureReaction('newWord', { message });
               }
             }
           });
@@ -1323,7 +1392,7 @@ class GameAvatarIntegration {
     document.querySelectorAll('.power-up').forEach(powerUp => {
       powerUp.addEventListener('click', () => {
         const type = powerUp.dataset.type;
-        this.triggerAdventureReaction('powerup_used', { type });
+        this.triggerAdventureReaction('powerUpUsed', { type });
       });
     });
   }
@@ -1336,7 +1405,7 @@ class GameAvatarIntegration {
     if (gameArea && welcomeScreen) {
       const stateObserver = new MutationObserver(() => {
         if (!gameArea.classList.contains('hidden')) {
-          this.triggerAdventureReaction('game_started', {});
+          this.triggerAdventureReaction('gameStart', {});
         }
       });
       
@@ -1345,312 +1414,182 @@ class GameAvatarIntegration {
     }
   }
 
-  triggerAdventureReaction(event, data = {}) {
-    const adventurer = document.getElementById('ultra-adventurer');
-    if (!adventurer) return;
+  triggerAdventureReaction(eventType, data = {}) {
+    if (!this.isVisible) return;
     
-    const effects = adventurer.querySelector('.adventure-effects-ultra');
-    const speech = adventurer.querySelector('.adventure-speech-bubble');
-    const aura = adventurer.querySelector('.adventure-aura');
-    const avatar = adventurer.querySelector('.avatar-display-ultra');
-    
-    if (!effects || !speech || !aura || !avatar) return;
-    
-    console.log(`🎭 [Avatar] Réaction: ${event}`, data);
-    
-    // Dispatcher les réactions selon l'événement
-    switch (event) {
-      case 'scoreGain':
-        this.reactToScoreGain(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'combo':
-        this.reactToCombo(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'comboBroken':
-        this.reactToComboBroken(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'timeCritical':
-        this.reactToTimeCritical(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'timeLow':
-        this.reactToTimeLow(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'victory':
-        this.reactToVictory(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'defeat':
-        this.reactToDefeat(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'letterTyped':
-        this.reactToLetterTyped(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'letterCorrect':
-        this.reactToLetterCorrect(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'letterPresent':
-        this.reactToLetterPresent(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'letterAbsent':
-        this.reactToLetterAbsent(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'letterErased':
-        this.reactToLetterErased(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'wordSubmitted':
-        this.reactToWordSubmitted(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'powerUp':
-        this.reactToPowerUp(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'moving':
-        this.reactToMoving(data, effects, speech, aura, adventurer, avatar);
-        break;
-      case 'gameStart':
-        this.reactToGameStart(data, effects, speech, aura, adventurer, avatar);
-        break;
-      default:
-        console.log(`🤷‍♂️ [Avatar] Réaction inconnue: ${event}`);
-    }
-  }
-
-  reactToScoreGain(data, effects, speech, aura, adventurer, avatar) {
-    if (data.isBig) {
-      effects.innerHTML = '';
-      speech.textContent = `ÉNORME ! +${data.amount}!`;
-      aura.className = 'adventure-aura explosion-aura';
-      avatar.style.animation = 'adventurerBigWin 2s ease-in-out';
-      this.showSpeech(speech, 3000);
-      
-      adventurer.style.animation = 'adventurerBigCelebration 2s ease-in-out';
-    } else if (data.isMedium) {
-      effects.innerHTML = '';
-      speech.textContent = `Super ! +${data.amount}`;
-      aura.className = 'adventure-aura success-aura';
-      avatar.style.animation = 'adventurerMediumWin 1.5s ease-in-out';
-      this.showSpeech(speech, 2000);
-      
-      adventurer.style.animation = 'adventurerSatisfactionJump 1.5s ease-in-out';
-    } else {
-      effects.innerHTML = '';
-      aura.className = 'adventure-aura small-success-aura';
-      avatar.style.animation = 'adventurerSmallWin 1s ease-in-out';
-      
-      adventurer.style.animation = 'adventurerSmallHop 1s ease-in-out';
-    }
-    
-    this.clearEffectsAfter(effects, aura, avatar, 3000);
-  }
-
-  reactToCombo(data, effects, speech, aura, adventurer, avatar) {
-    if (data.isFire) {
-      effects.innerHTML = '';
-      speech.textContent = `EN FEU ! x${data.combo}`;
-      aura.className = 'adventure-aura fire-aura';
-      avatar.style.animation = 'adventurerOnFire 2s ease-in-out infinite';
-      this.showSpeech(speech, 4000);
-      
-      adventurer.style.animation = 'adventurerSpinFire 2s ease-in-out infinite';
-    } else if (data.isStreak) {
-      effects.innerHTML = '';
-      speech.textContent = `Série ! x${data.combo}`;
-      aura.className = 'adventure-aura streak-aura';
-      avatar.style.animation = 'adventurerStreak 1.5s ease-in-out';
-      this.showSpeech(speech, 2500);
-      
-      adventurer.style.animation = 'adventurerStreakSway 1.5s ease-in-out';
-    }
-    
-    this.clearEffectsAfter(effects, aura, avatar, 3000);
-  }
-
-  reactToComboBroken(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    speech.textContent = 'Aïe... série cassée';
-    aura.className = 'adventure-aura broken-aura';
-    avatar.style.animation = 'adventurerSad 2s ease-in-out';
-    this.showSpeech(speech, 2000);
-    
-    adventurer.style.animation = 'adventurerDeflate 2s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 2500);
-  }
-
-  reactToTimeCritical(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    speech.textContent = `VITE ! ${data.timeLeft}s !`;
-    aura.className = 'adventure-aura panic-aura';
-    avatar.style.animation = 'adventurerPanic 0.5s ease-in-out infinite';
-    this.showSpeech(speech, 1500);
-    
-    adventurer.style.animation = 'adventurerFrantic 0.3s ease-in-out infinite';
-    
-    setTimeout(() => {
-      if (data.timeLeft <= 0) {
-        this.clearEffectsAfter(effects, aura, avatar, 100);
-      }
-    }, 1000);
-  }
-
-  reactToTimeLow(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura warning-aura';
-    avatar.style.animation = 'adventurerWorried 1s ease-in-out';
-    
-    adventurer.style.animation = 'adventurerNervous 1s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 2000);
-  }
-
-  reactToVictory(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    speech.textContent = 'VICTOIRE !!!';
-    aura.className = 'adventure-aura victory-aura';
-    avatar.style.animation = 'adventurerVictoryDance 3s ease-in-out';
-    this.showSpeech(speech, 4000);
-    
-    adventurer.style.animation = 'adventurerVictoryExplosion 3s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 5000);
-  }
-
-  reactToDefeat(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    speech.textContent = 'On recommence !';
-    aura.className = 'adventure-aura defeat-aura';
-    avatar.style.animation = 'adventurerDefeated 2s ease-in-out';
-    this.showSpeech(speech, 3000);
-    
-    adventurer.style.animation = 'adventurerCollapse 2s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 3500);
-  }
-
-  reactToLetterTyped(data, effects, speech, aura, adventurer, avatar) {
-    // Réaction subtile à chaque lettre tapée
-    avatar.style.animation = 'adventurerType 0.3s ease-in-out';
-    adventurer.style.animation = 'adventurerFocus 0.3s ease-in-out';
-    
-    setTimeout(() => {
-      avatar.style.animation = 'adventurerIdle 4s ease-in-out infinite';
-      adventurer.style.animation = '';
-    }, 300);
-  }
-
-  reactToLetterCorrect(data, effects, speech, aura, adventurer, avatar) {
-    // Réaction positive pour lettre correcte
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura success-aura';
-    avatar.style.animation = 'adventurerSmallWin 0.8s ease-in-out';
-    adventurer.style.animation = 'adventurerSmallHop 0.8s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 1000);
-  }
-
-  reactToLetterPresent(data, effects, speech, aura, adventurer, avatar) {
-    // Réaction modérée pour lettre présente
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura warning-aura';
-    avatar.style.animation = 'adventurerThinking 0.6s ease-in-out';
-    adventurer.style.animation = 'adventurerDeepThought 0.6s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 800);
-  }
-
-  reactToLetterAbsent(data, effects, speech, aura, adventurer, avatar) {
-    // Réaction négative pour lettre absente
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura broken-aura';
-    avatar.style.animation = 'adventurerSad 0.5s ease-in-out';
-    adventurer.style.animation = 'adventurerDeflate 0.5s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 700);
-  }
-
-  reactToLetterErased(data, effects, speech, aura, adventurer, avatar) {
-    // Réaction d'effacement
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura thinking-aura';
-    avatar.style.animation = 'adventurerNervous 0.4s ease-in-out';
-    adventurer.style.animation = 'adventurerNervous 0.4s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 500);
-  }
-
-  reactToWordSubmitted(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    aura.className = 'adventure-aura thinking-aura';
-    avatar.style.animation = 'adventurerThinking 1s ease-in-out';
-    
-    adventurer.style.animation = 'adventurerDeepThought 1s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 1500);
-  }
-
-  reactToPowerUp(data, effects, speech, aura, adventurer, avatar) {
-    const powerUpReactions = {
-      hint: { 
-        text: 'Indice !', 
-        animation: 'adventurerEureka',
-        containerAnim: 'adventurerLightbulb'
+    const reactions = {
+      // ====== ÉVÉNEMENTS POSITIFS ======
+      scoreSmallGain: {
+        animations: ['adventurerJumpJoy', 'adventurerCelebration'],
+        effects: ['sparkles', 'stars'],
+        category: 'positive',
+        speechBubbles: ['Nice!', 'Bien joué!', 'Super!', 'Excellent!'],
+        aura: { color: 'success', duration: 2000 }
       },
-      time: { 
-        text: '+30s !', 
-        animation: 'adventurerTimeBoost',
-        containerAnim: 'adventurerTimeWarp'
+      
+      scoreMediumGain: {
+        animations: ['adventurerSpinCelebration', 'adventurerEnergeticSway'],
+        effects: ['lightning', 'stars'],
+        category: 'positive',
+        speechBubbles: ['Fantastique!', 'Incroyable!', 'Bravo!', 'Wow!'],
+        aura: { color: 'success', duration: 3000 }
       },
-      skip: { 
-        text: 'Suivant !', 
-        animation: 'adventurerSkip',
-        containerAnim: 'adventurerRush'
+      
+      scoreBigGain: {
+        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
+        effects: ['celebration', 'lightning'],
+        category: 'positive',
+        speechBubbles: ['EXCELLENT!', 'PARFAIT!', 'GÉNIE!', 'INCROYABLE!'],
+        aura: { color: 'victory', duration: 4000 }
+      },
+      
+      letterCorrect: {
+        animations: ['adventurerJumpJoy'],
+        effects: ['sparkles'],
+        category: 'positive',
+        speechBubbles: ['Correct!', 'Oui!', 'Parfait!'],
+        aura: { color: 'success', duration: 1500 }
+      },
+      
+      powerUpUsed: {
+        animations: ['adventurerMagicSpin', 'adventurerSpinCelebration'],
+        effects: ['lightning', 'stars'],
+        category: 'positive',
+        speechBubbles: ['Pouvoir activé!', 'Magic!', 'Super pouvoir!'],
+        aura: { color: 'fire', duration: 2500 }
+      },
+      
+      // ====== ÉVÉNEMENTS NÉGATIFS ======
+      timeRunningOut: {
+        animations: ['adventurerFrantic', 'adventurerPanic'],
+        effects: ['stress', 'sweat'],
+        category: 'negative',
+        speechBubbles: ['Vite!', 'Dépêche!', 'Plus de temps!', 'Panic!'],
+        aura: { color: 'panic', duration: 2000 }
+      },
+      
+      letterAbsent: {
+        animations: ['adventurerSadness', 'adventurerDeflation'],
+        effects: ['confusion', 'sweat'],
+        category: 'negative',
+        speechBubbles: ['Oups...', 'Pas ça...', 'Raté...'],
+        aura: { color: 'error', duration: 1500 }
+      },
+      
+      attemptFailed: {
+        animations: ['adventurerCollapse', 'adventurerStress'],
+        effects: ['tired', 'confusion'],
+        category: 'negative',
+        speechBubbles: ['Ah non...', 'Dommage...', 'Essaie encore!'],
+        aura: { color: 'error', duration: 2000 }
+      },
+      
+      gameOver: {
+        animations: ['adventurerCollapse', 'adventurerSadness'],
+        effects: ['tired', 'stress'],
+        category: 'negative',
+        speechBubbles: ['Game Over...', 'Recommençons!', 'Plus de chance!'],
+        aura: { color: 'error', duration: 3000 }
+      },
+      
+      // ====== ÉVÉNEMENTS NEUTRES ======
+      letterTyped: {
+        animations: ['adventurerConcentration'],
+        effects: ['thinking', 'focus'],
+        category: 'neutral',
+        speechBubbles: ['Réfléchissons...', 'Hmm...', 'Voyons...'],
+        aura: { color: 'focus', duration: 1000 }
+      },
+      
+      letterPresent: {
+        animations: ['adventurerReflection', 'adventurerConcentration'],
+        effects: ['thinking', 'focus'],
+        category: 'neutral',
+        speechBubbles: ['Presque!', 'Bonne lettre!', 'Mauvaise place!'],
+        aura: { color: 'warning', duration: 1500 }
+      },
+      
+      moving: {
+        animations: ['adventurerWalk', 'adventurerEnergeticSway'],
+        effects: ['thinking'],
+        category: 'neutral',
+        speechBubbles: ['En exploration!', 'Je bouge!', 'Nouvelle position!'],
+        aura: { color: 'focus', duration: 1000 }
       }
     };
-    
-    const powerUp = powerUpReactions[data.type] || powerUpReactions.hint;
-    
-    effects.innerHTML = '';
-    speech.textContent = powerUp.text;
-    aura.className = 'adventure-aura powerup-aura';
-    avatar.style.animation = `${powerUp.animation} 1.5s ease-in-out`;
-    adventurer.style.animation = `${powerUp.containerAnim} 1.5s ease-in-out`;
-    this.showSpeech(speech, 2000);
-    
-    this.clearEffectsAfter(effects, aura, avatar, 2500);
+
+    const reaction = reactions[eventType];
+    if (!reaction) {
+      console.warn(`⚠️ [Avatar] Réaction inconnue: ${eventType}`);
+      return;
+    }
+
+    console.log(`🎭 [Avatar] Réaction: ${eventType}`, data);
+
+    // 1. Animation corporelle
+    if (reaction.animations) {
+      const randomAnimation = reaction.animations[Math.floor(Math.random() * reaction.animations.length)];
+      this.triggerAnimation(randomAnimation, 2000);
+    }
+
+    // 2. Effet visuel
+    if (reaction.effects) {
+      const randomEffect = reaction.effects[Math.floor(Math.random() * reaction.effects.length)];
+      this.applyVisualEffect(randomEffect, reaction.category);
+    }
+
+    // 3. Bulle de dialogue
+    if (reaction.speechBubbles) {
+      const randomBubble = reaction.speechBubbles[Math.floor(Math.random() * reaction.speechBubbles.length)];
+      this.showSpeechBubble(randomBubble, 2000);
+    }
+
+    // 4. Aura colorée
+    if (reaction.aura) {
+      this.changeAura(reaction.aura.color, reaction.aura.duration);
+    }
   }
 
-  reactToMoving(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    avatar.style.animation = 'adventurerWalking 3s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 3500);
-  }
-
-  reactToGameStart(data, effects, speech, aura, adventurer, avatar) {
-    effects.innerHTML = '';
-    speech.textContent = 'C\'est parti !';
-    aura.className = 'adventure-aura start-aura';
-    avatar.style.animation = 'adventurerReady 2s ease-in-out';
-    this.showSpeech(speech, 2500);
-    
-    adventurer.style.animation = 'adventurerBattleReady 2s ease-in-out';
-    
-    this.clearEffectsAfter(effects, aura, avatar, 3000);
-  }
-
-  showSpeech(speech, duration) {
-    speech.style.display = 'block';
-    speech.style.animation = 'speechBubbleAppear 0.3s ease-out';
+  showSpeechBubble(text, duration) {
+    const speechBubble = document.getElementById('adventureSpeech');
+    speechBubble.textContent = text;
+    speechBubble.style.display = 'block';
+    speechBubble.style.animation = 'speechBubbleAppear 0.3s ease-out';
     
     setTimeout(() => {
-      speech.style.display = 'none';
+      speechBubble.style.display = 'none';
     }, duration);
   }
 
-  clearEffectsAfter(effects, aura, avatar, delay) {
+  changeAura(color, duration) {
+    const aura = document.getElementById('adventureAura');
+    aura.className = `adventure-aura ${color}-aura`;
+    
     setTimeout(() => {
-      effects.innerHTML = '';
       aura.className = 'adventure-aura';
-      avatar.style.animation = 'adventurerIdle 4s ease-in-out infinite';
-    }, delay);
+    }, duration);
+  }
+
+  triggerAnimation(animation, duration) {
+    const adventurer = document.querySelector('.adventurer-avatar-ultra');
+    if (adventurer) {
+      adventurer.style.animation = animation;
+      
+      setTimeout(() => {
+        adventurer.style.animation = '';
+      }, duration);
+    }
+  }
+
+  applyVisualEffect(effect, category) {
+    const effects = document.querySelector('.adventure-effects-ultra');
+    if (effects) {
+      effects.className = `adventure-effects-ultra ${category}-${effect}`;
+      
+      setTimeout(() => {
+        effects.className = 'adventure-effects-ultra';
+      }, 2500);
+    }
   }
 }
 

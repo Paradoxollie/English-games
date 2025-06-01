@@ -3075,7 +3075,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
 /* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 70%; /* POSITION MAXIMALE pour collage parfait */
+  bottom: 73%; /* POSITION ULTRA-HAUTE pour collage parfait */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -3083,7 +3083,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -5px; /* Collage ultra-serré */
+  margin-bottom: -6px; /* Collage maximal */
 }
 
 /* Accessoire VISIBLE et bien positionné */
@@ -3601,4 +3601,163 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   0% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0.6; transform: scale(0.9); }
   100% { opacity: 0.2; transform: scale(0.8); }
+}
+
+/* ===========================================
+   EFFETS VISUELS VARIÉS (POSITIFS/NÉGATIFS)
+   =========================================== */
+
+/* Effets positifs */
+.adventure-effects-ultra.positive-sparkles::before {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  animation: sparkleEffect 1s ease-in-out;
+  font-size: 1.2rem;
+}
+
+.adventure-effects-ultra.positive-stars::before {
+  content: '⭐';
+  position: absolute;
+  top: -15px;
+  right: -10px;
+  animation: starBurst 1.5s ease-in-out;
+  font-size: 1.4rem;
+}
+
+.adventure-effects-ultra.positive-celebration::before {
+  content: '🎉';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: celebrationPop 2s ease-in-out;
+  font-size: 1.6rem;
+}
+
+.adventure-effects-ultra.positive-lightning::before {
+  content: '⚡';
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  animation: lightningStrike 0.8s ease-in-out;
+  font-size: 1.3rem;
+}
+
+/* Effets négatifs */
+.adventure-effects-ultra.negative-sweat::before {
+  content: '💦';
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  animation: sweatDrop 1s ease-in-out;
+  font-size: 1rem;
+}
+
+.adventure-effects-ultra.negative-confusion::before {
+  content: '❓';
+  position: absolute;
+  top: -15px;
+  left: -8px;
+  animation: confusionSpin 1.2s ease-in-out;
+  font-size: 1.2rem;
+}
+
+.adventure-effects-ultra.negative-stress::before {
+  content: '😰';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: stressShake 1s ease-in-out;
+  font-size: 1.1rem;
+}
+
+.adventure-effects-ultra.negative-tired::before {
+  content: '😴';
+  position: absolute;
+  top: -12px;
+  right: -6px;
+  animation: tiredSway 1.5s ease-in-out;
+  font-size: 1.1rem;
+}
+
+/* Effets neutres/concentration */
+.adventure-effects-ultra.neutral-thinking::before {
+  content: '💭';
+  position: absolute;
+  top: -18px;
+  left: -12px;
+  animation: thinkingFloat 2s ease-in-out;
+  font-size: 1.3rem;
+}
+
+.adventure-effects-ultra.neutral-focus::before {
+  content: '🎯';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  animation: focusGlow 1s ease-in-out;
+  font-size: 1.1rem;
+}
+
+/* Animations des effets */
+@keyframes sparkleEffect {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  50% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-20px) scale(0.8); }
+}
+
+@keyframes starBurst {
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0.7) rotate(360deg); }
+}
+
+@keyframes celebrationPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(0); }
+  20% { opacity: 1; transform: translateX(-50%) scale(1.4); }
+  40% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1.3); }
+  80% { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+}
+
+@keyframes lightningStrike {
+  0%, 20%, 40%, 60%, 80%, 100% { opacity: 0; }
+  10%, 30%, 50%, 70%, 90% { opacity: 1; }
+}
+
+@keyframes sweatDrop {
+  0% { opacity: 0; transform: translateY(-5px); }
+  50% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(15px); }
+}
+
+@keyframes confusionSpin {
+  0% { opacity: 0; transform: rotate(0deg) scale(0.8); }
+  50% { opacity: 1; transform: rotate(180deg) scale(1.2); }
+  100% { opacity: 0; transform: rotate(360deg) scale(0.9); }
+}
+
+@keyframes stressShake {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  25% { transform: translateX(-50%) translateY(-3px) translateX(-2px); }
+  75% { transform: translateX(-50%) translateY(-3px) translateX(2px); }
+}
+
+@keyframes tiredSway {
+  0%, 100% { transform: rotate(0deg); opacity: 0.8; }
+  50% { transform: rotate(-5deg); opacity: 1; }
+}
+
+@keyframes thinkingFloat {
+  0%, 100% { opacity: 0.6; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-8px); }
+}
+
+@keyframes focusGlow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
