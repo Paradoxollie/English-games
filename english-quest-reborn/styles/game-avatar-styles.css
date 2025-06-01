@@ -121,7 +121,7 @@
 .mini-avatar-display .avatar-head,
 .mini-avatar-display #gameMiniAvatarHead {
   position: absolute;
-  bottom: calc(var(--body-size) * 0.70); /* AUGMENTÉ pour coller vraiment */
+  bottom: calc(var(--body-size) * 0.85); /* DRASTIQUEMENT AUGMENTÉ pour coller vraiment */
   left: 50%;
   transform: translateX(-50%);
   width: var(--head-size);
@@ -129,7 +129,7 @@
   object-fit: contain;
   z-index: 10;
   transition: all 0.3s ease;
-  margin-bottom: -2px; /* Force le collage */
+  margin-bottom: -8px; /* Force le collage renforcé */
 }
 
 /* Accessoire BIEN VISIBLE en haut à droite */
