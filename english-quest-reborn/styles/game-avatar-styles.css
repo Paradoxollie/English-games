@@ -9,9 +9,10 @@
 
 :root {
   /* Tailles mobile-first */
-  --mobile-avatar-size: min(25vw, 120px);
-  --tablet-avatar-size: min(20vw, 150px);
-  --desktop-avatar-size: min(15vw, 180px);
+  /* Avatar plus petit pour bien s'intégrer aux zones de jeu */
+  --mobile-avatar-size: min(18vw, 90px);
+  --tablet-avatar-size: min(16vw, 120px);
+  --desktop-avatar-size: min(13vw, 150px);
   
   /* Positions adaptatives */
   --mobile-top: 15px;
@@ -117,11 +118,12 @@
   transition: all 0.3s ease;
 }
 
-/* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
+/* Tête collée au corps pour un alignement précis */
 .mini-avatar-display .avatar-head,
 .mini-avatar-display #gameMiniAvatarHead {
   position: absolute;
-  bottom: calc(var(--body-size) * 0.85); /* DRASTIQUEMENT AUGMENTÉ pour coller vraiment */
+  /* Tête alignée avec le haut du corps */
+  bottom: calc(var(--body-size) * 1);
   left: 50%;
   transform: translateX(-50%);
   width: var(--head-size);
@@ -1731,10 +1733,10 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   transition: all 0.3s ease;
 }
 
-/* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
+/* Tête collée au corps pour un alignement précis */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 90%; /* POSITION ULTRA-HAUTE pour collage parfait */
+  bottom: 90%; /* Position haute pour coller la tête au corps */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -1742,7 +1744,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -20px; /* Collage ultra-maximal renforcé - 3ème définition SYNCHRONISÉE */
+  margin-bottom: -20px; /* Collage ajusté pour maintenir la jonction tête-corps */
 }
 
 .avatar-display-large .large-accessory {
@@ -3074,10 +3076,10 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   display: block !important;
 }
 
-/* Tête COLLÉE au corps - CORRECTION ULTRA PRÉCISE */
+/* Tête collée au corps pour un alignement précis */
 .avatar-head-ultra {
   position: absolute;
-  bottom: 90%; /* POSITION ULTRA-HAUTE pour collage parfait */
+  bottom: 90%; /* Position haute pour coller la tête au corps */
   left: 50%;
   transform: translateX(-50%);
   width: 55%;
@@ -3085,7 +3087,7 @@ body[data-game="speed-verb"] .mini-avatar-xp-bar .xp-fill {
   object-fit: contain;
   z-index: 10;
   display: block !important;
-  margin-bottom: -20px; /* Collage ultra-maximal renforcé - 3ème définition SYNCHRONISÉE */
+  margin-bottom: -20px; /* Collage ajusté pour maintenir la jonction tête-corps */
 }
 
 /* Accessoire VISIBLE et bien positionné */
