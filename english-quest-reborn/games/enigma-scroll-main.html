@@ -541,6 +541,12 @@
           // Le système d'avatar peut maintenant utiliser les informations de l'utilisateur
           window.enigmaAvatar.userConnected = true;
           window.enigmaAvatar.currentUser = currentUser;
+          
+          // Forcer la mise à jour des skins d'avatar
+          if (typeof window.enigmaAvatar.refreshUserSkins === 'function') {
+            window.enigmaAvatar.refreshUserSkins();
+            console.log('🔄 [Enigma Auth] Refresh des skins d\'avatar demandé');
+          }
         }
       }
       
@@ -576,6 +582,41 @@
           clearInterval(monitorAuthState);
         }, 60000);
       }
+      
+      // Ajouter une surveillance des changements de skins d'avatar
+      let lastAvatarData = null;
+      const monitorAvatarChanges = setInterval(() => {
+        try {
+          let currentAvatarData = null;
+          
+          // Récupérer les données d'avatar actuelles
+          if (typeof getCurrentUser === 'function') {
+            const user = getCurrentUser();
+            currentAvatarData = user ? user.avatar : null;
+          }
+          
+          // Vérifier si les données d'avatar ont changé
+          const avatarDataString = JSON.stringify(currentAvatarData);
+          if (lastAvatarData !== avatarDataString) {
+            console.log('🎭 [Enigma Auth] Changement de skins d\'avatar détecté');
+            lastAvatarData = avatarDataString;
+            
+            // Notifier le système d'avatar
+            if (window.enigmaAvatar && typeof window.enigmaAvatar.refreshUserSkins === 'function') {
+              window.enigmaAvatar.refreshUserSkins();
+              console.log('🔄 [Enigma Auth] Refresh des skins suite au changement');
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ [Enigma Auth] Erreur surveillance avatar:', error);
+        }
+      }, 3000);
+      
+      // Arrêter la surveillance des avatars après 2 minutes
+      setTimeout(() => {
+        clearInterval(monitorAvatarChanges);
+        console.log('🛑 [Enigma Auth] Arrêt surveillance changements avatar');
+      }, 120000);
     });
   </script>
   <script src="../scripts/game-stats-service.js"></script>
