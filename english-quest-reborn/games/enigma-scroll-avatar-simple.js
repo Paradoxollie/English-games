@@ -248,18 +248,18 @@ class EnigmaScrollAvatar {
           <!-- Corps (selon choix utilisateur) -->
           <img src="${imagePaths.body}" 
                style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: auto; z-index: 5;"
-               onerror="console.warn('Corps non trouvé:', this.src); this.src='../assets/avatars/bodies/default_boy.png';">
+               onerror="console.error('🚨 Corps non trouvé:', this.src); this.src='../assets/avatars/bodies/default_boy.png';">
           
           <!-- Tête (selon choix utilisateur) -->
           <img src="${imagePaths.head}" 
                style="position: absolute; top: 31%; left: 50%; transform: translateX(-50%); width: 50%; height: auto; z-index: 10;"
-               onerror="console.warn('Tête non trouvée:', this.src); this.src='../assets/avatars/heads/default_boy.png';">
+               onerror="console.error('🚨 Tête non trouvée:', this.src); this.src='../assets/avatars/heads/default_boy.png';">
           
           <!-- Accessoire (selon choix utilisateur - peut être un GIF) -->
           <div style="position: absolute; top: 30%; right: 15%; width: 25%; height: 25%; z-index: 15;">
             <img src="${imagePaths.accessory}" 
                  style="width: 100%; height: 100%; object-fit: contain;"
-                 onerror="console.warn('Accessoire non trouvé:', this.src); this.src='../assets/avatars/accessories/default.gif';">
+                 onerror="console.error('🚨 Accessoire non trouvé:', this.src); this.src='../assets/avatars/accessories/default.gif';">
           </div>
         </div>
         
@@ -1212,20 +1212,56 @@ class EnigmaScrollAvatar {
   getAvatarImagePaths() {
     const basePath = '../assets/avatars/';
     
-    // Corriger les noms de fichiers d'avatar pour correspondre aux fichiers réels
-    let headFile = this.userSkins.head;
-    let bodyFile = this.userSkins.body;
-    let backgroundFile = this.userSkins.background;
+    // 🔧 Fonction de mapping pour corriger les noms Firestore vers les vrais fichiers
+    const mapSkinName = (skinName, type) => {
+      // Mapping pour les têtes
+      if (type === 'head') {
+        if (skinName === 'bear_head') return 'bear';
+        if (skinName === 'default_girl_head') return 'default_girl';
+        if (skinName === 'default_boy_head') return 'default_boy';
+        // Enlever le suffixe _head s'il existe
+        return skinName.replace('_head', '');
+      }
+      
+      // Mapping pour les corps
+      if (type === 'body') {
+        if (skinName === 'bear_body') return 'bear';
+        if (skinName === 'default_girl_body') return 'default_girl';
+        if (skinName === 'default_boy_body') return 'default_boy';
+        // Enlever le suffixe _body s'il existe
+        return skinName.replace('_body', '');
+      }
+      
+      // Mapping pour les backgrounds
+      if (type === 'background') {
+        if (skinName === 'default_background') return 'default';
+        // Enlever le suffixe _background s'il existe
+        return skinName.replace('_background', '');
+      }
+      
+      // Mapping pour les accessoires (sans changement généralement)
+      if (type === 'accessory') {
+        if (skinName === 'none' || !skinName) return 'default';
+        return skinName;
+      }
+      
+      return skinName;
+    };
     
-    // Mapping des noms dans Firestore vers les vrais fichiers
-    if (headFile === 'bear_head') headFile = 'bear';
-    if (bodyFile === 'bear_body') bodyFile = 'bear';
-    if (backgroundFile === 'default_background') backgroundFile = 'default';
+    const headFile = mapSkinName(this.userSkins.head, 'head');
+    const bodyFile = mapSkinName(this.userSkins.body, 'body');
+    const backgroundFile = mapSkinName(this.userSkins.background, 'background');
+    const accessoryFile = mapSkinName(this.userSkins.accessory, 'accessory');
+    
+    console.log('🔧 [EnigmaAvatar] Mapping des skins:', {
+      original: this.userSkins,
+      mapped: { headFile, bodyFile, backgroundFile, accessoryFile }
+    });
     
     return {
       head: `${basePath}heads/${headFile}.png`,
       body: `${basePath}bodies/${bodyFile}.png`,
-      accessory: `${basePath}accessories/${this.userSkins.accessory}.gif`, // Note: .gif pour l'accessoire
+      accessory: `${basePath}accessories/${accessoryFile}.gif`,
       background: `${basePath}backgrounds/${backgroundFile}.png`
     };
   }
