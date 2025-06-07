@@ -448,9 +448,29 @@
   </style>
 
   <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  
+  <!-- Configuration Firebase -->
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
+      authDomain: "english-games-41017.firebaseapp.com",
+      projectId: "english-games-41017",
+      storageBucket: "english-games-41017.appspot.com",
+      messagingSenderId: "1062036556501",
+      appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
+    };
+
+    // Initialiser Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      console.log('✅ Firebase initialisé pour Enigma Scroll');
+    }
+  </script>
+  
   <script src="../src/js/firebase-init.js"></script>
   <script src="../src/js/firebase-service-adapter.js"></script>
   

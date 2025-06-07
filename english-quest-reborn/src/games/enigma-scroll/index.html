@@ -402,38 +402,11 @@
   <div id="forest-mist" class="forest-mist"></div>
   <div id="floating-leaves" class="floating-leaves"></div>
 
-  <!-- Configuration Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <script>
-    // Configuration Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
-        authDomain: "english-games-41017.firebaseapp.com",
-        projectId: "english-games-41017",
-        storageBucket: "english-games-41017.appspot.com",
-        messagingSenderId: "1062036556501",
-        appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
-    };
-
-    // Initialiser Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        console.log('✅ Firebase initialisé pour Enigma Scroll');
-    }
-  </script>
-
-  <!-- Scripts d'authentification -->
-  <script type="module" src="../../../scripts/auth-service.js"></script>
-  <script type="module" src="../../../scripts/auth-header.js"></script>
-  <script src="../../../scripts/game-stats-service.js"></script>
-  <script src="../../../scripts/simple-rating-system.js"></script>
-  <script src="../../../scripts/update-rating-system.js"></script>
-  
-  <!-- Gestion universelle du menu mobile et synchronisation auth -->
-  <script src="../../../scripts/universal-mobile-auth.js" defer></script>
+  <!-- Services et utilitaires -->
+  <script src="../../core/services/auth.service.js"></script>
+  <script src="../../core/services/user.service.js"></script>
+  <script src="../../core/services/leaderboard.service.js"></script>
+  <script src="../../js/firebase-connection-state.js"></script>
 
   <!-- Scripts Firebase pour le jeu -->
   <script src="../../js/enigma-scroll/firebase-helpers.js"></script>
