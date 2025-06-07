@@ -475,8 +475,109 @@
   <script src="../src/js/firebase-service-adapter.js"></script>
   
   <!-- Scripts d'authentification -->
-  <script type="module" src="../scripts/auth-service.js"></script>
-  <script type="module" src="../scripts/auth-header.js"></script>
+  <script src="../scripts/firebase-config.js"></script>
+  <script src="../src/js/auth-state.js"></script>
+  <script>
+    // Script pour gérer l'interface utilisateur d'authentification dans Enigma Scroll
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🎮 [Enigma Auth] Initialisation de l\'authentification pour Enigma Scroll');
+      
+      // Initialiser l'état d'authentification
+      if (typeof initAuthStateListener === 'function') {
+        initAuthStateListener();
+      }
+      
+      // Fonction pour mettre à jour l'interface utilisateur
+      function updateAuthUI() {
+        console.log('🔄 [Enigma Auth] Mise à jour de l\'interface utilisateur');
+        
+        // Récupérer l'utilisateur actuel
+        let currentUser = null;
+        
+        // Essayer différentes méthodes pour récupérer l'utilisateur
+        if (typeof getCurrentUser === 'function') {
+          currentUser = getCurrentUser();
+        } else if (window.authState && window.authState.profile) {
+          currentUser = window.authState.profile;
+        } else if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+          const firebaseUser = firebase.auth().currentUser;
+          currentUser = {
+            uid: firebaseUser.uid,
+            username: firebaseUser.displayName || firebaseUser.email || 'Joueur',
+            displayName: firebaseUser.displayName || firebaseUser.email || 'Joueur'
+          };
+        }
+        
+        console.log('👤 [Enigma Auth] Utilisateur actuel:', currentUser);
+        
+                 // Mettre à jour les éléments de l'interface
+         const loginButton = document.getElementById('loginBtn');
+         const profileButton = document.getElementById('profileBtn');
+        
+        if (currentUser && currentUser.username) {
+          // L'utilisateur est connecté
+          if (loginButton) {
+            loginButton.style.display = 'none';
+          }
+          if (profileButton) {
+            profileButton.style.display = 'inline-block';
+            profileButton.textContent = currentUser.username;
+          }
+          console.log('✅ [Enigma Auth] Interface mise à jour pour utilisateur connecté:', currentUser.username);
+        } else {
+          // L'utilisateur n'est pas connecté
+          if (loginButton) {
+            loginButton.style.display = 'inline-block';
+          }
+          if (profileButton) {
+            profileButton.style.display = 'none';
+          }
+          console.log('🔴 [Enigma Auth] Interface mise à jour pour utilisateur déconnecté');
+        }
+        
+        // Notifier le système d'avatar si l'utilisateur est connecté
+        if (currentUser && window.enigmaAvatar) {
+          console.log('🎭 [Enigma Auth] Notification du système d\'avatar');
+          // Le système d'avatar peut maintenant utiliser les informations de l'utilisateur
+          window.enigmaAvatar.userConnected = true;
+          window.enigmaAvatar.currentUser = currentUser;
+        }
+      }
+      
+      // Mettre à jour l'interface immédiatement
+      setTimeout(updateAuthUI, 500);
+      
+      // Vérifier périodiquement l'état d'authentification
+      const checkInterval = setInterval(() => {
+        updateAuthUI();
+      }, 2000);
+      
+      // Arrêter la vérification après 30 secondes pour éviter une boucle infinie
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        console.log('🛑 [Enigma Auth] Arrêt de la vérification périodique');
+      }, 30000);
+      
+      // Écouter les changements d'état d'authentification si disponible
+      if (window.authState) {
+        // Surveiller les changements dans authState
+        let lastAuthState = null;
+        const monitorAuthState = setInterval(() => {
+          const currentAuthState = window.authState.isAuthenticated;
+          if (currentAuthState !== lastAuthState) {
+            console.log('🔄 [Enigma Auth] Changement d\'état détecté');
+            lastAuthState = currentAuthState;
+            updateAuthUI();
+          }
+        }, 1000);
+        
+        // Arrêter la surveillance après 60 secondes
+        setTimeout(() => {
+          clearInterval(monitorAuthState);
+        }, 60000);
+      }
+    });
+  </script>
   <script src="../scripts/game-stats-service.js"></script>
 
   <!-- Nouveau système de notation simplifié -->
@@ -1409,6 +1510,7 @@
       
       <div class="user-menu" id="userMenu">
         <a href="../auth.html" class="btn-login" id="loginBtn">Se connecter</a>
+        <a href="../profile.html" class="btn-login" id="profileBtn" style="display: none;">Mon Profil</a>
       </div>
     </div>
   </header>
