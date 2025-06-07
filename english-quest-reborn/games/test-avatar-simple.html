@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Test Avatar Simple - Enigma Scroll</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(145deg, #2196F3, #1976D2);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(145deg, #FF9800, #F57C00);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(145deg, #f44336, #d32f2f);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            background: rgba(0,255,0,0.1);
+            border: 2px solid rgba(0,255,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .user-data {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .avatar-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            max-width: 250px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            color: #ffeb3b;
+            font-size: 16px;
+        }
+        
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test Avatar Simple - Enigma Scroll</h1>
+        
+        <div class="test-section">
+            <h2>🔧 Configuration Rapide</h2>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <h3>👨 Tête</h3>
+                    <select id="head-select">
+                        <option value="default_boy">Garçon</option>
+                        <option value="default_girl">Fille</option>
+                        <option value="bear">Ours</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3>👕 Corps</h3>
+                    <select id="body-select">
+                        <option value="default_boy">Garçon</option>
+                        <option value="default_girl">Fille</option>
+                        <option value="bear">Ours</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3>🎭 Accessoire</h3>
+                    <select id="accessory-select">
+                        <option value="default">Défaut (GIF)</option>
+                        <option value="none">Aucun</option>
+                        <option value="glasses">Lunettes</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3>🌄 Fond</h3>
+                    <select id="background-select">
+                        <option value="default">Défaut</option>
+                        <option value="forest">Forêt</option>
+                        <option value="castle">Château</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn btn-primary" onclick="applySettings()">
+                    🎨 Appliquer Skins
+                </button>
+                <button class="btn btn-secondary" onclick="testAvatar()">
+                    🧪 Test Avatar
+                </button>
+                <button class="btn btn-warning" onclick="forceInit()">
+                    🚀 Forcer Init
+                </button>
+                <button class="btn btn-danger" onclick="resetAvatar()">
+                    🔄 Reset
+                </button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 État du Système</h2>
+            <div class="status" id="status">Chargement...</div>
+            <div class="user-data" id="user-data">Aucune donnée</div>
+        </div>
+    </div>
+    
+    <div class="avatar-info">
+        <h3>🎯 Avatar Flottant</h3>
+        <p>L'avatar devrait apparaître en position fixe sur cette page.</p>
+        <div style="margin-top: 10px;">
+            <small id="avatar-status">Vérification...</small>
+        </div>
+    </div>
+
+    <!-- Charger le système d'avatar -->
+    <script src="enigma-scroll-avatar-simple.js"></script>
+    
+    <script>
+        // Variables globales
+        let currentUser = {
+            username: "TestUser",
+            avatar: {
+                head: "default_boy",
+                body: "default_boy",
+                accessory: "default",
+                background: "default"
+            }
+        };
+        
+        // Fonctions
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            console.log('[Test]', message);
+        }
+        
+        function updateUserData() {
+            document.getElementById('user-data').textContent = JSON.stringify(currentUser, null, 2);
+        }
+        
+        function updateAvatarStatus() {
+            const statusEl = document.getElementById('avatar-status');
+            
+            if (window.enigmaAvatar && window.enigmaAvatar.isInitialized) {
+                statusEl.textContent = '✅ Avatar actif';
+                statusEl.style.color = '#4CAF50';
+            } else if (window.enigmaAvatar) {
+                statusEl.textContent = '⏳ Avatar créé, non initialisé';
+                statusEl.style.color = '#FF9800';
+            } else {
+                statusEl.textContent = '❌ Avatar non disponible';
+                statusEl.style.color = '#f44336';
+            }
+        }
+        
+        function applySettings() {
+            currentUser.avatar = {
+                head: document.getElementById('head-select').value,
+                body: document.getElementById('body-select').value,
+                accessory: document.getElementById('accessory-select').value,
+                background: document.getElementById('background-select').value
+            };
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+            updateUserData();
+            updateStatus('Skins appliqués dans localStorage');
+            
+            // Mettre à jour l'avatar
+            if (typeof window.updateEnigmaAvatarFromProfile === 'function') {
+                const success = window.updateEnigmaAvatarFromProfile(currentUser.avatar);
+                updateStatus(success ? 'Avatar mis à jour ✅' : 'Échec mise à jour avatar ❌');
+            } else {
+                updateStatus('Fonction updateEnigmaAvatarFromProfile non disponible');
+            }
+        }
+        
+        function testAvatar() {
+            if (window.enigmaAvatar) {
+                window.enigmaAvatar.testMessage();
+                window.enigmaAvatar.testAnimation();
+                updateStatus('Tests avatar lancés');
+            } else {
+                updateStatus('Avatar non disponible pour les tests');
+            }
+        }
+        
+        function forceInit() {
+            if (typeof window.forceInitEnigmaAvatar === 'function') {
+                const success = window.forceInitEnigmaAvatar();
+                updateStatus(success ? 'Initialisation forcée réussie ✅' : 'Échec initialisation ❌');
+            } else {
+                updateStatus('Fonction forceInitEnigmaAvatar non disponible');
+            }
+        }
+        
+        function resetAvatar() {
+            currentUser.avatar = {
+                head: "default_boy",
+                body: "default_boy",
+                accessory: "default",
+                background: "default"
+            };
+            
+            document.getElementById('head-select').value = 'default_boy';
+            document.getElementById('body-select').value = 'default_boy';
+            document.getElementById('accessory-select').value = 'default';
+            document.getElementById('background-select').value = 'default';
+            
+            applySettings();
+            updateStatus('Avatar reset aux valeurs par défaut');
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Test] Page simple chargée');
+            
+            // Mettre en place l'utilisateur de test
+            localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+            updateUserData();
+            updateStatus('Système de test simple initialisé');
+            
+            // Vérifier l'état de l'avatar périodiquement
+            setInterval(() => {
+                updateAvatarStatus();
+            }, 1000);
+            
+            console.log('[Test] Attente de l\'initialisation de l\'avatar...');
+        });
+        
+        // Écouter les changements dans les sélecteurs
+        ['head-select', 'body-select', 'accessory-select', 'background-select'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                console.log('[Test] Changement détecté dans', id);
+            });
+        });
+    </script>
+</body>
+</html> 

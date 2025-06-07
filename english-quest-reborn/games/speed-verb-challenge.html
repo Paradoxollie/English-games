@@ -960,6 +960,84 @@
             }
         }
 
+        /* Animations pour les réponses */
+        .correct-answer {
+            background-color: var(--verb-correct) !important;
+            border-color: var(--verb-correct) !important;
+            color: white !important;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .incorrect-answer {
+            background-color: var(--verb-incorrect) !important;
+            border-color: var(--verb-incorrect) !important;
+            color: white !important;
+            animation: incorrectShake 0.5s ease;
+        }
+
+        .score-pulse {
+            animation: scorePulse 0.5s ease;
+        }
+
+        .animate-feedback {
+            animation: fadeInOut 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes scorePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); color: var(--verb-correct); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            50% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styles pour le feedback */
+        .feedback-message {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: 1.1rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .success-message {
+            background-color: var(--verb-correct);
+            color: white;
+            border: 2px solid var(--verb-correct);
+        }
+
+        .error-message {
+            background-color: var(--verb-incorrect);
+            color: white;
+            border: 2px solid var(--verb-incorrect);
+            max-width: 80vw;
+            text-align: center;
+            white-space: pre-line;
+            line-height: 1.4;
+        }
+
         /* Optimisations tactiles pour mobile */
         @media (hover: none) and (pointer: coarse) {
             .game-button,
@@ -1199,6 +1277,10 @@
                             <!-- Ancien système de notation supprimé - remplacé par endGameRating -->
 
                             <div class="game-buttons">
+                                <button id="save-score-btn" class="game-button secondary-button">
+                                    <span>Sauvegarder le Score</span>
+                                    <i class="fas fa-save"></i>
+                                </button>
                                 <button id="play-again-btn" class="game-button primary-button">
                                     <span>Rejouer</span>
                                     <i class="fas fa-redo"></i>
@@ -1267,6 +1349,9 @@
     <!-- Gestion universelle du menu mobile et synchronisation auth -->
     <script src="../scripts/universal-mobile-auth.js" defer></script>
 
+    <!-- Verb data -->
+    <script src="../src/js/verb-data.js"></script>
+    
     <!-- Specific game script -->
     <script src="../scripts/speed-verb-challenge.js"></script>
 </body>

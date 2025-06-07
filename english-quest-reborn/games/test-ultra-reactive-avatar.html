@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 Test Avatar Ultra-Réactif - Enigma Scroll</title>
+  
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .test-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+    
+    .test-section {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 5px solid #4ecdc4;
+    }
+    
+    .test-section h3 {
+      margin-top: 0;
+      color: #4ecdc4;
+      font-size: 1.5rem;
+    }
+    
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .test-button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .test-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(135deg, #5a67d8, #6b4ba0);
+    }
+    
+    .test-button:active {
+      transform: translateY(0);
+    }
+    
+    .power-up-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    }
+    
+    .power-up-btn:hover {
+      background: linear-gradient(135deg, #ff5252, #e53935);
+    }
+    
+    .score-btn {
+      background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    }
+    
+    .score-btn:hover {
+      background: linear-gradient(135deg, #26d0ce, #2e8b80);
+    }
+    
+    .animation-btn {
+      background: linear-gradient(135deg, #feca57, #ff9ff3);
+    }
+    
+    .animation-btn:hover {
+      background: linear-gradient(135deg, #ff9f43, #f368e0);
+    }
+    
+    .info-box {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      border-left: 4px solid #feca57;
+    }
+    
+    .status-display {
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    
+    .fake-game-elements {
+      display: none;
+    }
+    
+    .demo-keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    
+    .demo-key {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    
+    .demo-key:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Éléments cachés pour simuler le jeu -->
+  <div class="fake-game-elements">
+    <div id="score-display">0</div>
+    <div id="combo-display">1x</div>
+    <div id="time-display">90</div>
+    <div id="attempts-display">0/6</div>
+    <div id="word-grid"></div>
+    <div id="message-container"></div>
+  </div>
+
+  <div class="test-container">
+    <h1>🧪 Test Avatar Ultra-Réactif</h1>
+    <p class="subtitle">Démonstration des nouvelles capacités ultra-réactives de l'avatar Enigma Scroll</p>
+    
+    <div class="status-display" id="avatar-status">
+      🤖 Chargement de l'avatar... Patientez quelques secondes.
+    </div>
+    
+    <!-- Section 1: Tests de Frappe -->
+    <div class="test-section">
+      <h3>⌨️ Tests de Réactions de Frappe</h3>
+      <p>Testez les nouvelles réactions aux actions de frappe et navigation</p>
+      
+      <div class="demo-keyboard">
+        <button class="demo-key" data-key="Q">Q</button>
+        <button class="demo-key" data-key="W">W</button>
+        <button class="demo-key" data-key="E">E</button>
+        <button class="demo-key" data-key="R">R</button>
+        <button class="demo-key" data-key="T">T</button>
+        <button class="demo-key" data-key="Y">Y</button>
+        <button class="demo-key" data-key="U">U</button>
+        <button class="demo-key" data-key="I">I</button>
+        <button class="demo-key" data-key="O">O</button>
+        <button class="demo-key" data-key="P">P</button>
+      </div>
+      
+      <div class="test-grid">
+        <button class="test-button" onclick="simulateTyping()">🔤 Simuler Frappe</button>
+        <button class="test-button" onclick="simulateDeletion()">⬅️ Simuler Suppression</button>
+        <button class="test-button" onclick="simulateSubmission()">🚀 Simuler Soumission</button>
+        <button class="test-button" onclick="simulateGameStart()">🎮 Simuler Démarrage</button>
+      </div>
+    </div>
+    
+    <!-- Section 2: Tests Power-ups -->
+    <div class="test-section">
+      <h3>⚡ Tests de Power-ups</h3>
+      <p>Découvrez les réactions spécifiques pour chaque type de power-up</p>
+      
+      <div class="test-grid">
+        <button class="test-button power-up-btn" onclick="testPowerUp('hint')">💡 Test Hint</button>
+        <button class="test-button power-up-btn" onclick="testPowerUp('skip')">⏭️ Test Skip</button>
+        <button class="test-button power-up-btn" onclick="testPowerUp('time')">⏰ Test Time Boost</button>
+        <button class="test-button power-up-btn" onclick="testPowerUpGeneric()">⚡ Power-up Générique</button>
+      </div>
+    </div>
+    
+    <!-- Section 3: Tests de Score -->
+    <div class="test-section">
+      <h3>🎯 Tests de Réactions de Score</h3>
+      <p>Observez les réactions escaladantes selon les points gagnés</p>
+      
+      <div class="test-grid">
+        <button class="test-button score-btn" onclick="testScoreReaction(5)">+5 Points</button>
+        <button class="test-button score-btn" onclick="testScoreReaction(15)">+15 Points</button>
+        <button class="test-button score-btn" onclick="testScoreReaction(25)">+25 Points</button>
+        <button class="test-button score-btn" onclick="testScoreReaction(50)">+50 Points</button>
+        <button class="test-button score-btn" onclick="testScoreReaction(100)">+100 Points</button>
+      </div>
+    </div>
+    
+    <!-- Section 4: Tests de Combo -->
+    <div class="test-section">
+      <h3>🔥 Tests de Combos</h3>
+      <p>Voyez l'intensité des réactions augmenter avec les combos</p>
+      
+      <div class="test-grid">
+        <button class="test-button score-btn" onclick="testComboReaction(1)">Combo x1</button>
+        <button class="test-button score-btn" onclick="testComboReaction(2)">Combo x2</button>
+        <button class="test-button score-btn" onclick="testComboReaction(3)">Combo x3</button>
+        <button class="test-button score-btn" onclick="testComboReaction(5)">Combo x5</button>
+        <button class="test-button score-btn" onclick="testComboReaction(10)">Combo x10</button>
+      </div>
+    </div>
+    
+    <!-- Section 5: Tests d'Animations -->
+    <div class="test-section">
+      <h3>🎭 Tests des Nouvelles Animations</h3>
+      <p>Explorez toutes les nouvelles animations expressives</p>
+      
+      <div class="test-grid">
+        <button class="test-button animation-btn" onclick="testAnimation('physicalBounce')">🏀 Bounce</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalSpin')">🌪️ Spin</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalWiggle')">🐍 Wiggle</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalGlow')">✨ Glow</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalFloat')">🎈 Float</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalZoom')">🔍 Zoom</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalFlash')">⚡ Flash</button>
+        <button class="test-button animation-btn" onclick="testAnimation('physicalWave')">🌊 Wave</button>
+      </div>
+    </div>
+    
+    <!-- Section 6: Tests de Messages -->
+    <div class="test-section">
+      <h3>📢 Tests de Messages du Jeu</h3>
+      <p>Testez les réactions aux différents messages d'état</p>
+      
+      <div class="test-grid">
+        <button class="test-button" onclick="testGameMessage('Mot non valide !')">❌ Mot Invalide</button>
+        <button class="test-button" onclick="testGameMessage('Mot incomplet !')">📝 Mot Incomplet</button>
+        <button class="test-button" onclick="testGameMessage('Félicitations ! Mot trouvé !')">🎉 Mot Trouvé</button>
+        <button class="test-button" onclick="testGameMessage('Temps écoulé !')">⏰ Temps Écoulé</button>
+        <button class="test-button" onclick="testGameMessage('Nouvelle partie ! Mot de 5 lettres')">🎮 Nouvelle Partie</button>
+      </div>
+    </div>
+    
+    <div class="info-box">
+      <strong>💡 Conseils de Test :</strong><br>
+      • Cliquez sur les lettres du clavier virtuel pour voir les réactions de frappe<br>
+      • Testez plusieurs actions rapidement pour voir le système anti-spam<br>
+      • Observez les différentes durées et intensités des réactions<br>
+      • L'avatar se balade automatiquement sur la page en arrière-plan
+    </div>
+    
+    <div class="info-box">
+      <strong>🔧 Système Ultra-Réactif :</strong><br>
+      • <strong>+120 phrases</strong> différentes en anglais<br>
+      • <strong>19 animations</strong> expressives<br>
+      • <strong>16 catégories</strong> de réactions<br>
+      • <strong>Détection <300ms</strong> pour la plupart des événements<br>
+      • <strong>Communication bidirectionnelle</strong> jeu ↔ avatar
+    </div>
+  </div>
+
+  <!-- Scripts pour l'avatar -->
+  <script src="enigma-scroll-avatar-simple.js"></script>
+  
+  <script>
+    // Attendre le chargement de l'avatar
+    setTimeout(() => {
+      if (window.enigmaAvatar) {
+        document.getElementById('avatar-status').innerHTML = '✅ Avatar chargé ! Tous les tests sont prêts.';
+      } else {
+        document.getElementById('avatar-status').innerHTML = '❌ Erreur de chargement de l\'avatar. Vérifiez la console.';
+      }
+    }, 3000);
+    
+    // Fonctions de test pour l'interface
+    function simulateTyping() {
+      const letters = ['H', 'E', 'L', 'L', 'O'];
+      letters.forEach((letter, index) => {
+        setTimeout(() => {
+          if (window.enigmaAvatar) {
+            window.enigmaAvatar.reactToKeyboardClick(letter);
+          }
+        }, index * 300);
+      });
+    }
+    
+    function simulateDeletion() {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToLetterDeletion();
+      }
+    }
+    
+    function simulateSubmission() {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToWordSubmission();
+      }
+    }
+    
+    function simulateGameStart() {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToGameStart();
+      }
+    }
+    
+    function testPowerUp(type) {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToPowerUp(type);
+      }
+    }
+    
+    function testPowerUpGeneric() {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToPowerUp('generic');
+      }
+    }
+    
+    function testScoreReaction(points) {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToScoreIncrease(points);
+      }
+    }
+    
+    function testComboReaction(combo) {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToCombo(combo);
+      }
+    }
+    
+    function testAnimation(animationType) {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.playAnimation(animationType);
+      }
+    }
+    
+    function testGameMessage(message) {
+      if (window.enigmaAvatar) {
+        window.enigmaAvatar.reactToGameMessage(message);
+      }
+    }
+    
+    // Écouteurs pour le clavier virtuel de démo
+    document.querySelectorAll('.demo-key').forEach(key => {
+      key.addEventListener('click', function() {
+        const letter = this.getAttribute('data-key');
+        if (window.enigmaAvatar) {
+          window.enigmaAvatar.reactToKeyboardClick(letter);
+        }
+      });
+    });
+    
+    // Test automatique aléatoire
+    function randomTest() {
+      const tests = [
+        () => simulateTyping(),
+        () => testScoreReaction(Math.floor(Math.random() * 50) + 10),
+        () => testComboReaction(Math.floor(Math.random() * 5) + 1),
+        () => testPowerUp(['hint', 'skip', 'time'][Math.floor(Math.random() * 3)]),
+        () => testAnimation(['physicalBounce', 'physicalSpin', 'physicalGlow', 'physicalFloat'][Math.floor(Math.random() * 4)])
+      ];
+      
+      const randomTestFunc = tests[Math.floor(Math.random() * tests.length)];
+      randomTestFunc();
+    }
+    
+    // Lancer un test aléatoire toutes les 10 secondes
+    setInterval(() => {
+      if (Math.random() < 0.3) { // 30% de chance
+        randomTest();
+      }
+    }, 10000);
+    
+    console.log('🧪 Page de test Avatar Ultra-Réactif chargée !');
+    console.log('🎯 Testez toutes les nouvelles fonctionnalités avec les boutons ci-dessus.');
+  </script>
+</body>
+</html> 

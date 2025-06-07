@@ -54,10 +54,30 @@ class GameAvatarIntegration {
     // 3. Charger les données utilisateur
     await this.loadUserData();
     
-    // 4. Créer l'interface avatar
+    // 4. NOUVEAU: Créer l'interface avatar DIRECTEMENT
+    console.log('🎨 [Avatar] Création interface avatar...');
     this.createAvatarInterface();
     
-    // 5. Démarrer les systèmes
+    // 5. FORCE: Créer aussi l'Ultra Adventurer pour les tests
+    console.log('🏃‍♂️ [Avatar] FORCE création Ultra Adventurer...');
+    setTimeout(() => {
+      this.createUltraReactiveMiniAdventurer();
+      
+      // Vérifier que l'avatar est créé
+      setTimeout(() => {
+        const avatar = document.getElementById('ultra-adventurer');
+        if (avatar) {
+          console.log('✅ [Avatar] Ultra Adventurer créé avec succès:', avatar);
+          console.log('📍 [Avatar] Position:', avatar.getBoundingClientRect());
+        } else {
+          console.error('❌ [Avatar] Ultra Adventurer PAS créé!');
+          // Retry immédiatement
+          this.createUltraReactiveMiniAdventurer();
+        }
+      }, 1000);
+    }, 500);
+    
+    // 6. Démarrer les systèmes
     this.startEngagementTracking();
     this.setupGameDetection();
     
@@ -725,9 +745,9 @@ class GameAvatarIntegration {
 
   // Système de détection automatique des jeux
   setupGameDetection() {
-    // Détecter Enigma Scroll
+    // Détecter Enigma Scroll SANS RÉCURSION
     if (window.location.pathname.includes('enigma-scroll')) {
-      this.setupEnigmaScrollIntegration();
+      this.initEnigmaScrollIntegration();
       document.body.setAttribute('data-game', 'enigma-scroll');
     }
     
@@ -740,23 +760,48 @@ class GameAvatarIntegration {
     this.observeScoreChanges();
   }
 
-  setupEnigmaScrollIntegration() {
-    console.log('🎮 [Avatar] Configuration Enigma Scroll avec système motivant');
+  initEnigmaScrollIntegration() {
+    console.log('🎮 [Avatar] Initialisation Enigma Scroll - VERSION ULTRA-CORRIGÉE');
     
-    this.setupGameDetection();
-    this.observeGameProgress();
-    this.observeScoreChanges();
+    // Force restart fresh pour éviter les boucles
+    this.isEnigmaScrollInit = true;
     
-    // Nouveau système de motivation dynamique
-    this.setupEnigmaScrollMotivation();
+    // Créer l'avatar s'il n'existe pas
+    if (!document.getElementById('ultra-adventurer')) {
+      console.log('🏃‍♂️ [Avatar] Avatar non trouvé, création immédiate...');
+      this.createUltraReactiveMiniAdventurer();
+    }
+    
+    // Attendre que l'avatar soit créé puis configurer les observateurs
+    setTimeout(() => {
+      // Vérifier que l'avatar existe
+      const adventurer = document.getElementById('ultra-adventurer');
+      if (adventurer) {
+        console.log('✅ [Avatar] Avatar trouvé, configuration des observateurs...');
+        this.observeEnigmaScrollElements();
+        
+        // Test de l'avatar
+        setTimeout(() => {
+          this.showSpeechBubble('Avatar ready! Let\'s start the game!', 2500);
+          this.triggerPhysicalAnimation('physicalHop');
+          console.log('🎯 [Avatar] Test de l\'avatar effectué');
+        }, 2000);
+      } else {
+        console.error('❌ [Avatar] Avatar toujours non trouvé après création');
+        // Retry
+        this.createUltraReactiveMiniAdventurer();
+      }
+    }, 1000);
+    
+    console.log('✅ [Avatar] Enigma Scroll integration initialized');
   }
 
-  setupEnigmaScrollMotivation() {
-    // Observer les éléments de jeu spécifiques
+  setupSimpleEnigmaScrollMotivation() {
+    // Observer les éléments de jeu spécifiques SANS RÉCURSION
     this.observeEnigmaScrollElements();
     
-    // Système de feedback en temps réel
-    this.startEnigmaScrollFeedback();
+    // Feedback simple
+    this.startSimpleEnigmaScrollFeedback();
   }
 
   observeEnigmaScrollElements() {
@@ -848,79 +893,95 @@ class GameAvatarIntegration {
   handleScoreIncrease(scoreDiff, totalScore) {
     console.log(`📈 [Avatar] Score augmenté de ${scoreDiff}, total: ${totalScore}`);
     
-    if (scoreDiff >= 50) {
-      this.updateMotivationalState('breakthrough', {
-        text: `EXCELLENT ! +${scoreDiff} points ! 🔥`
-      });
-    } else if (scoreDiff >= 20) {
-      this.updateMotivationalState('focus', {
-        text: `Bien joué ! +${scoreDiff} points ! 👏`
-      });
-    } else {
-      this.updateMotivationalState('ready', {
-        text: `+${scoreDiff} points ! Continue ! ⭐`
-      });
-    }
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
     
-    // Suggestions de skins basées sur le score
-    if (totalScore >= 500) {
-      this.suggestSkinUpgrade('mastery');
-    } else if (totalScore >= 200) {
-      this.suggestSkinUpgrade('breakthrough');
+    if (scoreDiff >= 50) {
+      this.showSpeechBubble(`EXCELLENT ! +${scoreDiff} points ! 🔥`, 3000);
+      this.triggerPhysicalAnimation('physicalVictoryDance');
+      this.changeAura('victory', 4000);
+    } else if (scoreDiff >= 20) {
+      this.showSpeechBubble(`Bien joué ! +${scoreDiff} points ! 👏`, 2500);
+      this.triggerPhysicalAnimation('physicalPump');
+      this.changeAura('success', 3000);
+    } else {
+      this.showSpeechBubble(`+${scoreDiff} points ! Continue ! ⭐`, 2000);
+      this.triggerPhysicalAnimation('physicalHop');
     }
   }
 
   handleComboChange(comboValue) {
     console.log(`🔥 [Avatar] Combo: x${comboValue}`);
     
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
+    
     if (comboValue >= 5) {
-      this.updateMotivationalState('mastery', {
-        text: `COMBO x${comboValue} ! TU ES EN FEU ! 🔥👑`
-      });
+      this.showSpeechBubble(`COMBO x${comboValue} ! TU ES EN FEU ! 🔥👑`, 4000);
+      this.triggerPhysicalAnimation('physicalFireDance');
+      this.changeAura('fire', 5000);
     } else if (comboValue >= 3) {
-      this.updateMotivationalState('breakthrough', {
-        text: `Super combo x${comboValue} ! 💪⚡`
-      });
+      this.showSpeechBubble(`Super combo x${comboValue} ! 💪⚡`, 3000);
+      this.triggerPhysicalAnimation('physicalDance');
+      this.changeAura('success', 3500);
     } else if (comboValue >= 2) {
-      this.updateMotivationalState('focus', {
-        text: `Combo x${comboValue} ! Maintiens le rythme ! 🎯`
-      });
+      this.showSpeechBubble(`Combo x${comboValue} ! Maintiens le rythme ! 🎯`, 2500);
+      this.triggerPhysicalAnimation('physicalClap');
     }
   }
 
   handleTimeChange(timeLeft) {
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
+    
     if (timeLeft <= 10 && timeLeft > 0) {
-      this.updateMotivationalState('struggle', {
-        text: `${timeLeft}s ! DÉPÊCHE-TOI ! ⏰💨`
-      });
+      this.showSpeechBubble(`${timeLeft}s ! DÉPÊCHE-TOI ! ⏰💨`, 2000);
+      this.triggerPhysicalAnimation('physicalPanicWave');
+      this.changeAura('fire', 2000);
     } else if (timeLeft <= 30) {
-      this.updateMotivationalState('focus', {
-        text: `Plus que ${timeLeft}s ! Concentre-toi ! 🎯`
-      });
+      this.showSpeechBubble(`Plus que ${timeLeft}s ! Concentre-toi ! 🎯`, 2500);
+      this.triggerPhysicalAnimation('physicalTilt');
     }
   }
 
   handleAttemptsChange(current, max) {
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
+    
     const remaining = max - current;
     
     if (remaining <= 1) {
-      this.updateMotivationalState('struggle', {
-        text: 'DERNIÈRE CHANCE ! Donne tout ! 💪🔥'
-      });
+      this.showSpeechBubble('DERNIÈRE CHANCE ! Donne tout ! 💪🔥', 3000);
+      this.triggerPhysicalAnimation('physicalShake');
+      this.changeAura('fire', 4000);
     } else if (remaining <= 2) {
-      this.updateMotivationalState('focus', {
-        text: `Plus que ${remaining} tentatives ! 🎯`
-      });
+      this.showSpeechBubble(`Plus que ${remaining} tentatives ! 🎯`, 2500);
+      this.triggerPhysicalAnimation('physicalNod');
     }
   }
 
-  startEnigmaScrollFeedback() {
-    // Feedback périodique pour maintenir l'engagement
+  startSimpleEnigmaScrollFeedback() {
+    console.log('💬 [Avatar] Démarrage feedback Enigma Scroll simple...');
+    
+    // Feedback périodique simplifié pour maintenir l'engagement
     setInterval(() => {
       if (this.isGameActive()) {
-        this.providePereiodicFeedback();
+        this.provideSimpleFeedback();
       }
-    }, 15000); // Toutes les 15 secondes
+    }, 20000); // Toutes les 20 secondes (moins fréquent)
+  }
+
+  provideSimpleFeedback() {
+    const feedbackMessages = [
+      "Continue comme ça ! 💪",
+      "Tu fais du bon travail ! 👏", 
+      "Reste concentré ! 🎯",
+      "Excellent effort ! ⭐",
+      "Tu progresses bien ! 📈"
+    ];
+    
+    const randomMessage = feedbackMessages[Math.floor(Math.random() * feedbackMessages.length)];
+    this.showReaction(randomMessage, 'thinking', 3000);
   }
 
   providePereiodicFeedback() {
@@ -992,7 +1053,7 @@ class GameAvatarIntegration {
     const timeElement = document.querySelector('#time-display');
     if (timeElement) {
       const observer = new MutationObserver(() => {
-        const timeLeft = parseInt(timeElement.textContent) || 0;
+        const timeLeft = parseInt(timeDisplay.textContent) || 0;
         
         if (timeLeft < 20 && timeLeft > 0 && this.updateBattleState) {
           // Temps critique = effort maximum
@@ -1211,6 +1272,9 @@ class GameAvatarIntegration {
     
     console.log('🏃‍♂️ Création Mini Adventurer ULTRA-RÉACTIF avec profil:', this.currentUser?.avatar);
     
+    // NOUVEAU: Forcer le rechargement des données utilisateur avant création
+    this.forceReloadUserDataSync();
+    
     // Créer le container principal
     const adventurerContainer = document.createElement('div');
     adventurerContainer.className = 'ultra-reactive-adventurer';
@@ -1249,6 +1313,73 @@ class GameAvatarIntegration {
     }, 2000);
   }
 
+  // NOUVELLE FONCTION: Rechargement synchrone des données utilisateur
+  forceReloadUserDataSync() {
+    console.log('🔄 [Avatar] Force reload synchrone des données utilisateur...');
+    
+    // Essayer toutes les sources possibles dans l'ordre de priorité
+    const sources = [
+      {
+        name: 'english_quest_current_user',
+        getData: () => {
+          const data = localStorage.getItem('english_quest_current_user');
+          return data ? JSON.parse(data) : null;
+        }
+      },
+      {
+        name: 'currentUser', 
+        getData: () => {
+          const data = localStorage.getItem('currentUser');
+          return data ? JSON.parse(data) : null;
+        }
+      },
+      {
+        name: 'authService',
+        getData: () => {
+          return window.authService?.getCurrentUser?.();
+        }
+      },
+      {
+        name: 'enigmaScrollProfile',
+        getData: () => {
+          const data = localStorage.getItem('enigmaScrollProfile');
+          return data ? JSON.parse(data) : null;
+        }
+      }
+    ];
+    
+    for (const source of sources) {
+      try {
+        const userData = source.getData();
+        if (userData && (userData.avatar || userData.username || userData.displayName)) {
+          console.log(`✅ [Avatar] Données trouvées via ${source.name}:`, userData);
+          
+          // Mettre à jour this.currentUser avec les données complètes
+          this.currentUser = {
+            username: userData.username || userData.displayName || 'Joueur',
+            level: userData.level || 1,
+            xp: userData.xp || 0,
+            avatar: userData.avatar || {
+              head: 'default_boy',
+              body: 'default_boy',
+              accessory: 'default',
+              background: 'forest'
+            }
+          };
+          
+          console.log('🎨 [Avatar] Données utilisateur mises à jour:', this.currentUser);
+          return true;
+        }
+      } catch (error) {
+        console.warn(`⚠️ [Avatar] Erreur avec source ${source.name}:`, error);
+      }
+    }
+    
+    console.warn('⚠️ [Avatar] Aucune donnée utilisateur trouvée, utilisation profil par défaut');
+    this.currentUser = this.createDemoUser();
+    return false;
+  }
+
   verifyAvatarVisibility() {
     const adventurer = document.getElementById('ultra-adventurer');
     if (!adventurer) {
@@ -1272,8 +1403,57 @@ class GameAvatarIntegration {
   }
 
   generateAvatarDisplayHTML() {
-    const user = this.currentUser || this.createDemoUser();
+    // NOUVELLE MÉTHODE: Essayer de recharger les données utilisateur à la volée
+    let user = this.currentUser;
+    
+    // Si pas de données utilisateur ou données par défaut, essayer de recharger
+    if (!user || !user.avatar || user.username === 'Aventurier') {
+      console.log('🔄 [Avatar] Rechargement données utilisateur pour HTML...');
+      
+      // Essayer plusieurs sources de données
+      const sources = [
+        () => {
+          const data = localStorage.getItem('english_quest_current_user');
+          return data ? JSON.parse(data) : null;
+        },
+        () => {
+          const data = localStorage.getItem('currentUser');
+          return data ? JSON.parse(data) : null;
+        },
+        () => {
+          return window.authService?.getCurrentUser?.();
+        },
+        () => {
+          const data = localStorage.getItem('enigmaScrollProfile');
+          return data ? JSON.parse(data) : null;
+        }
+      ];
+      
+      for (const source of sources) {
+        try {
+          const userData = source();
+          if (userData && (userData.avatar || userData.username)) {
+            console.log('✅ [Avatar] Données utilisateur trouvées pour HTML:', userData);
+            user = userData;
+            this.currentUser = userData; // Mettre à jour aussi l'instance
+            break;
+          }
+        } catch (e) {
+          // Ignorer les erreurs
+        }
+      }
+    }
+    
+    // Si toujours pas de données, utiliser le profil par défaut mais avec log
+    if (!user) {
+      console.warn('⚠️ [Avatar] Aucune donnée utilisateur trouvée, utilisation profil démo');
+      user = this.createDemoUser();
+    }
+    
     const avatar = user.avatar || {};
+    
+    console.log('🎨 [Avatar] Génération HTML avec avatar:', avatar);
+    console.log('👤 [Avatar] Utilisateur:', user.username || user.displayName || 'Inconnu');
     
     // Construire les chemins d'images correctement
     const getAvatarPath = (type, value) => {
@@ -1282,12 +1462,23 @@ class GameAvatarIntegration {
       if (value.includes('/') || value.includes('.')) {
         return value;
       }
-      // Sinon, construire le chemin avec l'extension
+      
+      // CORRECTION CRITIQUE: bodies au lieu de bodys
+      if (type === 'body') {
+        return `../assets/avatars/bodies/${value}.png`;
+      }
+      
+      // Pour les autres types (head, accessory, etc.)
       return `../assets/avatars/${type}s/${value}.png`;
     };
     
     const bodyPath = getAvatarPath('body', avatar.body) || '../assets/avatars/bodies/default_boy.png';
     const headPath = getAvatarPath('head', avatar.head) || '../assets/avatars/heads/default_boy.png';
+    
+    console.log('🖼️ [Avatar] Chemins images CORRIGÉS:');
+    console.log('  - Corps:', bodyPath);
+    console.log('  - Tête:', headPath);
+    console.log('  - Accessoire:', avatar.accessory);
     
     // Logique d'accessoire EXACTE du profil
     let accessoryHTML = '';
@@ -1317,44 +1508,207 @@ class GameAvatarIntegration {
         </div>`;
     }
     
-    return `
+    const finalHTML = `
       <div class="avatar-display-ultra">
         <!-- Corps -->
         <img src="${bodyPath}" 
              alt="Avatar Body" 
              class="avatar-body-ultra"
-             onerror="this.src='../assets/avatars/bodies/default_boy.png'">
+             onerror="this.src='../assets/avatars/bodies/default_boy.png'; console.warn('[Avatar] Corps échoué:', this.src);"
+             onload="console.log('[Avatar] Corps chargé:', this.src);">
         
         <!-- Tête COLLÉE au corps -->
         <img src="${headPath}" 
              alt="Avatar Head" 
              class="avatar-head-ultra"
-             onerror="this.src='../assets/avatars/heads/default_boy.png'">
+             onerror="this.src='../assets/avatars/heads/default_boy.png'; console.warn('[Avatar] Tête échouée:', this.src);"
+             onload="console.log('[Avatar] Tête chargée:', this.src);">
         
         <!-- Accessoire GIF -->
         ${accessoryHTML}
       </div>
     `;
+    
+    console.log('✅ [Avatar] HTML généré avec succès');
+    return finalHTML;
   }
 
   startUltraReactiveBehavior() {
-    console.log('🚀 [Avatar] Démarrage comportement ultra-réactif...');
+    console.log('🎮 [Avatar] Démarrage comportement ultra-réactif...');
     
-    // Configurer les réactions de jeu
-    this.setupUltraGameReactions();
+    // Démarrer l'animation idle
+    this.startIdleAnimations();
     
-    // Mouvement aléatoire intelligent
-    setTimeout(() => {
-      this.moveAdventurerRandomly();
-    }, 3000);
-    
-    // Animation idle de base
-    this.startIdleAnimation();
-    
-    // NOUVEAU: Surveillance continue de la visibilité
+    // Démarrer le watchdog de visibilité
     this.startVisibilityWatchdog();
     
-    console.log('✅ [Avatar] Système ultra-réactif opérationnel');
+    // Démarrer les réactions de jeu
+    this.setupUltraGameReactions();
+    
+    // NOUVEAU: Démarrer le système de mouvement intelligent
+    this.startIntelligentMovement();
+    
+    // Observer l'état du jeu
+    this.setupUltraGameObservers();
+    
+    console.log('✅ [Avatar] Comportement ultra-réactif actif');
+  }
+
+  // NOUVEAU: Système de mouvement intelligent
+  startIntelligentMovement() {
+    console.log('🚶‍♂️ [Avatar] Démarrage mouvement intelligent...');
+    
+    this.movementTimer = null;
+    this.currentPosition = 'safe-top-right'; // Position par défaut
+    this.lastGameActivity = Date.now();
+    this.isMoving = false;
+    
+    // Positions sûres selon le jeu
+    this.safePositions = {
+      'enigma-scroll': [
+        'safe-top-right',    // Position par défaut - ne gêne pas les mots
+        'safe-bottom-right', // En bas à droite - loin du clavier
+        'safe-center-right'  // Milieu droite - neutre
+      ],
+      'default': [
+        'safe-top-right',
+        'safe-bottom-right',
+        'safe-top-left',
+        'safe-center-right'
+      ]
+    };
+    
+    // Surveiller l'activité du jeu
+    this.observeGameActivity();
+    
+    // Premier mouvement après 10 secondes d'inactivité
+    setTimeout(() => {
+      this.scheduleNextMovement();
+    }, 10000);
+  }
+
+  observeGameActivity() {
+    // Surveiller les interactions utilisateur
+    const activityEvents = ['click', 'keydown', 'touchstart', 'mousemove'];
+    
+    activityEvents.forEach(event => {
+      document.addEventListener(event, () => {
+        this.lastGameActivity = Date.now();
+        
+        // Si l'avatar est en mouvement pendant l'activité, l'arrêter
+        if (this.isMoving) {
+          this.pauseMovement();
+        }
+      }, { passive: true });
+    });
+  }
+
+  scheduleNextMovement() {
+    if (this.movementTimer) {
+      clearTimeout(this.movementTimer);
+    }
+    
+    // Attendre 15-30 secondes d'inactivité avant de bouger
+    const inactivityDelay = 15000 + Math.random() * 15000;
+    
+    this.movementTimer = setTimeout(() => {
+      this.checkAndMove();
+    }, inactivityDelay);
+  }
+
+  checkAndMove() {
+    const timeSinceActivity = Date.now() - this.lastGameActivity;
+    
+    // Ne bouger que si pas d'activité récente (5 secondes minimum)
+    if (timeSinceActivity < 5000) {
+      console.log('🚶‍♂️ [Avatar] Activité récente détectée, report du mouvement');
+      this.scheduleNextMovement();
+      return;
+    }
+    
+    // Vérifier si le jeu est actif
+    if (this.isGameActiveNow()) {
+      console.log('🚶‍♂️ [Avatar] Jeu actif, report du mouvement');
+      this.scheduleNextMovement();
+      return;
+    }
+    
+    this.moveToRandomSafePosition();
+  }
+
+  isGameActiveNow() {
+    // Vérifier si Enigma Scroll est en cours
+    const gameStatus = document.querySelector('#gameStatus')?.textContent;
+    const timeLeft = document.querySelector('#timeLeft')?.textContent;
+    
+    if (gameStatus && gameStatus.includes('en cours')) {
+      return true;
+    }
+    
+    if (timeLeft && parseInt(timeLeft) > 0) {
+      return true;
+    }
+    
+    // Vérifier s'il y a des lettres sélectionnées
+    const selectedLetters = document.querySelectorAll('.letter.selected');
+    if (selectedLetters.length > 0) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  moveToRandomSafePosition() {
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
+    
+    console.log('🚶‍♂️ [Avatar] Démarrage mouvement doux...');
+    
+    // Déterminer les positions sûres selon le jeu
+    const gameType = window.location.href.includes('enigma-scroll') ? 'enigma-scroll' : 'default';
+    const positions = this.safePositions[gameType];
+    
+    // Choisir une position différente de la actuelle
+    const availablePositions = positions.filter(pos => pos !== this.currentPosition);
+    const newPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+    
+    // Marquer comme en mouvement
+    this.isMoving = true;
+    avatar.classList.add('moving');
+    
+    // Changer de position
+    avatar.classList.remove(this.currentPosition);
+    avatar.classList.add(newPosition);
+    this.currentPosition = newPosition;
+    
+    console.log(`🚶‍♂️ [Avatar] Mouvement vers: ${newPosition}`);
+    
+    // Arrêter l'état "en mouvement" après la transition
+    setTimeout(() => {
+      avatar.classList.remove('moving');
+      avatar.classList.add('idle-breathing');
+      this.isMoving = false;
+      
+      // Programmer le prochain mouvement
+      this.scheduleNextMovement();
+    }, 4000); // Durée de la transition CSS
+  }
+
+  pauseMovement() {
+    const avatar = document.getElementById('ultra-adventurer');
+    if (!avatar) return;
+    
+    avatar.classList.remove('moving');
+    this.isMoving = false;
+    
+    if (this.movementTimer) {
+      clearTimeout(this.movementTimer);
+    }
+    
+    // Reprogrammer le mouvement après un délai
+    setTimeout(() => {
+      this.scheduleNextMovement();
+    }, 10000);
   }
 
   startVisibilityWatchdog() {
@@ -1815,410 +2169,248 @@ class GameAvatarIntegration {
     }
   }
 
+  /**
+   * Déclenche une réaction d'aventure ULTRA-SIMPLIFIÉE
+   * FIXÉ pour éviter les erreurs en boucle
+   */
   triggerAdventureReaction(eventType, data = {}) {
-    if (!this.isVisible) return;
-    
-    const reactions = {
-      // ====== NOUVELLES RÉACTIONS POUR VALIDATIONS DE MOTS ======
-      wordCorrect: {
-        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
-        effects: ['celebration', 'lightning'],
-        category: 'positive',
-        speechBubbles: ['PARFAIT!', 'EXCELLENT!', 'BRAVO!', 'GÉNIE!'],
-        aura: { color: 'victory', duration: 4000 }
-      },
+    try {
+      console.log(`🎭 [Avatar] SIMPLE Adventure reaction: ${eventType}`, data);
       
-      wordPartial: {
-        animations: ['adventurerReflection', 'adventurerConcentration'],
-        effects: ['thinking', 'focus'],
-        category: 'neutral',
-        speechBubbles: ['Presque!', 'Bien essayé!', 'Continue!', 'Tu y es presque!'],
-        aura: { color: 'warning', duration: 2500 }
-      },
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (!avatar) return false;
       
-      wordWrong: {
-        animations: ['adventurerSadness', 'adventurerDeflation'],
-        effects: ['confusion', 'sweat'],
-        category: 'negative',
-        speechBubbles: ['Oups...', 'Pas ça...', 'Réessaie!', 'Tu peux mieux!'],
-        aura: { color: 'error', duration: 2000 }
-      },
-      
-      wordSubmitted: {
-        animations: ['adventurerConcentration'],
-        effects: ['thinking'],
-        category: 'neutral',
-        speechBubbles: ['Voyons...', 'Analysons...', 'Hmm...'],
-        aura: { color: 'focus', duration: 1500 }
-      },
-      
-      // ====== ÉVÉNEMENTS DE SCORE (AMÉLIORÉS) ======
-      scoreSmallGain: {
-        animations: ['adventurerJumpJoy', 'adventurerSmallHop'],
-        effects: ['sparkles'],
-        category: 'positive',
-        speechBubbles: ['Nice!', 'Bien!', 'Super!'],
-        aura: { color: 'success', duration: 2000 }
-      },
-      
-      scoreMediumGain: {
-        animations: ['adventurerSpinCelebration', 'adventurerSatisfactionJump'],
-        effects: ['stars', 'lightning'],
-        category: 'positive',
-        speechBubbles: ['Excellent!', 'Fantastique!', 'Bravo!'],
-        aura: { color: 'success', duration: 3000 }
-      },
-      
-      scoreBigGain: {
-        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
-        effects: ['celebration', 'lightning'],
-        category: 'positive',
-        speechBubbles: ['INCROYABLE!', 'PARFAIT!', 'CHAMPION!'],
-        aura: { color: 'victory', duration: 4000 }
-      },
-      
-      // ====== ÉVÉNEMENTS DE COMBO ======
-      combo: {
-        animations: ['adventurerSpinFire', 'adventurerStreakSway'],
-        effects: ['lightning', 'stars'],
-        category: 'positive',
-        speechBubbles: ['EN FEU!', 'COMBO!', 'INCROYABLE!', 'TU DÉCHIRES!'],
-        aura: { color: 'fire', duration: 3000 }
-      },
-      
-      comboBroken: {
-        animations: ['adventurerDeflate', 'adventurerSadness'],
-        effects: ['confusion'],
-        category: 'negative',
-        speechBubbles: ['Zut...', 'Combo brisé...', 'Recommençons!'],
-        aura: { color: 'error', duration: 2000 }
-      },
-      
-      // ====== ÉVÉNEMENTS DE TEMPS ======
-      timeRunningOut: {
-        animations: ['adventurerFrantic', 'adventurerPanic'],
-        effects: ['stress', 'sweat'],
-        category: 'negative',
-        speechBubbles: ['VITE!', 'DÉPÊCHE!', 'PLUS DE TEMPS!', 'PANIC!'],
-        aura: { color: 'panic', duration: 2000 }
-      },
-      
-      timeLow: {
-        animations: ['adventurerNervous', 'adventurerFocus'],
-        effects: ['thinking', 'sweat'],
-        category: 'neutral',
-        speechBubbles: ['Attention...', 'Concentre-toi!', 'Plus de temps!'],
-        aura: { color: 'warning', duration: 1500 }
-      },
-      
-      // ====== ÉVÉNEMENTS DE POWER-UPS ======
-      powerUpUsed: {
-        animations: ['adventurerLightbulb', 'adventurerTimeWarp'],
-        effects: ['lightning', 'stars'],
-        category: 'positive',
-        speechBubbles: ['POUVOIR!', 'MAGIE!', 'BOOSTER!', 'HELP!'],
-        aura: { color: 'powerup', duration: 2500 }
-      },
-      
-      // ====== ÉVÉNEMENTS DE JEU ======
-      victory: {
-        animations: ['adventurerVictoryExplosion', 'adventurerBigCelebration'],
-        effects: ['celebration', 'lightning'],
-        category: 'positive',
-        speechBubbles: ['VICTOIRE!', 'CHAMPION!', 'PARFAIT!', 'BRAVO!'],
-        aura: { color: 'victory', duration: 5000 }
-      },
-      
-      defeat: {
-        animations: ['adventurerCollapse', 'adventurerSadness'],
-        effects: ['tired', 'confusion'],
-        category: 'negative',
-        speechBubbles: ['Dommage...', 'Recommençons!', 'Tu peux mieux!'],
-        aura: { color: 'defeat', duration: 3000 }
-      },
-      
-      gameStart: {
-        animations: ['adventurerBattleReady', 'adventurerConcentration'],
-        effects: ['thinking', 'focus'],
-        category: 'neutral',
-        speechBubbles: ['C\'est parti!', 'Allons-y!', 'Ready!', 'Let\'s go!'],
-        aura: { color: 'start', duration: 2000 }
-      },
-      
-      // ====== ÉVÉNEMENTS MINEURS ======
-      letterErased: {
-        animations: ['adventurerNervous'],
-        effects: ['thinking'],
-        category: 'neutral',
-        speechBubbles: [], // Pas de bulle pour cet événement mineur
-        aura: { color: 'focus', duration: 800 }
-      },
-      
-      moving: {
-        animations: ['adventurerWalk'],
-        effects: ['thinking'],
-        category: 'neutral',
-        speechBubbles: ['En exploration!', 'Je bouge!'],
-        aura: { color: 'focus', duration: 1000 }
+      // Réactions ULTRA-SIMPLIFIÉES sans méthodes complexes
+      switch (eventType) {
+        case 'word_correct':
+        case 'word_found':
+          this.triggerPhysicalReaction('hop', '0.8s', 2);
+          this.showSpeechBubble('Great!', 2000);
+          this.changeAura('success', 3000);
+        break;
+        
+        case 'word_invalid':
+        case 'word_incorrect':
+          this.triggerPhysicalReaction('shake', '0.5s', 3);
+          this.showSpeechBubble('Try again!', 2000);
+        break;
+        
+        case 'combo':
+        case 'streak':
+          // Réaction combo SIMPLIFIÉE
+          this.triggerPhysicalReaction('pump', '0.6s', 2);
+          this.showSpeechBubble('Combo!', 1500);
+          this.changeAura('fire', 2000);
+        break;
+        
+        case 'level_up':
+        case 'achievement':
+          this.triggerPhysicalReaction('dance', '2s', 2);
+          this.showSpeechBubble('Level Up!', 3000);
+          this.changeAura('victory', 4000);
+        break;
+        
+        case 'game_start':
+          this.triggerPhysicalReaction('nod', '0.5s', 1);
+          this.showSpeechBubble('Let\'s go!', 2000);
+        break;
+        
+        case 'game_over':
+          this.triggerPhysicalReaction('droop', '1s', 1);
+          this.showSpeechBubble('Good try!', 2500);
+        break;
+        
+        case 'powerup_used':
+          this.triggerPhysicalReaction('pump', '0.5s', 1);
+          this.showSpeechBubble('Power up!', 1500);
+          this.changeAura('success', 2000);
+        break;
+        
+      default:
+          // Réaction par défaut très simple
+          this.triggerPhysicalReaction('gentle', '1s', 1);
+          this.showSpeechBubble('Nice!', 1500);
       }
-    };
-
-    const reaction = reactions[eventType];
-    if (!reaction) {
-      console.warn(`⚠️ [Avatar] Réaction inconnue: ${eventType}`);
-      return;
-    }
-
-    console.log(`🎭 [Avatar] Réaction: ${eventType}`, data);
-
-    // 1. Animation corporelle
-    if (reaction.animations) {
-      const randomAnimation = reaction.animations[Math.floor(Math.random() * reaction.animations.length)];
-      this.triggerAnimation(randomAnimation, 2500);
-    }
-
-    // 2. Effet visuel
-    if (reaction.effects) {
-      const randomEffect = reaction.effects[Math.floor(Math.random() * reaction.effects.length)];
-      this.applyVisualEffect(randomEffect, reaction.category);
-    }
-
-    // 3. Bulle de dialogue (seulement si il y en a)
-    if (reaction.speechBubbles && reaction.speechBubbles.length > 0) {
-      const randomBubble = reaction.speechBubbles[Math.floor(Math.random() * reaction.speechBubbles.length)];
-      this.showSpeechBubble(randomBubble, 2500);
-    }
-
-    // 4. Aura colorée
-    if (reaction.aura) {
-      this.changeAura(reaction.aura.color, reaction.aura.duration);
+      
+      return true;
+      
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur réaction aventure:', error);
+      return false;
     }
   }
 
-  showSpeechBubble(text, duration) {
-    const speechBubble = document.getElementById('adventureSpeech');
-    speechBubble.textContent = text;
-    speechBubble.style.display = 'block';
-    speechBubble.style.animation = 'speechBubbleAppear 0.3s ease-out';
-    
+  /**
+   * Observer ULTRA-SIMPLIFIÉ pour éviter les boucles infinies
+   */
+  observeGameEvents() {
+    try {
+      console.log('👁️ [Avatar] Observer SIMPLIFIÉ activé');
+      
+      // Throttle pour éviter les appels excessifs
+      let lastEventTime = 0;
+
+  // Méthodes simplifiées pour éviter les erreurs
+  createDefaultSpectacle() {
+    console.log('🎭 [Avatar] Creating default spectacle (simplified)');
+    this.changeAura('success', 2000);
+    return true;
+  }
+  
+  createChampionAura() {
+    console.log('🏆 [Avatar] Creating champion aura (simplified)');
+    this.changeAura('victory', 4000);
+    return true;
+  }
+  
+  createComboTrail() {
+    console.log('🔥 [Avatar] Creating combo trail (simplified)');
+    this.changeAura('fire', 2500);
+    return true;
+  }
+  
+  createFireTrail() {
+    console.log('🔥 [Avatar] Creating fire trail (simplified)');
+    this.changeAura('fire', 3000);
+    return true;
+  }
+  
+  createPowerExplosion() {
+    console.log('💥 [Avatar] Creating power explosion (simplified)');
+    this.changeAura('victory', 3500);
+    return true;
+  }
+  
+  /**
+   * Nettoie toutes les animations - VERSION ULTRA-ROBUSTE
+   */
+  clearAllAnimations() {
+    try {
+      console.log('🧹 [Avatar] Nettoyage COMPLET animations...');
+      
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (avatar) {
+        // Reset complet des animations
+        avatar.style.animation = '';
+        avatar.style.transform = '';
+        avatar.style.filter = '';
+        avatar.className = avatar.className.replace(/\s*(physical-\w+|spectacle-\w+)\s*/g, ' ');
+        
+        // Nettoyer l'aura
+        this.clearAura();
+        
+        // Cacher les bulles
+        const bubble = avatar.querySelector('.adventure-speech-bubble');
+        if (bubble) {
+          bubble.style.display = 'none';
+        }
+        
+        console.log('✅ [Avatar] Animations nettoyées');
+        return true;
+      }
+      
+      return false;
+      
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur nettoyage animations:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Nettoie l'aura
+   */
+  clearAura() {
+    try {
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (avatar) {
+        const aura = avatar.querySelector('.adventure-aura');
+        if (aura) {
+          aura.className = 'adventure-aura';
+          aura.style.background = '';
+          aura.style.animation = '';
+        }
+      }
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur nettoyage aura:', error);
+    }
+  }
+
+  /**
+   * Affiche une bulle de dialogue
+   */
+  showSpeechBubble(text, duration = 3000) {
+    try {
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (!avatar) return;
+      
+      const bubble = avatar.querySelector('.adventure-speech-bubble');
+      if (bubble) {
+        bubble.textContent = text;
+        bubble.style.display = 'block';
+        
     setTimeout(() => {
-      speechBubble.style.display = 'none';
-    }, duration);
+          bubble.style.display = 'none';
+        }, duration);
+        
+        console.log(`💬 [Avatar] Bulle: ${text}`);
+      }
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur bulle:', error);
+    }
   }
 
-  changeAura(color, duration) {
-    const aura = document.getElementById('adventureAura');
-    aura.className = `adventure-aura ${color}-aura`;
+  /**
+   * Déclenche une animation physique
+   */
+  triggerPhysicalAnimation(animationType) {
+    try {
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (!avatar) return;
+      
+      // Nettoyer anciennes animations
+      avatar.className = avatar.className.replace(/\s*animation-\w+/g, '');
+      
+      // Ajouter nouvelle animation
+      avatar.classList.add(`animation-${animationType}`);
+      
+      // Auto-nettoyage après animation
+    setTimeout(() => {
+        avatar.classList.remove(`animation-${animationType}`);
+    }, 3000);
+      
+      console.log(`🎭 [Avatar] Animation: ${animationType}`);
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur animation:', error);
+    }
+  }
+
+  /**
+   * Change l'aura de l'avatar
+   */
+  changeAura(type, duration = 3000) {
+    try {
+      const avatar = document.querySelector('#ultra-adventurer');
+      if (!avatar) return;
+      
+      const aura = avatar.querySelector('.adventure-aura');
+      if (aura) {
+        // Nettoyer ancienne aura
+    aura.className = 'adventure-aura';
     
+        // Appliquer nouvelle aura
+        aura.classList.add(`${type}-aura`);
+        
+        // Auto-nettoyage
     setTimeout(() => {
       aura.className = 'adventure-aura';
     }, duration);
-  }
-
-  triggerAnimation(animation, duration) {
-    const adventurer = document.querySelector('.adventurer-avatar-ultra');
-    if (adventurer) {
-      adventurer.style.animation = animation;
-      
-      setTimeout(() => {
-        adventurer.style.animation = '';
-      }, duration);
+        
+        console.log(`✨ [Avatar] Aura: ${type}`);
+      }
+    } catch (error) {
+      console.error('❌ [Avatar] Erreur aura:', error);
     }
-  }
-
-  applyVisualEffect(effect, category) {
-    const effects = document.querySelector('.adventure-effects-ultra');
-    if (effects) {
-      effects.className = `adventure-effects-ultra ${category}-${effect}`;
-      
-      setTimeout(() => {
-        effects.className = 'adventure-effects-ultra';
-      }, 2500);
-    }
-  }
-
-  moveAdventurerRandomly() {
-    const adventurer = document.getElementById('ultra-adventurer');
-    if (!adventurer) return;
-    
-    // Définir les zones sûres VISIBLES (où l'avatar ne gêne jamais ET reste visible)
-    const safeZones = this.calculateVisibleSafeZones();
-    const randomZone = safeZones[Math.floor(Math.random() * safeZones.length)];
-    
-    console.log(`🚶‍♂️ [Avatar] Mouvement FLUIDE vers zone visible:`, randomZone);
-    
-    // MOUVEMENT ULTRA-FLUIDE et lent
-    adventurer.style.transition = 'all 8s cubic-bezier(0.25, 0.1, 0.25, 1)'; // 8 secondes très fluide
-    adventurer.style.top = randomZone.top;
-    adventurer.style.left = randomZone.left;
-    adventurer.style.right = randomZone.right || 'auto';
-    adventurer.style.bottom = randomZone.bottom || 'auto';
-    
-    // FORCER LA VISIBILITÉ pendant le mouvement
-    adventurer.style.opacity = '1';
-    adventurer.style.visibility = 'visible';
-    adventurer.style.display = 'block';
-    adventurer.style.zIndex = '1200';
-    
-    // Déclencher réaction de mouvement
-    this.triggerAdventureReaction('moving', { zone: randomZone.name });
-    
-    // Programmer le prochain mouvement (plus long pour être moins distrayant)
-    setTimeout(() => {
-      this.moveAdventurerRandomly();
-    }, Math.random() * 15000 + 20000); // Entre 20-35 secondes
-  }
-
-  calculateVisibleSafeZones() {
-    const viewWidth = window.innerWidth;
-    const viewHeight = window.innerHeight;
-    const isMobile = viewWidth <= 768;
-    
-    // Zones sûres qui GARANTISSENT la visibilité
-    const safeZones = [];
-    
-    // Marges de sécurité pour rester TOUJOURS visible
-    const marginTop = 80; // En dessous du header
-    const marginBottom = 100; // Au dessus du footer
-    const marginSide = 20; // Marge latérale
-    
-    if (isMobile) {
-      // Sur mobile, zones très sûres et visibles
-      safeZones.push(
-        { 
-          name: 'top-right-visible', 
-          top: `${marginTop}px`, 
-          left: 'auto', 
-          right: `${marginSide}px`,
-          bottom: 'auto'
-        },
-        { 
-          name: 'top-left-visible', 
-          top: `${marginTop}px`, 
-          left: `${marginSide}px`, 
-          right: 'auto',
-          bottom: 'auto'
-        },
-        { 
-          name: 'middle-right-visible', 
-          top: '30%', 
-          left: 'auto', 
-          right: `${marginSide}px`,
-          bottom: 'auto'
-        },
-        { 
-          name: 'middle-left-visible', 
-          top: '35%', 
-          left: `${marginSide}px`, 
-          right: 'auto',
-          bottom: 'auto'
-        }
-      );
-    } else {
-      // Sur desktop, plus de zones mais toujours visibles
-      safeZones.push(
-        { 
-          name: 'top-right-visible', 
-          top: `${marginTop}px`, 
-          left: 'auto', 
-          right: `${marginSide}px`,
-          bottom: 'auto'
-        },
-        { 
-          name: 'top-left-visible', 
-          top: `${marginTop}px`, 
-          left: `${marginSide}px`, 
-          right: 'auto',
-          bottom: 'auto'
-        },
-        { 
-          name: 'middle-right-visible', 
-          top: '25%', 
-          left: 'auto', 
-          right: `${marginSide}px`,
-          bottom: 'auto'
-        },
-        { 
-          name: 'middle-left-visible', 
-          top: '30%', 
-          left: `${marginSide}px`, 
-          right: 'auto',
-          bottom: 'auto'
-        },
-        { 
-          name: 'center-right-visible', 
-          top: '50%', 
-          left: 'auto', 
-          right: `${marginSide}px`,
-          bottom: 'auto'
-        },
-        { 
-          name: 'bottom-right-visible', 
-          top: 'auto', 
-          bottom: `${marginBottom}px`, 
-          left: 'auto', 
-          right: `${marginSide}px`
-        }
-      );
-    }
-    
-    console.log('📍 [Avatar] Zones visibles calculées:', safeZones);
-    return safeZones;
-  }
-
-  startIdleAnimation() {
-    const adventurer = document.querySelector('.adventurer-avatar-ultra');
-    if (!adventurer) return;
-    
-    adventurer.style.animation = 'adventurerIdle 4s ease-in-out infinite';
-  }
-
-  destroy() {
-    console.log('🧹 [Avatar] Destruction instance...');
-    
-    // Arrêter tous les timers
-    if (this.visibilityTimer) {
-      clearInterval(this.visibilityTimer);
-      this.visibilityTimer = null;
-    }
-    
-    if (this.movementTimer) {
-      clearInterval(this.movementTimer);
-      this.movementTimer = null;
-    }
-    
-    if (this.idleTimer) {
-      clearInterval(this.idleTimer);
-      this.idleTimer = null;
-    }
-    
-    // Arrêter tous les observateurs
-    if (this.gameObserver) {
-      this.gameObserver.disconnect();
-      this.gameObserver = null;
-    }
-    
-    if (this.letterObserver) {
-      this.letterObserver.disconnect();
-      this.letterObserver = null;
-    }
-    
-    if (this.scoreObserver) {
-      this.scoreObserver.disconnect();
-      this.scoreObserver = null;
-    }
-    
-    // Supprimer l'avatar du DOM
-    const adventurer = document.getElementById('ultra-adventurer');
-    if (adventurer) {
-      adventurer.remove();
-    }
-    
-    // Nettoyer les références
-    this.currentUser = null;
-    this.isVisible = false;
-    
-    console.log('✅ [Avatar] Instance détruite proprement');
   }
 }
 
@@ -2271,20 +2463,70 @@ if (!document.getElementById('gameAvatarStyles')) {
   document.head.appendChild(styleSheet);
 }
 
-// Instance globale
+// Exposer la classe et l'instance globalement
+window.GameAvatarIntegration = GameAvatarIntegration;
 window.gameAvatarIntegration = null;
 
-// Auto-initialisation
+// Auto-initialisation FORCÉE (sauf si désactivée)
 document.addEventListener('DOMContentLoaded', () => {
-  if (!window.gameAvatarIntegration) {
-    console.log('🚀 [Avatar] Auto-initialisation système ultra-mobile');
-    window.gameAvatarIntegration = new GameAvatarIntegration({
-      gameType: 'auto-detect',
-      mobileOptimized: true,
-      contextualResponses: true
-    });
+  if (window.DISABLE_GAME_AVATAR_INTEGRATION) {
+    console.log('🚫 [Avatar] Auto-initialisation désactivée par flag');
+    return;
   }
+  console.log('🚀 [Avatar] DOM loaded - Initialisation FORCÉE');
+  
+  // Attendre un peu que les autres scripts se chargent
+  setTimeout(() => {
+    if (!window.gameAvatarIntegration) {
+      console.log('🚀 [Avatar] Création instance avatar...');
+      window.gameAvatarIntegration = new GameAvatarIntegration({
+        gameType: 'auto-detect',
+        mobileOptimized: true,
+        contextualResponses: true
+      });
+    } else {
+      console.log('🔄 [Avatar] Instance existante détectée, redémarrage...');
+      
+      // Forcer la recréation de l'avatar
+      window.gameAvatarIntegration.createUltraReactiveMiniAdventurer();
+      
+      // Si on est sur Enigma Scroll, configurer immédiatement
+      if (window.location.href.includes('enigma-scroll')) {
+        setTimeout(() => {
+          window.gameAvatarIntegration.initEnigmaScrollIntegration();
+        }, 1000);
+      }
+    }
+  }, 1000);
 });
+
+// DOUBLE SÉCURITÉ: Si la page est déjà chargée (sauf si désactivée)
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  if (window.DISABLE_GAME_AVATAR_INTEGRATION) {
+    console.log('🚫 [Avatar] Initialisation immédiate désactivée par flag');
+  } else {
+    console.log('🚀 [Avatar] Page déjà chargée - Initialisation immédiate');
+  
+  setTimeout(() => {
+    if (!window.gameAvatarIntegration) {
+      window.gameAvatarIntegration = new GameAvatarIntegration({
+        gameType: 'auto-detect',
+        mobileOptimized: true,
+        contextualResponses: true
+      });
+    }
+    
+    // Forcer Enigma Scroll si nécessaire
+    if (window.location.href.includes('enigma-scroll')) {
+      setTimeout(() => {
+        if (window.gameAvatarIntegration && !window.gameAvatarIntegration.isEnigmaScrollInit) {
+          window.gameAvatarIntegration.initEnigmaScrollIntegration();
+        }
+      }, 2000);
+    }
+  }, 500);
+  }
+}
 
 // Export pour usage externe
 if (typeof module !== 'undefined' && module.exports) {

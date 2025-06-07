@@ -546,6 +546,35 @@ async function saveAvatar() {
         // Mettre à jour l'état
         profileState.profile = updatedProfile;
 
+        // 🎮 Notifier l'avatar du jeu Enigma Scroll des changements
+        const avatarData = {
+            head,
+            body,
+            accessory: accessory || 'none',
+            background: background || 'default'
+        };
+        
+        // Mettre à jour le localStorage pour persistence
+        const storedUser = localStorage.getItem('english_quest_current_user');
+        if (storedUser) {
+            const userData = JSON.parse(storedUser);
+            userData.avatar = avatarData;
+            localStorage.setItem('english_quest_current_user', JSON.stringify(userData));
+            console.log('🎨 [Profile] Avatar mis à jour dans localStorage:', avatarData);
+        }
+        
+        // Notifier l'avatar du jeu si la fonction globale existe
+        if (typeof window.updateEnigmaAvatarFromProfile === 'function') {
+            const success = window.updateEnigmaAvatarFromProfile(avatarData);
+            if (success) {
+                console.log('🎮 [Profile] Avatar du jeu Enigma Scroll mis à jour avec succès');
+            }
+        } else if (typeof window.refreshEnigmaAvatarSkins === 'function') {
+            // Fallback: demander un rafraîchissement
+            window.refreshEnigmaAvatarSkins();
+            console.log('🔄 [Profile] Rafraîchissement de l\'avatar Enigma Scroll demandé');
+        }
+
         // Afficher un message de succès
         showSuccess('Avatar sauvegardé avec succès');
 

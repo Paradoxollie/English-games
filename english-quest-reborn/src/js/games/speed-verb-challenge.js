@@ -166,9 +166,119 @@ function initGame() {
     console.log("Jeu initialisé avec succès");
 }
 
-function optimizeForMobile() { /* ... existing logic ... */ }
-function protectGameState() { /* ... existing logic ... */ }
-function addEventListeners() { /* ... existing logic ... */ }
+function optimizeForMobile() {
+    // Optimisations pour mobile
+    if (document.body.classList.contains('is-mobile-device')) {
+        // Réduire la taille des polices
+        document.documentElement.style.setProperty('--base-font-size', '14px');
+        
+        // Optimiser les interactions tactiles
+        const gameButtons = document.querySelectorAll('.game-button');
+        gameButtons.forEach(btn => {
+            btn.style.minHeight = '48px';
+            btn.style.fontSize = '16px';
+        });
+        
+        // Optimiser les inputs
+        const inputs = document.querySelectorAll('.verb-input');
+        inputs.forEach(input => {
+            input.style.fontSize = '16px'; // Éviter le zoom sur iOS
+        });
+    }
+}
+
+function protectGameState() {
+    // Empêcher les tricheries
+    let gameStateChangeCount = 0;
+    const originalSetGameState = setGameState;
+    
+    window.setGameState = function(state) {
+        gameStateChangeCount++;
+        if (gameStateChangeCount > 10) {
+            console.warn('Trop de changements d\'état détectés');
+            return;
+        }
+        return originalSetGameState(state);
+    };
+    
+    // Protéger contre les manipulations de score
+    Object.defineProperty(window, 'score', {
+        get: function() { return score; },
+        set: function(val) { 
+            console.warn('Tentative de modification du score détectée');
+            return false;
+        }
+    });
+}
+function addEventListeners() {
+    // Gestion des boutons de difficulté
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Retirer la classe active de tous les boutons
+            difficultyBtns.forEach(b => b.classList.remove('active'));
+            // Ajouter la classe active au bouton cliqué
+            this.classList.add('active');
+            // Mettre à jour la difficulté
+            difficulty = this.getAttribute('data-difficulty');
+            console.log('Difficulté sélectionnée:', difficulty);
+        });
+    });
+
+    // Bouton pour commencer le jeu
+    if (elements.startGameBtn) {
+        elements.startGameBtn.addEventListener('click', function() {
+            console.log('Démarrage du jeu avec difficulté:', difficulty);
+            startGame();
+        });
+    }
+
+    // Bouton pour vérifier la réponse
+    if (elements.checkAnswerBtn) {
+        elements.checkAnswerBtn.addEventListener('click', checkAnswer);
+    }
+
+    // Bouton pour passer le verbe
+    if (elements.skipVerbBtn) {
+        elements.skipVerbBtn.addEventListener('click', skipVerb);
+    }
+
+    // Bouton pour sauvegarder le score
+    if (elements.saveScoreBtn) {
+        elements.saveScoreBtn.addEventListener('click', saveScore);
+    }
+
+    // Bouton pour rejouer
+    if (elements.playAgainBtn) {
+        elements.playAgainBtn.addEventListener('click', resetGame);
+    }
+
+    // Bouton pour afficher les règles (optionnel)
+    if (elements.showRulesBtn) {
+        elements.showRulesBtn.addEventListener('click', showRules);
+    }
+
+    // Bouton pour fermer les règles (optionnel)
+    if (elements.closeRulesBtn) {
+        elements.closeRulesBtn.addEventListener('click', hideRules);
+    }
+
+    // Gestion des entrées clavier dans le jeu
+    document.addEventListener('keydown', function(e) {
+        // Valider avec Entrée
+        if (e.key === 'Enter' && elements.checkAnswerBtn && !elements.checkAnswerBtn.disabled) {
+            e.preventDefault();
+            checkAnswer();
+        }
+        // Passer avec Escape
+        else if (e.key === 'Escape' && elements.skipVerbBtn && !elements.skipVerbBtn.disabled) {
+            e.preventDefault();
+            skipVerb();
+        }
+    });
+
+    console.log('Gestionnaires d\'événements ajoutés avec succès');
+}
 
 function initLeaderboard() {
     if (window.SpeedVerbLeaderboard && typeof window.SpeedVerbLeaderboard.init === 'function') {
@@ -224,176 +334,6 @@ async function loadLeaderboard() {
     }
 }
 
-
-function startGame() { /* ... existing logic ... */ }
-function startTimer() { /* ... existing logic ... */ }
-function updateTimeDisplay() { /* ... existing logic ... */ }
-function triggerRandomEvent() { /* ... existing logic ... */ }
-function showChallengeNotification(event) { /* ... existing logic ... */ }
-function checkChallengeCompletion(params) { /* ... existing logic ... */ }
-function completeChallengeAndApplyReward() { /* ... existing logic ... */ }
-function showEventNotification(event) { /* ... existing logic ... */ }
-function displayVerb() { /* ... existing logic ... */ }
-function checkAnswer() { /* ... existing logic ... */ }
-function skipVerb() { /* ... existing logic ... */ }
-function addExperience(xp) { /* ... existing logic ... */ }
-function updateXPBar() { /* ... existing logic ... */ }
-function updateHUD() { /* ... existing logic ... */ }
-function checkStreakBonus(streak) { /* ... existing logic ... */ }
-function playSound(soundName) { /* ... existing logic ... */ }
-function showFeedback(success, message) { /* ... existing logic ... */ }
-function setGameState(state) { /* ... existing logic ... */ }
-function showRules() { /* ... existing logic ... */ }
-function hideRules() { /* ... existing logic ... */ }
-function endGame() { /* ... existing logic ... */ }
-function showCurrentVerbAnswers() { /* ... existing logic ... */ }
-
-async function saveScore() {
-    console.log("Sauvegarde du score");
-    if (elements.saveScoreBtn) {
-        elements.saveScoreBtn.disabled = true;
-        elements.saveScoreBtn.textContent = "Sauvegarde...";
-    }
-
-    let userId = null;
-    let playerName = 'Joueur Anonyme';
-    const authState = window.authService?.getAuthState();
-
-    if (authState?.isAuthenticated && authState.profile) {
-        userId = authState.profile.userId; // Assuming userId is the unique ID from Firebase Auth
-        playerName = authState.profile.username || playerName; // Use username as playerName
-    } else {
-        console.warn("Utilisateur non authentifié ou profil non disponible pour sauvegarder le score.");
-        // Allow saving score anonymously if needed, or handle as an error
-        // For now, we'll proceed with a null userId and default playerName if not authenticated
-    }
-     // playerLevel is a game session variable, not from profile here
-    const currentLevelInGame = playerLevel;
-
-
-    const isHighScore = await checkIfHighScore(score);
-    if (isHighScore && elements.saveScoreBtn) {
-        elements.saveScoreBtn.classList.add('save-score-effect');
-    }
-
-    const scoreData = {
-        userId: userId, // Can be null if user is not authenticated
-        playerName: playerName,
-        gameId: 'speed-verb-challenge',
-        score: score,
-        level: currentLevelInGame, // Level achieved in this game session
-        verbsCompleted: verbsCompleted,
-        difficulty: difficulty,
-        timestamp: new Date().toISOString(), // ISO string for broader compatibility
-        highScore: isHighScore // Boolean flag
-    };
-
-    let scoreSavedSuccessfully = false;
-
-    if (window.SpeedVerbLeaderboard && typeof window.SpeedVerbLeaderboard.saveScore === 'function') {
-        console.log("Utilisation de SpeedVerbLeaderboard.saveScore");
-        try {
-            // SpeedVerbLeaderboard.saveScore might need to be async or return a promise
-            const result = await window.SpeedVerbLeaderboard.saveScore(scoreData); 
-            // Assuming saveScore returns a truthy value on success or a promise that resolves
-            if (result) { 
-                scoreSavedSuccessfully = true;
-            } else if (result === undefined) {
-                // If it returns undefined, we might assume it handles its own notifications/errors
-                // or we decide it means it didn't handle it, and we should fallback.
-                // For now, let's assume undefined means it tried but we don't know the outcome.
-                console.warn("SpeedVerbLeaderboard.saveScore returned undefined. Fallback might be needed.");
-            }
-        } catch (e) {
-            console.error("Erreur avec SpeedVerbLeaderboard.saveScore:", e);
-            // Fallback will be triggered if scoreSavedSuccessfully is still false
-        }
-    }
-    
-    if (!scoreSavedSuccessfully && window.firebaseServiceInstance && typeof window.firebaseServiceInstance.addScore === 'function') {
-        console.log("SpeedVerbLeaderboard non disponible ou a échoué, utilisation de firebaseServiceInstance.addScore");
-        try {
-            await window.firebaseServiceInstance.addScore(scoreData);
-            scoreSavedSuccessfully = true;
-        } catch (e) {
-            console.error("Erreur avec firebaseServiceInstance.addScore:", e);
-        }
-    } else if (!scoreSavedSuccessfully) {
-         console.error("Aucun service de sauvegarde de score disponible (SpeedVerbLeaderboard ou firebaseServiceInstance).");
-    }
-
-
-    if (scoreSavedSuccessfully) {
-        const successMessage = isHighScore ? "🏆 Nouveau record ! Score sauvegardé !" : "Score sauvegardé !";
-        showFeedback(true, successMessage);
-        // RewardSystem calls are typically in endGame, no need to duplicate here unless specifically for saving action
-        setTimeout(resetGame, 2000);
-    } else {
-        showFeedback(false, "Erreur: Score non sauvegardé. Réessayez.");
-        if (elements.saveScoreBtn) {
-            elements.saveScoreBtn.disabled = false;
-            elements.saveScoreBtn.textContent = "Inscrire mon score";
-        }
-    }
-}
-
-
-async function checkIfHighScore(currentScore) {
-    // Fallback to true if leaderboard service is not available or fails,
-    // to ensure high score related UI/rewards are triggered if applicable locally.
-    if (window.SpeedVerbLeaderboard && typeof window.SpeedVerbLeaderboard.isHighScore === 'function') {
-        try {
-            return await window.SpeedVerbLeaderboard.isHighScore(currentScore);
-        } catch (e) {
-            console.warn("Erreur avec SpeedVerbLeaderboard.isHighScore, fallback:", e);
-            return true; // Fallback if method fails
-        }
-    } else if (window.firebaseServiceInstance && window.firebaseServiceInstance.db) {
-        try {
-            const querySnapshot = await window.firebaseServiceInstance.db.collection('game_scores')
-                .where('gameId', '==', 'speed-verb-challenge')
-                .orderBy('score', 'desc')
-                .limit(10)
-                .get();
-            if (querySnapshot.size < 10) return true;
-            const lowestTopScore = querySnapshot.docs[querySnapshot.docs.length - 1]?.data().score || 0;
-            return currentScore > lowestTopScore;
-        } catch (e) {
-            console.warn("Erreur de vérification du high score via firebaseServiceInstance, fallback:", e);
-            return true;
-        }
-    }
-    console.warn("Aucun service de leaderboard pour vérifier le high score, fallback à true.");
-    return true; 
-}
-
-
-function rewardHighScore(score, offline = false) { /* ... existing logic, ensure it uses window.RewardSystem ... */ }
-// function getPlayerNameFromProfile() { /* This function seems redundant now with the new getPlayerName */ }
-function resetGame() { /* ... existing logic ... */ }
-
-document.addEventListener('scoreSubmitted', function(event) { /* ... existing logic ... */ });
-document.addEventListener('DOMContentLoaded', initGame);
-
-console.log("Speed Verb Challenge script loaded and potentially initialized.");
-// Ensure optimizeForMobile, protectGameState, addEventListeners, and other functions not fully shown
-// are either correctly defined in the original script or their existing logic is preserved.
-// For brevity, only the directly modified functions and their context are fully expanded here.
-// The placeholders like /* ... existing logic ... */ mean the original code for that function should be kept.
-
-// Full function definitions for functions that were previously just placeholders or had /* ... existing logic ... */
-// optimizeForMobile, protectGameState, addEventListeners need their original content if not shown above.
-// For example:
-// function optimizeForMobile() { /* ... full original logic ... */ }
-// function protectGameState() { /* ... full original logic ... */ }
-// etc.
-
-// The following are the functions that were previously marked as /* ... existing logic ... */
-// and should retain their original implementation details.
-
-// function optimizeForMobile() { /* ... original logic from file ... */ }
-// function protectGameState() { /* ... original logic from file ... */ }
-// function addEventListeners() { /* ... original logic from file ... */ }
 function startGame() {
     score = 0;
     timeLeft = 90;
@@ -405,8 +345,14 @@ function startGame() {
     highestStreak = 0;
     comboMultiplier = 1;
     verbsCompleted = 0;
-    const difficultyOptions = document.querySelectorAll('input[name="difficulty"]');
-    difficultyOptions.forEach(option => { if (option.checked) difficulty = option.value; });
+    
+    // Récupérer la difficulté depuis le bouton actif
+    const activeDifficultyBtn = document.querySelector('.difficulty-btn.active');
+    if (activeDifficultyBtn) {
+        difficulty = activeDifficultyBtn.getAttribute('data-difficulty');
+    }
+    console.log('Démarrage du jeu avec difficulté:', difficulty);
+    
     updateHUD();
     setGameState('playing');
     startTimer();

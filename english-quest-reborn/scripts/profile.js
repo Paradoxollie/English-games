@@ -224,6 +224,9 @@ async function loadProfile(profileData) {
     if (adminPanelLinkContainer) {
       adminPanelLinkContainer.style.display = profileData.isAdmin ? 'block' : 'none';
     }
+
+    // 🎮 Notifier l'avatar du jeu Enigma Scroll des changements
+    notifyEnigmaAvatarUpdate(avatarToDisplay);
   } catch (error) {
     console.error("[ProfileJs] Error loading profile:", error);
   }
@@ -984,6 +987,41 @@ function setupEventListeners() {
     }
   } catch (error) {
     console.error("[ProfileJs] Error setting up settings listeners:", error);
+  }
+}
+
+// 🎮 Notifier l'avatar du jeu Enigma Scroll des changements
+function notifyEnigmaAvatarUpdate(avatarData) {
+  try {
+    // 1. Mettre à jour le localStorage pour persistence
+    const storedUser = localStorage.getItem('english_quest_current_user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      userData.avatar = avatarData;
+      localStorage.setItem('english_quest_current_user', JSON.stringify(userData));
+      console.log('[ProfileJs] Avatar mis à jour dans localStorage:', avatarData);
+    }
+    
+    // 2. Notifier l'avatar du jeu si la fonction globale existe
+    if (typeof window.updateEnigmaAvatarFromProfile === 'function') {
+      const success = window.updateEnigmaAvatarFromProfile(avatarData);
+      if (success) {
+        console.log('[ProfileJs] Avatar du jeu Enigma Scroll mis à jour avec succès');
+      }
+    } else if (typeof window.refreshEnigmaAvatarSkins === 'function') {
+      // Fallback: demander un rafraîchissement
+      window.refreshEnigmaAvatarSkins();
+      console.log('[ProfileJs] Rafraîchissement de l\'avatar Enigma Scroll demandé');
+    }
+    
+    // 3. Notifier d'autres systèmes si nécessaire
+    if (window.enigmaAvatar && typeof window.enigmaAvatar.refreshUserSkins === 'function') {
+      window.enigmaAvatar.refreshUserSkins();
+      console.log('[ProfileJs] Rafraîchissement direct de l\'avatar Enigma Scroll');
+    }
+    
+  } catch (error) {
+    console.error('[ProfileJs] Erreur lors de la notification avatar:', error);
   }
 }
 
