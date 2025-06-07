@@ -1212,11 +1212,21 @@ class EnigmaScrollAvatar {
   getAvatarImagePaths() {
     const basePath = '../assets/avatars/';
     
+    // Corriger les noms de fichiers d'avatar pour correspondre aux fichiers réels
+    let headFile = this.userSkins.head;
+    let bodyFile = this.userSkins.body;
+    let backgroundFile = this.userSkins.background;
+    
+    // Mapping des noms dans Firestore vers les vrais fichiers
+    if (headFile === 'bear_head') headFile = 'bear';
+    if (bodyFile === 'bear_body') bodyFile = 'bear';
+    if (backgroundFile === 'default_background') backgroundFile = 'default';
+    
     return {
-      head: `${basePath}heads/${this.userSkins.head}.png`,
-      body: `${basePath}bodies/${this.userSkins.body}.png`,
+      head: `${basePath}heads/${headFile}.png`,
+      body: `${basePath}bodies/${bodyFile}.png`,
       accessory: `${basePath}accessories/${this.userSkins.accessory}.gif`, // Note: .gif pour l'accessoire
-      background: `${basePath}backgrounds/${this.userSkins.background}.png`
+      background: `${basePath}backgrounds/${backgroundFile}.png`
     };
   }
   

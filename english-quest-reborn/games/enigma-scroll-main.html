@@ -448,212 +448,17 @@
   </style>
 
   <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
   
-  <!-- Configuration Firebase -->
-  <script>
-    // Configuration Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
-      authDomain: "english-games-41017.firebaseapp.com",
-      projectId: "english-games-41017",
-      storageBucket: "english-games-41017.appspot.com",
-      messagingSenderId: "1062036556501",
-      appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
-    };
+  <!-- Scripts d'authentification du site -->
+  <script type="module" src="../scripts/auth-service.js"></script>
+  <script type="module" src="../scripts/auth-header.js"></script>
+  <script src="../scripts/universal-mobile-auth.js" defer></script>
 
-    // Initialiser Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-      console.log('✅ Firebase initialisé pour Enigma Scroll');
-    }
-  </script>
-  
-  <script src="../src/js/firebase-init.js"></script>
-  <script src="../src/js/firebase-service-adapter.js"></script>
-  
-  <!-- Scripts d'authentification -->
-  <script src="../scripts/firebase-config.js"></script>
-  <script src="../src/js/auth-state.js"></script>
-  <script>
-    // Script pour gérer l'interface utilisateur d'authentification dans Enigma Scroll
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🎮 [Enigma Auth] Initialisation de l\'authentification pour Enigma Scroll');
-      
-      // Initialiser l'état d'authentification
-      if (typeof initAuthStateListener === 'function') {
-        initAuthStateListener();
-      }
-      
-      // Fonction pour mettre à jour l'interface utilisateur
-      function updateAuthUI() {
-        console.log('🔄 [Enigma Auth] Mise à jour de l\'interface utilisateur');
-        
-        // Récupérer l'utilisateur actuel
-        let currentUser = null;
-        
-        // Essayer différentes méthodes pour récupérer l'utilisateur
-        if (typeof getCurrentUser === 'function') {
-          currentUser = getCurrentUser();
-        } else if (window.authState && window.authState.profile) {
-          currentUser = window.authState.profile;
-        } else if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-          const firebaseUser = firebase.auth().currentUser;
-          currentUser = {
-            uid: firebaseUser.uid,
-            username: firebaseUser.displayName || firebaseUser.email || 'Joueur',
-            displayName: firebaseUser.displayName || firebaseUser.email || 'Joueur'
-          };
-        }
-        
-        // Si on a un utilisateur, s'assurer qu'il est sauvegardé correctement dans localStorage
-        if (currentUser) {
-          // Sauvegarder avec la clé attendue par universal-mobile-auth.js
-          try {
-            localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
-            console.log('💾 [Enigma Auth] Utilisateur sauvegardé dans localStorage:', currentUser.username);
-          } catch (error) {
-            console.warn('⚠️ [Enigma Auth] Erreur sauvegarde localStorage:', error);
-          }
-        }
-        
-        console.log('👤 [Enigma Auth] Utilisateur actuel:', currentUser);
-        
-                 // Mettre à jour les éléments de l'interface
-         const loginButton = document.getElementById('loginBtn');
-         const profileButton = document.getElementById('profileBtn');
-        
-        if (currentUser && (currentUser.username || currentUser.displayName)) {
-          // L'utilisateur est connecté
-          const displayName = currentUser.username || currentUser.displayName || 'Utilisateur';
-          
-          if (loginButton) {
-            loginButton.style.display = 'none';
-          }
-          if (profileButton) {
-            profileButton.style.display = 'inline-block';
-            profileButton.textContent = displayName;
-            // Assurer que c'est un lien vers le profil
-            profileButton.href = '../profile.html';
-          }
-          
-          // Mettre à jour aussi les boutons mobiles si ils existent
-          const mobileLoginButton = document.getElementById('mobileLoginButton');
-          const mobileProfileButton = document.getElementById('mobileProfileButton');
-          if (mobileLoginButton) mobileLoginButton.style.display = 'none';
-          if (mobileProfileButton) {
-            mobileProfileButton.style.display = 'block';
-            mobileProfileButton.textContent = displayName;
-          }
-          
-          console.log('✅ [Enigma Auth] Interface mise à jour pour utilisateur connecté:', displayName);
-        } else {
-          // L'utilisateur n'est pas connecté
-          if (loginButton) {
-            loginButton.style.display = 'inline-block';
-          }
-          if (profileButton) {
-            profileButton.style.display = 'none';
-          }
-          
-          // Mettre à jour aussi les boutons mobiles si ils existent
-          const mobileLoginButton = document.getElementById('mobileLoginButton');
-          const mobileProfileButton = document.getElementById('mobileProfileButton');
-          if (mobileLoginButton) mobileLoginButton.style.display = 'block';
-          if (mobileProfileButton) mobileProfileButton.style.display = 'none';
-          
-          console.log('🔴 [Enigma Auth] Interface mise à jour pour utilisateur déconnecté');
-        }
-        
-        // Notifier le système d'avatar si l'utilisateur est connecté
-        if (currentUser && window.enigmaAvatar) {
-          console.log('🎭 [Enigma Auth] Notification du système d\'avatar');
-          // Le système d'avatar peut maintenant utiliser les informations de l'utilisateur
-          window.enigmaAvatar.userConnected = true;
-          window.enigmaAvatar.currentUser = currentUser;
-          
-          // Forcer la mise à jour des skins d'avatar
-          if (typeof window.enigmaAvatar.refreshUserSkins === 'function') {
-            window.enigmaAvatar.refreshUserSkins();
-            console.log('🔄 [Enigma Auth] Refresh des skins d\'avatar demandé');
-          }
-        }
-      }
-      
-      // Mettre à jour l'interface avec délais échelonnés pour laisser le temps au système de se charger
-      setTimeout(updateAuthUI, 500);
-      setTimeout(updateAuthUI, 1500);
-      setTimeout(updateAuthUI, 3000);
-      
-      // Vérifier périodiquement l'état d'authentification
-      const checkInterval = setInterval(() => {
-        updateAuthUI();
-      }, 2000);
-      
-      // Arrêter la vérification après 30 secondes pour éviter une boucle infinie
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        console.log('🛑 [Enigma Auth] Arrêt de la vérification périodique');
-      }, 30000);
-      
-      // Écouter les changements d'état d'authentification si disponible
-      if (window.authState) {
-        // Surveiller les changements dans authState
-        let lastAuthState = null;
-        const monitorAuthState = setInterval(() => {
-          const currentAuthState = window.authState.isAuthenticated;
-          if (currentAuthState !== lastAuthState) {
-            console.log('🔄 [Enigma Auth] Changement d\'état détecté');
-            lastAuthState = currentAuthState;
-            updateAuthUI();
-          }
-        }, 1000);
-        
-        // Arrêter la surveillance après 60 secondes
-        setTimeout(() => {
-          clearInterval(monitorAuthState);
-        }, 60000);
-      }
-      
-      // Ajouter une surveillance des changements de skins d'avatar
-      let lastAvatarData = null;
-      const monitorAvatarChanges = setInterval(() => {
-        try {
-          let currentAvatarData = null;
-          
-          // Récupérer les données d'avatar actuelles
-          if (typeof getCurrentUser === 'function') {
-            const user = getCurrentUser();
-            currentAvatarData = user ? user.avatar : null;
-          }
-          
-          // Vérifier si les données d'avatar ont changé
-          const avatarDataString = JSON.stringify(currentAvatarData);
-          if (lastAvatarData !== avatarDataString) {
-            console.log('🎭 [Enigma Auth] Changement de skins d\'avatar détecté');
-            lastAvatarData = avatarDataString;
-            
-            // Notifier le système d'avatar
-            if (window.enigmaAvatar && typeof window.enigmaAvatar.refreshUserSkins === 'function') {
-              window.enigmaAvatar.refreshUserSkins();
-              console.log('🔄 [Enigma Auth] Refresh des skins suite au changement');
-            }
-          }
-        } catch (error) {
-          console.warn('⚠️ [Enigma Auth] Erreur surveillance avatar:', error);
-        }
-      }, 3000);
-      
-      // Arrêter la surveillance des avatars après 2 minutes
-      setTimeout(() => {
-        clearInterval(monitorAvatarChanges);
-        console.log('🛑 [Enigma Auth] Arrêt surveillance changements avatar');
-      }, 120000);
-    });
-  </script>
-  <script src="../scripts/game-stats-service.js"></script>
+
+
 
   <!-- Nouveau système de notation simplifié -->
   <script src="../scripts/simple-rating-system.js"></script>
@@ -1571,21 +1376,27 @@
 <body>
   <!-- Header -->
   <header class="header">
-    <div class="header-container">
-      <a href="../index.html" class="logo">English <span>Quest</span></a>
-      
-      <nav class="nav" id="mainNav">
+    <div class="container header-container">
+      <a href="../index.html" class="logo">ENGLISH<span>QUEST</span></a>
+
+      <nav class="nav">
         <ul class="nav-list">
           <li><a href="../index.html" class="nav-link">Accueil</a></li>
           <li><a href="../games.html" class="nav-link active">Jeux</a></li>
           <li><a href="../courses.html" class="nav-link">Cours</a></li>
-          <li><a href="../progress.html" class="nav-link">Progression</a></li>
+          <li><a href="../gallery.html" class="nav-link">Galerie</a></li>
+          <li><a href="../leaderboard.html" class="nav-link">Classement</a></li>
+          <!-- Éléments user-menu intégrés dans la navigation mobile -->
+          <li class="mobile-only"><a href="../login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
+          <li class="mobile-only"><a href="../profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">Déconnexion</a></li>
         </ul>
       </nav>
-      
+
       <div class="user-menu" id="userMenu">
-        <a href="../auth.html" class="btn-login" id="loginBtn">Se connecter</a>
-        <a href="../profile.html" class="btn-login" id="profileBtn" style="display: none;">Mon Profil</a>
+        <a href="../login.html" class="btn-login" id="loginButton">Connexion</a>
+        <a href="../profile.html" class="btn-login" id="profileButton" style="display: none;">Mon Profil</a>
+        <button class="menu-toggle">☰</button>
       </div>
     </div>
   </header>
