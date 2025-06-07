@@ -1091,25 +1091,68 @@ class EnigmaScrollAvatar {
         }
       }
       
-      // 4. Essayer Firebase Auth directement si disponible
-      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-        const firebaseUser = firebase.auth().currentUser;
-        console.log('🔥 [EnigmaAvatar] Utilisateur Firebase trouvé:', firebaseUser.uid);
+      // 4. Essayer via englishQuestUserId avec récupération Firestore
+      const userId = localStorage.getItem('englishQuestUserId');
+      if (userId && userId !== 'undefined' && userId !== 'null' && typeof firebase !== 'undefined' && firebase.firestore) {
+        console.log('🔍 [EnigmaAvatar] ID utilisateur trouvé, récupération Firestore:', userId);
         
-        // Essayer de récupérer le profil utilisateur depuis Firestore
-        if (firebase.firestore) {
-          firebase.firestore().collection('users').doc(firebaseUser.uid).get()
-            .then(doc => {
-              if (doc.exists) {
-                const userData = doc.data();
-                if (userData.avatar) {
-                  console.log('🎭 [EnigmaAvatar] Avatar trouvé dans Firestore:', userData.avatar);
-                  this.userSkins = this.validateAndNormalizeAvatarData(userData.avatar);
-                  this.createAvatar(); // Recréer l'avatar avec les bons skins
+        // Récupérer les données utilisateur depuis Firestore
+        firebase.firestore().collection('users').doc(userId).get()
+          .then(doc => {
+            if (doc.exists) {
+              const userData = doc.data();
+              console.log('👤 [EnigmaAvatar] Données utilisateur récupérées depuis Firestore:', userData);
+              
+              if (userData.avatar) {
+                console.log('🎭 [EnigmaAvatar] Avatar trouvé dans Firestore:', userData.avatar);
+                this.userSkins = this.validateAndNormalizeAvatarData(userData.avatar);
+                this.createAvatar(); // Recréer l'avatar avec les bons skins
+                
+                // Sauvegarder l'utilisateur complet dans localStorage pour universal-mobile-auth.js
+                const fullUser = {
+                  uid: userId,
+                  id: userId,
+                  username: userData.username,
+                  displayName: userData.displayName || userData.username,
+                  avatar: userData.avatar,
+                  ...userData
+                };
+                
+                try {
+                  localStorage.setItem('english_quest_current_user', JSON.stringify(fullUser));
+                  console.log('💾 [EnigmaAvatar] Utilisateur complet sauvegardé dans localStorage');
+                } catch (error) {
+                  console.warn('⚠️ [EnigmaAvatar] Erreur sauvegarde localStorage:', error);
                 }
               }
-            })
-            .catch(error => console.warn('⚠️ [EnigmaAvatar] Erreur Firestore:', error));
+            } else {
+              console.warn('⚠️ [EnigmaAvatar] Aucun document utilisateur trouvé pour:', userId);
+            }
+          })
+          .catch(error => console.warn('⚠️ [EnigmaAvatar] Erreur Firestore:', error));
+      }
+      
+      // 5. Essayer Firebase Auth directement si disponible (fallback)
+      if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+        const firebaseUser = firebase.auth().currentUser;
+        console.log('🔥 [EnigmaAvatar] Utilisateur Firebase trouvé (fallback):', firebaseUser.uid);
+        
+        // Si on n'a pas déjà récupéré via l'étape 4, essayer ici
+        if (!userId || userId === 'undefined' || userId === 'null') {
+          if (firebase.firestore) {
+            firebase.firestore().collection('users').doc(firebaseUser.uid).get()
+              .then(doc => {
+                if (doc.exists) {
+                  const userData = doc.data();
+                  if (userData.avatar) {
+                    console.log('🎭 [EnigmaAvatar] Avatar trouvé dans Firestore (fallback):', userData.avatar);
+                    this.userSkins = this.validateAndNormalizeAvatarData(userData.avatar);
+                    this.createAvatar(); // Recréer l'avatar avec les bons skins
+                  }
+                }
+              })
+              .catch(error => console.warn('⚠️ [EnigmaAvatar] Erreur Firestore (fallback):', error));
+          }
         }
       }
       

@@ -508,22 +508,47 @@
           };
         }
         
+        // Si on a un utilisateur, s'assurer qu'il est sauvegardé correctement dans localStorage
+        if (currentUser) {
+          // Sauvegarder avec la clé attendue par universal-mobile-auth.js
+          try {
+            localStorage.setItem('english_quest_current_user', JSON.stringify(currentUser));
+            console.log('💾 [Enigma Auth] Utilisateur sauvegardé dans localStorage:', currentUser.username);
+          } catch (error) {
+            console.warn('⚠️ [Enigma Auth] Erreur sauvegarde localStorage:', error);
+          }
+        }
+        
         console.log('👤 [Enigma Auth] Utilisateur actuel:', currentUser);
         
                  // Mettre à jour les éléments de l'interface
          const loginButton = document.getElementById('loginBtn');
          const profileButton = document.getElementById('profileBtn');
         
-        if (currentUser && currentUser.username) {
+        if (currentUser && (currentUser.username || currentUser.displayName)) {
           // L'utilisateur est connecté
+          const displayName = currentUser.username || currentUser.displayName || 'Utilisateur';
+          
           if (loginButton) {
             loginButton.style.display = 'none';
           }
           if (profileButton) {
             profileButton.style.display = 'inline-block';
-            profileButton.textContent = currentUser.username;
+            profileButton.textContent = displayName;
+            // Assurer que c'est un lien vers le profil
+            profileButton.href = '../profile.html';
           }
-          console.log('✅ [Enigma Auth] Interface mise à jour pour utilisateur connecté:', currentUser.username);
+          
+          // Mettre à jour aussi les boutons mobiles si ils existent
+          const mobileLoginButton = document.getElementById('mobileLoginButton');
+          const mobileProfileButton = document.getElementById('mobileProfileButton');
+          if (mobileLoginButton) mobileLoginButton.style.display = 'none';
+          if (mobileProfileButton) {
+            mobileProfileButton.style.display = 'block';
+            mobileProfileButton.textContent = displayName;
+          }
+          
+          console.log('✅ [Enigma Auth] Interface mise à jour pour utilisateur connecté:', displayName);
         } else {
           // L'utilisateur n'est pas connecté
           if (loginButton) {
@@ -532,6 +557,13 @@
           if (profileButton) {
             profileButton.style.display = 'none';
           }
+          
+          // Mettre à jour aussi les boutons mobiles si ils existent
+          const mobileLoginButton = document.getElementById('mobileLoginButton');
+          const mobileProfileButton = document.getElementById('mobileProfileButton');
+          if (mobileLoginButton) mobileLoginButton.style.display = 'block';
+          if (mobileProfileButton) mobileProfileButton.style.display = 'none';
+          
           console.log('🔴 [Enigma Auth] Interface mise à jour pour utilisateur déconnecté');
         }
         
@@ -550,8 +582,10 @@
         }
       }
       
-      // Mettre à jour l'interface immédiatement
+      // Mettre à jour l'interface avec délais échelonnés pour laisser le temps au système de se charger
       setTimeout(updateAuthUI, 500);
+      setTimeout(updateAuthUI, 1500);
+      setTimeout(updateAuthUI, 3000);
       
       // Vérifier périodiquement l'état d'authentification
       const checkInterval = setInterval(() => {
