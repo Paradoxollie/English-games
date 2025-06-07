@@ -32,13 +32,13 @@ def main():
     try:
         with socketserver.TCPServer(("", port), handler) as httpd:
             print(f"✅ Serveur démarré sur http://localhost:{port}")
-            print(f"🎮 Jeu principal: http://localhost:{port}/games/enigma-scroll-main.html")
+            print(f"🎮 Jeu principal: http://localhost:{port}/src/games/enigma-scroll/index.html")
             print(f"👤 Profil: http://localhost:{port}/profile.html")
             print(f"🏠 Page d'accueil: http://localhost:{port}/index.html")
             print(f"\n💡 Conseil: Utilisez Ctrl+C pour arrêter le serveur")
             
             # Ouvrir automatiquement le navigateur
-            webbrowser.open(f"http://localhost:{port}/games/enigma-scroll-main.html")
+            webbrowser.open(f"http://localhost:{port}/src/games/enigma-scroll/index.html")
             
             # Démarrer le serveur
             httpd.serve_forever()

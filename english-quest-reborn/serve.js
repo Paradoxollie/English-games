@@ -66,5 +66,5 @@ const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`🚀 Serveur HTTP simple démarré sur http://localhost:${PORT}`);
   console.log(`📁 Servant les fichiers depuis: ${__dirname}`);
-  console.log(`🎮 Accédez au jeu: http://localhost:${PORT}/games/enigma-scroll-main.html`);
+  console.log(`🎮 Accédez au jeu: http://localhost:${PORT}/src/games/enigma-scroll/index.html`);
 }); 
