@@ -599,60 +599,10 @@
             window.enigmaAvatar.reactToGameStart();
             console.log('🎯 [Avatar] Test de démarrage envoyé');
             
-            // Test progressif des animations selon les performances
-            setTimeout(() => {
-              console.log('🎭 [Avatar] Test crescendo des animations...');
-              
-              // Niveau 1 (débutant)
-              console.log('Level 1: Bounce débutant');
-              window.enigmaAvatar.playAnimation('physicalBounce');
-              
-              setTimeout(() => {
-                // Simuler amélioration des performances
-                window.playerPerformanceTracker.updateScore(20);
-                window.playerPerformanceTracker.updateCombo(3);
-                window.playerPerformanceTracker.wordsFound = 2;
-                
-                console.log('Level 2: Spin intermédiaire');
-                window.enigmaAvatar.playAnimation('physicalSpin');
-                
-                setTimeout(() => {
-                  // Simuler excellentes performances
-                  window.playerPerformanceTracker.updateScore(30);
-                  window.playerPerformanceTracker.updateScore(35);
-                  window.playerPerformanceTracker.updateCombo(6);
-                  window.playerPerformanceTracker.wordsFound = 4;
-                  
-                  console.log('Level 3: Bounce avancé');
-                  window.enigmaAvatar.playAnimation('physicalBounce');
-                  
-                  setTimeout(() => {
-                    // Simuler performances légendaires
-                    window.playerPerformanceTracker.updateScore(45);
-                    window.playerPerformanceTracker.updateScore(50);
-                    window.playerPerformanceTracker.updateCombo(9);
-                    window.playerPerformanceTracker.wordsFound = 6;
-                    
-                    console.log('SUPER: Spin légendaire !');
-                    window.enigmaAvatar.playAnimation('physicalSpin');
-                  }, 3000);
-                }, 3000);
-              }, 3000);
-            }, 3000);
+
                       }, 2000);
             
-            // Ajouter boutons de test manuel
-            setTimeout(() => {
-              const testButtons = document.createElement('div');
-              testButtons.style.cssText = 'position: fixed; top: 10px; left: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 5px;';
-              testButtons.innerHTML = `
-                <button onclick="window.enigmaAvatar.playAnimation('physicalSpin')" style="margin: 2px; padding: 5px; background: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer;">SPIN</button>
-                <button onclick="window.enigmaAvatar.playAnimation('physicalBounce')" style="margin: 2px; padding: 5px; background: #4ecdc4; color: white; border: none; border-radius: 3px; cursor: pointer;">BOUNCE</button>
-                <button onclick="window.enigmaAvatar.playAnimation('physicalJump')" style="margin: 2px; padding: 5px; background: #feca57; color: white; border: none; border-radius: 3px; cursor: pointer;">JUMP</button>
-              `;
-              document.body.appendChild(testButtons);
-              console.log('🔧 [Avatar] Boutons de test ajoutés');
-            }, 3000);
+
         } else {
           console.error('❌ [Avatar] Problème avec notre système');
         }

@@ -157,6 +157,9 @@ class EnigmaScrollAvatar {
   }
   
   init() {
+    // 0. Configurer l'écouteur d'authentification pour les skins
+    this.setupAuthListener();
+    
     // 1. Créer l'avatar immédiatement
     this.createAvatar();
     
@@ -172,6 +175,24 @@ class EnigmaScrollAvatar {
       this.showMessage(this.getRandomPhrase(greetings), 3000);
       this.playAnimation('physicalHop');
     }, 1000);
+  }
+  
+  // 🔐 Configurer l'écouteur d'authentification pour les changements de skins
+  setupAuthListener() {
+    console.log('🔐 [EnigmaAvatar] Configuration de l\'écouteur d\'authentification...');
+    
+    // Écouter les changements via le service d'authentification
+    if (window.authService && typeof window.authService.addAuthStateListener === 'function') {
+      window.authService.addAuthStateListener((user) => {
+        console.log('🔄 [EnigmaAvatar] Changement d\'authentification détecté:', user);
+        
+        if (user && user.avatar) {
+          console.log('🎨 [EnigmaAvatar] Nouveaux skins utilisateur détectés, mise à jour...');
+          this.userSkins = this.getUserSkinChoices();
+          this.createAvatar(); // Recréer l'avatar avec les nouveaux skins
+        }
+      });
+    }
   }
   
   createAvatar() {
@@ -331,10 +352,10 @@ class EnigmaScrollAvatar {
       this.checkGameAttempts();
     }, 1000);
     
-    // 🎨 Surveiller les changements de skins utilisateur toutes les 3 secondes
+    // 🎨 Surveiller les changements de skins utilisateur toutes les 30 secondes (réduit la fréquence)
     setInterval(() => {
       this.updateAvatarSkins();
-    }, 3000);
+    }, 30000);
     
     // Surveiller les messages du jeu
     this.watchGameMessages();
@@ -1021,7 +1042,18 @@ class EnigmaScrollAvatar {
     console.log('🎨 [EnigmaAvatar] Récupération des skins utilisateur...');
     
     try {
-      // 1. Essayer de récupérer depuis le localStorage
+      // 1. Essayer de récupérer depuis le service d'authentification
+      if (window.authService && typeof window.authService.getCurrentUser === 'function') {
+        const currentUser = window.authService.getCurrentUser();
+        console.log('🔐 [EnigmaAvatar] Utilisateur du service auth:', currentUser);
+        
+        if (currentUser && currentUser.avatar) {
+          console.log('🎭 [EnigmaAvatar] Avatar utilisateur trouvé via authService:', currentUser.avatar);
+          return this.validateAndNormalizeAvatarData(currentUser.avatar);
+        }
+      }
+      
+      // 2. Essayer de récupérer depuis le localStorage
       const storedUser = localStorage.getItem('english_quest_current_user');
       if (storedUser) {
         const userData = JSON.parse(storedUser);
@@ -1033,19 +1065,19 @@ class EnigmaScrollAvatar {
         }
       }
       
-      // 2. Essayer d'autres sources de données utilisateur
+      // 3. Essayer d'autres sources de données utilisateur
       if (window.userData && window.userData.avatar) {
         console.log('🌍 [EnigmaAvatar] Avatar depuis window.userData:', window.userData.avatar);
         return this.validateAndNormalizeAvatarData(window.userData.avatar);
       }
       
-      // 3. Chercher dans d'autres variables globales possibles
+      // 4. Chercher dans d'autres variables globales possibles
       if (window.currentUser && window.currentUser.avatar) {
         console.log('🌐 [EnigmaAvatar] Avatar depuis window.currentUser:', window.currentUser.avatar);
         return this.validateAndNormalizeAvatarData(window.currentUser.avatar);
       }
       
-      // 4. Valeurs par défaut si aucune donnée trouvée
+      // 5. Valeurs par défaut si aucune donnée trouvée
       console.log('⚠️ [EnigmaAvatar] Aucun avatar utilisateur trouvé, utilisation des valeurs par défaut');
       return this.getDefaultAvatarSkins();
       
@@ -1217,6 +1249,65 @@ const avatarCSS = `
   25% { transform: translateX(-5px) rotate(-8deg) scale(1.05); }
   50% { transform: translateX(5px) rotate(8deg) scale(1.1); }
   75% { transform: translateX(-3px) rotate(-4deg) scale(1.05); }
+}
+
+/* Animations physiques niveaux */
+@keyframes physicalBounceLevel1 {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+@keyframes physicalBounceLevel2 {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-15px) scale(1.03); }
+  50% { transform: translateY(-30px) scale(1.08); }
+  75% { transform: translateY(-15px) scale(1.03); }
+}
+
+@keyframes physicalBounceLevel3 {
+  0%, 100% { transform: translateY(0) scale(1); }
+  20% { transform: translateY(-25px) scale(1.05); }
+  40% { transform: translateY(-40px) scale(1.1); }
+  60% { transform: translateY(-35px) scale(1.08); }
+  80% { transform: translateY(-20px) scale(1.05); }
+}
+
+@keyframes physicalSpinLevel1 {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
+}
+
+@keyframes physicalSpinLevel2 {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.03); }
+  50% { transform: rotate(180deg) scale(1.08); }
+  75% { transform: rotate(270deg) scale(1.05); }
+}
+
+@keyframes physicalSpinLevel3 {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(72deg) scale(1.02); }
+  40% { transform: rotate(144deg) scale(1.05); }
+  60% { transform: rotate(216deg) scale(1.08); }
+  80% { transform: rotate(288deg) scale(1.05); }
+}
+
+@keyframes physicalJump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-15px) scale(0.95); }
+  50% { transform: translateY(-35px) scale(1.1); }
+  75% { transform: translateY(-15px) scale(0.95); }
+}
+
+/* Animations génériques pour compatibilité */
+@keyframes physicalBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-25px) scale(1.05); }
+}
+
+@keyframes physicalSpin {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
 }
 
 @keyframes enigma-victory {
