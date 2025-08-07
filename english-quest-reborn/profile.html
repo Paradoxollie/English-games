@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/new-design.css">
   <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/game-avatar-styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
     /* Reset and Base Styles */
@@ -342,7 +343,7 @@
       box-shadow: none;
     }
 
-    /* Styles pour les 茅l茅ments verrouill茅s */
+    /* Styles pour les éléments verrouillés */
     .inventory-item.locked {
       opacity: 0.6;
       cursor: not-allowed;
@@ -388,7 +389,7 @@
       margin-top: 0.5rem;
     }
 
-    /* Styles pour les paliers de d茅blocage */
+    /* Styles pour les paliers de déblocage */
     .milestone-card {
       background: var(--color-background);
       border-radius: 0.75rem;
@@ -709,10 +710,10 @@
           <li><a href="courses.html" class="nav-link">Cours</a></li>
           <li><a href="gallery.html" class="nav-link">Galerie</a></li>
           <li><a href="leaderboard.html" class="nav-link">Classement</a></li>
-                  <!-- 脡l茅ments user-menu int茅gr茅s dans la navigation mobile -->
+          <!-- Éléments user-menu intégrés dans la navigation mobile -->
           <li class="mobile-only"><a href="login.html" class="nav-link" id="mobileLoginButton">Connexion</a></li>
           <li class="mobile-only"><a href="profile.html" class="nav-link" id="mobileProfileButton" style="display: none;">Mon Profil</a></li>
-          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">D茅connexion</a></li></ul>
+          <li class="mobile-only"><a href="#" class="nav-link" id="mobileLogoutButton" style="display: none;">Déconnexion</a></li></ul>
       </nav>
 
       <div class="user-menu" id="userMenu">
@@ -728,7 +729,10 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <h1 id="username">Chargement...</h1>
-      <p id="userEmail">Chargement...</p>
+      <p style="margin-top:0.25rem; color: rgba(255,255,255,0.85); font-weight:500;">Compte RGPD (sans e‑mail)</p>
+      <div style="margin-top:1rem;">
+        <button id="openInventoryBtn" class="btn-equip" style="background:#2ecc71; border:none; padding:0.6rem 1rem; border-radius:0.5rem; cursor:pointer; color:white; font-weight:600;">Personnaliser mon avatar</button>
+      </div>
     </div>
 
     <!-- Main Layout -->
@@ -775,15 +779,16 @@
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userCoins">0</div>
-            <div class="stat-label">Pi猫ces</div>
+            <div class="stat-label">Pièces</div>
           </div>
+          
           <div class="stat-card">
             <div class="stat-value" id="userPendingXP">0</div>
             <div class="stat-label">XP en attente</div>
           </div>
           <div class="stat-card">
             <div class="stat-value" id="userPendingCoins">0</div>
-            <div class="stat-label">Pi猫ces en attente</div>
+            <div class="stat-label">Pièces en attente</div>
           </div>
         </div>
           </div>
@@ -793,29 +798,42 @@
     <div class="tabs-section">
         <div class="profile-tabs">
         <button class="profile-tab active" data-tab="inventory">Inventaire</button>
-        <button class="profile-tab" data-tab="achievements">Succ猫s</button>
+        <button class="profile-tab" data-tab="achievements">Succès</button>
         <button class="profile-tab" data-tab="progression">Progression</button>
-        <button class="profile-tab" data-tab="settings">Param猫tres</button>
+        <button class="profile-tab" data-tab="settings">Paramètres</button>
         </div>
 
       <!-- Tab Content -->
         <div class="tab-content active" id="inventory">
           <h2>Mon Inventaire</h2>
-          <p>Personnalisez votre avatar en achetant et en 茅quipant diff茅rents 茅l茅ments.</p>
+          <p>Personnalisez votre avatar en achetant et en équipant différents éléments.</p>
+          <div class="inventory-section" style="margin-bottom: 2rem;">
+            <h3>Gacha (Tirages en coins)</h3>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center; background: var(--color-background); padding: 1rem; border-radius: 0.75rem;">
+              <div style="display:flex; align-items:center; gap:0.5rem; font-size:0.95rem; color: var(--color-text-secondary);">
+                Coût: 100 pièces par tirage
+              </div>
+              <button id="gachaDraw1" class="btn-buy" style="max-width:160px;">Tirer x1</button>
+              <button id="gachaDraw10" class="btn-buy" style="max-width:160px; background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));">Tirer x10</button>
+              <div id="gachaStatus" style="color: var(--color-text-secondary);
+                   font-size:0.9rem;"></div>
+            </div>
+            <div id="gachaResults" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:1rem; margin-top:1rem;"></div>
+          </div>
           <div class="inventory-grid" id="inventoryGrid">
             <p>Chargement de votre inventaire...</p>
           </div>
         </div>
 
         <div class="tab-content" id="achievements">
-          <h2>Mes Succ猫s</h2>
+          <h2>Mes Succès</h2>
           <div class="achievement-list" id="achievementList">
-            <!-- Les succ猫s seront ajout茅s dynamiquement -->
+            <!-- Les succès seront ajoutés dynamiquement -->
           </div>
         </div>
 
         <div class="tab-content" id="progression">
-          <h2>Progression et D茅blocages</h2>
+          <h2>Progression et Déblocages</h2>
           
           <!-- Simulateur XP -->
           <div class="xp-simulator" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
@@ -827,28 +845,28 @@
             </div>
           </div>
           
-          <!-- Paliers de d茅blocage -->
+            <!-- Paliers de déblocage -->
           <div class="unlock-milestones" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
             <h3 style="margin-bottom: 1rem;">Paliers de D茅blocage</h3>
-            <div id="milestonesList" class="milestones-grid" style="display: grid; gap: 1rem;">
-              <!-- Les paliers seront ajout茅s dynamiquement -->
+             <div id="milestonesList" class="milestones-grid" style="display: grid; gap: 1rem;">
+               <!-- Les paliers seront ajoutés dynamiquement -->
             </div>
           </div>
           
           <!-- Tableau des niveaux -->
           <div class="level-chart" style="background: var(--color-background); padding: 1.5rem; border-radius: 0.75rem;">
             <h3 style="margin-bottom: 1rem;">Tableau des Niveaux</h3>
-            <div id="levelChart" style="max-height: 300px; overflow-y: auto;">
-              <!-- Le tableau sera ajout茅 dynamiquement -->
+             <div id="levelChart" style="max-height: 300px; overflow-y: auto;">
+               <!-- Le tableau sera ajouté dynamiquement -->
             </div>
           </div>
         </div>
 
-        <div class="tab-content" id="settings">
-          <h2>Param猫tres</h2>
+         <div class="tab-content" id="settings">
+          <h2>Paramètres</h2>
           <form class="settings-form" id="settingsForm">
             <div class="form-group">
-            <label for="themeToggle">Th猫me sombre</label>
+            <label for="themeToggle">Thème sombre</label>
               <label class="toggle-switch">
                 <input type="checkbox" id="themeToggle" checked>
                 <span class="toggle-slider"></span>
@@ -869,6 +887,10 @@
               </label>
             </div>
           </form>
+           <div class="info-box" style="margin-top:1rem;">
+             <strong>Confidentialité</strong><br>
+             Votre compte ne stocke pas d’adresse e‑mail. Les données affichées ici (niveau, XP, pièces, avatar, inventaire) sont stockées de façon minimale pour le bon fonctionnement du site.
+           </div>
         </div>
     </div>
 
@@ -885,11 +907,11 @@
       <div class="footer-content">
         <div class="footer-brand">
           <a href="index.html" class="logo">ENGLISH<span>QUEST</span></a>
-          <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et comp茅titive.</p>
+           <p>Une nouvelle approche de l'apprentissage de l'anglais, plus immersive et compétitive.</p>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 English Quest - Tous droits r茅serv茅s</p>
+         <p>&copy; 2025 English Quest - Tous droits réservés</p>
       </div>
     </div>
   </footer>
@@ -900,12 +922,76 @@
   <script type="module" src="scripts/skin-service.js"></script>
   <script type="module" src="scripts/auth-service.js"></script>
   <script type="module" src="scripts/auth-header.js"></script>
-  <script type="module" src="scripts/inventory-service.js"></script>
   <script type="module" src="scripts/profile.js"></script>
+  <script type="module" src="scripts/gacha-service.js"></script>
   <script src="scripts/debug.js"></script>
   
   <!-- Gestion universelle du menu mobile et synchronisation auth -->
   <script src="scripts/universal-mobile-auth.js" defer></script>
+  <script type="module">
+    import { authService } from './scripts/auth-service.js';
+    import { gachaService } from './scripts/gacha-service.js';
+
+    const elCoins = document.getElementById('userCoins');
+    const elStatus = document.getElementById('gachaStatus');
+    const elResults = document.getElementById('gachaResults');
+    const btn1 = document.getElementById('gachaDraw1');
+    const btn10 = document.getElementById('gachaDraw10');
+
+    const renderTotals = (user) => {
+      if (!user) return;
+      if (typeof user.coins !== 'undefined') elCoins.textContent = user.coins;
+    };
+
+    authService.addAuthStateListener((user) => {
+      renderTotals(user);
+    });
+
+    const renderResults = (results=[]) => {
+      elResults.innerHTML = '';
+      results.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'inventory-item owned';
+        const title = r.id.replace(/_/g,' ');
+        card.innerHTML = `
+          <h4>${title}</h4>
+          <p>${r.type} ・ ${r.rarity}${r.isDuplicate ? ' ・ Dupliqué' : ''}</p>
+          ${r.compensationCoins ? `<div class="level-requirement">Compensation: +${r.compensationCoins} coins</div>` : ''}
+        `;
+        elResults.appendChild(card);
+      });
+    };
+
+    const withLock = async (fn) => {
+      btn1.disabled = true; btn10.disabled = true;
+      try { await fn(); } finally { btn1.disabled = false; btn10.disabled = false; }
+    };
+
+    btn1?.addEventListener('click', () => withLock(async () => {
+      elStatus.textContent = 'Tirage en cours...';
+      const res = await gachaService.draw({ count: 1 });
+      if (res.success) {
+        renderResults(res.results);
+        elStatus.textContent = `OK ・ Coins: ${res.newTotals.coins}`;
+      } else {
+        elStatus.textContent = `Erreur: ${res.error || 'inconnue'}`;
+      }
+    }));
+
+    btn10?.addEventListener('click', () => withLock(async () => {
+      elStatus.textContent = 'Tirages en cours...';
+      const res = await gachaService.draw({ count: 10 });
+      if (res.success) {
+        renderResults(res.results);
+        elStatus.textContent = `OK ・ Coins: ${res.newTotals.coins}`;
+      } else {
+        elStatus.textContent = `Erreur: ${res.error || 'inconnue'}`;
+      }
+    }));
+  </script>
+  
+  <!-- Avatar universel (bridge) -->
+  <script src="scripts/game-avatar-integration.js" defer></script>
 </body>
 </html>
 

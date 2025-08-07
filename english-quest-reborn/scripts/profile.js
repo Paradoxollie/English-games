@@ -17,7 +17,8 @@ const userAvatarBody = document.getElementById('userAvatarBody');
 const userAvatarBackground = document.getElementById('userAvatarBackground');
 const userAvatarAccessory = document.getElementById('userAvatarAccessory');
 const username = document.getElementById('username');
-const userEmail = document.getElementById('userEmail');
+// RGPD: pas d'e-mail stocké/affiché sur le profil
+const userEmail = null;
 const userLevel = document.getElementById('userLevel');
 const userXP = document.getElementById('userXP');
 const userCoins = document.getElementById('userCoins');
@@ -151,6 +152,20 @@ async function init() {
     await loadProfile(user);
     initTabs();
     setupEventListeners();
+  // Accès rapide à l'inventaire/personnalisation
+  const openInventoryBtn = document.getElementById('openInventoryBtn');
+  if (openInventoryBtn) {
+    openInventoryBtn.addEventListener('click', () => {
+      document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const invTabBtn = Array.from(document.querySelectorAll('.profile-tab')).find(b => b.getAttribute('data-tab') === 'inventory');
+      if (invTabBtn) invTabBtn.classList.add('active');
+      const invTab = document.getElementById('inventory');
+      if (invTab) invTab.classList.add('active');
+      const avatarSection = document.querySelector('.avatar-section');
+      if (avatarSection) avatarSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
     console.log("[ProfileJs] Profile page initialization successful.");
   } catch (error) {
     console.error("[ProfileJs] CRITICAL ERROR during profile page init:", error);
@@ -173,18 +188,7 @@ async function loadProfile(profileData) {
     // DOM elements are: username, userEmail, userLevel, userXP, userCoins
     if (username) username.textContent = profileData.username || 'Aventurier';
     
-    // Fix: Instead of showing "Internal ID not set", hide the email field or show username
-    if (userEmail) {
-      if (profileData.email && profileData.email !== '') {
-        userEmail.textContent = profileData.email;
-        userEmail.style.display = 'block';
-      } else {
-        // Hide the email display if no email is available
-        userEmail.style.display = 'none';
-        // Or alternatively, show the username again:
-        // userEmail.textContent = profileData.username || 'Aventurier';
-      }
-    }
+    // RGPD: pas d'affichage d'email
     
     // Mise à jour des statistiques avec le système de niveaux
     const currentXP = profileData.xp || 0;
@@ -192,7 +196,7 @@ async function loadProfile(profileData) {
     
     if (userLevel) userLevel.textContent = progressInfo.currentLevel;
     if (userXP) userXP.textContent = `${currentXP} XP`;
-    if (userCoins) userCoins.textContent = `${profileData.coins || 0} pièces`;
+    if (userCoins) userCoins.textContent = `${profileData.coins || 0}`;
     
     // Add these lines:
     if (userPendingXP) userPendingXP.textContent = `${profileData.pendingXP || 0} XP`;

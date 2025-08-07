@@ -64,21 +64,23 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
       lastLogin: admin.firestore.FieldValue.serverTimestamp(),
       level: 1,
       xp: 0,
-      coins: 0, // Default coins
+      coins: 0,
       avatar: {
-        head: "default_boy",
-        body: "default_boy",
-        accessory: "none",
-        background: "default",
+        head: "default_boy_head",
+        body: "default_boy_body",
+        accessory: "default",
+        background: "default_background",
       },
-      inventory: [
-        {id: "default_boy", type: "head"},
-        {id: "default_girl", type: "head"},
-        {id: "default_boy", type: "body"},
-        {id: "default_girl", type: "body"},
-        {id: "none", type: "accessory"},
-        {id: "default", type: "background"},
-      ],
+      // New inventory format
+      inventory: {
+        skins: {
+          head: ["default_boy_head", "default_girl_head"],
+          body: ["default_boy_body", "default_girl_body"],
+          accessory: ["default"],
+          background: ["default_background"],
+        },
+        items: [],
+      },
       achievements: [],
       settings: {
         theme: "dark",
@@ -116,6 +118,140 @@ exports.registerUser = functions.https.onCall(async (data, context) => {
         "internal",
         error.message || errorMessage,
     );
+  }
+});
+
+/**
+ * Perform a Gacha draw atomically on the server.
+ * Params: { uid (optional: taken from auth), boxId, count }
+ * Cost: 100 coins par tirage (coins uniquement)
+ * Returns: { success, results: [{type, id, rarity, isDuplicate, compensationCoins}], newTotals: { coins }, inventory }
+ */
+exports.performGachaDraw = functions.https.onCall(async (data, context) => {
+  try {
+    const count = Math.min(Math.max(parseInt(data?.count || 1, 10), 1), 10);
+    const uid = context.auth?.uid || data?.uid;
+    if (!uid) {
+      throw new functions.https.HttpsError('unauthenticated', 'User not authenticated');
+    }
+
+    const userRef = db.collection('users').doc(uid);
+    const result = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(userRef);
+      if (!snap.exists) {
+        throw new functions.https.HttpsError('not-found', 'User not found');
+      }
+
+      const user = snap.data();
+
+      // Ensure currencies
+      const currentCoins = user.coins || 0;
+      const costPerDraw = 100;
+      const totalCost = costPerDraw * count;
+
+      if (currentCoins < totalCost) {
+        throw new functions.https.HttpsError('failed-precondition', 'Not enough coins');
+      }
+
+      // Ensure inventory structure
+      const inv = user.inventory && user.inventory.skins ? user.inventory : {
+        skins: { head: [], body: [], accessory: [], background: [] }, items: []
+      };
+
+      // Loot pool and rarity rates
+      const pool = {
+        head: [
+          { id: 'default_boy_head', rarity: 'common' },
+          { id: 'default_girl_head', rarity: 'common' },
+          { id: 'bear_head', rarity: 'epic' }
+        ],
+        body: [
+          { id: 'default_boy_body', rarity: 'common' },
+          { id: 'default_girl_body', rarity: 'common' },
+          { id: 'bear_body', rarity: 'epic' }
+        ],
+        accessory: [
+          { id: 'default', rarity: 'common' }
+        ],
+        background: [
+          { id: 'default_background', rarity: 'common' }
+        ]
+      };
+
+      // Rarity distribution
+      const rarityRates = [
+        { rarity: 'legendary', rate: 0.02 },
+        { rarity: 'epic', rate: 0.08 },
+        { rarity: 'rare', rate: 0.25 },
+        { rarity: 'common', rate: 0.65 }
+      ];
+
+      // Helper: pick rarity
+      const pickRarity = () => {
+        const r = Math.random();
+        let acc = 0;
+        for (const rr of rarityRates) {
+          acc += rr.rate;
+          if (r < acc) return rr.rarity;
+        }
+        return 'common';
+      };
+
+      // Helper: pick item by type and rarity (fallback to available)
+      const pickItem = (type, targetRarity) => {
+        const candidates = pool[type].filter(x => x.rarity === targetRarity);
+        const list = candidates.length ? candidates : pool[type];
+        return list[Math.floor(Math.random() * list.length)];
+      };
+
+      const typesCycle = ['head', 'body', 'accessory', 'background'];
+      const results = [];
+      let newCoins = currentCoins;
+
+      for (let i = 0; i < count; i++) {
+        const type = typesCycle[i % typesCycle.length];
+        const rarity = pickRarity();
+        const item = pickItem(type, rarity);
+
+        const owned = (inv.skins[type] || []).includes(item.id);
+        let compensation = 0;
+        if (owned) {
+          // Duplicate compensation by rarity
+          compensation = rarity === 'legendary' ? 500 : rarity === 'epic' ? 150 : rarity === 'rare' ? 50 : 15;
+          newCoins += compensation;
+        } else {
+          if (!inv.skins[type]) inv.skins[type] = [];
+          inv.skins[type].push(item.id);
+        }
+
+        results.push({ type, id: item.id, rarity, isDuplicate: owned, compensationCoins: compensation });
+      }
+
+      // Deduct cost
+      newCoins -= totalCost;
+
+      tx.update(userRef, {
+        inventory: inv,
+        coins: newCoins,
+        lastGacha: admin.firestore.FieldValue.serverTimestamp(),
+        gachaStats: {
+          totalDraws: (user.gachaStats?.totalDraws || 0) + count,
+          lastCurrency: currency
+        }
+      });
+
+      return {
+        results,
+        newTotals: { coins: newCoins },
+        inventory: inv
+      };
+    });
+
+    return { success: true, ...result };
+  } catch (error) {
+    console.error('performGachaDraw error:', error);
+    if (error instanceof functions.https.HttpsError) throw error;
+    throw new functions.https.HttpsError('internal', error.message || 'Gacha error');
   }
 });
 

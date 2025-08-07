@@ -2528,6 +2528,89 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   }
 }
 
+// Couche de compatibilité universelle pour l'API window.enigmaAvatar
+// S'active uniquement si aucune autre implémentation ne l'a déjà créée
+(function installEnigmaAvatarCompatibility() {
+  if (window.enigmaAvatar) return;
+
+  const ensureIntegration = () => {
+    if (!window.gameAvatarIntegration) {
+      try {
+        window.gameAvatarIntegration = new GameAvatarIntegration({
+          gameType: 'auto-detect',
+          mobileOptimized: true,
+          contextualResponses: true
+        });
+      } catch (e) {
+        console.warn('[Avatar Bridge] Impossible d\'initialiser GameAvatarIntegration:', e);
+      }
+    }
+    return window.gameAvatarIntegration;
+  };
+
+  const show = (text, duration = 2500) => {
+    const gi = ensureIntegration();
+    gi && gi.showSpeechBubble && gi.showSpeechBubble(text, duration);
+  };
+
+  const anim = (type) => {
+    const gi = ensureIntegration();
+    gi && gi.triggerPhysicalAnimation && gi.triggerPhysicalAnimation(type);
+  };
+
+  const aura = (type, duration = 3000) => {
+    const gi = ensureIntegration();
+    gi && gi.changeAura && gi.changeAura(type, duration);
+  };
+
+  window.enigmaAvatar = {
+    reactToKeyboardClick: () => {},
+    reactToLetterDeletion: () => anim('physicalNod'),
+    reactToWordSubmission: () => { show('Let\'s see! 👀', 1800); anim('physicalPump'); },
+    reactToPowerUp: (type) => {
+      switch (type) {
+        case 'hint':
+          show('Hint revealed! 💡', 2000); anim('physicalClap'); aura('success', 2000); break;
+        case 'skip':
+          show('Skipping ahead! ⏭️', 2000); anim('physicalHop'); break;
+        case 'time':
+          show('Time extended! ⏰', 2000); anim('physicalVictoryDance'); aura('victory', 3000); break;
+        default:
+          show('Power up! ⚡', 1800); anim('physicalPump'); aura('success', 2000);
+      }
+    },
+    reactToGameStart: () => { show('Game time! 🎮', 2200); anim('physicalVictoryDance'); },
+    reactToNewGame: () => { show('Fresh start! 🌟', 1800); anim('physicalHop'); },
+    reactToScoreIncrease: (points) => {
+      if (points >= 50) { show(`AMAZING! +${points}! 🔥`, 3200); anim('physicalSpin'); aura('victory', 4000); }
+      else if (points >= 25) { show(`Excellent! +${points}! ⭐`, 2600); anim('physicalPump'); aura('success', 3000); }
+      else if (points >= 15) { show(`Good job! +${points}! 👍`, 2200); anim('physicalHop'); aura('success', 2200); }
+      else if (points >= 5) { show(`Nice! +${points}! ✨`, 2000); anim('physicalHop'); }
+      else { show(`Keep going! +${points}! 🌟`, 1800); anim('physicalWiggle'); }
+    },
+    reactToCombo: (combo) => {
+      if (combo >= 7) { show(`COMBO x${combo}! 🔥👑`, 3500); anim('physicalSpin'); aura('fire', 4500); }
+      else if (combo >= 5) { show(`Combo x${combo}! 🚀`, 2800); anim('physicalBounce'); aura('fire', 3500); }
+      else if (combo >= 3) { show(`Streak x${combo}! ✨`, 2400); anim('physicalDance'); aura('success', 2800); }
+      else if (combo >= 2) { show(`Combo x${combo}! 🎯`, 2000); anim('physicalClap'); }
+      else { show('Good start! 💪', 1600); anim('physicalWave'); }
+    },
+    reactToGameMessage: (message = '') => {
+      const m = String(message).toLowerCase();
+      if (m.includes('non valide') || m.includes('invalid')) { show('Try again! 🤔', 2000); anim('physicalTilt'); }
+      else if (m.includes('incomplet') || m.includes('incomplete')) { show('Complete the word! ✍️', 2000); anim('physicalNod'); }
+      else if (m.includes('temps') || m.includes('time')) { show('Time\'s up! ⏰', 2200); anim('physicalDroop'); aura('fire', 2000); }
+      else if (m.includes('félicitations') || m.includes('bravo') || m.includes('congrats')) { show('Great! 🎉', 2500); anim('physicalVictoryDance'); aura('victory', 3500); }
+      else { show(message, 2000); }
+    },
+    playAnimation: (animationType) => anim(animationType),
+    showMessage: (text, duration) => show(text, duration),
+    isInitialized: true
+  };
+
+  console.log('✅ [Avatar Bridge] API window.enigmaAvatar installée (compatibilité globale)');
+})();
+
 // Export pour usage externe
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GameAvatarIntegration;
