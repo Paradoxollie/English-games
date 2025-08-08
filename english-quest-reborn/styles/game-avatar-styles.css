@@ -32,20 +32,19 @@
 div[id="ultra-adventurer"],
 body .ultra-reactive-adventurer,
 body #ultra-adventurer {
-  /* Dimensions plus grandes, style jeu */
-  width: 12vw !important;
-  height: 18vw !important;
-  min-width: 200px !important;
-  max-width: 360px !important;
-  min-height: 300px !important;
-  max-height: 540px !important;
+  /* Dimensions confort (peuvent être ajustées) */
+  width: 220px !important;
+  height: 320px !important;
+  min-width: 160px !important;
+  max-width: 300px !important;
+  min-height: 220px !important;
+  max-height: 420px !important;
   
   /* FORCER le positionnement */
   position: fixed !important;
-  top: 10vh !important;  /* Viewport height - stable au zoom */
-  right: 3vw !important; /* Viewport width - stable au zoom */
+  bottom: 24px !important;
+  right: 24px !important;
   left: auto !important;
-  bottom: auto !important;
   
   /* FORCER l'affichage */
   display: block !important;
@@ -156,9 +155,9 @@ body #ultra-adventurer {
   bottom: 0 !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 75% !important;
+  width: 72% !important;
   height: auto !important;
-  max-height: 60% !important;
+  max-height: 65% !important;
   object-fit: contain !important;
   z-index: 5 !important;
   display: block !important;
@@ -181,13 +180,13 @@ body .ultra-reactive-adventurer .avatar-head,
 body #ultra-adventurer .avatar-head {
   /* POSITION RELATIVE au container - mais stable au zoom */
   position: absolute !important;
-  top: 30% !important;  /* Pourcentage du container - stable */
+  top: 18% !important;  /* Remonté pour aligner avec le corps */
   left: 50% !important;
   right: auto !important;
   bottom: auto !important;
   
   /* DIMENSIONS proportionnelles au container */
-  width: 55% !important;
+  width: 50% !important;
   height: auto !important;
   
   /* AFFICHAGE FORCÉ */
@@ -213,13 +212,13 @@ body #ultra-adventurer .avatar-head {
 .ultra-reactive-adventurer .avatar-accessory,
 #ultra-adventurer .avatar-accessory {
   position: absolute !important;
-  top: 25% !important;  /* Légèrement plus haut que la tête (qui est à 30%) */
-  right: 10% !important;
+  top: 16% !important;
+  right: 8% !important;
   left: auto !important;
   bottom: auto !important;
   
-  width: 30% !important;
-  height: 30% !important;
+  width: 26% !important;
+  height: 26% !important;
   
   z-index: 1215 !important;
   display: block !important;
@@ -360,12 +359,12 @@ body #ultra-adventurer .avatar-head {
 @media (max-width: 768px) {
   .ultra-reactive-adventurer,
   #ultra-adventurer {
-    width: 24vw !important;
-    height: 36vw !important;
-    min-width: 180px !important;
-    max-width: 320px !important;
-    min-height: 260px !important;
-    max-height: 480px !important;
+    width: 200px !important;
+    height: 290px !important;
+    min-width: 160px !important;
+    max-width: 260px !important;
+    min-height: 220px !important;
+    max-height: 360px !important;
   }
   
   /* Les proportions relatives restent les mêmes */
@@ -373,15 +372,15 @@ body #ultra-adventurer .avatar-head {
   #ultra-adventurer .avatar-head-ultra,
   .ultra-reactive-adventurer .avatar-head,
   #ultra-adventurer .avatar-head {
-    top: 30% !important;  /* Même proportion que desktop */
-    width: 55% !important;  /* Même proportion */
+    top: 18% !important;
+    width: 50% !important;
   }
   
   .ultra-reactive-adventurer .avatar-accessory-ultra,
   #ultra-adventurer .avatar-accessory-ultra {
-    top: 25% !important;  /* Même proportion que desktop */
-    width: 30% !important;  /* Même proportion */
-    height: 30% !important;
+    top: 16% !important;
+    width: 26% !important;
+    height: 26% !important;
   }
   
   .ultra-reactive-adventurer .adventure-effects-ultra,
