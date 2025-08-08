@@ -570,7 +570,7 @@ async function startGame(difficulty) {
   }
 }
 
-function endGame(won, message) {
+async function endGame(won, message) {
   gameState.gameActive = false;
   gameState.validatingWord = false;
   stopTimer();

@@ -140,8 +140,10 @@ function setupLeaderboardButtons() {
         btnLocal.classList.remove('active');
         loadOnlineLeaderboard();
     });
-    // Valeur par défaut: Mes Scores
-    loadUserBestLeaderboard();
+    // Valeur par défaut: Mondial
+    btnOnline.classList.add('active');
+    btnLocal.classList.remove('active');
+    loadOnlineLeaderboard();
 }
 
 function addEventListeners() {
