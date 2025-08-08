@@ -450,6 +450,26 @@ function endGame() {
     
     setGameState('gameOver');
     console.log('🏁 Fin de jeu - Score:', score);
+
+    // Récompenses + stats + notation fin de partie
+    try {
+        const isTopScore = highestStreak >= 10 || score >= 150;
+        if (window.rewardService && typeof window.rewardService.giveRewards === 'function') {
+            const xpGain = Math.max(5, Math.floor(score / 2) + Math.floor(highestStreak * 1.5));
+            const coinsGain = Math.max(3, Math.floor(score / 3) + Math.floor(comboMultiplier));
+            window.rewardService.giveRewards({ xp: xpGain, coins: coinsGain }, isTopScore, 'speed-verb-challenge');
+        }
+        if (window.gameStatsService && typeof window.gameStatsService.recordGamePlay === 'function') {
+            const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+            window.gameStatsService.recordGamePlay('speed-verb-challenge', userId, score, null);
+        }
+        if (window.endGameRating && typeof window.endGameRating.showRating === 'function') {
+            const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+            setTimeout(() => window.endGameRating.showRating('speed-verb-challenge', userId, 'Speed Verb Challenge'), 600);
+        }
+    } catch (e) {
+        console.warn('⚠️ [SpeedVerb] Récompenses/notation:', e);
+    }
 }
 
 function resetGame() {

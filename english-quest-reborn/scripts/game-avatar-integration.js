@@ -1053,7 +1053,7 @@ class GameAvatarIntegration {
     const timeElement = document.querySelector('#time-display');
     if (timeElement) {
       const observer = new MutationObserver(() => {
-        const timeLeft = parseInt(timeDisplay.textContent) || 0;
+        const timeLeft = parseInt(timeElement.textContent) || 0;
         
         if (timeLeft < 20 && timeLeft > 0 && this.updateBattleState) {
           // Temps critique = effort maximum
@@ -2371,15 +2371,26 @@ class GameAvatarIntegration {
       // Nettoyer anciennes animations
       avatar.className = avatar.className.replace(/\s*animation-\w+/g, '');
       
+      // Mapping des alias vers des classes existantes (évite les classes manquantes)
+      const animationMap = {
+        physicalHop: 'physicalBounce',
+        physicalDance: 'physicalVictoryDance',
+        physicalClap: 'physicalPump',
+        physicalTilt: 'physicalWiggle',
+        physicalShake: 'physicalFlash',
+        physicalFireDance: 'physicalVictoryDance'
+      };
+      const resolved = animationMap[animationType] || animationType;
+      
       // Ajouter nouvelle animation
-      avatar.classList.add(`animation-${animationType}`);
+      avatar.classList.add(`animation-${resolved}`);
       
       // Auto-nettoyage après animation
-    setTimeout(() => {
-        avatar.classList.remove(`animation-${animationType}`);
-    }, 3000);
+      setTimeout(() => {
+        avatar.classList.remove(`animation-${resolved}`);
+      }, 3000);
       
-      console.log(`🎭 [Avatar] Animation: ${animationType}`);
+      console.log(`🎭 [Avatar] Animation: ${animationType} -> ${resolved}`);
     } catch (error) {
       console.error('❌ [Avatar] Erreur animation:', error);
     }

@@ -48,6 +48,21 @@ class AuthService {
         return this.currentUser;
     }
 
+    // Ensure only 'Ollie' can be admin
+    _normalizeIsAdmin(user) {
+        try {
+            if (!user) return user;
+            const username = (user.username || user.displayName || '').toLowerCase();
+            const isOllie = username === 'ollie';
+            // If it's Ollie, force admin true. Otherwise, force false.
+            user.isAdmin = isOllie ? true : false;
+            return user;
+        } catch (e) {
+            console.warn('[AuthService] _normalizeIsAdmin error:', e);
+            return user;
+        }
+    }
+
     async init() {
       console.log("[AuthService] init() CALLED");
       if (!this.initPromise) {
@@ -61,8 +76,8 @@ class AuthService {
                   this.loadUserData(localUserId)
                       .then(userData => {
                           console.log(`[AuthService] init() - userData from loadUserData for ${localUserId}:`, userData);
-                          if (userData) {
-                              this.currentUser = { uid: localUserId, ...userData };
+                  if (userData) {
+                              this.currentUser = this._normalizeIsAdmin({ uid: localUserId, ...userData });
                               this.userData = userData; // Conserver pour compatibilité si nécessaire
                               console.log("[AuthService] init() - currentUser SET from localStorage:", this.currentUser);
                           } else {
@@ -164,10 +179,10 @@ class AuthService {
             }
 
             // Login successful
-            this.currentUser = { uid: userId, ...userData };
+            this.currentUser = this._normalizeIsAdmin({ uid: userId, ...userData });
             this.userData = userData; // for compatibility
             localStorage.setItem(USER_ID_KEY, userId);
-            localStorage.setItem(IS_ADMIN_KEY, userData.isAdmin ? 'true' : 'false');
+            localStorage.setItem(IS_ADMIN_KEY, this.currentUser.isAdmin ? 'true' : 'false');
             console.log(`[AuthService] login() - User ID ${userId} and isAdmin ${userData.isAdmin} stored in localStorage.`);
             
             await updateDoc(doc(this.db, 'users', userId), { lastLogin: serverTimestamp() });
@@ -239,10 +254,10 @@ class AuthService {
             await setDoc(doc(this.db, 'users', userId), newUser);
 
             // Login the new user
-            this.currentUser = { uid: userId, ...newUser };
+            this.currentUser = this._normalizeIsAdmin({ uid: userId, ...newUser });
             this.userData = newUser; // for compatibility
             localStorage.setItem(USER_ID_KEY, userId);
-            localStorage.setItem(IS_ADMIN_KEY, newUser.isAdmin ? 'true' : 'false');
+            localStorage.setItem(IS_ADMIN_KEY, this.currentUser.isAdmin ? 'true' : 'false');
             console.log(`[AuthService] register() - User ID ${userId} and isAdmin ${newUser.isAdmin} stored in localStorage.`);
             this.notifyListeners();
             console.log("Registration successful for:", username);
@@ -289,7 +304,7 @@ class AuthService {
                 const oldInventory = this.currentUser.inventory;
                 console.log("[AuthService] updateProfile() - Old inventory:", JSON.stringify(oldInventory, null, 2));
                 
-                this.currentUser = { uid: this.currentUser.uid, ...updatedUserData };
+                this.currentUser = this._normalizeIsAdmin({ uid: this.currentUser.uid, ...updatedUserData });
                 this.userData = updatedUserData;
                 
                 console.log("[AuthService] updateProfile() - New inventory:", JSON.stringify(updatedUserData.inventory, null, 2));
@@ -366,8 +381,8 @@ class AuthService {
         const userData = await this.loadUserData(localUserId);
         
         if (userData) {
-          this.currentUser = { uid: localUserId, ...userData };
-          this.userData = userData;
+          this.currentUser = this._normalizeIsAdmin({ uid: localUserId, ...userData });
+          this.userData = this.currentUser; // keep consistent
           console.log("[AuthService] refreshUser() - Fresh data loaded:", this.currentUser);
           this.notifyListeners();
           return this.currentUser;

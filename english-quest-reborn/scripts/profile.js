@@ -224,9 +224,10 @@ async function loadProfile(profileData) {
     loadLevelChart();
 
     // Assuming adminPanelLinkContainer is defined globally or fetched if needed
-    const adminPanelLinkContainer = document.getElementById('adminPanelLinkContainer'); 
-    if (adminPanelLinkContainer) {
-      adminPanelLinkContainer.style.display = profileData.isAdmin ? 'block' : 'none';
+    const adminPanelLink = document.getElementById('adminPanelLink');
+    if (adminPanelLink) {
+      const isOllie = (profileData.username || '').toLowerCase() === 'ollie';
+      adminPanelLink.style.display = isOllie ? 'inline-block' : 'none';
     }
 
     // 🎮 Notifier l'avatar du jeu Enigma Scroll des changements

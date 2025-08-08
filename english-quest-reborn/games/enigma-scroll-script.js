@@ -635,6 +635,29 @@ function endGame(won, message) {
       gameState.wordsFound,
       gameState.wordLength
     );
+
+    // Récompenses + notation fin de partie
+    try {
+      // Récompenses intelligentes (XP/coins). Bonus si meilleur combo élevé
+      const isTopScore = gameState.bestCombo >= 8 || totalScore >= 50;
+      if (window.rewardService && typeof window.rewardService.giveRewards === 'function') {
+        const xpGain = Math.max(5, Math.floor(totalScore / 2) + gameState.wordsFound * 2);
+        const coinsGain = Math.max(3, Math.floor(totalScore / 3) + Math.floor(gameState.combo));
+        window.rewardService.giveRewards({ xp: xpGain, coins: coinsGain }, isTopScore, 'enigma-scroll');
+      }
+      // Enregistrement de la partie pour les stats globales
+      if (window.gameStatsService && typeof window.gameStatsService.recordGamePlay === 'function') {
+        const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+        window.gameStatsService.recordGamePlay('enigma-scroll', userId, finalScore, null);
+      }
+      // Overlay de notation
+      if (window.endGameRating && typeof window.endGameRating.showRating === 'function') {
+        const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+        setTimeout(() => window.endGameRating.showRating('enigma-scroll', userId, 'Enigma Scroll'), 600);
+      }
+    } catch (e) {
+      console.warn('⚠️ [Enigma Scroll] Récompenses/notation: ', e);
+    }
     
     showMessage(`${message} Score: +${totalScore}`, 'success', 3000);
     
@@ -673,6 +696,18 @@ function endGame(won, message) {
       gameState.wordsFound,
       gameState.wordLength
     );
+    try {
+      if (window.gameStatsService && typeof window.gameStatsService.recordGamePlay === 'function') {
+        const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+        window.gameStatsService.recordGamePlay('enigma-scroll', userId, finalScore, null);
+      }
+      if (window.endGameRating && typeof window.endGameRating.showRating === 'function') {
+        const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
+        setTimeout(() => window.endGameRating.showRating('enigma-scroll', userId, 'Enigma Scroll'), 600);
+      }
+    } catch (e) {
+      console.warn('⚠️ [Enigma Scroll] Récompenses/notation: ', e);
+    }
     
     gameState.combo = 1;
     showMessage(message, 'error', 3000);

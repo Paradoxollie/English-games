@@ -463,6 +463,10 @@
   <!-- Nouveau système de notation simplifié -->
   <script src="../scripts/simple-rating-system.js"></script>
   <script src="../scripts/update-rating-system.js"></script>
+  <!-- Services jeux: stats, récompenses et notation fin de partie -->
+  <script src="../scripts/game-stats-service.js"></script>
+  <script type="module" src="../scripts/reward-service.js"></script>
+  <script src="../scripts/end-game-rating.js"></script>
   
   <!-- SYSTÈME D'AVATAR ULTRA-SIMPLE ET ROBUSTE -->
   <script src="enigma-scroll-avatar-simple.js"></script>
@@ -611,10 +615,7 @@
     });
   </script>
   
-  <!-- Script retiré pour éviter le doublon (déjà chargé plus haut) -->
-
-  <!-- Script de jeu principal -->
-  <script src="enigma-scroll-script.js"></script>
+  <!-- Script principal du jeu sera chargé plus bas (évite un double chargement) -->
 
   <!-- SYSTÈME DE VALIDATION ULTRA-COMPLET -->
   <script src="comprehensive-word-validator.js"></script>
@@ -1619,111 +1620,5 @@
   <!-- Script principal du jeu -->
   <script src="enigma-scroll-script.js"></script>
   
-  <script>
-    // Initialisation complète du jeu avec le nouveau système
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🎯 Initialisation d\'Enigma Scroll avec système ultra-diversifié...');
-      
-      // Attendre que tous les systèmes soient chargés
-      let initAttempts = 0;
-      const maxAttempts = 100;
-      
-      function checkSystemsReady() {
-        initAttempts++;
-        
-        // Vérifier que tous les systèmes sont disponibles
-        const systemsReady = (
-          window.COMPREHENSIVE_ENGLISH_WORDS &&
-          window.validateWordComprehensive &&
-          window.boostWordDatabase &&
-          typeof wordGenerator !== 'undefined'
-        );
-        
-        if (systemsReady) {
-          console.log('✅ Tous les systèmes sont prêts !');
-          console.log(`📊 Base de mots chargée avec ${Object.values(window.COMPREHENSIVE_ENGLISH_WORDS).reduce((a, b) => a + b.length, 0)} mots`);
-          
-          // Vérifier les améliorations
-          const stats = window.getDatabaseStats ? window.getDatabaseStats() : null;
-          if (stats) {
-            console.log('📈 Statistiques de la base enrichie:', stats);
-          }
-          
-          // Initialiser l'interface
-          initializeGameInterface();
-          
-        } else if (initAttempts < maxAttempts) {
-          setTimeout(checkSystemsReady, 100);
-        } else {
-          console.warn('⚠️ Timeout lors de l\'initialisation - Démarrage en mode dégradé');
-          initializeGameInterface();
-        }
-      }
-      
-      function initializeGameInterface() {
-        // Gestion des événements
-        document.querySelectorAll('.difficulty-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            // Marquer comme sélectionné
-            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
-            
-            // Activer le bouton de démarrage
-            document.getElementById('start-game-button').disabled = false;
-          });
-        });
-        
-        document.getElementById('start-game-button').addEventListener('click', async function() {
-          const selectedDiff = document.querySelector('.difficulty-btn.selected');
-          if (selectedDiff) {
-            const difficulty = parseInt(selectedDiff.dataset.difficulty);
-            console.log(`🎮 Démarrage du jeu en difficulté ${difficulty} lettres`);
-            await startGame(difficulty);
-          } else {
-            alert('Veuillez sélectionner une difficulté !');
-          }
-        });
-        
-        document.getElementById('new-game-button').addEventListener('click', newGame);
-        
-        // Gestion du clavier
-        document.addEventListener('keydown', function(e) {
-          if (!window.gameState || !window.gameState.gameActive) return;
-          
-          if (e.key.match(/[a-zA-Z]/)) {
-            handleKeyPress(e.key.toUpperCase());
-          } else if (e.key === 'Enter') {
-            handleKeyPress('ENTER');
-          } else if (e.key === 'Backspace') {
-            handleKeyPress('BACKSPACE');
-          } else if (e.key >= '1' && e.key <= '3') {
-            const powerUpTypes = ['hint', 'time', 'skip'];
-            const powerUpType = powerUpTypes[parseInt(e.key) - 1];
-            usePowerUp(powerUpType);
-          }
-        });
-        
-        // Clavier virtuel
-        document.querySelectorAll('.key-btn').forEach(key => {
-          key.addEventListener('click', function() {
-            handleKeyPress(this.dataset.key);
-          });
-        });
-        
-        // Power-ups
-        document.querySelectorAll('.power-up').forEach(powerUp => {
-          powerUp.addEventListener('click', function() {
-            if (!this.classList.contains('disabled')) {
-              usePowerUp(this.dataset.type);
-            }
-          });
-        });
-        
-        console.log('✅ Interface d\'Enigma Scroll initialisée !');
-      }
-      
-      checkSystemsReady();
-    });
-  </script>
 </body>
 </html> 

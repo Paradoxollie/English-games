@@ -38,7 +38,9 @@
 
                 console.log('Checking admin status for user:', user.username);
                 
-                if (!user.isAdmin) {
+                const username = (user.username || '').toLowerCase();
+                const isOllie = username === 'ollie';
+                if (!isOllie) {
                     console.log('User is not admin, redirecting to index');
                     window.location.href = 'index.html';
                     return;
@@ -147,11 +149,9 @@
         // Toggle admin status
         window.toggleAdmin = async function(userId, isAdmin) {
             try {
-                console.log('Toggling admin status for user:', userId, 'to:', isAdmin);
-                const userDocRef = doc(db, 'users', userId);
-                await updateDoc(userDocRef, { isAdmin });
-                console.log('Admin status updated, reloading users');
-                await loadUsers();
+                // Only Ollie can be admin; block any other change
+                alert('Seul le compte "Ollie" peut avoir le statut administrateur.');
+                return;
             } catch (error) {
                 console.error('Error toggling admin status:', error);
                 alert('Erreur lors de la modification du statut admin');
