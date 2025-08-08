@@ -1640,29 +1640,20 @@
   <!-- Script principal du jeu -->
   <script src="enigma-scroll-script.js"></script>
   <script>
-    // Chargement du classement Enigma Scroll
-    document.addEventListener('DOMContentLoaded', async function(){
-      try {
-        if (window.scoreService && typeof window.scoreService.getTopScores === 'function') {
-          const rows = await window.scoreService.getTopScores('enigma-scroll', 10);
-          const tbody = document.getElementById('enigma-leaderboard-body');
-          if (tbody) {
-            tbody.innerHTML = '';
-            rows.forEach((row, idx) => {
-              const tr = document.createElement('tr');
-              const rankStyle = idx===0? 'font-weight:700;color:#f1c40f;' : idx===1? 'font-weight:600;color:#bdc3c7;' : idx===2? 'font-weight:600;color:#d35400;' : '';
-              tr.innerHTML = `
-                <td style="padding:6px;${rankStyle}">${idx+1}</td>
-                <td style="padding:6px;${rankStyle}">${row.username}</td>
-                <td style="padding:6px; text-align:right;${rankStyle}">${row.score||0}</td>`;
-              tbody.appendChild(tr);
-            });
-            if (rows.length === 0) {
-              tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Aucun score pour le moment</td></tr>';
-            }
-          }
-        }
-      } catch(e) { console.warn('[Enigma Leaderboard] load error:', e); }
+    document.addEventListener('DOMContentLoaded', function(){
+      // Charge le top 10 au chargement
+      if (typeof loadEnigmaLeaderboard === 'function') {
+        loadEnigmaLeaderboard();
+      } else {
+        // Fallback tardif si la fonction n'est pas encore dispo
+        setTimeout(() => {
+          if (typeof loadEnigmaLeaderboard === 'function') loadEnigmaLeaderboard();
+        }, 500);
+      }
+      // Recharge automatiquement à la fin d'une partie via events bus
+      window.addEventListener('gameRatingUpdated', () => {
+        if (typeof loadEnigmaLeaderboard === 'function') loadEnigmaLeaderboard();
+      });
     });
   </script>
   

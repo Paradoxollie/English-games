@@ -213,20 +213,38 @@ window.enigmaScrollGame = {
   init: function() {
     console.log('Système de scores Enigma Scroll initialisé');
   },
-  saveScore: function(score, user, wordsFound, difficulty) {
-    console.log(`Score sauvegardé: ${score} points, ${wordsFound} mots trouvés, difficulté ${difficulty}`);
-    // Sauvegarder en local storage
-    const scores = JSON.parse(localStorage.getItem('enigmaScrollMainScores') || '[]');
-    scores.push({
-      score: score,
-      wordsFound: wordsFound,
-      difficulty: difficulty,
-      date: new Date().toISOString()
-    });
-    scores.sort((a, b) => b.score - a.score);
-    localStorage.setItem('enigmaScrollMainScores', JSON.stringify(scores.slice(0, 10)));
-  }
+  // Ancien système local désactivé: on centralise via Firestore
+  saveScore: function() {}
 };
+
+// Chargement/rafraîchissement du classement Enigma (Top 10)
+async function loadEnigmaLeaderboard() {
+  try {
+    const tbody = document.getElementById('enigma-leaderboard-body');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Chargement...</td></tr>';
+    if (window.scoreService && typeof window.scoreService.getTopScores === 'function') {
+      const rows = await window.scoreService.getTopScores('enigma-scroll', 10);
+      tbody.innerHTML = '';
+      rows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        const rankStyle = idx===0? 'font-weight:700;color:#f1c40f;' : idx===1? 'font-weight:600;color:#bdc3c7;' : idx===2? 'font-weight:600;color:#d35400;' : '';
+        tr.innerHTML = `
+          <td style="padding:6px;${rankStyle}">${idx+1}</td>
+          <td style="padding:6px;${rankStyle}">${row.username}</td>
+          <td style="padding:6px; text-align:right;${rankStyle}">${row.score||0}</td>`;
+        tbody.appendChild(tr);
+      });
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Aucun score pour le moment</td></tr>';
+      }
+    } else {
+      tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Service indisponible</td></tr>';
+    }
+  } catch (e) {
+    console.warn('[Enigma Leaderboard] load error:', e);
+  }
+}
 
 // Fonctions utilitaires
 function showMessage(text, type = 'info', duration = 2000) {
