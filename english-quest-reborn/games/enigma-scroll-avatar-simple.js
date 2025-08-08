@@ -197,135 +197,87 @@ class EnigmaScrollAvatar {
   
   createAvatar() {
     console.log('🎨 [EnigmaAvatar] Création avatar...');
-    
-    // Supprimer ancien avatar
-    const existing = document.getElementById('enigma-avatar');
-    if (existing) existing.remove();
-    
+
     // Récupérer les chemins des images selon les choix utilisateur
     const imagePaths = this.getAvatarImagePaths();
     console.log('🖼️ [EnigmaAvatar] Chemins des images:', imagePaths);
-    
-    // Créer nouvel avatar
-    const avatar = document.createElement('div');
-    avatar.id = 'enigma-avatar';
-    
-    // Appliquer l'arrière-plan choisi par l'utilisateur
-    const backgroundStyle = this.userSkins.background !== 'default' 
-      ? `background-image: url('${imagePaths.background}'); background-size: cover; background-position: center; border-radius: 15px;`
-      : '';
-    
-    avatar.style.cssText = `
-      position: fixed !important;
-      top: 10vh !important;
-      right: 5vw !important;
-      width: 80px !important;
-      height: 120px !important;
-      z-index: 99999 !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: none !important;
-      transition: all 0.3s ease;
-      animation: gentle-living-breathing 2.5s ease-in-out infinite, 
-                 page-wandering 20s ease-in-out infinite,
-                 subtle-avatar-glow 4s ease-in-out infinite;
-      ${backgroundStyle}
-    `;
-    
-    avatar.innerHTML = `
-      <div style="position: relative; width: 100%; height: 100%;">
-        <!-- Container pour animations de réaction -->
-        <div id="avatar-reaction-container" style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 2;
-          pointer-events: none;
-        ">
-          <!-- Corps (selon choix utilisateur) -->
+
+    // Chercher ou créer le conteneur unifié
+    let container = document.getElementById('ultra-adventurer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'ultra-adventurer';
+      container.className = 'ultra-reactive-adventurer';
+      container.innerHTML = `
+        <div class="adventurer-avatar-ultra"></div>
+        <div class="adventure-effects-ultra" id="adventureEffectsUltra"></div>
+        <div class="adventure-speech-bubble" id="adventureSpeech" style="display:none;"></div>
+        <div class="adventure-aura" id="adventureAura"></div>
+      `;
+      document.body.appendChild(container);
+    } else {
+      // S'assurer que l'ossature interne existe
+      if (!container.querySelector('.adventurer-avatar-ultra')) {
+        const inner = document.createElement('div');
+        inner.className = 'adventurer-avatar-ultra';
+        container.prepend(inner);
+      }
+      if (!container.querySelector('#adventureEffectsUltra')) {
+        const eff = document.createElement('div');
+        eff.className = 'adventure-effects-ultra';
+        eff.id = 'adventureEffectsUltra';
+        container.appendChild(eff);
+      }
+      if (!container.querySelector('#adventureSpeech')) {
+        const speech = document.createElement('div');
+        speech.className = 'adventure-speech-bubble';
+        speech.id = 'adventureSpeech';
+        speech.style.display = 'none';
+        container.appendChild(speech);
+      }
+      if (!container.querySelector('#adventureAura')) {
+        const aura = document.createElement('div');
+        aura.className = 'adventure-aura';
+        aura.id = 'adventureAura';
+        container.appendChild(aura);
+      }
+    }
+
+    // Appliquer l'arrière-plan si pertinent sur le conteneur principal
+    if (this.userSkins.background && this.userSkins.background !== 'default') {
+      container.style.backgroundImage = `url('${imagePaths.background}')`;
+      container.style.backgroundSize = 'cover';
+      container.style.backgroundPosition = 'center';
+    } else {
+      container.style.backgroundImage = '';
+    }
+
+    // Générer l'affichage avatar dans l'ossature unifiée
+    const avatarHost = container.querySelector('.adventurer-avatar-ultra');
+    if (avatarHost) {
+      avatarHost.innerHTML = `
+        <div class="avatar-display-ultra">
           <img src="${imagePaths.body}" 
-               style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70%; height: auto; z-index: 5;"
-               onerror="console.error('🚨 Corps non trouvé:', this.src); this.src='../assets/avatars/bodies/default_boy.png';">
-          
-          <!-- Tête (selon choix utilisateur) -->
+               alt="Avatar Body"
+               class="avatar-body-ultra"
+               onerror="this.src='../assets/avatars/bodies/default_boy.png'">
           <img src="${imagePaths.head}" 
-               style="position: absolute; top: 31%; left: 50%; transform: translateX(-50%); width: 50%; height: auto; z-index: 10;"
-               onerror="console.error('🚨 Tête non trouvée:', this.src); this.src='../assets/avatars/heads/default_boy.png';">
-          
-          <!-- Accessoire (selon choix utilisateur - peut être un GIF) -->
-          <div style="position: absolute; top: 30%; right: 15%; width: 25%; height: 25%; z-index: 15;">
+               alt="Avatar Head"
+               class="avatar-head-ultra"
+               onerror="this.src='../assets/avatars/heads/default_boy.png'">
+          <div class="avatar-accessory-ultra">
             <img src="${imagePaths.accessory}" 
-                 style="width: 100%; height: 100%; object-fit: contain;"
-                 onerror="console.error('🚨 Accessoire non trouvé:', this.src); this.src='../assets/avatars/accessories/default.gif';">
+                 alt="Accessory"
+                 onerror="this.style.display='none'">
           </div>
         </div>
-        
-        <!-- Bulle de dialogue -->
-        <div id="avatar-speech" style="
-          position: absolute;
-          top: -85px;
-          left: -80px;
-          width: 200px;
-          background: linear-gradient(145deg, #2c3e50, #34495e);
-          color: white;
-          padding: 12px 16px;
-          border-radius: 18px;
-          font-size: 13px;
-          font-weight: 600;
-          text-align: center;
-          white-space: normal;
-          word-wrap: break-word;
-          line-height: 1.3;
-          display: none;
-          z-index: 20;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-          min-height: 35px;
-          max-width: 220px;
-        ">
-          <div style="
-            position: absolute;
-            bottom: -8px;
-            right: 30px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid #34495e;
-          "></div>
-        </div>
-        
-        <!-- Effets -->
-        <div id="avatar-effects" style="
-          position: absolute;
-          top: 15%;
-          left: -30px;
-          transform: none;
-          font-size: 20px;
-          z-index: 25;
-          text-shadow: 0 0 10px rgba(255,255,255,0.8);
-        "></div>
-        
-        <!-- Aura -->
-        <div id="avatar-aura" style="
-          position: absolute;
-          top: -10%;
-          left: -10%;
-          right: -10%;
-          bottom: -10%;
-          border-radius: 50%;
-          z-index: 1;
-          transition: all 0.5s ease;
-        "></div>
-      </div>
-    `;
-    
-    document.body.appendChild(avatar);
-    this.avatar = avatar;
-    
-    console.log('✅ [EnigmaAvatar] Avatar créé!');
+      `;
+    }
+
+    // Pointeur interne pour API locales
+    this.avatar = container;
+
+    console.log('✅ [EnigmaAvatar] Avatar rendu dans #ultra-adventurer');
   }
   
   startWatching() {
@@ -871,7 +823,7 @@ class EnigmaScrollAvatar {
   }
   
   showMessage(text, duration = 3000) {
-    const bubble = document.getElementById('avatar-speech');
+    const bubble = document.getElementById('adventureSpeech');
     if (!bubble) return;
     
     bubble.textContent = text;
@@ -886,60 +838,48 @@ class EnigmaScrollAvatar {
   
   playAnimation(animationType) {
     if (!this.avatar) return;
-    
     console.log(`🎭 [EnigmaAvatar] Animation: ${animationType}`);
-    
-    // Trouver le container de réaction - JAMAIS toucher à l'avatar principal !
-    const reactionContainer = document.getElementById('avatar-reaction-container');
-    if (!reactionContainer) {
-      console.log('❌ [EnigmaAvatar] Container de réaction non trouvé');
-      return;
-    }
-    
-    // 🎭 ANIMATIONS ULTRA-ÉTENDUES
-    const animations = {
-      // Animations existantes améliorées
-      'physicalHop': 'enigma-hop 0.8s ease-in-out 2',
-      'physicalPump': 'enigma-pump 0.6s ease-in-out 3',
-      'physicalDance': 'enigma-dance 2s ease-in-out 1',
-      'physicalVictoryDance': 'enigma-victory 2.5s ease-in-out 1',
-      'physicalFireDance': 'enigma-fire 2s ease-in-out 1',
-      'physicalClap': 'enigma-clap 1s ease-in-out 2',
-      'physicalTilt': 'enigma-tilt 0.6s ease-in-out 3',
-      'physicalShake': 'enigma-shake 0.6s ease-in-out 4',
-      'physicalNod': 'enigma-nod 0.8s ease-in-out 2',
-      'physicalDroop': 'enigma-droop 1.5s ease-in-out 1',
-      'physicalPanicWave': 'enigma-panic 0.5s ease-in-out infinite',
-      
-      // 🎯 NOUVELLES ANIMATIONS RÉACTIVES
-      'physicalBounce': 'enigma-bounce 0.7s ease-in-out 2',
-      'physicalSpin': 'enigma-spin 1.5s ease-in-out 1',
-      'physicalWiggle': 'enigma-wiggle 0.8s ease-in-out 2',
-      'physicalGlow': 'enigma-glow 1s ease-in-out 2',
-      'physicalFloat': 'enigma-float 2s ease-in-out 1',
-      'physicalZoom': 'enigma-zoom 0.6s ease-in-out 1',
-      'physicalFlash': 'enigma-flash 0.4s ease-in-out 3',
-      'physicalWave': 'enigma-wave 1.2s ease-in-out 1'
+
+    // Utiliser les classes CSS unifiées sur #ultra-adventurer
+    const container = document.getElementById('ultra-adventurer');
+    if (!container) return;
+
+    const animationMap = {
+      physicalHop: 'physicalHop',
+      physicalPump: 'physicalPump',
+      physicalDance: 'physicalDance',
+      physicalVictoryDance: 'physicalVictoryDance',
+      physicalFireDance: 'physicalVictoryDance',
+      physicalClap: 'physicalClap',
+      physicalTilt: 'physicalTilt',
+      physicalShake: 'physicalShake',
+      physicalNod: 'physicalNod',
+      physicalDroop: 'physicalDroop',
+      physicalPanicWave: 'physicalPanicWave',
+      physicalBounce: 'physicalBounce',
+      physicalSpin: 'physicalSpin',
+      physicalWiggle: 'physicalWiggle',
+      physicalGlow: 'physicalGlow',
+      physicalFloat: 'physicalFloat',
+      physicalZoom: 'physicalZoom',
+      physicalFlash: 'physicalFlash',
+      physicalWave: 'physicalWave'
     };
-    
-    const reactionAnimation = animations[animationType] || animations['physicalHop'];
-    
-    // Appliquer l'animation UNIQUEMENT au container de réaction
-    reactionContainer.style.animation = reactionAnimation;
-    
-    console.log(`✅ [EnigmaAvatar] Animation ${animationType} appliquée au container`);
-    
-    // Nettoyer l'animation du container après
-    setTimeout(() => {
-      if (reactionContainer) {
-        reactionContainer.style.animation = '';
-        console.log(`🧹 [EnigmaAvatar] Animation ${animationType} nettoyée`);
-      }
-    }, 3000);
+
+    // Nettoyer anciennes classes animation-
+    Array.from(container.classList).forEach(cls => {
+      if (cls.startsWith('animation-')) container.classList.remove(cls);
+    });
+
+    const resolved = animationMap[animationType] || 'physicalHop';
+    const className = `animation-${resolved}`;
+    container.classList.add(className);
+
+    setTimeout(() => container.classList.remove(className), 3500);
   }
   
   showEffects(emoji) {
-    const effects = document.getElementById('avatar-effects');
+    const effects = document.getElementById('adventureEffectsUltra');
     if (!effects) return;
     
     effects.textContent = emoji;
@@ -953,7 +893,7 @@ class EnigmaScrollAvatar {
   }
   
   showAura(type, duration = 3000) {
-    const aura = document.getElementById('avatar-aura');
+    const aura = document.getElementById('adventureAura');
     if (!aura) return;
     
     // Reset aura

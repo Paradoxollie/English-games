@@ -13,6 +13,7 @@
 
   <!-- Système d'avatars animés -->
   <link rel="stylesheet" href="../styles/avatar-animations.css">
+  <link rel="stylesheet" href="../styles/game-avatar-styles.css">
   
   <!-- CSS FORCÉ pour avatar - SURCHARGE ULTRA-ROBUSTE -->
   <style>
@@ -447,10 +448,10 @@
     }
   </style>
 
-  <!-- Firebase v8 (compat pour GameStatsService/EndGameRating) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
   
   <!-- Scripts d'authentification du site -->
   <script type="module" src="../scripts/auth-service.js"></script>
@@ -475,19 +476,6 @@
   
   <!-- 🚫 DÉSACTIVER L'ANCIEN SYSTÈME D'AVATAR CONFLICTUEL -->
   <script>
-    // Initialiser Firebase pour cette page (requis pour GameStatsService/EndGameRating)
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-      const firebaseConfig = {
-        apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
-        authDomain: "english-games-41017.firebaseapp.com",
-        projectId: "english-games-41017",
-        storageBucket: "english-games-41017.appspot.com",
-        messagingSenderId: "1062036556501",
-        appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
-      };
-      try { firebase.initializeApp(firebaseConfig); } catch(e) {}
-    }
-    
     // Empêcher le chargement du système d'avatar conflictuel
     window.DISABLE_GAME_AVATAR_INTEGRATION = true;
     
@@ -1630,7 +1618,7 @@
 
           <div class="sidebar-card">
             <h3>🏅 Classement (Top 10)</h3>
-            <div id="enigma-leaderboard" style="overflow:auto;">
+            <div id="enigma-leaderboard">
               <table style="width:100%; border-collapse:collapse;">
                 <thead>
                   <tr>
@@ -1653,20 +1641,28 @@
   <!-- Script principal du jeu -->
   <script src="enigma-scroll-script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function(){
-      // Charge le top 10 au chargement
-      if (typeof loadEnigmaLeaderboard === 'function') {
-        loadEnigmaLeaderboard();
-      } else {
-        // Fallback tardif si la fonction n'est pas encore dispo
-        setTimeout(() => {
-          if (typeof loadEnigmaLeaderboard === 'function') loadEnigmaLeaderboard();
-        }, 500);
-      }
-      // Recharge automatiquement à la fin d'une partie via events bus
-      window.addEventListener('gameRatingUpdated', () => {
-        if (typeof loadEnigmaLeaderboard === 'function') loadEnigmaLeaderboard();
-      });
+    // Chargement du classement Enigma Scroll
+    document.addEventListener('DOMContentLoaded', async function(){
+      try {
+        if (window.scoreService && typeof window.scoreService.getTopScores === 'function') {
+          const rows = await window.scoreService.getTopScores('enigma-scroll', 10);
+          const tbody = document.getElementById('enigma-leaderboard-body');
+          if (tbody) {
+            tbody.innerHTML = '';
+            rows.forEach((row, idx) => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td style="padding:6px;">${idx+1}</td>
+                <td style="padding:6px;">${(row.username||'Player')}</td>
+                <td style="padding:6px; text-align:right;">${row.score||0}</td>`;
+              tbody.appendChild(tr);
+            });
+            if (rows.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Aucun score pour le moment</td></tr>';
+            }
+          }
+        }
+      } catch(e) { console.warn('[Enigma Leaderboard] load error:', e); }
     });
   </script>
   
