@@ -487,9 +487,6 @@ class GameStatsService {
 // Instance globale
 const gameStatsService = new GameStatsService();
 
-// Export pour utilisation en module
-export { gameStatsService };
-
 // Disponible globalement
 window.gameStatsService = gameStatsService;
 

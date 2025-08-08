@@ -526,7 +526,7 @@ function showFeedback(success, message) {
     console.log(success ? '✅' : '❌', message);
 }
 
-function endGame() {
+async function endGame() {
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;

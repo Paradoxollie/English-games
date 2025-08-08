@@ -542,8 +542,5 @@ class EndGameRating {
 // Instance globale
 const endGameRating = new EndGameRating();
 
-// Export pour utilisation en module
-export { endGameRating };
-
 // Disponible globalement
 window.endGameRating = endGameRating; 
