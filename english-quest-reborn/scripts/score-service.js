@@ -20,7 +20,8 @@ class ScoreService {
   constructor() {
     this.db = db;
     this.bannedUsernames = [
-      'player', 'test', 'testuser', 'demo', 'guest', 'anonymous', 'anon'
+      'player', 'test', 'testuser', 'demo', 'guest', 'anonymous', 'anon',
+      'invite', 'invité', 'utilisateur', 'visiteur', 'anonyme', 'user', 'joueur'
     ];
   }
 
@@ -29,8 +30,17 @@ class ScoreService {
     const n = String(name).trim();
     if (n.length < 3) return false;
     const lower = n.toLowerCase();
+    // Exact banned
     if (this.bannedUsernames.includes(lower)) return false;
-    if (lower.startsWith('utilisateur ')) return false; // placeholder pattern
+    // Common placeholders/prefixes (e.g., "player 1", "guest_42", "invité 645")
+    const bannedPrefixes = [
+      'player', 'guest', 'invité', 'invite', 'utilisateur', 'visiteur', 'anonymous', 'anonyme', 'test', 'user', 'joueur'
+    ];
+    for (const prefix of bannedPrefixes) {
+      if (lower.startsWith(prefix + ' ') || lower.startsWith(prefix + '_') || lower.startsWith(prefix + '-') || lower === prefix) {
+        return false;
+      }
+    }
     // allow alnum, space, underscore, dash, accented; reject weird junk
     const re = /^[\p{L}\p{N} _\-']{3,30}$/u;
     return re.test(n);

@@ -49,7 +49,10 @@ function initElements() {
         finalScoreValue: document.getElementById('final-score-value'),
         finalLevelDisplay: document.getElementById('final-level'),
         verbsCompletedDisplay: document.getElementById('verbs-completed'),
-        highestComboDisplay: document.getElementById('highest-combo')
+        highestComboDisplay: document.getElementById('highest-combo'),
+        leaderboardBody: document.getElementById('leaderboard-body'),
+        btnLocalScores: document.getElementById('local-scores-btn'),
+        btnOnlineScores: document.getElementById('online-scores-btn')
     };
     
     console.log('Éléments DOM initialisés:', {
@@ -57,6 +60,88 @@ function initElements() {
         difficultyBtns: document.querySelectorAll('.difficulty-btn').length,
         welcomeScreen: !!elements.gameStates.welcome
     });
+}
+
+// ===== Classement (harmonisé avec Enigma) =====
+async function loadOnlineLeaderboard() {
+    const tbody = elements.leaderboardBody || document.getElementById('leaderboard-body');
+    if (!tbody) return;
+    try {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Chargement...</td></tr>';
+        if (window.scoreService && typeof window.scoreService.getTopScores === 'function') {
+            const rows = await window.scoreService.getTopScores('speed-verb-challenge', 20);
+            tbody.innerHTML = '';
+            rows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                if (idx === 0) tr.className = 'rank-gold';
+                else if (idx === 1) tr.className = 'rank-silver';
+                else if (idx === 2) tr.className = 'rank-bronze';
+                tr.innerHTML = `
+                  <td>${idx+1}</td>
+                  <td>${row.username}</td>
+                  <td style="text-align:right;">${row.score || 0}</td>
+                  <td>${new Date(row.createdDate || Date.now()).toLocaleDateString()}</td>`;
+                tbody.appendChild(tr);
+            });
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Aucun score</td></tr>';
+            }
+        } else {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Service indisponible</td></tr>';
+        }
+    } catch (e) {
+        console.warn('[SpeedVerb] leaderboard error:', e);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#e74c3c; padding:10px;">Erreur de chargement</td></tr>';
+    }
+}
+
+async function loadUserBestLeaderboard() {
+    const tbody = elements.leaderboardBody || document.getElementById('leaderboard-body');
+    if (!tbody) return;
+    const user = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()) || null;
+    if (!user || !user.uid) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Connectez-vous pour voir vos scores</td></tr>';
+        return;
+    }
+    try {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Chargement...</td></tr>';
+        if (window.scoreService && typeof window.scoreService.getUserBest === 'function') {
+            const row = await window.scoreService.getUserBest('speed-verb-challenge', user.uid);
+            tbody.innerHTML = '';
+            if (row) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>—</td>
+                  <td>${row.username}</td>
+                  <td style="text-align:right;">${row.score || 0}</td>
+                  <td>${new Date(row.createdDate || Date.now()).toLocaleDateString()}</td>`;
+                tbody.appendChild(tr);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:.7; padding:10px;">Aucun score</td></tr>';
+            }
+        }
+    } catch (e) {
+        console.warn('[SpeedVerb] user best error:', e);
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#e74c3c; padding:10px;">Erreur de chargement</td></tr>';
+    }
+}
+
+function setupLeaderboardButtons() {
+    const btnLocal = elements.btnLocalScores || document.getElementById('local-scores-btn');
+    const btnOnline = elements.btnOnlineScores || document.getElementById('online-scores-btn');
+    if (!btnLocal || !btnOnline) return;
+    btnLocal.addEventListener('click', () => {
+        btnLocal.classList.add('active');
+        btnOnline.classList.remove('active');
+        loadUserBestLeaderboard();
+    });
+    btnOnline.addEventListener('click', () => {
+        btnOnline.classList.add('active');
+        btnLocal.classList.remove('active');
+        loadOnlineLeaderboard();
+    });
+    // Valeur par défaut: Mes Scores
+    loadUserBestLeaderboard();
 }
 
 function addEventListeners() {
@@ -524,6 +609,9 @@ function initGame() {
     }
     
     finishInit();
+
+    // Harmoniser le classement avec Enigma
+    setupLeaderboardButtons();
 }
 
 function finishInit() {
