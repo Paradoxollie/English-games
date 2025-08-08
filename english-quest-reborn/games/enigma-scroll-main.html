@@ -14,6 +14,7 @@
   <!-- Système d'avatars animés -->
   <link rel="stylesheet" href="../styles/avatar-animations.css">
   <link rel="stylesheet" href="../styles/game-avatar-styles.css">
+  <script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
   
   <!-- CSS FORCÉ pour avatar - SURCHARGE ULTRA-ROBUSTE -->
   <style>
@@ -471,8 +472,8 @@
   <script src="../scripts/game-events.js"></script>
   <script src="../scripts/end-game-rating.js"></script>
   
-  <!-- SYSTÈME D'AVATAR ULTRA-SIMPLE ET ROBUSTE -->
-  <script src="enigma-scroll-avatar-simple.js"></script>
+  <!-- Nouveau renderer Avatar 3D (fallback DOM si WebGL indisponible) -->
+  <script src="../scripts/avatar-3d.js" defer></script>
   
   <!-- 🚫 DÉSACTIVER L'ANCIEN SYSTÈME D'AVATAR CONFLICTUEL -->
   <script>
