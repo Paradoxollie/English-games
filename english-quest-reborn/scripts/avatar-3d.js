@@ -63,6 +63,7 @@
       this.scene = null;
       this.camera = null;
       this.renderer = null;
+      this.root = null; // group for whole avatar
       this.planes = {};
       this.clock = null;
       this.anim = { t: 0, reacting: false };
@@ -81,13 +82,18 @@
         el.className = 'ultra-reactive-adventurer';
         document.body.appendChild(el);
       }
-      // Ensure reasonable size if styles not loaded
-      el.style.position = el.style.position || 'fixed';
-      el.style.right = el.style.right || '20px';
-      el.style.bottom = el.style.bottom || '20px';
-      el.style.width = el.style.width || '140px';
-      el.style.height = el.style.height || '200px';
-      el.style.zIndex = el.style.zIndex || '1500';
+      // Force a larger, game-like size overriding any !important CSS
+      const setImp = (prop, value) => el.style.setProperty(prop, value, 'important');
+      setImp('position', 'fixed');
+      setImp('right', '24px');
+      setImp('bottom', '24px');
+      setImp('width', '260px');
+      setImp('height', '360px');
+      setImp('min-width', '240px');
+      setImp('min-height', '320px');
+      setImp('max-width', '360px');
+      setImp('max-height', '520px');
+      setImp('z-index', '2000');
       this.container = el;
     }
 
@@ -124,7 +130,7 @@
       this.scene = new THREE.Scene();
       const aspect = this.container.clientWidth / Math.max(1, this.container.clientHeight);
       // Orthographic camera for crisp UI-like look
-      const w = 2.0, h = w / aspect;
+      const w = 2.8, h = w / aspect;
       this.camera = new THREE.OrthographicCamera(-w, w, h, -h, 0.01, 10);
       this.camera.position.set(0, 0, 5);
       this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -137,6 +143,20 @@
       // Subtle background gradient using CSS to emulate polished UI
       this.container.style.background = 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.04), rgba(0,0,0,0) 70%)';
       window.addEventListener('resize', () => this.onResize());
+
+      // Root group for unified animations
+      this.root = new THREE.Group();
+      this.scene.add(this.root);
+
+      // Mouse parallax for more depth
+      this.container.addEventListener('mousemove', (e) => {
+        const rect = this.container.getBoundingClientRect();
+        const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+        const maxRot = 0.18; // radians
+        this.root.rotation.y = -nx * maxRot;
+        this.root.rotation.x = ny * maxRot * 0.6;
+      });
     }
 
     createPlane(textureUrl, size = { w: 1, h: 1 }, z = 0) {
@@ -151,23 +171,23 @@
     }
 
     loadPlanes() {
-      // Sizes normalized for a tall avatar: body taller, head smaller overlay
-      const body = this.createPlane(this.assets.body, { w: 1.0, h: 1.4 }, 0.0);
-      const head = this.createPlane(this.assets.head, { w: 0.75, h: 0.75 }, 0.05);
+      // Larger, hero-like proportions
+      const body = this.createPlane(this.assets.body, { w: 1.6, h: 2.3 }, 0.0);
+      const head = this.createPlane(this.assets.head, { w: 1.2, h: 1.2 }, 0.05);
       head.position.y = 0.35; // head above center
 
-      // Accessory plane (optional)
-      const accessory = this.createPlane(this.assets.accessory, { w: 0.5, h: 0.5 }, 0.1);
-      accessory.position.set(0.35, 0.35, 0.1);
+      // Accessory plane (optional) – bigger for visibility
+      const accessory = this.createPlane(this.assets.accessory, { w: 0.7, h: 0.7 }, 0.1);
+      accessory.position.set(0.5, 0.45, 0.1);
 
       // Add subtle aura ring
-      const aura = this.createPlane('../assets/avatars/accessories/default.png', { w: 1.6, h: 1.9 }, -0.05);
-      aura.material.opacity = 0.15;
+      const aura = this.createPlane('../assets/avatars/accessories/default.png', { w: 2.6, h: 3.2 }, -0.05);
+      aura.material.opacity = 0.22;
 
-      this.scene.add(aura);
-      this.scene.add(body);
-      this.scene.add(head);
-      this.scene.add(accessory);
+      this.root.add(aura);
+      this.root.add(body);
+      this.root.add(head);
+      this.root.add(accessory);
 
       this.planes = { body, head, accessory, aura };
       this.active = true;
@@ -194,21 +214,17 @@
       const t = this.anim.t;
 
       // Idle breathing and head bobbing
-      if (this.planes.body) {
-        this.planes.body.position.y = Math.sin(t * 1.2) * 0.03;
-        this.planes.body.scale.setScalar(1 + Math.sin(t * 1.2) * 0.02);
+      if (this.root) {
+        // Global idle breathing
+        const s = 1 + Math.sin(t * 1.2) * 0.035;
+        this.root.scale.set(s, s, 1);
       }
-      if (this.planes.head) {
-        this.planes.head.position.y = 0.35 + Math.sin(t * 1.5) * 0.04;
-        this.planes.head.rotation.z = Math.sin(t * 0.8) * 0.03;
-      }
-      if (this.planes.accessory) {
-        this.planes.accessory.rotation.z = Math.sin(t * 1.8) * 0.1;
-      }
+      if (this.planes.head) this.planes.head.rotation.z = Math.sin(t * 0.7) * 0.045;
+      if (this.planes.accessory) this.planes.accessory.rotation.z = Math.sin(t * 1.4) * 0.12;
       if (this.planes.aura) {
-        const pulse = 0.15 + (Math.sin(t * 2.2) * 0.08 + 0.08);
+        const pulse = 0.22 + (Math.sin(t * 2.0) * 0.12 + 0.1);
         this.planes.aura.material.opacity = pulse;
-        this.planes.aura.scale.setScalar(1 + Math.sin(t * 1.5) * 0.03);
+        this.planes.aura.scale.setScalar(1 + Math.sin(t * 1.2) * 0.05);
       }
 
       if (this.renderer && this.scene && this.camera) {
@@ -219,45 +235,44 @@
 
     // Reactions
     pulse(scale = 1.12, duration = 250) {
-      if (!this.planes.body) return;
+      if (!this.root) return;
       const start = performance.now();
       const base = 1;
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
         const s = base + (scale - base) * Math.sin(k * Math.PI);
-        this.planes.body.scale.set(s, s, 1);
-        this.planes.head.scale.set(s, s, 1);
+        this.root.scale.set(s, s, 1);
         if (k < 1) requestAnimationFrame(anim);
       };
       requestAnimationFrame(anim);
     }
 
     spin(duration = 600) {
-      if (!this.planes.head) return;
+      if (!this.root) return;
       const start = performance.now();
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
-        this.planes.head.rotation.z = k * Math.PI * 2;
+        this.root.rotation.z = k * Math.PI * 2;
         if (k < 1) requestAnimationFrame(anim);
+        else this.root.rotation.z = 0;
       };
       requestAnimationFrame(anim);
     }
 
     shake(duration = 300, intensity = 0.05) {
-      if (!this.planes.body) return;
+      if (!this.root) return;
       const start = performance.now();
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
         const amp = intensity * (1 - k);
         const x = (Math.random() - 0.5) * 2 * amp;
         const y = (Math.random() - 0.5) * 2 * amp;
-        this.planes.body.position.x = x;
-        this.planes.head.position.x = x * 0.8;
-        this.planes.body.position.y += y * 0.2;
+        this.root.position.x = x;
+        this.root.position.y = y * 0.4;
         if (k < 1) requestAnimationFrame(anim);
         else {
-          this.planes.body.position.x = 0;
-          if (this.planes.head) this.planes.head.position.x = 0;
+          this.root.position.x = 0;
+          this.root.position.y = 0;
         }
       };
       requestAnimationFrame(anim);
