@@ -33,12 +33,12 @@ div[id="ultra-adventurer"],
 body .ultra-reactive-adventurer,
 body #ultra-adventurer {
   /* Dimensions confort (peuvent être ajustées) */
-  width: 220px !important;
-  height: 320px !important;
+  width: 180px !important;
+  height: 260px !important;
   min-width: 160px !important;
-  max-width: 300px !important;
+  max-width: 260px !important;
   min-height: 220px !important;
-  max-height: 420px !important;
+  max-height: 360px !important;
   
   /* FORCER le positionnement */
   position: fixed !important;
@@ -155,9 +155,9 @@ body #ultra-adventurer {
   bottom: 0 !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 72% !important;
+  width: 70% !important;
   height: auto !important;
-  max-height: 65% !important;
+  max-height: 62% !important;
   object-fit: contain !important;
   z-index: 5 !important;
   display: block !important;
@@ -180,13 +180,13 @@ body .ultra-reactive-adventurer .avatar-head,
 body #ultra-adventurer .avatar-head {
   /* POSITION RELATIVE au container - mais stable au zoom */
   position: absolute !important;
-  top: 18% !important;  /* Remonté pour aligner avec le corps */
+  top: 12% !important;  /* Remontée pour aligner avec le corps */
   left: 50% !important;
   right: auto !important;
   bottom: auto !important;
   
   /* DIMENSIONS proportionnelles au container */
-  width: 50% !important;
+  width: 48% !important;
   height: auto !important;
   
   /* AFFICHAGE FORCÉ */
@@ -212,13 +212,13 @@ body #ultra-adventurer .avatar-head {
 .ultra-reactive-adventurer .avatar-accessory,
 #ultra-adventurer .avatar-accessory {
   position: absolute !important;
-  top: 16% !important;
+  top: 10% !important;
   right: 8% !important;
   left: auto !important;
   bottom: auto !important;
   
-  width: 26% !important;
-  height: 26% !important;
+  width: 24% !important;
+  height: 24% !important;
   
   z-index: 1215 !important;
   display: block !important;
@@ -359,12 +359,12 @@ body #ultra-adventurer .avatar-head {
 @media (max-width: 768px) {
   .ultra-reactive-adventurer,
   #ultra-adventurer {
-    width: 200px !important;
-    height: 290px !important;
-    min-width: 160px !important;
-    max-width: 260px !important;
-    min-height: 220px !important;
-    max-height: 360px !important;
+    width: 170px !important;
+    height: 240px !important;
+    min-width: 150px !important;
+    max-width: 220px !important;
+    min-height: 200px !important;
+    max-height: 320px !important;
   }
   
   /* Les proportions relatives restent les mêmes */
@@ -372,15 +372,15 @@ body #ultra-adventurer .avatar-head {
   #ultra-adventurer .avatar-head-ultra,
   .ultra-reactive-adventurer .avatar-head,
   #ultra-adventurer .avatar-head {
-    top: 18% !important;
-    width: 50% !important;
+    top: 12% !important;
+    width: 48% !important;
   }
   
   .ultra-reactive-adventurer .avatar-accessory-ultra,
   #ultra-adventurer .avatar-accessory-ultra {
-    top: 16% !important;
-    width: 26% !important;
-    height: 26% !important;
+    top: 10% !important;
+    width: 24% !important;
+    height: 24% !important;
   }
   
   .ultra-reactive-adventurer .adventure-effects-ultra,

@@ -38,16 +38,18 @@
       el.className = 'ultra-reactive-adventurer';
       document.body.appendChild(el);
     }
-    el.style.position = 'fixed';
-    el.style.right = '24px';
-    el.style.bottom = '24px';
-    el.style.width = '320px';
-    el.style.height = '460px';
-    el.style.zIndex = '3000';
-    el.style.display = 'block';
-    el.style.visibility = 'visible';
-    el.style.opacity = '1';
-    el.style.pointerEvents = 'none';
+    const setImp = (p,v)=> el.style.setProperty(p,v,'important');
+    setImp('position','fixed');
+    setImp('right','24px');
+    setImp('bottom','24px');
+    setImp('width','180px');
+    setImp('height','260px');
+    setImp('z-index','3000');
+    setImp('display','block');
+    setImp('visibility','visible');
+    setImp('opacity','1');
+    setImp('pointer-events','none');
+    setImp('transform','translateZ(0)');
     return el;
   }
   function renderDOM(container, a) {
@@ -63,7 +65,9 @@
       <div class="adventure-speech-bubble" id="adventureSpeech" style="display:none;"></div>
       <div class="adventure-aura" id="adventureAura"></div>
     `;
-    container.innerHTML = html;
+    // Avoid flicker: replace content atomically
+    while (container.firstChild) container.removeChild(container.firstChild);
+    container.insertAdjacentHTML('afterbegin', html);
   }
   function api(container) {
     const speech = () => container.querySelector('#adventureSpeech');
@@ -127,5 +131,6 @@
     init();
   }
 })();
+
 
 
