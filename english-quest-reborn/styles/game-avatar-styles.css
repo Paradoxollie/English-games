@@ -32,13 +32,13 @@
 div[id="ultra-adventurer"],
 body .ultra-reactive-adventurer,
 body #ultra-adventurer {
-  /* FORCER les dimensions en unités viewport */
-  width: 5vw !important;
-  height: 8vw !important;
-  min-width: 45px !important;
-  max-width: 70px !important;
-  min-height: 72px !important;
-  max-height: 112px !important;
+  /* Dimensions plus grandes, style jeu */
+  width: 12vw !important;
+  height: 18vw !important;
+  min-width: 200px !important;
+  max-width: 360px !important;
+  min-height: 300px !important;
+  max-height: 540px !important;
   
   /* FORCER le positionnement */
   position: fixed !important;
@@ -360,12 +360,12 @@ body #ultra-adventurer .avatar-head {
 @media (max-width: 768px) {
   .ultra-reactive-adventurer,
   #ultra-adventurer {
-    width: 7vw !important;
-    height: 11vw !important;
-    min-width: 55px !important;
-    max-width: 80px !important;
-    min-height: 88px !important;
-    max-height: 128px !important;
+    width: 24vw !important;
+    height: 36vw !important;
+    min-width: 180px !important;
+    max-width: 320px !important;
+    min-height: 260px !important;
+    max-height: 480px !important;
   }
   
   /* Les proportions relatives restent les mêmes */
@@ -402,12 +402,12 @@ body #ultra-adventurer .avatar-head {
 @media (max-width: 480px) {
   .ultra-reactive-adventurer,
   #ultra-adventurer {
-    width: 9vw !important;
-    height: 14vw !important;
-    min-width: 65px !important;
-    max-width: 90px !important;
-    min-height: 104px !important;
-    max-height: 144px !important;
+    width: 36vw !important;
+    height: 54vw !important;
+    min-width: 180px !important;
+    max-width: 320px !important;
+    min-height: 260px !important;
+    max-height: 480px !important;
   }
   
   /* Les proportions relatives restent identiques */
@@ -445,8 +445,8 @@ body #ultra-adventurer .avatar-head {
 @media (max-width: 768px) and (orientation: landscape) {
   .ultra-reactive-adventurer,
   #ultra-adventurer {
-    width: 5vw !important;
-    height: 8vw !important;
+    width: 18vw !important;
+    height: 27vw !important;
     top: 5vh !important;
   }
   
