@@ -237,7 +237,7 @@ class EndGameRating {
         }
 
         try {
-            if (window.gameStatsService) {
+            if (window.gameStatsService && typeof window.gameStatsService.submitRating === 'function') {
                 const result = await window.gameStatsService.submitRating(
                     this.currentGameId, 
                     rating, 

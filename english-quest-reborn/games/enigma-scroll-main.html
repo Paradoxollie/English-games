@@ -447,10 +447,10 @@
     }
   </style>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <!-- Firebase v8 (compat pour GameStatsService/EndGameRating) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   
   <!-- Scripts d'authentification du site -->
   <script type="module" src="../scripts/auth-service.js"></script>
@@ -475,6 +475,19 @@
   
   <!-- 🚫 DÉSACTIVER L'ANCIEN SYSTÈME D'AVATAR CONFLICTUEL -->
   <script>
+    // Initialiser Firebase pour cette page (requis pour GameStatsService/EndGameRating)
+    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+      const firebaseConfig = {
+        apiKey: "AIzaSyBfy1clmJoOl_0r3rQKhJb8ooPWkQgBuQs",
+        authDomain: "english-games-41017.firebaseapp.com",
+        projectId: "english-games-41017",
+        storageBucket: "english-games-41017.appspot.com",
+        messagingSenderId: "1062036556501",
+        appId: "1:1062036556501:web:e74b7a0c8b8b8b8b8b8b8b"
+      };
+      try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+    }
+    
     // Empêcher le chargement du système d'avatar conflictuel
     window.DISABLE_GAME_AVATAR_INTEGRATION = true;
     
