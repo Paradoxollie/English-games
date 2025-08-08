@@ -99,21 +99,23 @@
 
     init() {
       this.ensureContainer();
-      if (!hasThree) {
-        // Fallback: simple DOM layering if Three.js not available
-        this.renderFallback();
-        this.installAPI(true);
-        return;
+      if (hasThree) {
+        this.initThree();
       }
-      this.initThree();
-      this.loadPlanes();
-      this.animate();
-      this.installAPI(false);
+      // Always render DOM overlay for perfect alignment
+      this.renderFallback();
+      if (hasThree) {
+        this.loadAurasOnly();
+        this.animate();
+        this.raiseDomAboveCanvas();
+      }
+      this.installAPI(!hasThree);
     }
 
     renderFallback() {
+      // DOM overlay using exact CSS classes to mirror profile layout
       const html = `
-        <div class="adventurer-avatar-ultra">
+        <div class="adventurer-avatar-ultra" style="position: absolute; inset: 0; z-index: 2;">
           <div class="avatar-display-ultra">
             <img src="${this.assets.body}" class="avatar-body-ultra" onerror="this.src='../assets/avatars/bodies/default_boy.png'">
             <img src="${this.assets.head}" class="avatar-head-ultra" onerror="this.src='../assets/avatars/heads/default_boy.png'">
@@ -122,7 +124,11 @@
             </div>
           </div>
         </div>`;
-      this.container.innerHTML = html;
+      // Keep existing children (e.g., WebGL canvas), append overlay
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+      this.container.appendChild(wrapper.firstElementChild);
+      this.domWrapper = this.container.querySelector('.adventurer-avatar-ultra');
       this.active = true;
     }
 
@@ -136,7 +142,10 @@
       this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1.0, 2));
       this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-      this.container.innerHTML = '';
+      // Place canvas as background layer
+      this.renderer.domElement.style.position = 'absolute';
+      this.renderer.domElement.style.inset = '0';
+      this.renderer.domElement.style.zIndex = '1';
       this.container.appendChild(this.renderer.domElement);
       this.clock = new THREE.Clock();
 
@@ -144,7 +153,7 @@
       this.container.style.background = 'radial-gradient(ellipse at bottom, rgba(255,255,255,0.04), rgba(0,0,0,0) 70%)';
       window.addEventListener('resize', () => this.onResize());
 
-      // Root group for unified animations
+      // Root group for auras/effects behind DOM
       this.root = new THREE.Group();
       this.scene.add(this.root);
 
@@ -170,26 +179,16 @@
       return mesh;
     }
 
-    loadPlanes() {
-      // Larger, hero-like proportions
-      const body = this.createPlane(this.assets.body, { w: 1.6, h: 2.3 }, 0.0);
-      const head = this.createPlane(this.assets.head, { w: 1.2, h: 1.2 }, 0.05);
-      head.position.y = 0.35; // head above center
-
-      // Accessory plane (optional) – bigger for visibility
-      const accessory = this.createPlane(this.assets.accessory, { w: 0.7, h: 0.7 }, 0.1);
-      accessory.position.set(0.5, 0.45, 0.1);
-
-      // Add subtle aura ring
-      const aura = this.createPlane('../assets/avatars/accessories/default.png', { w: 2.6, h: 3.2 }, -0.05);
-      aura.material.opacity = 0.22;
-
+    loadAurasOnly() {
+      // Aura/ambient planes only (DOM handles precise alignment of parts)
+      const aura = this.createPlane('../assets/avatars/accessories/default.png', { w: 3.0, h: 3.8 }, -0.05);
+      aura.material.opacity = 0.25;
+      const shadow = this.createPlane('../assets/avatars/accessories/default.png', { w: 2.2, h: 0.5 }, -0.06);
+      shadow.material.opacity = 0.18;
+      shadow.position.y = -0.9;
       this.root.add(aura);
-      this.root.add(body);
-      this.root.add(head);
-      this.root.add(accessory);
-
-      this.planes = { body, head, accessory, aura };
+      this.root.add(shadow);
+      this.planes = { aura, shadow };
       this.active = true;
     }
 
@@ -219,8 +218,6 @@
         const s = 1 + Math.sin(t * 1.2) * 0.035;
         this.root.scale.set(s, s, 1);
       }
-      if (this.planes.head) this.planes.head.rotation.z = Math.sin(t * 0.7) * 0.045;
-      if (this.planes.accessory) this.planes.accessory.rotation.z = Math.sin(t * 1.4) * 0.12;
       if (this.planes.aura) {
         const pulse = 0.22 + (Math.sin(t * 2.0) * 0.12 + 0.1);
         this.planes.aura.material.opacity = pulse;
@@ -235,47 +232,54 @@
 
     // Reactions
     pulse(scale = 1.12, duration = 250) {
-      if (!this.root) return;
+      if (!this.domWrapper) return;
       const start = performance.now();
       const base = 1;
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
         const s = base + (scale - base) * Math.sin(k * Math.PI);
-        this.root.scale.set(s, s, 1);
+        this.domWrapper.style.transform = `scale(${s})`;
+        this.domWrapper.style.transformOrigin = 'center bottom';
         if (k < 1) requestAnimationFrame(anim);
+        else this.domWrapper.style.transform = '';
       };
       requestAnimationFrame(anim);
     }
 
     spin(duration = 600) {
-      if (!this.root) return;
+      if (!this.domWrapper) return;
       const start = performance.now();
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
-        this.root.rotation.z = k * Math.PI * 2;
+        const deg = k * 360;
+        this.domWrapper.style.transform = `rotate(${deg}deg)`;
+        this.domWrapper.style.transformOrigin = 'center bottom';
         if (k < 1) requestAnimationFrame(anim);
-        else this.root.rotation.z = 0;
+        else this.domWrapper.style.transform = '';
       };
       requestAnimationFrame(anim);
     }
 
     shake(duration = 300, intensity = 0.05) {
-      if (!this.root) return;
+      if (!this.domWrapper) return;
       const start = performance.now();
       const anim = (now) => {
         const k = Math.min(1, (now - start) / duration);
         const amp = intensity * (1 - k);
         const x = (Math.random() - 0.5) * 2 * amp;
         const y = (Math.random() - 0.5) * 2 * amp;
-        this.root.position.x = x;
-        this.root.position.y = y * 0.4;
+        this.domWrapper.style.transform = `translate(${x * 50}px, ${y * 40}px)`;
         if (k < 1) requestAnimationFrame(anim);
         else {
-          this.root.position.x = 0;
-          this.root.position.y = 0;
+          this.domWrapper.style.transform = '';
         }
       };
       requestAnimationFrame(anim);
+    }
+
+    raiseDomAboveCanvas() {
+      if (!this.domWrapper) return;
+      this.domWrapper.style.zIndex = '2';
     }
 
     auraBurst(type = 'success', duration = 800) {
