@@ -466,6 +466,8 @@
   <!-- Services jeux: stats, récompenses et notation fin de partie -->
   <script src="../scripts/game-stats-service.js"></script>
   <script type="module" src="../scripts/reward-service.js"></script>
+  <script type="module" src="../scripts/score-service.js"></script>
+  <script src="../scripts/game-events.js"></script>
   <script src="../scripts/end-game-rating.js"></script>
   
   <!-- SYSTÈME D'AVATAR ULTRA-SIMPLE ET ROBUSTE -->
@@ -1612,6 +1614,24 @@
               <p><strong>Raccourcis :</strong> 1, 2, 3</p>
             </div>
           </div>
+
+          <div class="sidebar-card">
+            <h3>🏅 Classement (Top 10)</h3>
+            <div id="enigma-leaderboard">
+              <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr>
+                    <th style="text-align:left; padding:6px; color: var(--color-text-secondary);">Rang</th>
+                    <th style="text-align:left; padding:6px; color: var(--color-text-secondary);">Joueur</th>
+                    <th style="text-align:right; padding:6px; color: var(--color-text-secondary);">Score</th>
+                  </tr>
+                </thead>
+                <tbody id="enigma-leaderboard-body">
+                  <tr><td colspan="3" style="padding:8px; opacity:.7;">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1619,6 +1639,31 @@
   
   <!-- Script principal du jeu -->
   <script src="enigma-scroll-script.js"></script>
+  <script>
+    // Chargement du classement Enigma Scroll
+    document.addEventListener('DOMContentLoaded', async function(){
+      try {
+        if (window.scoreService && typeof window.scoreService.getTopScores === 'function') {
+          const rows = await window.scoreService.getTopScores('enigma-scroll', 10);
+          const tbody = document.getElementById('enigma-leaderboard-body');
+          if (tbody) {
+            tbody.innerHTML = '';
+            rows.forEach((row, idx) => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td style="padding:6px;">${idx+1}</td>
+                <td style="padding:6px;">${(row.username||'Player')}</td>
+                <td style="padding:6px; text-align:right;">${row.score||0}</td>`;
+              tbody.appendChild(tr);
+            });
+            if (rows.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="3" style="padding:8px; opacity:.7;">Aucun score pour le moment</td></tr>';
+            }
+          }
+        }
+      } catch(e) { console.warn('[Enigma Leaderboard] load error:', e); }
+    });
+  </script>
   
 </body>
 </html> 

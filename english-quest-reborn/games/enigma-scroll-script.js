@@ -557,6 +557,7 @@ async function startGame(difficulty) {
   startTimer();
   
   showMessage(`Nouvelle partie ! Mot de ${gameState.wordLength} lettres`, 'success');
+  if (window.emitGameEvent) emitGameEvent('start');
   
   // 🎯 NOTIFICATION AVATAR ULTRA-RÉACTIF - Démarrage de jeu
   try {
@@ -602,7 +603,7 @@ function endGame(won, message) {
       gameState.bestCombo = gameState.combo;
     }
     
-    // 🎯 NOTIFICATION AVATAR ULTRA-RÉACTIF - Mot trouvé
+    // 🎯 NOTIFICATIONS - avatar + events bus
     try {
       if (window.enigmaAvatar) {
         console.log('🎮 [Enigma Scroll] Notification avatar - mot trouvé!');
@@ -624,6 +625,8 @@ function endGame(won, message) {
           }, 500);
         }
       }
+      if (window.emitGameEvent) emitGameEvent('score', { points: totalScore });
+      if (gameState.combo > 2 && window.emitGameEvent) emitGameEvent('combo', { combo: gameState.combo });
     } catch (error) {
       console.warn('⚠️ [Enigma Scroll] Erreur notification avatar:', error);
     }
@@ -636,8 +639,16 @@ function endGame(won, message) {
       gameState.wordLength
     );
 
-    // Récompenses + notation fin de partie
+    // Sauvegarde score en ligne + Récompenses + notation fin de partie
     try {
+      if (window.scoreService && typeof window.scoreService.saveScore === 'function') {
+        const extra = {
+          wordsFound: gameState.wordsFound,
+          bestCombo: gameState.bestCombo,
+          wordLength: gameState.wordLength
+        };
+        await window.scoreService.saveScore('enigma-scroll', finalScore, extra);
+      }
       // Récompenses intelligentes (XP/coins). Bonus si meilleur combo élevé
       const isTopScore = gameState.bestCombo >= 8 || totalScore >= 50;
       if (window.rewardService && typeof window.rewardService.giveRewards === 'function') {
@@ -680,12 +691,13 @@ function endGame(won, message) {
     // Partie perdue
     finalScore = gameState.score;
     
-    // 🎯 NOTIFICATION AVATAR ULTRA-RÉACTIF - Défaite
+    // 🎯 NOTIFICATIONS - avatar + events bus
     try {
       if (window.enigmaAvatar) {
         console.log('🎮 [Enigma Scroll] Notification avatar - défaite');
         window.enigmaAvatar.reactToGameMessage('Essayez encore !');
       }
+      if (window.emitGameEvent) emitGameEvent('end', { score: finalScore, message });
     } catch (error) {
       console.warn('⚠️ [Enigma Scroll] Erreur notification avatar défaite:', error);
     }
@@ -697,6 +709,14 @@ function endGame(won, message) {
       gameState.wordLength
     );
     try {
+      if (window.scoreService && typeof window.scoreService.saveScore === 'function') {
+        const extra = {
+          wordsFound: gameState.wordsFound,
+          bestCombo: gameState.bestCombo,
+          wordLength: gameState.wordLength
+        };
+        await window.scoreService.saveScore('enigma-scroll', finalScore, extra);
+      }
       if (window.gameStatsService && typeof window.gameStatsService.recordGamePlay === 'function') {
         const userId = (window.authService && window.authService.getCurrentUser && window.authService.getCurrentUser()?.uid) || null;
         window.gameStatsService.recordGamePlay('enigma-scroll', userId, finalScore, null);

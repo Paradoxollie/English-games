@@ -149,6 +149,7 @@ function startGame() {
     setGameState('playing');
     startTimer();
     displayVerb();
+    if (window.emitGameEvent) emitGameEvent('start');
 }
 
 function setGameState(state) {
@@ -336,6 +337,7 @@ function checkAnswer() {
         verbsCompleted++;
         
         updateHUD();
+        if (window.emitGameEvent) emitGameEvent('score', { points });
         showFeedback(true, `Correct ! +${points} points`);
         
         // Animation de succès
@@ -450,9 +452,18 @@ function endGame() {
     
     setGameState('gameOver');
     console.log('🏁 Fin de jeu - Score:', score);
+    if (window.emitGameEvent) emitGameEvent('end', { score });
 
-    // Récompenses + stats + notation fin de partie
+    // Sauvegarde score en ligne + Récompenses + stats + notation fin de partie
     try {
+        if (window.scoreService && typeof window.scoreService.saveScore === 'function') {
+            const extra = {
+                highestStreak,
+                verbsCompleted,
+                difficulty
+            };
+            await window.scoreService.saveScore('speed-verb-challenge', score, extra);
+        }
         const isTopScore = highestStreak >= 10 || score >= 150;
         if (window.rewardService && typeof window.rewardService.giveRewards === 'function') {
             const xpGain = Math.max(5, Math.floor(score / 2) + Math.floor(highestStreak * 1.5));
