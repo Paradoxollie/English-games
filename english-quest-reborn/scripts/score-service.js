@@ -87,17 +87,21 @@ class ScoreService {
   }
 
   async getUserBest(gameId, userId) {
+    // Éviter l'index composite requis (gameId + userId + orderBy score)
+    // On récupère les scores de l'utilisateur pour ce jeu et on calcule le meilleur côté client
     const q = query(
       collection(this.db, 'game_scores'),
       where('gameId', '==', gameId),
-      where('userId', '==', userId),
-      orderBy('score', 'desc'),
-      fbLimit(1)
+      where('userId', '==', userId)
     );
     const snap = await getDocs(q);
     if (snap.empty) return null;
-    const doc = snap.docs[0];
-    return { id: doc.id, ...doc.data() };
+    let best = null;
+    snap.forEach(d => {
+      const row = { id: d.id, ...d.data() };
+      if (!best || (Number(row.score) || 0) > (Number(best.score) || 0)) best = row;
+    });
+    return best;
   }
 }
 

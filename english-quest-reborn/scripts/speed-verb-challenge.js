@@ -73,13 +73,11 @@ async function loadOnlineLeaderboard() {
             tbody.innerHTML = '';
             rows.forEach((row, idx) => {
                 const tr = document.createElement('tr');
-                if (idx === 0) tr.className = 'rank-gold';
-                else if (idx === 1) tr.className = 'rank-silver';
-                else if (idx === 2) tr.className = 'rank-bronze';
+                const rankStyle = idx===0? 'font-weight:700;color:#f1c40f;' : idx===1? 'font-weight:600;color:#bdc3c7;' : idx===2? 'font-weight:600;color:#d35400;' : '';
                 tr.innerHTML = `
-                  <td>${idx+1}</td>
-                  <td>${row.username}</td>
-                  <td style="text-align:right;">${row.score || 0}</td>
+                  <td style="${rankStyle}">${idx+1}</td>
+                  <td style="${rankStyle}">${row.username}</td>
+                  <td style="text-align:right;${rankStyle}">${row.score || 0}</td>
                   <td>${new Date(row.createdDate || Date.now()).toLocaleDateString()}</td>`;
                 tbody.appendChild(tr);
             });

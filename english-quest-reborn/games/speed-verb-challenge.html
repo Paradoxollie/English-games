@@ -1306,7 +1306,7 @@
                 </div>
                 
                 <div class="leaderboard-panel">
-                    <h2>🏆 Classement</h2>
+                    <h2>🏆 Classement (Top 20)</h2>
                     
                     <!-- Boutons de navigation -->
                     <div class="leaderboard-buttons">
@@ -1319,18 +1319,18 @@
                     </div>
                     
                     <div class="leaderboard-container">
-                        <table class="leaderboard-table">
+                        <table class="leaderboard-table" style="width:100%; border-collapse:collapse;">
                             <thead>
                                 <tr>
-                                    <th>Rang</th>
-                                    <th>Joueur</th>
-                                    <th>Score</th>
-                                    <th>Date</th>
+                                    <th style="text-align:left; padding:6px; color: var(--color-text-secondary);">Rang</th>
+                                    <th style="text-align:left; padding:6px; color: var(--color-text-secondary);">Joueur</th>
+                                    <th style="text-align:right; padding:6px; color: var(--color-text-secondary);">Score</th>
+                                    <th style="text-align:left; padding:6px; color: var(--color-text-secondary);">Date</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboard-body">
                                 <tr>
-                                    <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 20px;">
+                                    <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7); padding: 12px;">
                                         Aucun score enregistré
                                         <br><small style="opacity: 0.6;">Jouez pour voir vos scores ici !</small>
                                     </td>
