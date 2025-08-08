@@ -19,6 +19,21 @@ const db = getFirestore(app);
 class ScoreService {
   constructor() {
     this.db = db;
+    this.bannedUsernames = [
+      'player', 'test', 'testuser', 'demo', 'guest', 'anonymous', 'anon'
+    ];
+  }
+
+  isValidUsername(name) {
+    if (!name) return false;
+    const n = String(name).trim();
+    if (n.length < 3) return false;
+    const lower = n.toLowerCase();
+    if (this.bannedUsernames.includes(lower)) return false;
+    if (lower.startsWith('utilisateur ')) return false; // placeholder pattern
+    // allow alnum, space, underscore, dash, accented; reject weird junk
+    const re = /^[\p{L}\p{N} _\-']{3,30}$/u;
+    return re.test(n);
   }
 
   async saveScore(gameId, score, extra = {}) {
@@ -27,7 +42,10 @@ class ScoreService {
       throw new Error('Utilisateur non connecté - impossible d\'enregistrer le score');
     }
 
-    const username = user.username || user.displayName || 'Player';
+    const username = user.username || user.displayName || '';
+    if (!this.isValidUsername(username)) {
+      throw new Error('Nom d\'utilisateur invalide: veuillez configurer un pseudo valide dans votre profil');
+    }
 
     const payload = {
       gameId,
@@ -53,7 +71,9 @@ class ScoreService {
     const snap = await getDocs(q);
     const rows = [];
     snap.forEach(doc => rows.push({ id: doc.id, ...doc.data() }));
-    return rows;
+    // Filtrer les pseudos bannis côté client pour l'affichage
+    const filtered = rows.filter(r => this.isValidUsername(r.username));
+    return filtered;
   }
 
   async getUserBest(gameId, userId) {

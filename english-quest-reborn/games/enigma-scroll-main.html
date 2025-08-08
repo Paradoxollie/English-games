@@ -1617,7 +1617,7 @@
 
           <div class="sidebar-card">
             <h3>🏅 Classement (Top 10)</h3>
-            <div id="enigma-leaderboard">
+            <div id="enigma-leaderboard" style="overflow:auto;">
               <table style="width:100%; border-collapse:collapse;">
                 <thead>
                   <tr>
@@ -1650,10 +1650,11 @@
             tbody.innerHTML = '';
             rows.forEach((row, idx) => {
               const tr = document.createElement('tr');
+              const rankStyle = idx===0? 'font-weight:700;color:#f1c40f;' : idx===1? 'font-weight:600;color:#bdc3c7;' : idx===2? 'font-weight:600;color:#d35400;' : '';
               tr.innerHTML = `
-                <td style="padding:6px;">${idx+1}</td>
-                <td style="padding:6px;">${(row.username||'Player')}</td>
-                <td style="padding:6px; text-align:right;">${row.score||0}</td>`;
+                <td style="padding:6px;${rankStyle}">${idx+1}</td>
+                <td style="padding:6px;${rankStyle}">${row.username}</td>
+                <td style="padding:6px; text-align:right;${rankStyle}">${row.score||0}</td>`;
               tbody.appendChild(tr);
             });
             if (rows.length === 0) {

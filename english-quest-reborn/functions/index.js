@@ -12,6 +12,48 @@ const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 
 admin.initializeApp();
+// Helper validation for usernames
+function isValidUsername(name) {
+  if (!name) return false;
+  const n = String(name).trim();
+  if (n.length < 3) return false;
+  const banned = ['player','test','testuser','demo','guest','anonymous','anon'];
+  const lower = n.toLowerCase();
+  if (banned.includes(lower)) return false;
+  if (lower.startsWith('utilisateur ')) return false;
+  return /^[\p{L}\p{N} _\-']{3,30}$/u.test(n);
+}
+
+// HTTP callable to clean invalid scores (admin only -> by username check or by caller is Ollie)
+exports.cleanInvalidScores = functions.https.onCall(async (data, context) => {
+  try {
+    const uid = context.auth?.uid;
+    if (!uid) throw new functions.https.HttpsError('unauthenticated','Not authenticated');
+    const userDoc = await admin.firestore().collection('users').doc(uid).get();
+    const user = userDoc.exists ? userDoc.data() : null;
+    const isOllie = user && (user.username||'').toLowerCase() === 'ollie';
+    if (!isOllie) throw new functions.https.HttpsError('permission-denied','Only Ollie can run cleanup');
+
+    const gameId = data?.gameId || null;
+    const scoresRef = admin.firestore().collection('game_scores');
+    let queryRef = scoresRef;
+    if (gameId) queryRef = queryRef.where('gameId','==',gameId);
+    const snap = await queryRef.get();
+    let deleted = 0;
+    for (const doc of snap.docs) {
+      const row = doc.data();
+      if (!isValidUsername(row.username)) {
+        await doc.ref.delete();
+        deleted++;
+      }
+    }
+    return { success: true, deleted };
+  } catch (e) {
+    console.error('cleanInvalidScores error', e);
+    throw new functions.https.HttpsError('internal', e.message||'error');
+  }
+});
+
 
 const db = admin.firestore();
 const saltRounds = 10;
