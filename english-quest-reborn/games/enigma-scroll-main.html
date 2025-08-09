@@ -498,11 +498,13 @@
       
       // Supprimer tous les anciens avatars
       setTimeout(() => {
-        const conflictingAvatars = document.querySelectorAll('.floating-buddy-avatar, .wandering-pet-avatar, .mini-adventurer-avatar, .game-mini-avatar, [class*="adventurer"]:not(#ultra-adventurer)');
-        conflictingAvatars.forEach(avatar => {
-          console.log('🗑️ [Avatar] Suppression avatar conflictuel:', avatar.className);
-          avatar.remove();
-        });
+        const candidates = document.querySelectorAll('.floating-buddy-avatar, .wandering-pet-avatar, .mini-adventurer-avatar, .game-mini-avatar, [class*="adventurer"]');
+        Array.from(candidates)
+          .filter(el => !el.closest('#ultra-adventurer'))
+          .forEach(avatar => {
+            console.log('🗑️ [Avatar] Suppression avatar conflictuel:', avatar.className);
+            avatar.remove();
+          });
         
         // Désactiver l'ancien système s'il existe
         if (window.gameAvatarIntegration) {
