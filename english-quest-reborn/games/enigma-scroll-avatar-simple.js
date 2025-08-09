@@ -1604,16 +1604,35 @@ document.head.insertAdjacentHTML('beforeend', avatarCSS);
 class EnigmaAvatarBrain {
   constructor(adapter, options = {}) {
     this.adapter = adapter;
-    this.options = { tts: false, language: 'fr', funRate: 0.25, ...options };
+    this.options = {
+      tts: false,
+      language: 'en',
+      funRate: 0.15,
+      speakCooldownMs: 7000,
+      tipCooldownMs: 25000,
+      challengeCooldownMs: 45000,
+      ...options,
+    };
     this.state = { mood: 'neutral', streak: 0, lastAt: Date.now(), energy: 70, tips: 0 };
+    this.lastByTag = new Map();
     this._timer = setInterval(() => this.tick(), 16000);
   }
 
-  speak(text) {
+  can(tag, cooldownMs) {
+    const now = Date.now();
+    const last = this.lastByTag.get(tag) || 0;
+    if (now - last < cooldownMs) return false;
+    this.lastByTag.set(tag, now);
+    return true;
+  }
+
+  speak(text, tag = 'speak') {
+    if (!this.can(tag, this.options.speakCooldownMs)) return;
     try {
       if (this.options.tts && 'speechSynthesis' in window) {
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = 'fr-FR'; speechSynthesis.speak(u);
+        u.lang = 'en-US';
+        speechSynthesis.speak(u);
       }
       this.adapter.showMessage(text, 2200);
     } catch (_) {}
@@ -1622,7 +1641,7 @@ class EnigmaAvatarBrain {
   setMood(m) {
     this.state.mood = m;
     const aura = m === 'happy' ? 'success' : m === 'excited' ? 'victory' : m === 'tired' ? 'fire' : '';
-    if (aura) this.adapter.showAura(aura, 1800);
+    if (aura) this.adapter.showAura(aura, 1600);
   }
 
   anim(kind) {
@@ -1631,77 +1650,90 @@ class EnigmaAvatarBrain {
   }
 
   rewardSmall() {
-    const msgs = ['Super ! ✨','Bien joué ! ⭐','Continue comme ça ! 💪'];
-    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
+    const msgs = ['Nice! ✨', 'Great job! ⭐', 'Keep it up! 💪'];
+    this.speak(msgs[Math.floor(Math.random()*msgs.length)], 'score');
     this.anim('happy');
   }
 
   rewardBig() {
-    const msgs = ['INCROYABLE ! 🔥','Tu gères ! 👑','Champion ! 🏆'];
-    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
-    this.anim('excited'); this.setMood('excited');
+    const msgs = ['AMAZING! 🔥', 'You rock! 👑', 'Champion! 🏆'];
+    this.speak(msgs[Math.floor(Math.random()*msgs.length)], 'score');
+    this.anim('excited');
+    this.setMood('excited');
   }
 
   encourage() {
-    const msgs = ['On s’accroche ! 🎯','Essaie une autre piste… 🧠','Tu y es presque ! ✨'];
-    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
-    this.setMood('focused'); this.anim('focused');
+    if (!this.can('encourage', this.options.speakCooldownMs)) return;
+    const msgs = ['You got this! 🎯', 'Try a different path… 🧠', 'Almost there! ✨'];
+    this.adapter.showMessage(msgs[Math.floor(Math.random()*msgs.length)], 2200);
+    this.setMood('focused');
+    this.anim('focused');
   }
 
   tip() {
-    const tips = ['Regarde la position des lettres correctes 👀','Teste un préfixe/suffixe 🔤','Change une voyelle peut aider ✨'];
-    this.speak(tips[this.state.tips % tips.length]);
+    if (!this.can('tip', this.options.tipCooldownMs)) return;
+    const tips = ['Check positions of correct letters 👀', 'Try a prefix/suffix 🔤', 'Swap a vowel, it might help ✨'];
+    this.adapter.showMessage(tips[this.state.tips % tips.length], 2400);
   }
 
   miniChallenge() {
-    const prompts = ['Fais un combo x3 pour une danse ! 💃','+20 points en 30s et je m’enflamme ! 🔥','Deux mots d’affilée: challenge ! 🚀'];
-    this.speak(prompts[Math.floor(Math.random()*prompts.length)]);
+    if (!this.can('challenge', this.options.challengeCooldownMs)) return;
+    const prompts = ['Hit a x3 combo and I dance! 💃', '+20 points in 30s? 🔥', 'Two correct words in a row: challenge! 🚀'];
+    this.adapter.showMessage(prompts[Math.floor(Math.random()*prompts.length)], 2600);
   }
 
   onEvent(type, data) {
     this.state.lastAt = Date.now();
-    switch(type){
-      case 'scoreSmallGain':
+    switch (type) {
+      case 'scoreSmallGain': {
         this.state.streak++;
         this.state.energy = Math.min(100, this.state.energy + 2);
-        if (data.isBig) this.rewardBig(); else this.rewardSmall();
+        if (data.isBig) this.rewardBig(); else if (data.isMedium) this.rewardSmall(); else if (Math.random()<0.5) this.rewardSmall();
         if (this.state.streak % 5 === 0) this.miniChallenge();
-        break;
-      case 'combo':
+        break; }
+      case 'combo': {
         this.state.streak += (data.combo || 1);
-        data.isFire ? this.rewardBig() : this.rewardSmall();
-        break;
-      case 'wrongWord':
-        this.state.streak = 0; this.state.energy = Math.max(0, this.state.energy - 5); this.encourage();
-        break;
-      case 'timeOver':
-        this.setMood('tired'); this.speak('Fin du temps ! On retente ? ⏰');
-        break;
-      case 'victory':
+        if (data.isFire || data.combo >= 5) this.rewardBig(); else if (this.can('combo', this.options.speakCooldownMs)) this.rewardSmall();
+        break; }
+      case 'wrongWord': {
+        this.state.streak = 0;
+        this.state.energy = Math.max(0, this.state.energy - 5);
+        this.encourage();
+        break; }
+      case 'timeOver': {
+        if (this.can('time', this.options.speakCooldownMs)) this.adapter.showMessage("Time's up! Let's try again! ⏰", 2200);
+        this.setMood('tired');
+        break; }
+      case 'victory': {
         this.rewardBig();
-        break;
-      case 'gameStart':
-        this.setMood('happy'); this.speak('C’est parti ! 🎮');
-        break;
-      case 'powerUpUsed':
-        this.speak('Power up ! ⚡'); this.anim('happy');
-        break;
-      default:
-        if (Math.random() < 0.2) this.anim('gentle');
+        break; }
+      case 'gameStart': {
+        if (this.can('system', this.options.speakCooldownMs)) this.adapter.showMessage("Let's go! 🎮", 2000);
+        this.setMood('happy');
+        break; }
+      case 'powerUpUsed': {
+        if (this.can('powerup', this.options.speakCooldownMs)) this.adapter.showMessage('Power up! ⚡', 1800);
+        this.anim('happy');
+        break; }
+      default: {
+        if (Math.random() < 0.15) this.anim('gentle');
+      }
     }
   }
 
-  tick(){
+  tick() {
     const idle = (Date.now() - this.state.lastAt) / 1000;
-    if (idle > 40) {
+    if (idle > 45) {
       this.state.energy = Math.max(0, this.state.energy - 2);
-      if (Math.random() < 0.6) this.encourage();
+      if (Math.random() < 0.5) this.encourage();
       if (this.state.energy < 30) this.state.tips++;
-      if (this.state.tips > 0 && Math.random() < 0.5) this.tip();
+      if (this.state.tips > 0 && Math.random() < 0.4) this.tip();
     }
     if (Math.random() < this.options.funRate) {
-      const fun = ['Je tente une danse si tu fais +15 ! 💃','Objectif combo x3 ! 🔥','Astuce: change d’ordre les lettres 👀'];
-      this.speak(fun[Math.floor(Math.random()*fun.length)]);
+      if (this.can('fun', 30000)) {
+        const fun = ['I will dance if you gain +15! 💃', 'Combo x3 goal! 🔥', 'Pro tip: try a different letter order 👀'];
+        this.adapter.showMessage(fun[Math.floor(Math.random()*fun.length)], 2400);
+      }
     }
   }
 }
