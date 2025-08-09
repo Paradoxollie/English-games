@@ -42,8 +42,8 @@
     setImp('position','fixed');
     setImp('right','24px');
     setImp('bottom','24px');
-    setImp('width','160px');
-    setImp('height','230px');
+    setImp('width','150px');
+    setImp('height','220px');
     setImp('z-index','3000');
     setImp('display','block');
     setImp('visibility','visible');

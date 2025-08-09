@@ -87,12 +87,12 @@
       setImp('position', 'fixed');
       setImp('right', '24px');
       setImp('bottom', '24px');
-      setImp('width', '200px');
-      setImp('height', '300px');
-      setImp('min-width', '180px');
-      setImp('min-height', '260px');
-      setImp('max-width', '300px');
-      setImp('max-height', '440px');
+      setImp('width', '180px');
+      setImp('height', '260px');
+      setImp('min-width', '160px');
+      setImp('min-height', '240px');
+      setImp('max-width', '260px');
+      setImp('max-height', '380px');
       setImp('z-index', '2000');
       this.container = el;
     }
