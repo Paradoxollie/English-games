@@ -82,17 +82,17 @@
         el.className = 'ultra-reactive-adventurer';
         document.body.appendChild(el);
       }
-      // Force a larger, game-like size overriding any !important CSS
+      // Force a compact, game-like size overriding any !important CSS
       const setImp = (prop, value) => el.style.setProperty(prop, value, 'important');
       setImp('position', 'fixed');
       setImp('right', '24px');
       setImp('bottom', '24px');
-      setImp('width', '260px');
-      setImp('height', '360px');
-      setImp('min-width', '240px');
-      setImp('min-height', '320px');
-      setImp('max-width', '360px');
-      setImp('max-height', '520px');
+      setImp('width', '200px');
+      setImp('height', '300px');
+      setImp('min-width', '180px');
+      setImp('min-height', '260px');
+      setImp('max-width', '300px');
+      setImp('max-height', '440px');
       setImp('z-index', '2000');
       this.container = el;
     }
