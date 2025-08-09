@@ -180,7 +180,7 @@ body .ultra-reactive-adventurer .avatar-head,
 body #ultra-adventurer .avatar-head {
   /* POSITION RELATIVE au container - mais stable au zoom */
   position: absolute !important;
-  top: 22% !important;  /* Plus bas pour coller au corps comme le profil */
+  top: 26% !important;  /* Plus bas pour coller au corps comme le profil */
   left: 50% !important;
   right: auto !important;
   bottom: auto !important;
@@ -372,7 +372,7 @@ body #ultra-adventurer .avatar-head {
   #ultra-adventurer .avatar-head-ultra,
   .ultra-reactive-adventurer .avatar-head,
   #ultra-adventurer .avatar-head {
-    top: 22% !important;
+    top: 26% !important;
     width: 48% !important;
   }
   
