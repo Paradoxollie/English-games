@@ -34,6 +34,13 @@ class GameAvatarIntegration {
     this.isTouchDevice = 'ontouchstart' in window;
     
     this.init();
+
+    // Boot lightweight AI Brain when available
+    try {
+      this.brain = new AvatarBrain(this, { tts: false });
+    } catch (e) {
+      console.warn('[AvatarBrain] init skipped:', e);
+    }
   }
 
   async init() {
@@ -2179,6 +2186,10 @@ class GameAvatarIntegration {
       
       const avatar = document.querySelector('#ultra-adventurer');
       if (!avatar) return false;
+      // Notify AI brain
+      if (this.notifyBrain) {
+        this.notifyBrain(eventType, data);
+      }
       
       // Réactions ULTRA-SIMPLIFIÉES sans méthodes complexes
       switch (eventType) {
@@ -2626,3 +2637,146 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = GameAvatarIntegration;
 } 
+
+// =====================
+// Lightweight adaptive Avatar Brain
+// =====================
+class AvatarBrain {
+  constructor(integration, options = {}) {
+    this.integration = integration;
+    this.options = { tts: false, language: 'fr', ...options };
+    this.state = {
+      mood: 'neutral', // neutral | happy | excited | focused | tired
+      streak: 0,
+      lastInteractionAt: Date.now(),
+      energy: 70, // 0-100
+      tipsLevel: 0,
+    };
+
+    // Bind bridge
+    integration.notifyBrain = (eventType, data) => this.onEvent(eventType, data);
+
+    // Periodic behaviors
+    this._interval = setInterval(() => this.tick(), 15000);
+  }
+
+  destroy() { try { clearInterval(this._interval); } catch(_) {} }
+
+  speak(text) {
+    try {
+      if (this.options.tts && 'speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = this.options.language.startsWith('fr') ? 'fr-FR' : 'en-US';
+        speechSynthesis.speak(utter);
+      }
+      this.integration.showSpeechBubble?.(text, 2200);
+    } catch (_) { /* ignore */ }
+  }
+
+  setMood(mood) {
+    this.state.mood = mood;
+    const auraMap = { happy: 'success', excited: 'victory', focused: 'success', tired: 'fire', neutral: '' };
+    const aura = auraMap[mood] || '';
+    if (aura) this.integration.changeAura?.(aura, 1800);
+  }
+
+  animate(kind = 'gentle') {
+    const map = { gentle: 'physicalWiggle', happy: 'physicalHop', excited: 'physicalVictoryDance', focused: 'physicalNod', tired: 'physicalDroop' };
+    this.integration.triggerPhysicalAnimation?.(map[kind] || map.gentle);
+  }
+
+  rewardSmall() {
+    const msgs = ['Bien joué ! ⭐','Continue comme ça ! 💪','Super ! ✨'];
+    this.speak(msgs[Math.floor(Math.random() * msgs.length)]);
+    this.animate('happy');
+  }
+
+  rewardBig() {
+    const msgs = ['INCROYABLE ! 🔥','Tu déchires ! 👑','Champion ! 🏆'];
+    this.speak(msgs[Math.floor(Math.random() * msgs.length)]);
+    this.animate('excited');
+    this.setMood('excited');
+  }
+
+  encourage() {
+    const msgs = ['On s’\u00accroche ! 🎯','Réfléchis à une autre combinaison… 🧠','Tu y es presque ! ✨'];
+    this.speak(msgs[Math.floor(Math.random() * msgs.length)]);
+    this.setMood('focused');
+    this.animate('focused');
+  }
+
+  tipIfNeeded() {
+    if (this.state.tipsLevel <= 0) return;
+    const tips = [
+      'Essaie une autre terminaison…',
+      'Pense aux préfixes et suffixes !',
+      'Regarde les lettres déjà correctes pour guider ton choix.',
+    ];
+    this.speak(tips[(this.state.tipsLevel - 1) % tips.length]);
+  }
+
+  miniChallenge() {
+    const prompts = ['Trouve un mot en 20s pour gagner un bonus ! ⏱️','Fais un combo x3 ! 🚀','Deux mots corrects d’affilée et je danse ! 💃'];
+    this.speak(prompts[Math.floor(Math.random() * prompts.length)]);
+  }
+
+  onEvent(eventType, data) {
+    this.state.lastInteractionAt = Date.now();
+    switch (eventType) {
+      case 'scoreSmallGain':
+        this.state.streak++;
+        this.state.energy = Math.min(100, this.state.energy + 3);
+        if (data.isBig) this.rewardBig();
+        else if (data.isMedium) { this.rewardSmall(); this.tipIfNeeded(); }
+        else this.rewardSmall();
+        if (this.state.streak % 5 === 0) this.miniChallenge();
+        break;
+      case 'combo':
+        this.state.streak += (data.combo || 1);
+        (data.isFire ? this.rewardBig() : this.rewardSmall());
+        break;
+      case 'comboBroken':
+      case 'wordWrong':
+      case 'wrongWord':
+        this.state.streak = 0;
+        this.state.energy = Math.max(0, this.state.energy - 5);
+        this.encourage();
+        break;
+      case 'timeRunningOut':
+        this.setMood('focused');
+        this.speak(`Plus que ${data.timeLeft}s, reste concentré ! ⏰`);
+        break;
+      case 'victory':
+      case 'wordCorrect':
+        this.rewardSmall();
+        break;
+      case 'gameStart':
+        this.setMood('happy');
+        this.speak('C’est parti ! 🎮');
+        break;
+      case 'powerUpUsed':
+        this.speak('Power up ! ⚡');
+        this.animate('happy');
+        break;
+      default:
+        if (Math.random() < 0.3) this.animate('gentle');
+    }
+  }
+
+  tick() {
+    const idleSec = (Date.now() - this.state.lastInteractionAt) / 1000;
+    if (idleSec > 45) {
+      this.state.energy = Math.max(0, this.state.energy - 2);
+      if (Math.random() < 0.6) this.encourage();
+      if (this.state.energy < 30 && this.state.tipsLevel < 2) this.state.tipsLevel++;
+    }
+    if (Math.random() < 0.25) {
+      const fun = [
+        'Je peux faire une danse si tu gagnes +20 points ! 💃',
+        'On tente un combo ? 🔥',
+        'Astuce: observe la position des lettres correctes 👀',
+      ];
+      this.speak(fun[Math.floor(Math.random() * fun.length)]);
+    }
+  }
+}
