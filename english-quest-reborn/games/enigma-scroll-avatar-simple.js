@@ -154,6 +154,13 @@ class EnigmaScrollAvatar {
     
     console.log('🎮 [EnigmaAvatar] Initialisation système avatar ULTRA-RÉACTIF...');
     this.init();
+
+    // Installer le cerveau IA léger
+    try {
+      this.brain = new EnigmaAvatarBrain(this, { tts: false, language: 'fr' });
+    } catch (e) {
+      console.warn('[EnigmaAvatarBrain] init skipped:', e);
+    }
   }
   
   init() {
@@ -423,6 +430,8 @@ class EnigmaScrollAvatar {
     this.showAura('success', 1500);
     
     console.log('🚀 [EnigmaAvatar] Réaction soumission mot');
+    // Notifier l'IA
+    this.brain?.onEvent('wordSubmitted', {});
   }
   
   // Réaction aux power-ups
@@ -460,6 +469,7 @@ class EnigmaScrollAvatar {
     this.showAura('fire', 3000);
     
     console.log(`⚡ [EnigmaAvatar] Réaction power-up: ${powerUpType}`);
+    this.brain?.onEvent('powerUpUsed', { type: powerUpType });
     
     setTimeout(() => {
       this.isReacting = false;
@@ -478,6 +488,7 @@ class EnigmaScrollAvatar {
     this.showAura('victory', 4000);
     
     console.log('🎮 [EnigmaAvatar] Réaction démarrage jeu');
+    this.brain?.onEvent('gameStart', {});
   }
   
   // Réaction au nouveau jeu
@@ -491,6 +502,7 @@ class EnigmaScrollAvatar {
     this.showEffects('🔄');
     
     console.log('🔄 [EnigmaAvatar] Réaction nouveau jeu');
+    this.brain?.onEvent('newGame', {});
   }
   
   // Vérifier les changements dans la grille
@@ -692,6 +704,15 @@ class EnigmaScrollAvatar {
     setTimeout(() => {
       this.isReacting = false;
     }, Math.min(duration * 0.6, 1200));
+
+    // Notifier l'IA
+    this.brain?.onEvent('scoreSmallGain', {
+      amount: points,
+      total: this.currentScore,
+      isSmall: points < 15,
+      isMedium: points >= 15 && points < 25,
+      isBig: points >= 25
+    });
   }
   
   reactToCombo(combo) {
@@ -750,6 +771,9 @@ class EnigmaScrollAvatar {
     setTimeout(() => {
       this.isReacting = false;
     }, Math.min(duration * 0.4, 800));
+
+    // Notifier l'IA
+    this.brain?.onEvent('combo', { combo, isStreak: combo >= 3, isFire: combo >= 5 });
   }
   
   reactToGameMessage(message) {
@@ -771,18 +795,21 @@ class EnigmaScrollAvatar {
         this.playAnimation('physicalTilt');
         this.showEffects('🤔');
       }
+      this.brain?.onEvent('wrongWord', {});
     } 
     else if (message.includes('Incomplete') || message.includes('incomplet') || message.includes('Mot incomplet')) {
       const incompleteMsg = this.getRandomPhrase(this.phrases.incompleteWord);
       this.showMessage(incompleteMsg, 2000);
       this.playAnimation('physicalNod');
       this.showEffects('✍️');
+      this.brain?.onEvent('incomplete', {});
     } 
     else if (message.includes('Time') || message.includes('Temps') || message.includes('écoulé')) {
       this.showMessage('Time\'s up! 😅', 3000);
       this.playAnimation('physicalDroop');
       this.showEffects('⏰');
       this.showAura('fire', 2000);
+      this.brain?.onEvent('timeOver', {});
     } 
     else if (message.includes('Excellent') || message.includes('Bravo') || message.includes('Félicitations')) {
       const excellentMsg = this.getRandomPhrase(this.phrases.scoreExcellent);
@@ -790,6 +817,7 @@ class EnigmaScrollAvatar {
       this.playAnimation('physicalVictoryDance');
       this.showAura('victory', 4000);
       this.showEffects('🎉');
+      this.brain?.onEvent('victory', {});
     }
     else if (message.includes('Score') || message.includes('points')) {
       // Réagir aux messages de score
@@ -961,6 +989,7 @@ class EnigmaScrollAvatar {
       this.playAnimation('physicalVictoryDance');
       this.showAura('victory', 6000);
       this.showEffects('🏁🎉🏆');
+      this.brain?.onEvent('gameOver', { performance });
     }, 1000);
   }
   
@@ -1568,6 +1597,114 @@ const avatarCSS = `
 
 // Injecter les CSS
 document.head.insertAdjacentHTML('beforeend', avatarCSS);
+
+// ================================
+// Lightweight Enigma Avatar Brain
+// ================================
+class EnigmaAvatarBrain {
+  constructor(adapter, options = {}) {
+    this.adapter = adapter;
+    this.options = { tts: false, language: 'fr', funRate: 0.25, ...options };
+    this.state = { mood: 'neutral', streak: 0, lastAt: Date.now(), energy: 70, tips: 0 };
+    this._timer = setInterval(() => this.tick(), 16000);
+  }
+
+  speak(text) {
+    try {
+      if (this.options.tts && 'speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'fr-FR'; speechSynthesis.speak(u);
+      }
+      this.adapter.showMessage(text, 2200);
+    } catch (_) {}
+  }
+
+  setMood(m) {
+    this.state.mood = m;
+    const aura = m === 'happy' ? 'success' : m === 'excited' ? 'victory' : m === 'tired' ? 'fire' : '';
+    if (aura) this.adapter.showAura(aura, 1800);
+  }
+
+  anim(kind) {
+    const map = { gentle: 'physicalWiggle', happy: 'physicalHop', excited: 'physicalVictoryDance', focused: 'physicalNod', tired: 'physicalDroop' };
+    this.adapter.playAnimation(map[kind] || map.gentle);
+  }
+
+  rewardSmall() {
+    const msgs = ['Super ! ✨','Bien joué ! ⭐','Continue comme ça ! 💪'];
+    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
+    this.anim('happy');
+  }
+
+  rewardBig() {
+    const msgs = ['INCROYABLE ! 🔥','Tu gères ! 👑','Champion ! 🏆'];
+    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
+    this.anim('excited'); this.setMood('excited');
+  }
+
+  encourage() {
+    const msgs = ['On s’accroche ! 🎯','Essaie une autre piste… 🧠','Tu y es presque ! ✨'];
+    this.speak(msgs[Math.floor(Math.random()*msgs.length)]);
+    this.setMood('focused'); this.anim('focused');
+  }
+
+  tip() {
+    const tips = ['Regarde la position des lettres correctes 👀','Teste un préfixe/suffixe 🔤','Change une voyelle peut aider ✨'];
+    this.speak(tips[this.state.tips % tips.length]);
+  }
+
+  miniChallenge() {
+    const prompts = ['Fais un combo x3 pour une danse ! 💃','+20 points en 30s et je m’enflamme ! 🔥','Deux mots d’affilée: challenge ! 🚀'];
+    this.speak(prompts[Math.floor(Math.random()*prompts.length)]);
+  }
+
+  onEvent(type, data) {
+    this.state.lastAt = Date.now();
+    switch(type){
+      case 'scoreSmallGain':
+        this.state.streak++;
+        this.state.energy = Math.min(100, this.state.energy + 2);
+        if (data.isBig) this.rewardBig(); else this.rewardSmall();
+        if (this.state.streak % 5 === 0) this.miniChallenge();
+        break;
+      case 'combo':
+        this.state.streak += (data.combo || 1);
+        data.isFire ? this.rewardBig() : this.rewardSmall();
+        break;
+      case 'wrongWord':
+        this.state.streak = 0; this.state.energy = Math.max(0, this.state.energy - 5); this.encourage();
+        break;
+      case 'timeOver':
+        this.setMood('tired'); this.speak('Fin du temps ! On retente ? ⏰');
+        break;
+      case 'victory':
+        this.rewardBig();
+        break;
+      case 'gameStart':
+        this.setMood('happy'); this.speak('C’est parti ! 🎮');
+        break;
+      case 'powerUpUsed':
+        this.speak('Power up ! ⚡'); this.anim('happy');
+        break;
+      default:
+        if (Math.random() < 0.2) this.anim('gentle');
+    }
+  }
+
+  tick(){
+    const idle = (Date.now() - this.state.lastAt) / 1000;
+    if (idle > 40) {
+      this.state.energy = Math.max(0, this.state.energy - 2);
+      if (Math.random() < 0.6) this.encourage();
+      if (this.state.energy < 30) this.state.tips++;
+      if (this.state.tips > 0 && Math.random() < 0.5) this.tip();
+    }
+    if (Math.random() < this.options.funRate) {
+      const fun = ['Je tente une danse si tu fais +15 ! 💃','Objectif combo x3 ! 🔥','Astuce: change d’ordre les lettres 👀'];
+      this.speak(fun[Math.floor(Math.random()*fun.length)]);
+    }
+  }
+}
 
 // Initialisation automatique
 let enigmaAvatar = null;
